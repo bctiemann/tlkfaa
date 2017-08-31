@@ -1,6 +1,6 @@
 # base requirements
 
-Django==1.9
+Django==1.11
 djangorestframework==3.3.1
 Unipath==1.1
 colorlog==2.6.0
