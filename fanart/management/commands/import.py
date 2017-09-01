@@ -21,12 +21,17 @@ class Command(BaseCommand):
     do_users = False
     do_folders = False
     do_pictures = True
+    do_comments = False
+    do_shouts = False
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key',)
 
     def get_child_folders(self, c, folder_id, new_folder):
-        c.execute("""SELECT * FROM folders WHERE parent=%s""", (folder_id,))
+        if folder_id:
+            c.execute("""SELECT * FROM folders WHERE parent=%s""", (folder_id,))
+        else:
+            c.execute("""SELECT * FROM folders WHERE parent is null""")
         for folder in c.fetchall():
             print folder
             f = None
@@ -43,6 +48,37 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 pass
             self.get_child_folders(c, folder['folderid'], f)
+
+    def get_child_comments(self, c, comment_id, new_comment):
+        if comment_id:
+            c.execute("""SELECT * FROM comments WHERE replyto=%s""", (comment_id,))
+        else:
+            c.execute("""SELECT * FROM comments WHERE replyto is null""")
+        for comment in c.fetchall():
+            print comment
+            f = None
+            try:
+                user = User.objects.get(id_orig=comment['userid'])
+                print user
+                picture = Picture.objects.get(id_orig=comment['pictureid'])
+                print picture
+                f = Comment.objects.create(
+                    id_orig = comment['commentid'],
+                    user = user,
+                    picture = picture,
+                    comment = comment['comment'],
+                    reply_to = new_comment,
+                    date_posted = comment['posted'],
+                    date_edited = comment['edited'],
+                    is_deleted = comment['deleted'],
+                    is_received = comment['viewed'],
+                    hash = comment['hash'],
+                )
+            except User.DoesNotExist:
+                pass
+            except Picture.DoesNotExist:
+                pass
+            self.get_child_comments(c, comment['commentid'], f)
 
     def handle(self, *args, **options):
         db = MySQLdb.connect(passwd='28DcBPP2G6ckhnmXybFR8R25', db='fanart', host='10.0.0.2', user='fadbuser', charset='utf8mb4')
@@ -122,20 +158,7 @@ class Command(BaseCommand):
                     u.save()
 
         if self.do_folders:
-            c.execute("""SELECT * FROM folders WHERE parent is null""")
-            for folder in c.fetchall():
-                print folder
-                try:
-                    user = User.objects.get(artist_id_orig=folder['artistid'])
-                    f = Folder.objects.create(
-                        id_orig = folder['folderid'],
-                        user = user,
-                        name = folder['name'],
-                        description = folder['description'],
-                    )
-                except User.DoesNotExist:
-                    pass
-                self.get_child_folders(c, folder['folderid'], f)
+            self.get_child_folders(c, None, None)
 
         if self.do_pictures:
             c.execute("""SELECT * FROM pictures""")
@@ -143,10 +166,17 @@ class Command(BaseCommand):
                 print picture
                 try:
                     user = User.objects.get(artist_id_orig=picture['artistid'])
+
                     try:
                         folder = Folder.objects.get(id_orig=picture['folderid'])
                     except Folder.DoesNotExist:
                         folder = None
+
+                    try:
+                        approver = User.objects.get(id_orig=picture['insertedby'])
+                    except User.DoesNotExist:
+                        approver = None
+
                     p = Picture.objects.create(
                         id_orig = picture['pictureid'],
                         artist = user,
@@ -166,14 +196,14 @@ class Command(BaseCommand):
                         width = picture['width'],
                         height = picture['height'],
                         date_uploaded = picture['uploaded'],
-                        date_inserted = picture['inserted'],
+                        date_approved = picture['inserted'],
                         date_updated = picture['updated'],
                         date_deleted = picture['deleted'],
                         hash = picture['hash'],
                         is_public = picture['picpublic'],
                         rank_in_artist = picture['rankinartist'],
                         rank_in_folder = picture['rankinfolder'],
-                        inserted_by = picture['insertedby'] if picture['insertedby'] > 0 else None,
+                        approved_by = approver,
                         keywords = picture['keywords'],
                         work_in_progress = picture['wip'],
                         allow_comments = picture['allowcomments_p'],
@@ -182,3 +212,6 @@ class Command(BaseCommand):
                     )
                 except User.DoesNotExist:
                     pass
+
+        if self.do_comments:
+            self.get_child_comments(c, None, None)

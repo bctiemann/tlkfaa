@@ -27,9 +27,9 @@ admin.site.register(fanart_models.User, UserAdmin)
 
 
 class PictureAdmin(admin.ModelAdmin):
-    list_display = ('filename',)
+    list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
-    readonly_fields=('artist', 'inserted_by',)
+    readonly_fields=('artist', 'approved_by',)
     artist_id_for_formfield = None
 
     def get_form(self, request, obj=None, **kwargs):
@@ -43,3 +43,24 @@ class PictureAdmin(admin.ModelAdmin):
         return super(PictureAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(fanart_models.Picture, PictureAdmin)
+
+
+class FolderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user',)
+    list_filter = ()
+    readonly_fields=('user',)
+    user_id_for_formfield = None
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.user_id_for_formfield = obj.user_id
+        return super(FolderAdmin, self).get_form(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'parent':
+            kwargs['queryset'] = fanart_models.Folder.objects.filter(user=self.user_id_for_formfield)
+        if db_field.name == 'latest_picture':
+            kwargs['queryset'] = fanart_models.Picture.objects.filter(artist=self.user_id_for_formfield)
+        return super(FolderAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+admin.site.register(fanart_models.Folder, FolderAdmin)

@@ -110,14 +110,14 @@ class Picture(models.Model):
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
-    date_inserted = models.DateTimeField(null=True, blank=True)
+    date_approved = models.DateTimeField(null=True, blank=True)
     date_updated = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
     hash = models.CharField(max_length=32, blank=True)
     is_public = models.BooleanField(default=True)
     rank_in_artist = models.IntegerField(default=0)
     rank_in_folder = models.IntegerField(default=0)
-    inserted_by = models.ForeignKey('User', null=True, blank=True, related_name='inserted')
+    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='inserted')
     keywords = models.TextField(blank=True)
     work_in_progress = models.BooleanField(default=False)
     allow_comments = models.BooleanField(default=True)
@@ -141,3 +141,16 @@ class Folder(models.Model):
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.name)
+
+
+class Comment(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    user = models.ForeignKey('User', null=True, blank=True)
+    picture = models.ForeignKey('Picture')
+    reply_to = models.ForeignKey('Comment', null=True, blank=True, related_name='parent')
+    comment = models.TextField(blank=True)
+    date_posted = models.DateTimeField()
+    date_edited = models.DateTimeField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
+    is_received = models.BooleanField(default=False)
+    hash = models.CharField(max_length=36, null=True, blank=True)
