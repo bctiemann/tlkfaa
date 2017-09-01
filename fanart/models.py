@@ -125,7 +125,7 @@ class Picture(models.Model):
     needs_poster = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return '{0} {1}.{2}'.format(self.id, self.filename, self.extension)
+        return '{0} {1}'.format(self.id, self.filename)
 
 
 class Folder(models.Model):
