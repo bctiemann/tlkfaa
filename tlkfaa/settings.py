@@ -143,7 +143,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/usr/local/www/django/tlkfaa/static'
+
+STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
+MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
+MEDIA_URL = '/media/'
 
 # This logging setup has the following attributes:
 # When DEBUG = True, debug information will be displayed on requested page.
