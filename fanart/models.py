@@ -26,6 +26,7 @@ class User(AbstractUser):
             'unique': _("A user with that username already exists."),
         },
     )
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     last_host = models.CharField(max_length=128, null=True, blank=True)
     h_size = models.IntegerField(null=True, blank=True)
     v_size = models.IntegerField(null=True, blank=True)
@@ -37,7 +38,7 @@ class User(AbstractUser):
     show_tool_box = models.BooleanField(default=True)
     folders_tree = models.BooleanField(default=False)
 
-    is_artist = models.BooleanField(default=False)
+    artist_id_orig = models.IntegerField(null=True, blank=True, db_index=True)
 
     dir_name = models.CharField(max_length=150, blank=True)
     sort_name = models.CharField(max_length=150, blank=True)
@@ -61,7 +62,7 @@ class User(AbstractUser):
     comments = models.TextField(blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     banner_text = models.TextField(blank=True)
-    banner_text_updated = models.DateTimeField(null=True)
+    banner_text_updated = models.DateTimeField(null=True, blank=True)
     banner_text_min = models.TextField(blank=True)
     zip_enabled = models.BooleanField(default=True)
     show_email = models.BooleanField(default=True)
@@ -86,11 +87,57 @@ class User(AbstractUser):
     sketcher_banned_by = models.ForeignKey('User', null=True, blank=True)
     sketcher_ban_reason = models.TextField(blank=True)
 
-
-class Artist(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=32, null=True, blank=True)
+    def __unicode__(self):
+        return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
 
 class Picture(models.Model):
-    pass
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    artist = models.ForeignKey('User', null=True)
+    folder = models.ForeignKey('Folder', null=True, blank=True)
+    filename = models.CharField(max_length=255, blank=True)
+    extension = models.CharField(max_length=5, blank=True)
+    title = models.TextField(blank=True)
+    is_color = models.BooleanField(default=True)
+    type = models.CharField(max_length=32, blank=True)
+    mime_type = models.CharField(max_length=100, blank=True)
+    file_size = models.IntegerField(blank=True)
+    quality = models.CharField(max_length=1, blank=True)
+    thumb_height = models.IntegerField(blank=True)
+    num_comments = models.IntegerField(default=0)
+    num_faves = models.IntegerField(default=0)
+    characters = models.CharField(max_length=50, blank=True)
+    width = models.IntegerField(blank=True)
+    height = models.IntegerField(blank=True)
+    date_uploaded = models.DateTimeField(null=True, blank=True)
+    date_inserted = models.DateTimeField(null=True, blank=True)
+    date_updated = models.DateTimeField(null=True, blank=True)
+    date_deleted = models.DateTimeField(null=True, blank=True)
+    hash = models.CharField(max_length=32, blank=True)
+    is_public = models.BooleanField(default=True)
+    rank_in_artist = models.IntegerField(default=0)
+    rank_in_folder = models.IntegerField(default=0)
+    inserted_by = models.ForeignKey('User', null=True, blank=True, related_name='inserted')
+    keywords = models.TextField(blank=True)
+    work_in_progress = models.BooleanField(default=False)
+    allow_comments = models.BooleanField(default=True)
+    is_scanned = models.BooleanField(default=False)
+    needs_poster = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return '{0} {1}.{2}'.format(self.id, self.filename, self.extension)
+
+
+class Folder(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    user = models.ForeignKey('User', null=True, blank=True)
+    name = models.CharField(max_length=64, blank=True)
+    description = models.TextField(blank=True)
+    parent = models.ForeignKey('Folder', null=True, blank=True)
+#    parent_folder_id = models.IntegerField(null=True, blank=True)
+    num_pictures = models.IntegerField(default=0)
+    latest_picture = models.ForeignKey('Picture', null=True, blank=True, related_name='latest_folder')
+    latest_picture_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return '{0} {1}'.format(self.id, self.name)
