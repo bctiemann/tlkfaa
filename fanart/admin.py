@@ -64,3 +64,11 @@ class FolderAdmin(admin.ModelAdmin):
         return super(FolderAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(fanart_models.Folder, FolderAdmin)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'picture', 'date_posted',)
+    list_filter = ()
+    readonly_fields=('user', 'picture', 'reply_to',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.Comment, CommentAdmin)

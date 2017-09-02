@@ -154,3 +154,6 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_received = models.BooleanField(default=False)
     hash = models.CharField(max_length=36, null=True, blank=True)
+
+    def __unicode__(self):
+        return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)

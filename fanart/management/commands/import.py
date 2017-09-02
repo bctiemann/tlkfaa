@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture
+from fanart.models import User, Folder, Picture, Comment
 
 
 class Command(BaseCommand):
@@ -20,8 +20,8 @@ class Command(BaseCommand):
 
     do_users = False
     do_folders = False
-    do_pictures = True
-    do_comments = False
+    do_pictures = False
+    do_comments = True
     do_shouts = False
 
     def add_arguments(self, parser):
