@@ -66,9 +66,17 @@ class FolderAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Folder, FolderAdmin)
 
 
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'picture', 'date_posted',)
+class PictureCommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'picture', 'date_posted', 'num_replies',)
     list_filter = ()
     readonly_fields=('user', 'picture', 'reply_to',)
     user_id_for_formfield = None
-admin.site.register(fanart_models.Comment, CommentAdmin)
+admin.site.register(fanart_models.PictureComment, PictureCommentAdmin)
+
+
+class ShoutAdmin(admin.ModelAdmin):
+    list_display = ('user', 'artist', 'date_posted')
+    list_filter = ()
+    readonly_fields=('user', 'artist',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.Shout, ShoutAdmin)

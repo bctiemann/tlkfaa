@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, Comment
+from fanart.models import User, Folder, Picture, PictureComment, Shout
 
 
 class Command(BaseCommand):
@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 print user
                 picture = Picture.objects.get(id_orig=comment['pictureid'])
                 print picture
-                f = Comment.objects.create(
+                f = PictureComment.objects.create(
                     id_orig = comment['commentid'],
                     user = user,
                     picture = picture,
@@ -77,6 +77,33 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 pass
             except Picture.DoesNotExist:
+                pass
+            self.get_child_comments(c, comment['commentid'], f)
+
+    def get_child_shouts(self, c, comment_id, new_comment):
+        if comment_id:
+            c.execute("""SELECT * FROM shouts WHERE replyto=%s""", (comment_id,))
+        else:
+            c.execute("""SELECT * FROM shouts WHERE replyto is null""")
+        for comment in c.fetchall():
+            print comment
+            f = None
+            try:
+                user = User.objects.get(id_orig=comment['userid'])
+                print user
+                artist = User.objects.get(id_orig=comment['artistid'])
+                print artist
+                f = PictureComment.objects.create(
+                    id_orig = comment['commentid'],
+                    user = user,
+                    artist = artist,
+                    comment = comment['comment'],
+                    date_posted = comment['posted'],
+                    date_edited = comment['edited'],
+                    is_deleted = comment['deleted'],
+                    is_received = comment['viewed'],
+                )
+            except User.DoesNotExist:
                 pass
             self.get_child_comments(c, comment['commentid'], f)
 
@@ -215,3 +242,6 @@ class Command(BaseCommand):
 
         if self.do_comments:
             self.get_child_comments(c, None, None)
+
+        if self.do_shouts:
+            self.get_child_shouts(c, None, None)

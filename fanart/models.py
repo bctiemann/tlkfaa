@@ -143,11 +143,9 @@ class Folder(models.Model):
         return '{0} {1}'.format(self.id, self.name)
 
 
-class Comment(models.Model):
+class BaseComment(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     user = models.ForeignKey('User', null=True, blank=True)
-    picture = models.ForeignKey('Picture')
-    reply_to = models.ForeignKey('Comment', null=True, blank=True, related_name='parent')
     comment = models.TextField(blank=True)
     date_posted = models.DateTimeField()
     date_edited = models.DateTimeField(null=True, blank=True)
@@ -156,4 +154,26 @@ class Comment(models.Model):
     hash = models.CharField(max_length=36, null=True, blank=True)
 
     def __unicode__(self):
+        return '{0} {1}'.format(self.id, self.user.username)
+
+    class Meta:
+        abstract = True
+
+
+class PictureComment(BaseComment):
+    picture = models.ForeignKey('Picture')
+    reply_to = models.ForeignKey('PictureComment', null=True, blank=True, related_name='replies')
+
+    @property
+    def num_replies(self):
+        return self.replies.count()
+
+    def __unicode__(self):
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)
+
+
+class Shout(BaseComment):
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received')
+
+    def __unicode__(self):
+        return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
