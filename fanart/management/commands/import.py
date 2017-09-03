@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character
 
 
 class Command(BaseCommand):
@@ -22,7 +22,16 @@ class Command(BaseCommand):
     do_folders = False
     do_pictures = False
     do_comments = False
-    do_shouts = True
+    do_shouts = False
+    do_coloringbase = False
+    do_coloringpics = True
+    do_characters = False
+
+    GENDERS = {
+        0: 'neither',
+        1: 'male',
+        2: 'female',
+    }
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key',)
@@ -237,4 +246,53 @@ class Command(BaseCommand):
                         is_received = comment['viewed'],
                     )
                 except User.DoesNotExist:
+                    pass
+
+        if self.do_coloringbase:
+            c.execute("""SELECT * FROM coloring_base""")
+            for cb in c.fetchall():
+                print cb
+                try:
+                    creator = User.objects.get(id_orig=cb['artistid'])
+                    print creator
+                    picture = Picture.objects.get(id_orig=cb['pictureid'])
+                    print picture
+                    f = ColoringBase.objects.create(
+                        id_orig = cb['coloring_baseid'],
+                        creator = creator,
+                        picture = picture,
+                        date_posted = cb['posted'],
+                        is_active = cb['active'],
+                        is_visible = cb['visible'],
+                        num_colored = cb['numcolored'],
+                    )
+                except User.DoesNotExist:
+                    pass
+                except Picture.DoesNotExist:
+                    pass
+
+        if self.do_coloringpics:
+            c.execute("""SELECT * FROM coloring_pics""")
+            for cp in c.fetchall():
+                print cp
+                try:
+                    artist = User.objects.get(id_orig=cp['artistid'])
+                    print artist
+                    base = ColoringBase.objects.get(id_orig=cp['basepic'])
+                    print base
+                    f = ColoringPicture.objects.create(
+                        id_orig = cp['coloring_picid'],
+                        artist = artist,
+                        base = base,
+                        date_posted = cp['posted'],
+                        comment = cp['comment'],
+                        picture = cp['filename'],
+                        extension = cp['extension'],
+                        width = cp['width'],
+                        height = cp['height'],
+                        thumb_height = cp['thumbheight'],
+                    )
+                except User.DoesNotExist:
+                    pass
+                except ColoringBase.DoesNotExist:
                     pass

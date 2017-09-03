@@ -219,6 +219,7 @@ class Character(models.Model):
 
 
 class ColoringBase(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     creator = models.ForeignKey('User', null=True, blank=True)
     picture = models.ForeignKey('Picture', null=True, blank=True)
     date_posted = models.DateTimeField(null=True, blank=True)
@@ -228,6 +229,7 @@ class ColoringBase(models.Model):
 
 
 class ColoringPicture(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True, blank=True)
     base = models.ForeignKey('ColoringBase', null=True, blank=True)
     date_posted = models.DateTimeField(null=True, blank=True)
