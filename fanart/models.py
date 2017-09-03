@@ -1,19 +1,34 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
 
-class User(AbstractUser):
-    MALE = 'male'
-    FEMALE = 'female'
+def get_media_path(instance, filename):
+    return '{0}/{1}'.format(instance.id, filename)
 
+def get_image_thumb_small_path(instance, filename):
+    return '{0}/thumb_small/{1}'.format(instance.id, filename)
+
+def get_image_thumb_large_path(instance, filename):
+    return '{0}/thumb_large/{1}'.format(instance.id, filename)
+
+
+class OverwriteStorage(FileSystemStorage):
+
+    def get_available_name(self, name, max_length=None):
+        self.delete(name)
+        return name
+
+
+class User(AbstractUser):
     GENDER_CHOICES = (
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        ('', '(No response)'),
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('neither', '(No response)'),
     )
 
     username = models.CharField(
@@ -177,3 +192,48 @@ class Shout(BaseComment):
 
     def __unicode__(self):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
+
+
+class Character(models.Model):
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('neither', 'Neither'),
+    )
+
+    creator = models.ForeignKey('User', null=True, related_name='characters_created')
+    owner = models.ForeignKey('User', null=True, blank=True)
+    adopted_from = models.ForeignKey('User', null=True, blank=True, related_name='characters_adopted_out')
+    name = models.CharField(max_length=64, blank=True)
+    profile_picture = models.ForeignKey('Picture', null=True, blank=True)
+    profile_coloring_picture = models.ForeignKey('ColoringPicture', null=True, blank=True)
+    description = models.TextField(blank=True)
+    species = models.CharField(max_length=64, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    story_title = models.CharField(max_length=100, blank=True)
+    story_url = models.CharField(max_length=100, blank=True)
+    date_created = models.DateTimeField(null=True, blank=True)
+    date_modified = models.DateTimeField(null=True, blank=True)
+    date_adopted = models.DateTimeField(null=True, blank=True)
+    date_deleted = models.DateTimeField(null=True, blank=True)
+
+
+class ColoringBase(models.Model):
+    creator = models.ForeignKey('User', null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=False)
+    is_visible = models.BooleanField(default=True)
+    num_colored = models.IntegerField(null=True, blank=True)
+
+
+class ColoringPicture(models.Model):
+    artist = models.ForeignKey('User', null=True, blank=True)
+    base = models.ForeignKey('ColoringBase', null=True, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    comment = models.TextField(blank=True)
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_media_path, null=True, blank=True)
+    extension = models.CharField(max_length=5, blank=True)
+    width = models.IntegerField(blank=True)
+    height = models.IntegerField(blank=True)
+    thumb_height = models.IntegerField(blank=True)

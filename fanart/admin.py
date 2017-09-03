@@ -75,8 +75,32 @@ admin.site.register(fanart_models.PictureComment, PictureCommentAdmin)
 
 
 class ShoutAdmin(admin.ModelAdmin):
-    list_display = ('user', 'artist', 'date_posted')
+    list_display = ('user', 'artist', 'date_posted',)
     list_filter = ()
     readonly_fields=('user', 'artist',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.Shout, ShoutAdmin)
+
+
+class CharacterAdmin(admin.ModelAdmin):
+    list_display = ('creator', 'owner', 'date_created',)
+    list_filter = ()
+    readonly_fields=('creator', 'owner', 'adopted_from', 'profile_picture', 'profile_coloring_picture',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.Character, CharacterAdmin)
+
+
+class ColoringBaseAdmin(admin.ModelAdmin):
+    list_display = ('creator', 'date_posted',)
+    list_filter = ()
+    readonly_fields=('creator', 'picture',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.ColoringBase, ColoringBaseAdmin)
+
+
+class ColoringPictureAdmin(admin.ModelAdmin):
+    list_display = ('artist', 'date_posted',)
+    list_filter = ()
+    readonly_fields=('artist', 'base',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.ColoringPicture, ColoringPictureAdmin)

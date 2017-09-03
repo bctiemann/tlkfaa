@@ -21,8 +21,8 @@ class Command(BaseCommand):
     do_users = False
     do_folders = False
     do_pictures = False
-    do_comments = True
-    do_shouts = False
+    do_comments = False
+    do_shouts = True
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key',)
@@ -77,33 +77,6 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 pass
             except Picture.DoesNotExist:
-                pass
-            self.get_child_comments(c, comment['commentid'], f)
-
-    def get_child_shouts(self, c, comment_id, new_comment):
-        if comment_id:
-            c.execute("""SELECT * FROM shouts WHERE replyto=%s""", (comment_id,))
-        else:
-            c.execute("""SELECT * FROM shouts WHERE replyto is null""")
-        for comment in c.fetchall():
-            print comment
-            f = None
-            try:
-                user = User.objects.get(id_orig=comment['userid'])
-                print user
-                artist = User.objects.get(id_orig=comment['artistid'])
-                print artist
-                f = PictureComment.objects.create(
-                    id_orig = comment['commentid'],
-                    user = user,
-                    artist = artist,
-                    comment = comment['comment'],
-                    date_posted = comment['posted'],
-                    date_edited = comment['edited'],
-                    is_deleted = comment['deleted'],
-                    is_received = comment['viewed'],
-                )
-            except User.DoesNotExist:
                 pass
             self.get_child_comments(c, comment['commentid'], f)
 
@@ -244,4 +217,24 @@ class Command(BaseCommand):
             self.get_child_comments(c, None, None)
 
         if self.do_shouts:
-            self.get_child_shouts(c, None, None)
+            c.execute("""SELECT * FROM shouts""")
+            for comment in c.fetchall():
+                print comment
+                f = None
+                try:
+                    user = User.objects.get(id_orig=comment['userid'])
+                    print user
+                    artist = User.objects.get(id_orig=comment['artistid'])
+                    print artist
+                    f = Shout.objects.create(
+                        id_orig = comment['shoutid'],
+                        user = user,
+                        artist = artist,
+                        comment = comment['comment'],
+                        date_posted = comment['posted'],
+                        date_edited = comment['edited'],
+                        is_deleted = comment['deleted'],
+                        is_received = comment['viewed'],
+                    )
+                except User.DoesNotExist:
+                    pass
