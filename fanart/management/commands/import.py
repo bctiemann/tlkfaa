@@ -24,13 +24,14 @@ class Command(BaseCommand):
     do_comments = False
     do_shouts = False
     do_coloringbase = False
-    do_coloringpics = True
-    do_characters = False
+    do_coloringpics = False
+    do_characters = True
 
     GENDERS = {
         0: 'neither',
         1: 'male',
         2: 'female',
+        3: 'neither',
     }
 
     def add_arguments(self, parser):
@@ -94,6 +95,7 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
+#            c.execute("""SELECT * FROM users where userid=34557""")
             c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
@@ -249,11 +251,12 @@ class Command(BaseCommand):
                     pass
 
         if self.do_coloringbase:
+#            c.execute("""SELECT * FROM coloring_base where coloring_baseid = 2655""")
             c.execute("""SELECT * FROM coloring_base""")
             for cb in c.fetchall():
                 print cb
                 try:
-                    creator = User.objects.get(id_orig=cb['artistid'])
+                    creator = User.objects.get(artist_id_orig=cb['artistid'])
                     print creator
                     picture = Picture.objects.get(id_orig=cb['pictureid'])
                     print picture
@@ -267,8 +270,10 @@ class Command(BaseCommand):
                         num_colored = cb['numcolored'],
                     )
                 except User.DoesNotExist:
+                    print 'Artist not found'
                     pass
                 except Picture.DoesNotExist:
+                    print 'Picture not found'
                     pass
 
         if self.do_coloringpics:
@@ -293,6 +298,52 @@ class Command(BaseCommand):
                         thumb_height = cp['thumbheight'],
                     )
                 except User.DoesNotExist:
+                    print 'Artist not found'
                     pass
                 except ColoringBase.DoesNotExist:
+                    print 'ColoringBase not found'
                     pass
+
+        if self.do_characters:
+            c.execute("""SELECT * FROM characters""")
+            for c in c.fetchall():
+                print c
+
+                try:
+                    creator = User.objects.get(id_orig=c['creator'])
+                except User.DoesNotExist:
+                    creator = None
+                try:
+                    owner = User.objects.get(id_orig=c['artistid'])
+                except User.DoesNotExist:
+                    owner = None
+                try:
+                    adopted_from = User.objects.get(id_orig=c['adoptedfrom'])
+                except User.DoesNotExist:
+                    adopted_from = None
+                try:
+                    profile_picture = Picture.objects.get(id_orig=c['profilepic'])
+                except Picture.DoesNotExist:
+                    profile_picture = None
+                try:
+                    profile_coloring_picture = ColoringPicture.objects.get(id_orig=c['profilepic_c'])
+                except ColoringPicture.DoesNotExist:
+                    profile_coloring_picture = None
+                f = Character.objects.create(
+                    id_orig = c['characterid'],
+                    creator = creator,
+                    owner = owner,
+                    adopted_from = adopted_from,
+                    name = c['charactername'],
+                    description = c['description'],
+                    species = c['species'] if c['species'] else '',
+                    gender = self.GENDERS[c['sex']],
+                    story_title = c['storyname'] if c['storyname'] else '',
+                    story_url = c['storyurl'] if c['storyurl'] else '',
+                    date_created = c['created'],
+                    date_modified = c['lastmod'],
+                    date_adopted = c['adopted'],
+                    date_deleted = c['deleted'],
+                    profile_picture = profile_picture,
+                    profile_coloring_picture = profile_coloring_picture,
+                )

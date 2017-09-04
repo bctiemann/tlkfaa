@@ -201,6 +201,7 @@ class Character(models.Model):
         ('neither', 'Neither'),
     )
 
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     creator = models.ForeignKey('User', null=True, related_name='characters_created')
     owner = models.ForeignKey('User', null=True, blank=True)
     adopted_from = models.ForeignKey('User', null=True, blank=True, related_name='characters_adopted_out')
