@@ -218,6 +218,9 @@ class Character(models.Model):
     date_adopted = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
 
+    def __unicode__(self):
+        return '{0} {1} ({2})'.format(self.id, self.name, self.owner.username)
+
 
 class ColoringBase(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
@@ -240,3 +243,13 @@ class ColoringPicture(models.Model):
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
     thumb_height = models.IntegerField(blank=True)
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
+    picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
+    character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
+    is_visible = models.BooleanField(default=True)
+    date_added = models.DateTimeField(null=True, blank=True)
+    last_viewed = models.DateTimeField(null=True, blank=True)

@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite
 
 
 class Command(BaseCommand):
@@ -25,7 +25,8 @@ class Command(BaseCommand):
     do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
-    do_characters = True
+    do_characters = False
+    do_favorites = True
 
     GENDERS = {
         0: 'neither',
@@ -141,7 +142,7 @@ class Command(BaseCommand):
                     u.website = artist['website'] if artist['website'] else ''
                     u.featured = artist['featured']
                     u.comments = artist['comments'] if artist['comments'] else ''
-                    u.gender = artist['gender'] if artist['gender'] else ''
+                    u.gender = self.GENDERS[artist['gender']] if artist['gender'] else ''
                     u.banner_text = artist['bannertext']
                     u.banner_text_updated = artist['bannertextupdated']
                     u.banner_text_min = artist['bannertext_min'] if artist['bannertext_min'] else ''
@@ -306,44 +307,83 @@ class Command(BaseCommand):
 
         if self.do_characters:
             c.execute("""SELECT * FROM characters""")
-            for c in c.fetchall():
-                print c
+            for ch in c.fetchall():
+                print ch
 
                 try:
-                    creator = User.objects.get(id_orig=c['creator'])
+                    creator = User.objects.get(id_orig=ch['creator'])
                 except User.DoesNotExist:
                     creator = None
                 try:
-                    owner = User.objects.get(id_orig=c['artistid'])
+                    owner = User.objects.get(id_orig=ch['artistid'])
                 except User.DoesNotExist:
                     owner = None
                 try:
-                    adopted_from = User.objects.get(id_orig=c['adoptedfrom'])
+                    adopted_from = User.objects.get(id_orig=ch['adoptedfrom'])
                 except User.DoesNotExist:
                     adopted_from = None
                 try:
-                    profile_picture = Picture.objects.get(id_orig=c['profilepic'])
+                    profile_picture = Picture.objects.get(id_orig=ch['profilepic'])
                 except Picture.DoesNotExist:
                     profile_picture = None
                 try:
-                    profile_coloring_picture = ColoringPicture.objects.get(id_orig=c['profilepic_c'])
+                    profile_coloring_picture = ColoringPicture.objects.get(id_orig=ch['profilepic_c'])
                 except ColoringPicture.DoesNotExist:
                     profile_coloring_picture = None
                 f = Character.objects.create(
-                    id_orig = c['characterid'],
+                    id_orig = ch['characterid'],
                     creator = creator,
                     owner = owner,
                     adopted_from = adopted_from,
-                    name = c['charactername'],
-                    description = c['description'],
-                    species = c['species'] if c['species'] else '',
-                    gender = self.GENDERS[c['sex']],
-                    story_title = c['storyname'] if c['storyname'] else '',
-                    story_url = c['storyurl'] if c['storyurl'] else '',
-                    date_created = c['created'],
-                    date_modified = c['lastmod'],
-                    date_adopted = c['adopted'],
-                    date_deleted = c['deleted'],
+                    name = ch['charactername'],
+                    description = ch['description'],
+                    species = ch['species'] if ch['species'] else '',
+                    gender = self.GENDERS[ch['sex']],
+                    story_title = ch['storyname'] if ch['storyname'] else '',
+                    story_url = ch['storyurl'] if ch['storyurl'] else '',
+                    date_created = ch['created'],
+                    date_modified = ch['lastmod'],
+                    date_adopted = ch['adopted'],
+                    date_deleted = ch['deleted'],
                     profile_picture = profile_picture,
                     profile_coloring_picture = profile_coloring_picture,
+                )
+
+        if self.do_favorites:
+            c.execute("""SELECT * FROM favorites""")
+            for fave in c.fetchall():
+                print fave
+                try:
+                    user = User.objects.get(id_orig=fave['userid'])
+                except User.DoesNotExist:
+                    user = None
+                    print 'User not found'
+                try:
+                    artist = User.objects.get(artist_id_orig=fave['artistid'])
+                except User.DoesNotExist:
+                    artist = None
+                    print 'Artist not found'
+                f = Favorite.objects.create(
+                    user = user,
+                    artist = artist,
+                    date_added = fave['added'],
+                    is_visible = fave['visible'] if fave['visible'] != None else True,
+                    last_viewed = fave['lastviewed'],
+                )
+
+            c.execute("""SELECT * FROM favepics""")
+            for fave in c.fetchall():
+                print fave
+                try:
+                    user = User.objects.get(id_orig=fave['userid'])
+                except User.DoesNotExist:
+                    user = None
+                try:
+                    picture = Picture.objects.get(id_orig=fave['pictureid'])
+                except Picture.DoesNotExist:
+                    picture = None
+                f = Favorite.objects.create(
+                    user = user,
+                    picture = picture,
+                    date_added = fave['added'],
                 )

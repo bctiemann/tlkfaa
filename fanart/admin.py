@@ -83,7 +83,7 @@ admin.site.register(fanart_models.Shout, ShoutAdmin)
 
 
 class CharacterAdmin(admin.ModelAdmin):
-    list_display = ('creator', 'owner', 'date_created',)
+    list_display = ('name', 'creator', 'owner', 'date_created',)
     list_filter = ()
     readonly_fields=('creator', 'owner', 'adopted_from', 'profile_picture', 'profile_coloring_picture',)
     user_id_for_formfield = None
