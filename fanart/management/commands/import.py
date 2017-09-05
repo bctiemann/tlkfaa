@@ -30,7 +30,8 @@ class Command(BaseCommand):
     do_offers = False
     do_claims = False
     do_picturecharacters = False
-    do_tags = True
+    do_tags = False
+    do_approvers = True
 
     GENDERS = {
         0: 'neither',
@@ -488,3 +489,11 @@ class Command(BaseCommand):
                     num_pictures = tag['numpictures'],
                     is_visible = tag['visible'],
                 )
+
+        if self.do_approvers:
+            c.execute("""SELECT * FROM approvers""")
+            for a in c.fetchall():
+                print a
+                u = User.objects.get(id_orig=a['userid'])
+                u.is_approver = True
+                u.save()

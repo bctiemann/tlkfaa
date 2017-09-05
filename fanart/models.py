@@ -101,6 +101,7 @@ class User(AbstractUser):
     sketcher_banned = models.DateTimeField(null=True, blank=True)
     sketcher_banned_by = models.ForeignKey('User', null=True, blank=True)
     sketcher_ban_reason = models.TextField(blank=True)
+    is_approver = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
