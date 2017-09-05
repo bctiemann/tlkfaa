@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag, GiftPicture, SocialMedia, SocialMediaIdentity
+from fanart import models as fanart_models
 
 
 class Command(BaseCommand):
@@ -35,7 +35,11 @@ class Command(BaseCommand):
     do_sketcheradmins = False
     do_requests = False
     do_imclients = False
-    do_imids = True
+    do_imids = False
+    do_newpics = False
+    do_approval_access = False
+    do_adminblog = False
+    do_artistnames = True
 
     GENDERS = {
         0: 'neither',
@@ -56,16 +60,16 @@ class Command(BaseCommand):
             print folder
             f = None
             try:
-                user = User.objects.get(artist_id_orig=folder['artistid'])
+                user = fanart_models.User.objects.get(artist_id_orig=folder['artistid'])
                 print user
-                f = Folder.objects.create(
+                f = fanart_models.Folder.objects.create(
                     id_orig = folder['folderid'],
                     user = user,
                     name = folder['name'],
                     description = folder['description'],
                     parent = new_folder,
                 )
-            except User.DoesNotExist:
+            except fanart_models.User.DoesNotExist:
                 pass
             self.get_child_folders(c, folder['folderid'], f)
 
@@ -78,11 +82,11 @@ class Command(BaseCommand):
             print comment
             f = None
             try:
-                user = User.objects.get(id_orig=comment['userid'])
+                user = fanart_models.User.objects.get(id_orig=comment['userid'])
                 print user
-                picture = Picture.objects.get(id_orig=comment['pictureid'])
+                picture = fanart_models.Picture.objects.get(id_orig=comment['pictureid'])
                 print picture
-                f = PictureComment.objects.create(
+                f = fanart_models.PictureComment.objects.create(
                     id_orig = comment['commentid'],
                     user = user,
                     picture = picture,
@@ -94,9 +98,9 @@ class Command(BaseCommand):
                     is_received = comment['viewed'],
                     hash = comment['hash'],
                 )
-            except User.DoesNotExist:
+            except fanart_models.User.DoesNotExist:
                 pass
-            except Picture.DoesNotExist:
+            except fanart_models.Picture.DoesNotExist:
                 pass
             self.get_child_comments(c, comment['commentid'], f)
 
@@ -109,7 +113,7 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
-                u = User.objects.create_user(
+                u = fanart_models.User.objects.create_user(
                     id_orig = user['userid'],
                     username = user['username'],
                     password = user['passwd'],
@@ -186,21 +190,21 @@ class Command(BaseCommand):
             for picture in c.fetchall():
                 print picture
                 try:
-                    user = User.objects.get(artist_id_orig=picture['artistid'])
+                    user = fanart_models.User.objects.get(artist_id_orig=picture['artistid'])
 
                     try:
-                        folder = Folder.objects.get(id_orig=picture['folderid'])
-                    except Folder.DoesNotExist:
+                        folder = fanart_models.Folder.objects.get(id_orig=picture['folderid'])
+                    except fanart_models.Folder.DoesNotExist:
                         folder = None
                         print 'No folder'
 
                     try:
-                        approver = User.objects.get(id_orig=picture['insertedby'])
-                    except User.DoesNotExist:
+                        approver = fanart_models.User.objects.get(id_orig=picture['insertedby'])
+                    except fanart_models.User.DoesNotExist:
                         approver = None
                         print 'No approver'
 
-                    p = Picture.objects.create(
+                    p = fanart_models.Picture.objects.create(
                         id_orig = picture['pictureid'],
                         artist = user,
                         folder = folder,
@@ -232,8 +236,9 @@ class Command(BaseCommand):
                         allow_comments = picture['allowcomments_p'],
                         is_scanned = picture['scanned'],
                         needs_poster = picture['needs_poster'] if picture['needs_poster'] != None else False,
+                        watchers_notified = True,
                     )
-                except User.DoesNotExist:
+                except fanart_models.User.DoesNotExist:
                     pass
                     print 'No artist'
 
@@ -246,11 +251,11 @@ class Command(BaseCommand):
                 print comment
                 f = None
                 try:
-                    user = User.objects.get(id_orig=comment['userid'])
+                    user = fanart_models.User.objects.get(id_orig=comment['userid'])
                     print user
-                    artist = User.objects.get(id_orig=comment['artistid'])
+                    artist = fanart_models.User.objects.get(id_orig=comment['artistid'])
                     print artist
-                    f = Shout.objects.create(
+                    f = fanart_models.Shout.objects.create(
                         id_orig = comment['shoutid'],
                         user = user,
                         artist = artist,
@@ -260,7 +265,7 @@ class Command(BaseCommand):
                         is_deleted = comment['deleted'],
                         is_received = comment['viewed'],
                     )
-                except User.DoesNotExist:
+                except fanart_models.User.DoesNotExist:
                     pass
 
         if self.do_coloringbase:
@@ -269,11 +274,11 @@ class Command(BaseCommand):
             for cb in c.fetchall():
                 print cb
                 try:
-                    creator = User.objects.get(artist_id_orig=cb['artistid'])
+                    creator = fanart_models.User.objects.get(artist_id_orig=cb['artistid'])
                     print creator
-                    picture = Picture.objects.get(id_orig=cb['pictureid'])
+                    picture = fanart_models.Picture.objects.get(id_orig=cb['pictureid'])
                     print picture
-                    f = ColoringBase.objects.create(
+                    f = fanart_models.ColoringBase.objects.create(
                         id_orig = cb['coloring_baseid'],
                         creator = creator,
                         picture = picture,
@@ -282,10 +287,10 @@ class Command(BaseCommand):
                         is_visible = cb['visible'],
                         num_colored = cb['numcolored'],
                     )
-                except User.DoesNotExist:
+                except fanart_models.User.DoesNotExist:
                     print 'Artist not found'
                     pass
-                except Picture.DoesNotExist:
+                except fanart_models.Picture.DoesNotExist:
                     print 'Picture not found'
                     pass
 
@@ -294,11 +299,11 @@ class Command(BaseCommand):
             for cp in c.fetchall():
                 print cp
                 try:
-                    artist = User.objects.get(id_orig=cp['artistid'])
+                    artist = fanart_models.User.objects.get(id_orig=cp['artistid'])
                     print artist
-                    base = ColoringBase.objects.get(id_orig=cp['basepic'])
+                    base = fanart_models.ColoringBase.objects.get(id_orig=cp['basepic'])
                     print base
-                    f = ColoringPicture.objects.create(
+                    f = fanart_models.ColoringPicture.objects.create(
                         id_orig = cp['coloring_picid'],
                         artist = artist,
                         base = base,
@@ -310,10 +315,10 @@ class Command(BaseCommand):
                         height = cp['height'],
                         thumb_height = cp['thumbheight'],
                     )
-                except User.DoesNotExist:
+                except fanart_models.User.DoesNotExist:
                     print 'Artist not found'
                     pass
-                except ColoringBase.DoesNotExist:
+                except fanart_models.ColoringBase.DoesNotExist:
                     print 'ColoringBase not found'
                     pass
 
@@ -323,26 +328,26 @@ class Command(BaseCommand):
                 print ch
 
                 try:
-                    creator = User.objects.get(id_orig=ch['creator'])
-                except User.DoesNotExist:
+                    creator = fanart_models.User.objects.get(id_orig=ch['creator'])
+                except fanart_models.User.DoesNotExist:
                     creator = None
                 try:
-                    owner = User.objects.get(id_orig=ch['artistid'])
-                except User.DoesNotExist:
+                    owner = fanart_models.User.objects.get(id_orig=ch['artistid'])
+                except fanart_models.User.DoesNotExist:
                     owner = None
                 try:
-                    adopted_from = User.objects.get(id_orig=ch['adoptedfrom'])
-                except User.DoesNotExist:
+                    adopted_from = fanart_models.User.objects.get(id_orig=ch['adoptedfrom'])
+                except fanart_models.User.DoesNotExist:
                     adopted_from = None
                 try:
-                    profile_picture = Picture.objects.get(id_orig=ch['profilepic'])
-                except Picture.DoesNotExist:
+                    profile_picture = fanart_models.Picture.objects.get(id_orig=ch['profilepic'])
+                except fanart_models.Picture.DoesNotExist:
                     profile_picture = None
                 try:
-                    profile_coloring_picture = ColoringPicture.objects.get(id_orig=ch['profilepic_c'])
-                except ColoringPicture.DoesNotExist:
+                    profile_coloring_picture = fanart_models.ColoringPicture.objects.get(id_orig=ch['profilepic_c'])
+                except fanart_models.ColoringPicture.DoesNotExist:
                     profile_coloring_picture = None
-                f = Character.objects.create(
+                f = fanart_models.Character.objects.create(
                     id_orig = ch['characterid'],
                     creator = creator,
                     owner = owner,
@@ -366,16 +371,16 @@ class Command(BaseCommand):
             for fave in c.fetchall():
                 print fave
                 try:
-                    user = User.objects.get(id_orig=fave['userid'])
-                except User.DoesNotExist:
+                    user = fanart_models.User.objects.get(id_orig=fave['userid'])
+                except fanart_models.User.DoesNotExist:
                     user = None
                     print 'User not found'
                 try:
-                    artist = User.objects.get(artist_id_orig=fave['artistid'])
-                except User.DoesNotExist:
+                    artist = fanart_models.User.objects.get(artist_id_orig=fave['artistid'])
+                except fanart_models.User.DoesNotExist:
                     artist = None
                     print 'Artist not found'
-                f = Favorite.objects.create(
+                f = fanart_models.Favorite.objects.create(
                     user = user,
                     artist = artist,
                     date_added = fave['added'],
@@ -387,14 +392,14 @@ class Command(BaseCommand):
             for fave in c.fetchall():
                 print fave
                 try:
-                    user = User.objects.get(id_orig=fave['userid'])
-                except User.DoesNotExist:
+                    user = fanart_models.User.objects.get(id_orig=fave['userid'])
+                except fanart_models.User.DoesNotExist:
                     user = None
                 try:
-                    picture = Picture.objects.get(id_orig=fave['pictureid'])
-                except Picture.DoesNotExist:
+                    picture = fanart_models.Picture.objects.get(id_orig=fave['pictureid'])
+                except fanart_models.Picture.DoesNotExist:
                     picture = None
-                f = Favorite.objects.create(
+                f = fanart_models.Favorite.objects.create(
                     user = user,
                     picture = picture,
                     date_added = fave['added'],
@@ -405,18 +410,18 @@ class Command(BaseCommand):
             for offer in c.fetchall():
                 print offer
                 try:
-                    artist = User.objects.get(id_orig=offer['artistid'])
-                except User.DoesNotExist:
+                    artist = fanart_models.User.objects.get(id_orig=offer['artistid'])
+                except fanart_models.User.DoesNotExist:
                     artist = None
                 try:
-                    character = Character.objects.get(id_orig=offer['characterid'])
-                except Character.DoesNotExist:
+                    character = fanart_models.Character.objects.get(id_orig=offer['characterid'])
+                except fanart_models.Character.DoesNotExist:
                     character = None
                 try:
-                    adopted_by = User.objects.get(id_orig=offer['adoptedby'])
-                except User.DoesNotExist:
+                    adopted_by = fanart_models.User.objects.get(id_orig=offer['adoptedby'])
+                except fanart_models.User.DoesNotExist:
                     adopted_by = None
-                f = TradingOffer.objects.create(
+                f = fanart_models.TradingOffer.objects.create(
                     id_orig = offer['offerid'],
                     artist = artist,
                     type = offer['type'],
@@ -438,14 +443,14 @@ class Command(BaseCommand):
             for claim in c.fetchall():
                 print claim
                 try:
-                    offer = TradingOffer.objects.get(id_orig=claim['offerid'])
-                except TradingOffer.DoesNotExist:
+                    offer = fanart_models.TradingOffer.objects.get(id_orig=claim['offerid'])
+                except fanart_models.TradingOffer.DoesNotExist:
                     offer = None
                 try:
-                    user = User.objects.get(id_orig=claim['userid'])
-                except User.DoesNotExist:
+                    user = fanart_models.User.objects.get(id_orig=claim['userid'])
+                except fanart_models.User.DoesNotExist:
                     user = None
-                f = TradingClaim.objects.create(
+                f = fanart_models.TradingClaim.objects.create(
                     id_orig = claim['claimid'],
                     offer = offer,
                     user = user,
@@ -464,19 +469,19 @@ class Command(BaseCommand):
             for pc in c.fetchall():
                 print pc
                 try:
-                    character = Character.objects.get(id_orig=pc['characterid'])
-                except Character.DoesNotExist:
+                    character = fanart_models.Character.objects.get(id_orig=pc['characterid'])
+                except fanart_models.Character.DoesNotExist:
                     character = None
                 try:
-                    picture = Picture.objects.get(id_orig=pc['pictureid'])
-                except Picture.DoesNotExist:
+                    picture = fanart_models.Picture.objects.get(id_orig=pc['pictureid'])
+                except fanart_models.Picture.DoesNotExist:
                     picture = None
                     print 'Picture {0} not found'.format(pc['pictureid'])
                 try:
-                    pending = Pending.objects.get(id=pc['pendingid'])
-                except Pending.DoesNotExist:
+                    pending = fanart_models.Pending.objects.get(id=pc['pendingid'])
+                except fanart_models.Pending.DoesNotExist:
                     pending = None
-                f = PictureCharacter.objects.create(
+                f = fanart_models.PictureCharacter.objects.create(
                     picture = picture,
                     pending = pending,
                     character = character,
@@ -487,7 +492,7 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM tags""")
             for tag in c.fetchall():
                 print tag
-                f = Tag.objects.create(
+                f = fanart_models.Tag.objects.create(
                     id_orig = tag['tagid'],
                     tag = tag['tag'],
                     num_pictures = tag['numpictures'],
@@ -498,7 +503,7 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM approvers""")
             for a in c.fetchall():
                 print a
-                u = User.objects.get(id_orig=a['userid'])
+                u = fanart_models.User.objects.get(id_orig=a['userid'])
                 u.is_approver = True
                 u.save()
 
@@ -507,10 +512,10 @@ class Command(BaseCommand):
             for a in c.fetchall():
                 print a
                 try:
-                    u = User.objects.get(artist_id_orig=a['artistid'])
+                    u = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
                     u.is_sketcher_mod = True
                     u.save()
-                except User.DoesNotExist:
+                except fanart_models.User.DoesNotExist:
                     pass
 
         if self.do_requests:
@@ -518,18 +523,18 @@ class Command(BaseCommand):
             for a in c.fetchall():
                 print a
                 try:
-                    artist = User.objects.get(id_orig=a['artistid'])
-                except User.DoesNotExist:
+                    artist = fanart_models.User.objects.get(id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
                     artist = None
                 try:
-                    recipient = User.objects.get(id_orig=a['recptid'])
-                except User.DoesNotExist:
+                    recipient = fanart_models.User.objects.get(id_orig=a['recptid'])
+                except fanart_models.User.DoesNotExist:
                     recipient = None
                 try:
-                    picture = Picture.objects.get(id_orig=a['pictureid'])
-                except Picture.DoesNotExist:
+                    picture = fanart_models.Picture.objects.get(id_orig=a['pictureid'])
+                except fanart_models.Picture.DoesNotExist:
                     picture = None
-                f = GiftPicture.objects.create(
+                f = fanart_models.GiftPicture.objects.create(
                     artist = artist,
                     recipient = recipient,
                     picture = picture,
@@ -545,7 +550,7 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM imclients""")
             for a in c.fetchall():
                 print a
-                f = SocialMedia.objects.create(
+                f = fanart_models.SocialMedia.objects.create(
                     id_orig = a['imclientid'],
                     name = a['imclient'],
                 )
@@ -555,15 +560,71 @@ class Command(BaseCommand):
             for a in c.fetchall():
                 print a
                 try:
-                    user = User.objects.get(artist_id_orig=a['artistid'])
-                except User.DoesNotExist:
+                    user = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
                     user = None
                 try:
-                    social_media = SocialMedia.objects.get(id_orig=a['imclientid'])
-                except SocialMedia.DoesNotExist:
+                    social_media = fanart_models.SocialMedia.objects.get(id_orig=a['imclientid'])
+                except fanart_models.SocialMedia.DoesNotExist:
                     social_media = None
-                f = SocialMediaIdentity.objects.create(
+                f = fanart_models.SocialMediaIdentity.objects.create(
                     user = user,
                     social_media = social_media,
                     identity = a['imid'],
+                )
+
+        if self.do_newpics:
+            c.execute("""SELECT * FROM newpics""")
+            for a in c.fetchall():
+                try:
+                    user = fanart_models.User.objects.get(id_orig=a['userid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                try:
+                    picture = fanart_models.Picture.objects.get(id_orig=a['pictureid'])
+                except fanart_models.Picture.DoesNotExist:
+                    picture = None
+                f = fanart_models.UnviewedPicture.objects.create(
+                    user = user,
+                    picture = picture,
+                    date_added = a['added'],
+                )
+
+        if self.do_approval_access:
+            c.execute("""SELECT * FROM approval_access""")
+            for a in c.fetchall():
+                try:
+                    user = fanart_models.User.objects.get(id_orig=a['userid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                f = fanart_models.ApprovalAccess.objects.create(
+                    user = user,
+                    login = a['login'],
+                    logout = a['logout'],
+                )
+
+        if self.do_adminblog:
+            c.execute("""SELECT * FROM adminblog""")
+            for a in c.fetchall():
+                try:
+                    user = fanart_models.User.objects.get(artist_id_orig=a['adminid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                f = fanart_models.AdminBlog.objects.create(
+                    user = user,
+                    date_posted = a['posted'],
+                    message = a['message'],
+                )
+
+        if self.do_artistnames:
+            c.execute("""SELECT * FROM artistnames""")
+            for a in c.fetchall():
+                try:
+                    artist = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
+                    artist = None
+                f = fanart_models.ArtistName.objects.create(
+                    artist = artist,
+                    name = a['name'],
+                    date_changed = a['changedon'],
                 )

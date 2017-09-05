@@ -141,6 +141,7 @@ class Picture(models.Model):
     work_in_progress = models.BooleanField(default=False)
     allow_comments = models.BooleanField(default=True)
     is_scanned = models.BooleanField(default=False)
+    watchers_notified = models.BooleanField(default=False)
     needs_poster = models.BooleanField(default=False)
     characters = models.ManyToManyField('Character', through='PictureCharacter')
     tags = models.ManyToManyField('Tag', blank=True)
@@ -373,3 +374,28 @@ class SocialMediaIdentity(models.Model):
 
     def __unicode__(self):
         return '{0}: {1}'.format(self.social_media, self.identity)
+
+
+class UnviewedPicture(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    date_added = models.DateTimeField(null=True, blank=True)
+
+
+class ApprovalAccess(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    login = models.DateTimeField(null=True, blank=True)
+    logout = models.DateTimeField(null=True, blank=True)
+
+
+class AdminBlog(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(blank=True)
+
+
+class ArtistName(models.Model):
+    artist = models.ForeignKey('User', null=True, blank=True)
+    date_changed = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=32, blank=True)
+
