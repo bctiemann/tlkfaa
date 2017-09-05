@@ -32,7 +32,8 @@ class Command(BaseCommand):
     do_picturecharacters = False
     do_tags = False
     do_approvers = False
-    do_requests = True
+    do_sketcheradmins = True
+    do_requests = False
 
     GENDERS = {
         0: 'neither',
@@ -498,6 +499,17 @@ class Command(BaseCommand):
                 u = User.objects.get(id_orig=a['userid'])
                 u.is_approver = True
                 u.save()
+
+        if self.do_sketcheradmins:
+            c.execute("""SELECT * FROM sketcheradmins""")
+            for a in c.fetchall():
+                print a
+                try:
+                    u = User.objects.get(artist_id_orig=a['artistid'])
+                    u.is_sketcher_mod = True
+                    u.save()
+                except User.DoesNotExist:
+                    pass
 
         if self.do_requests:
             c.execute("""SELECT * FROM requests""")
