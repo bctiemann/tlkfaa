@@ -121,7 +121,7 @@ class Picture(models.Model):
     thumb_height = models.IntegerField(blank=True)
     num_comments = models.IntegerField(default=0)
     num_faves = models.IntegerField(default=0)
-    characters = models.CharField(max_length=50, blank=True)
+#    characters = models.CharField(max_length=50, blank=True)
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
@@ -139,6 +139,7 @@ class Picture(models.Model):
     is_scanned = models.BooleanField(default=False)
     needs_poster = models.BooleanField(default=False)
     characters = models.ManyToManyField('Character', through='PictureCharacter')
+    tags = models.ManyToManyField('Tag', blank=True)
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)
@@ -220,7 +221,7 @@ class Character(models.Model):
     date_deleted = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return '{0} {1} ({2})'.format(self.id, self.name, self.owner.username)
+        return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
 
 
 class Favorite(models.Model):
@@ -329,3 +330,13 @@ class PictureCharacter(models.Model):
     pending = models.ForeignKey('Pending', null=True, blank=True)
     character = models.ForeignKey('Character', null=True, blank=True)
     date_tagged = models.DateTimeField(null=True, blank=True)
+
+
+class Tag(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    tag = models.CharField(max_length=255, blank=True)
+    num_pictures = models.IntegerField(null=True, blank=True)
+    is_visible = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.tag

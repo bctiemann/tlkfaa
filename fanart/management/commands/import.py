@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag
 
 
 class Command(BaseCommand):
@@ -29,7 +29,8 @@ class Command(BaseCommand):
     do_favorites = False
     do_offers = False
     do_claims = False
-    do_picturecharacters = True
+    do_picturecharacters = False
+    do_tags = True
 
     GENDERS = {
         0: 'neither',
@@ -475,4 +476,15 @@ class Command(BaseCommand):
                     pending = pending,
                     character = character,
                     date_tagged = pc['tagged_on'],
+                )
+
+        if self.do_tags:
+            c.execute("""SELECT * FROM tags""")
+            for tag in c.fetchall():
+                print tag
+                f = Tag.objects.create(
+                    id_orig = tag['tagid'],
+                    tag = tag['tag'],
+                    num_pictures = tag['numpictures'],
+                    is_visible = tag['visible'],
                 )
