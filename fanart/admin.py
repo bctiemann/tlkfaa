@@ -127,3 +127,27 @@ class TradingClaimAdmin(admin.ModelAdmin):
     user_id_for_formfield = None
 admin.site.register(fanart_models.TradingClaim, TradingClaimAdmin)
 
+
+class GiftPictureAdmin(admin.ModelAdmin):
+    list_display = ('artist', 'recipient', 'picture', 'date_accepted',)
+    list_filter = ()
+    readonly_fields = ('artist', 'recipient', 'picture',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.GiftPicture, GiftPictureAdmin)
+
+
+class SocialMediaAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    list_filter = ()
+    readonly_fields = ()
+    user_id_for_formfield = None
+admin.site.register(fanart_models.SocialMedia, SocialMediaAdmin)
+
+
+class SocialMediaIdentityAdmin(admin.ModelAdmin):
+    list_display = ('user', 'social_media', 'identity',)
+    list_filter = ()
+    readonly_fields = ('user',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.SocialMediaIdentity, SocialMediaIdentityAdmin)
+

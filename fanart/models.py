@@ -357,3 +357,19 @@ class GiftPicture(models.Model):
     date_accepted = models.DateTimeField(null=True, blank=True)
     hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True)
 
+
+class SocialMedia(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    name = models.CharField(max_length=16, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class SocialMediaIdentity(models.Model):
+    social_media = models.ForeignKey('SocialMedia')
+    user = models.ForeignKey('User', null=True, blank=True)
+    identity = models.CharField(max_length=100, blank=True)
+
+    def __unicode__(self):
+        return '{0}: {1}'.format(self.social_media, self.identity)

@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag, GiftPicture
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag, GiftPicture, SocialMedia, SocialMediaIdentity
 
 
 class Command(BaseCommand):
@@ -32,8 +32,10 @@ class Command(BaseCommand):
     do_picturecharacters = False
     do_tags = False
     do_approvers = False
-    do_sketcheradmins = True
+    do_sketcheradmins = False
     do_requests = False
+    do_imclients = False
+    do_imids = True
 
     GENDERS = {
         0: 'neither',
@@ -537,4 +539,31 @@ class Command(BaseCommand):
                     date_sent = a['sent'],
                     date_accepted = a['accepted'],
                     hash = a['hash'][1:] if a['hash'] else None,
+                )
+
+        if self.do_imclients:
+            c.execute("""SELECT * FROM imclients""")
+            for a in c.fetchall():
+                print a
+                f = SocialMedia.objects.create(
+                    id_orig = a['imclientid'],
+                    name = a['imclient'],
+                )
+
+        if self.do_imids:
+            c.execute("""SELECT * FROM imids""")
+            for a in c.fetchall():
+                print a
+                try:
+                    user = User.objects.get(artist_id_orig=a['artistid'])
+                except User.DoesNotExist:
+                    user = None
+                try:
+                    social_media = SocialMedia.objects.get(id_orig=a['imclientid'])
+                except SocialMedia.DoesNotExist:
+                    social_media = None
+                f = SocialMediaIdentity.objects.create(
+                    user = user,
+                    social_media = social_media,
+                    identity = a['imid'],
                 )
