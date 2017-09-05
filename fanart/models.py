@@ -399,3 +399,8 @@ class ArtistName(models.Model):
     date_changed = models.DateTimeField(null=True, blank=True)
     name = models.CharField(max_length=32, blank=True)
 
+
+class Block(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
+    date_blocked = models.DateTimeField(null=True, blank=True)

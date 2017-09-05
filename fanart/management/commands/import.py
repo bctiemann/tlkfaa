@@ -18,7 +18,7 @@ class Command(BaseCommand):
 #    control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
 #    control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
-    do_users = False
+    do_users = True
     do_folders = False
     do_pictures = False
     do_comments = False
@@ -39,7 +39,8 @@ class Command(BaseCommand):
     do_newpics = False
     do_approval_access = False
     do_adminblog = False
-    do_artistnames = True
+    do_artistnames = False
+    do_blocks = False
 
     GENDERS = {
         0: 'neither',
@@ -109,8 +110,8 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
-#            c.execute("""SELECT * FROM users where userid=34440""")
-            c.execute("""SELECT * FROM users""")
+            c.execute("""SELECT * FROM users where userid=34383""")
+#            c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
                 u = fanart_models.User.objects.create_user(
@@ -627,4 +628,21 @@ class Command(BaseCommand):
                     artist = artist,
                     name = a['name'],
                     date_changed = a['changedon'],
+                )
+
+        if self.do_blocks:
+            c.execute("""SELECT * FROM blocks""")
+            for a in c.fetchall():
+                try:
+                    user = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                try:
+                    blocked_user = fanart_models.User.objects.get(id_orig=a['userid'])
+                except fanart_models.User.DoesNotExist:
+                    blocked_user = None
+                f = fanart_models.Block.objects.create(
+                    user = user,
+                    blocked_user = blocked_user,
+                    date_blocked = a['blockedon'],
                 )
