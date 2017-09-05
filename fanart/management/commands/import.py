@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending, Tag, GiftPicture
 
 
 class Command(BaseCommand):
@@ -31,7 +31,8 @@ class Command(BaseCommand):
     do_claims = False
     do_picturecharacters = False
     do_tags = False
-    do_approvers = True
+    do_approvers = False
+    do_requests = True
 
     GENDERS = {
         0: 'neither',
@@ -497,3 +498,31 @@ class Command(BaseCommand):
                 u = User.objects.get(id_orig=a['userid'])
                 u.is_approver = True
                 u.save()
+
+        if self.do_requests:
+            c.execute("""SELECT * FROM requests""")
+            for a in c.fetchall():
+                print a
+                try:
+                    artist = User.objects.get(id_orig=a['artistid'])
+                except User.DoesNotExist:
+                    artist = None
+                try:
+                    recipient = User.objects.get(id_orig=a['recptid'])
+                except User.DoesNotExist:
+                    recipient = None
+                try:
+                    picture = Picture.objects.get(id_orig=a['pictureid'])
+                except Picture.DoesNotExist:
+                    picture = None
+                f = GiftPicture.objects.create(
+                    artist = artist,
+                    recipient = recipient,
+                    picture = picture,
+                    filename = a['filename'] if a['filename'] else '',
+                    message = a['sendmsg'],
+                    is_active = a['active'],
+                    date_sent = a['sent'],
+                    date_accepted = a['accepted'],
+                    hash = a['hash'][1:] if a['hash'] else None,
+                )

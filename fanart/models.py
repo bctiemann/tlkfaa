@@ -6,6 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
+import uuid
+
 
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
@@ -341,3 +343,16 @@ class Tag(models.Model):
 
     def __unicode__(self):
         return self.tag
+
+
+class GiftPicture(models.Model):
+    artist = models.ForeignKey('User', null=True, blank=True)
+    recipient = models.ForeignKey('User', null=True, blank=True, related_name='gifts_received')
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    filename = models.CharField(max_length=100, blank=True)
+    message = models.TextField(blank=True)
+    is_active = models.BooleanField(default=False)
+    date_sent = models.DateTimeField(null=True, blank=True)
+    date_accepted = models.DateTimeField(null=True, blank=True)
+    hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True)
+
