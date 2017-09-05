@@ -138,6 +138,7 @@ class Picture(models.Model):
     allow_comments = models.BooleanField(default=True)
     is_scanned = models.BooleanField(default=False)
     needs_poster = models.BooleanField(default=False)
+    characters = models.ManyToManyField('Character', through='PictureCharacter')
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)
@@ -321,3 +322,10 @@ class TradingClaim(models.Model):
     basename = models.CharField(max_length=100, blank=True)
     extension = models.CharField(max_length=5, blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
+
+
+class PictureCharacter(models.Model):
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    pending = models.ForeignKey('Pending', null=True, blank=True)
+    character = models.ForeignKey('Character', null=True, blank=True)
+    date_tagged = models.DateTimeField(null=True, blank=True)

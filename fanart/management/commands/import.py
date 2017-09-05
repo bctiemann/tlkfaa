@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim, PictureCharacter, Pending
 
 
 class Command(BaseCommand):
@@ -28,7 +28,8 @@ class Command(BaseCommand):
     do_characters = False
     do_favorites = False
     do_offers = False
-    do_claims = True
+    do_claims = False
+    do_picturecharacters = True
 
     GENDERS = {
         0: 'neither',
@@ -98,7 +99,7 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
-#            c.execute("""SELECT * FROM users where userid=34557""")
+#            c.execute("""SELECT * FROM users where userid=34440""")
             c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
@@ -185,11 +186,13 @@ class Command(BaseCommand):
                         folder = Folder.objects.get(id_orig=picture['folderid'])
                     except Folder.DoesNotExist:
                         folder = None
+                        print 'No folder'
 
                     try:
                         approver = User.objects.get(id_orig=picture['insertedby'])
                     except User.DoesNotExist:
                         approver = None
+                        print 'No approver'
 
                     p = Picture.objects.create(
                         id_orig = picture['pictureid'],
@@ -206,7 +209,7 @@ class Command(BaseCommand):
                         thumb_height = picture['thumbheight'],
                         num_comments = picture['numcomments'],
                         num_faves = picture['numpicfaves'],
-                        characters = picture['characters'] if picture['characters'] else '',
+#                        characters = picture['characters'] if picture['characters'] else '',
                         width = picture['width'],
                         height = picture['height'],
                         date_uploaded = picture['uploaded'],
@@ -226,6 +229,7 @@ class Command(BaseCommand):
                     )
                 except User.DoesNotExist:
                     pass
+                    print 'No artist'
 
         if self.do_comments:
             self.get_child_comments(c, None, None)
@@ -447,4 +451,28 @@ class Command(BaseCommand):
                     basename = claim['basename'] if claim['basename'] else '',
                     extension = claim['extension'] if claim['extension'] else '',
                     date_uploaded = claim['picdate'],
+                )
+
+        if self.do_picturecharacters:
+            c.execute("""SELECT * FROM picturecharacters""")
+            for pc in c.fetchall():
+                print pc
+                try:
+                    character = Character.objects.get(id_orig=pc['characterid'])
+                except Character.DoesNotExist:
+                    character = None
+                try:
+                    picture = Picture.objects.get(id_orig=pc['pictureid'])
+                except Picture.DoesNotExist:
+                    picture = None
+                    print 'Picture {0} not found'.format(pc['pictureid'])
+                try:
+                    pending = Pending.objects.get(id=pc['pendingid'])
+                except Pending.DoesNotExist:
+                    pending = None
+                f = PictureCharacter.objects.create(
+                    picture = picture,
+                    pending = pending,
+                    character = character,
+                    date_tagged = pc['tagged_on'],
                 )
