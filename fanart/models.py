@@ -222,6 +222,48 @@ class Character(models.Model):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner.username)
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
+    picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
+    character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
+    is_visible = models.BooleanField(default=True)
+    date_added = models.DateTimeField(null=True, blank=True)
+    last_viewed = models.DateTimeField(null=True, blank=True)
+
+
+class Pending(models.Model):
+    artist = models.ForeignKey('User', null=True)
+    folder = models.ForeignKey('Folder', null=True, blank=True)
+    filename = models.CharField(max_length=255, blank=True)
+    extension = models.CharField(max_length=5, blank=True)
+    type = models.CharField(max_length=32, blank=True)
+    is_movie = models.BooleanField(default=False)
+    has_thumb = models.BooleanField(default=False)
+    title = models.TextField(blank=True)
+    width = models.IntegerField(blank=True)
+    height = models.IntegerField(blank=True)
+    file_size = models.IntegerField(blank=True)
+    date_uploaded = models.DateTimeField(null=True, blank=True)
+    hash = models.CharField(max_length=32, blank=True)
+    notify_approval = models.BooleanField(default=False)
+    work_in_progress = models.BooleanField(default=False)
+    allow_comments = models.BooleanField(default=True)
+    replaces_picture = models.ForeignKey('Picture', null=True, blank=True)
+    reset_upload_date = models.BooleanField(default=False)
+    notify_replacement = models.BooleanField(default=False)
+    keywords = models.TextField(blank=True)
+    status = models.TextField(blank=True)
+    remote_host = models.CharField(max_length=100, blank=True)
+    remote_addr = models.CharField(max_length=100, blank=True)
+    user_agent = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
+    force_approve = models.BooleanField(default=False)
+    is_scanned = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
+
+
 class ColoringBase(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     creator = models.ForeignKey('User', null=True, blank=True)
@@ -245,11 +287,37 @@ class ColoringPicture(models.Model):
     thumb_height = models.IntegerField(blank=True)
 
 
-class Favorite(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
-    picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
-    character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
+class TradingOffer(models.Model):
+    TYPE_CHOICES = (
+        ('icon', 'Icon'),
+        ('adoptable', 'Adoptable'),
+    )
+
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    artist = models.ForeignKey('User', null=True, blank=True)
+    type = models.CharField(max_length=10, choices = TYPE_CHOICES, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    title = models.CharField(max_length=64, blank=True)
+    comment = models.TextField(blank=True)
+    filename = models.CharField(max_length=100, blank=True)
+    basename = models.CharField(max_length=100, blank=True)
+    extension = models.CharField(max_length=5, blank=True)
+    thumb_height = models.IntegerField(blank=True)
+    character = models.ForeignKey('Character', null=True, blank=True)
+    adopted_by = models.ForeignKey('User', null=True, blank=True, related_name='trades_offered')
+    is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
-    date_added = models.DateTimeField(null=True, blank=True)
-    last_viewed = models.DateTimeField(null=True, blank=True)
+
+
+class TradingClaim(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    offer = models.ForeignKey('TradingOffer', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    comment = models.TextField(blank=True)
+    reference_url = models.CharField(max_length=255, blank=True)
+    date_fulfilled = models.DateTimeField(null=True, blank=True)
+    filename = models.CharField(max_length=100, blank=True)
+    basename = models.CharField(max_length=100, blank=True)
+    extension = models.CharField(max_length=5, blank=True)
+    date_uploaded = models.DateTimeField(null=True, blank=True)

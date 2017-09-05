@@ -104,3 +104,20 @@ class ColoringPictureAdmin(admin.ModelAdmin):
     readonly_fields=('artist', 'base',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.ColoringPicture, ColoringPictureAdmin)
+
+
+class TradingOfferAdmin(admin.ModelAdmin):
+    list_display = ('artist', 'date_posted',)
+    list_filter = ()
+    readonly_fields=('artist', 'character', 'adopted_by',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.TradingOffer, TradingOfferAdmin)
+
+
+class TradingClaimAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date_posted', 'date_fulfilled',)
+    list_filter = ()
+    readonly_fields=('user', 'offer',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.TradingClaim, TradingClaimAdmin)
+

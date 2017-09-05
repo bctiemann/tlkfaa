@@ -9,7 +9,7 @@ import MySQLdb
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite
+from fanart.models import User, Folder, Picture, PictureComment, Shout, ColoringBase, ColoringPicture, Character, Favorite, TradingOffer, TradingClaim
 
 
 class Command(BaseCommand):
@@ -26,7 +26,9 @@ class Command(BaseCommand):
     do_coloringbase = False
     do_coloringpics = False
     do_characters = False
-    do_favorites = True
+    do_favorites = False
+    do_offers = False
+    do_claims = True
 
     GENDERS = {
         0: 'neither',
@@ -386,4 +388,63 @@ class Command(BaseCommand):
                     user = user,
                     picture = picture,
                     date_added = fave['added'],
+                )
+
+        if self.do_offers:
+            c.execute("""SELECT * FROM offers""")
+            for offer in c.fetchall():
+                print offer
+                try:
+                    artist = User.objects.get(id_orig=offer['artistid'])
+                except User.DoesNotExist:
+                    artist = None
+                try:
+                    character = Character.objects.get(id_orig=offer['characterid'])
+                except Character.DoesNotExist:
+                    character = None
+                try:
+                    adopted_by = User.objects.get(id_orig=offer['adoptedby'])
+                except User.DoesNotExist:
+                    adopted_by = None
+                f = TradingOffer.objects.create(
+                    id_orig = offer['offerid'],
+                    artist = artist,
+                    type = offer['type'],
+                    date_posted = offer['posted'],
+                    title = offer['title'],
+                    comment = offer['comment'],
+                    filename = offer['filename'] if offer['filename'] else '',
+                    basename = offer['basename'] if offer['basename'] else '',
+                    extension = offer['extension'] if offer['extension'] else '',
+                    thumb_height = offer['thumbheight'],
+                    character = character,
+                    adopted_by = adopted_by,
+                    is_active = offer['active'],
+                    is_visible = offer['visible'],
+                )
+
+        if self.do_claims:
+            c.execute("""SELECT * FROM claims""")
+            for claim in c.fetchall():
+                print claim
+                try:
+                    offer = TradingOffer.objects.get(id_orig=claim['offerid'])
+                except TradingOffer.DoesNotExist:
+                    offer = None
+                try:
+                    user = User.objects.get(id_orig=claim['userid'])
+                except User.DoesNotExist:
+                    user = None
+                f = TradingClaim.objects.create(
+                    id_orig = claim['claimid'],
+                    offer = offer,
+                    user = user,
+                    date_posted = claim['posted'],
+                    comment = claim['comment'] if claim['comment'] else '',
+                    reference_url = claim['refurl'] if claim['refurl'] else '',
+                    date_fulfilled = claim['fulfilled'],
+                    filename = claim['filename'] if claim['filename'] else '',
+                    basename = claim['basename'] if claim['basename'] else '',
+                    extension = claim['extension'] if claim['extension'] else '',
+                    date_uploaded = claim['picdate'],
                 )
