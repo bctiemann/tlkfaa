@@ -44,7 +44,8 @@ class Command(BaseCommand):
     do_bulletins = False
     do_contests = False
     do_contestpics = False
-    do_contestvotes = True
+    do_contestvotes = False
+    do_pms = True
 
     GENDERS = {
         0: 'neither',
@@ -108,6 +109,31 @@ class Command(BaseCommand):
             except fanart_models.Picture.DoesNotExist:
                 pass
             self.get_child_comments(c, comment['commentid'], f)
+
+    def get_child_pms(self, c, pm_id, new_pm):
+        c.execute("""SELECT * FROM pms WHERE replyto=%s""", (pm_id,))
+        for pm in c.fetchall():
+            print pm
+            f = None
+            try:
+                sender = fanart_models.User.objects.get(id_orig=pm['senderid'])
+                recipient = fanart_models.User.objects.get(id_orig=pm['recptid'])
+                f = fanart_models.PrivateMessage.objects.create(
+                    sender = sender,
+                    recipient = recipient,
+                    date_sent = pm['sent'],
+                    reply_to = new_pm,
+                    subject = pm['subject'],
+                    message = pm['message'],
+                    date_viewed = timezone.now() if pm['viewed'] else None,
+                    date_replied = timezone.now() if pm['replied'] else None,
+                    deleted_by_sender = pm['deleted_s'],
+                    deleted_by_recipient = pm['deleted_r'],
+                )
+            except fanart_models.User.DoesNotExist:
+                pass
+            self.get_child_pms(c, pm['pmid'], f)
+
 
     def handle(self, *args, **options):
         db = MySQLdb.connect(passwd='28DcBPP2G6ckhnmXybFR8R25', db='fanart', host='10.0.0.2', user='fadbuser', charset='utf8mb4')
@@ -734,3 +760,6 @@ class Command(BaseCommand):
                     entry = entry,
                     date_voted = a['voted'],
                 )
+
+        if self.do_pms:
+            self.get_child_pms(c, 0, None)

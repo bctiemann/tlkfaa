@@ -451,3 +451,16 @@ class ContestVote(models.Model):
     entry = models.ForeignKey('ContestEntry', null=True, blank=True)
     user = models.ForeignKey('User', null=True, blank=True)
     date_voted = models.DateTimeField(null=True, blank=True)
+
+
+class PrivateMessage(models.Model):
+    sender = models.ForeignKey('User', null=True, blank=True, related_name='pms_sent')
+    recipient = models.ForeignKey('User', null=True, blank=True, related_name='pms_received')
+    date_sent = models.DateTimeField(null=True, blank=True)
+    reply_to = models.ForeignKey('PrivateMessage', null=True, blank=True)
+    subject = models.TextField(blank=True)
+    message = models.TextField(blank=True)
+    date_viewed = models.DateTimeField(null=True, blank=True)
+    date_replied = models.DateTimeField(null=True, blank=True)
+    deleted_by_sender = models.BooleanField(default=False)
+    deleted_by_recipient = models.BooleanField(default=False)
