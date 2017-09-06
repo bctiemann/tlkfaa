@@ -1,0 +1,93 @@
+<div class="grasswrap">
+<div class="grass">
+
+<c:set var="bodyTopMargin" scope="page" value="0" />
+
+{% block tab_main %}{% endblock %}
+<c:choose>
+<c:when test="${tabPage == ''}">
+    <div class="tab main">
+    </div>
+</c:when>
+<c:when test="${tabPage == 'Artists'}">
+    <img src="/images/ground-artists.png" />
+    <c:set var="bodyTopMargin" scope="page" value="0" />
+</c:when>
+<c:when test="${tabPage == 'Artists.jsp'}">
+    <img src="/images/ground-artists.png" />
+    <c:set var="bodyTopMargin" scope="page" value="0" />
+</c:when>
+<c:when test="${tabPage == 'Artwork' || tab == 'artwork'}">
+    <img src="/images/ground-artwork.png" />
+    <c:set var="bodyTopMargin" scope="page" value="1" />
+</c:when>
+<c:when test="${tabPage == 'Characters'}">
+    <img src="/images/ground-characters.png" />
+    <c:set var="bodyTopMargin" scope="page" value="1" />
+</c:when>
+<c:when test="${tabPage == 'TradingTree.jsp'}">
+    <img src="/images/ground-tradingtree.png" />
+    <c:set var="bodyTopMargin" scope="page" value="1" />
+</c:when>
+<c:when test="${tabPage == 'ColoringCave.jsp'}">
+<%--    <img src="/images/ground-coloringcave.png" />--%>
+    <c:set var="bodyTopMargin" scope="page" value="1" />
+</c:when>
+<c:when test="${tabPage == 'Special'}">
+<%--    <img src="/images/ground-special.png" />--%>
+    <c:set var="bodyTopMargin" scope="page" value="1" />
+</c:when>
+</c:choose>
+<%--<img src="/images/ground-<% if (thisPage.equals("")) { %>1<% } else if (thisPage.equals("Artists")) { %>2<% } else if (thisPage.equals("Artwork")) { %>3<% } else if (thisPage.equals("Special")) { %>4<% } %>.jpg" />--%>
+
+<% if (thisPage.equals("")) { %>
+
+<div class="pagesummary" style="margin-left: 130px; margin-right: 10px">
+<sql:query var="qryCache">
+SELECT numartists,numpictures FROM cache
+</sql:query>
+
+<c:forEach var="row" items="${qryCache.rows}">
+<b>fanart.lionking.org</b> is the largest collection of
+<i>Lion King</i> fan artwork on the Internet, currently featuring
+<b><fmt:formatNumber type="number" value="${row.numartists}" /></b> artists with a total of 
+<b><fmt:formatNumber type="number" value="${row.numpictures}" /></b> published
+pictures inspired by Disney's <i>Lion King</i> universe.
+</c:forEach>
+</div>
+
+<% } else if (thisPage.equals("Artists")) { %>
+
+<%--
+<div class="pagesummary" style="margin-left: 230px; margin-right: 10px">
+On this page you can look up artists alphabetically or by any of several other methods, revisiting old favorites or discovering new ones.
+</div>
+--%>
+
+<% } else if (thisPage.equals("Artists.jsp")) { %>
+
+<% } else if (thisPage.equals("Artwork")) { %>
+
+<%--
+<div class="pagesummary" style="margin-left: 10px; margin-right: 285px; width: 300px">
+On this page you'll find recently uploaded and widely acclaimed artwork, as well as randomly selected pictures, which you can add to your Favorite Pictures album.
+</div>
+--%>
+
+<% } else if (thisPage.equals("Special")) { %>
+
+<%--
+<div class="pagesummary" style="margin-left: 10px; margin-right: 180px; width: 400px">
+This page contains special sections where our artists have created art to commemorate specific events, as well as the site-wide Art Contest.
+</div>
+--%>
+
+<% } %>
+
+    <div class="grass-tile"></div>
+</div>
+<div class="grassspacer"></div>
+<%--<div class="grassgradient"></div>--%>
+</div>
+
+<% } %>

@@ -1,5 +1,11 @@
 {% extends "fanart/base.html" %}
 
+{% block activetab_home %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_home.html" %}
+{% endblock %}
+
 {% block content %}
 
 <jsp:include page="inc_root/inc_header.jsp" />
