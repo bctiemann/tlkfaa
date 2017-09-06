@@ -42,7 +42,8 @@ class Command(BaseCommand):
     do_contestpics = False
     do_contestvotes = False
     do_pms = False
-    do_specials = True
+    do_specials = False
+    do_votes = True
 
     GENDERS = {
         0: 'neither',
@@ -770,4 +771,21 @@ class Command(BaseCommand):
                     title = a['title'],
                     description = a['title'],
                     is_visible = a['visible'],
+                )
+
+        if self.do_votes:
+            c.execute("""SELECT * FROM votes""")
+            for a in c.fetchall():
+                print a
+                try:
+                    voter = fanart_models.User.objects.get(id_orig=a['userid'])
+                except fanart_models.User.DoesNotExist:
+                    voter = None
+                try:
+                    artist = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
+                    artist = None
+                f = fanart_models.Vote.objects.create(
+                    voter = voter,
+                    artist = artist,
                 )

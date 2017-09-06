@@ -471,3 +471,8 @@ class SpecialFeature(models.Model):
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
     is_visible = models.BooleanField(default=True)
+
+
+class Vote(models.Model):
+    voter = models.ForeignKey('User', null=True, blank=True, related_name='votes_cast')
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received')
