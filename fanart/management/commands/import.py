@@ -18,7 +18,7 @@ class Command(BaseCommand):
 #    control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
 #    control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
-    do_users = True
+    do_users = False
     do_folders = False
     do_pictures = False
     do_comments = False
@@ -41,6 +41,10 @@ class Command(BaseCommand):
     do_adminblog = False
     do_artistnames = False
     do_blocks = False
+    do_bulletins = False
+    do_contests = False
+    do_contestpics = False
+    do_contestvotes = True
 
     GENDERS = {
         0: 'neither',
@@ -645,4 +649,88 @@ class Command(BaseCommand):
                     user = user,
                     blocked_user = blocked_user,
                     date_blocked = a['blockedon'],
+                )
+
+        if self.do_bulletins:
+            c.execute("""SELECT * FROM bulletins""")
+            for a in c.fetchall():
+                print a
+                user = None
+                if a['artistid']:
+                    try:
+                        user = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                    except fanart_models.User.DoesNotExist:
+                        user = None
+                f = fanart_models.Bulletin.objects.create(
+                    user = user,
+                    date_posted = a['posted'],
+                    is_published = a['published'],
+                    date_published = a['publishedon'],
+                    title = a['title'],
+                    bulletin = a['bulletin'],
+                    is_admin = a['admin'],
+                    show_email = a['showemail'] if a['showemail'] != None else False,
+                )
+
+        if self.do_contests:
+            c.execute("""SELECT * FROM contests""")
+            for a in c.fetchall():
+                print a
+                try:
+                    creator = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
+                    creator = None
+                f = fanart_models.Contest.objects.create(
+                    id_orig = a['contestid'],
+                    type = a['type'],
+                    creator = creator,
+                    title = a['title'],
+                    description = a['description'],
+                    rules = a['rules'],
+                    date_created = a['created'],
+                    date_start = a['startdate'],
+                    date_end = a['deadline'],
+                    is_active = a['active'],
+                    is_cancelled = a['cancelled'],
+                    allow_multiple_entries = a['allowmultiple'],
+                    allow_anonymous_entries = a['anonymous'],
+                    allow_voting = a['allowvoting'],
+                )
+
+        if self.do_contestpics:
+            c.execute("""SELECT * FROM contestpics""")
+            for a in c.fetchall():
+                print a
+                try:
+                    contest = fanart_models.Contest.objects.get(id_orig=a['contestid'])
+                except fanart_models.Contest.DoesNotExist:
+                    contest = None
+                try:
+                    picture = fanart_models.Picture.objects.get(id_orig=a['pictureid'])
+                except fanart_models.Picture.DoesNotExist:
+                    picture = None
+                f = fanart_models.ContestEntry.objects.create(
+                    id_orig = a['contestpicid'],
+                    contest = contest,
+                    picture = picture,
+                    date_entered = a['entered'],
+                    date_notified = a['emailsent'],
+                )
+
+        if self.do_contestvotes:
+            c.execute("""SELECT * FROM contestvotes""")
+            for a in c.fetchall():
+                print a
+                try:
+                    user = fanart_models.User.objects.get(id_orig=a['userid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                try:
+                    entry = fanart_models.ContestEntry.objects.get(id_orig=a['contestpicid'])
+                except fanart_models.ContestEntry.DoesNotExist:
+                    entry = None
+                f = fanart_models.ContestVote.objects.create(
+                    user = user,
+                    entry = entry,
+                    date_voted = a['voted'],
                 )

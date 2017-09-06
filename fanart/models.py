@@ -404,3 +404,50 @@ class Block(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
     blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
     date_blocked = models.DateTimeField(null=True, blank=True)
+
+
+class Bulletin(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    date_posted = models.DateTimeField(null=True, blank=True)
+    is_published = models.BooleanField(default=False)
+    date_published = models.DateTimeField(null=True, blank=True)
+    title = models.TextField(blank=True)
+    bulletin = models.TextField(blank=True)
+    is_admin = models.BooleanField(default=False)
+    show_email = models.BooleanField(default=False)
+
+
+class Contest(models.Model):
+    TYPE_CHOICES = (
+        ('global', 'Global'),
+        ('personal', 'Personal'),
+    )
+
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    type = models.CharField(max_length=16, choices=TYPE_CHOICES)
+    creator = models.ForeignKey('User', null=True, blank=True)
+    title = models.CharField(max_length=64, blank=True)
+    description = models.TextField(blank=True)
+    rules = models.TextField(blank=True)
+    date_created = models.DateTimeField(null=True, blank=True)
+    date_start = models.DateTimeField(null=True, blank=True)
+    date_end = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_cancelled = models.BooleanField(default=False)
+    allow_multiple_entries = models.BooleanField(default=False)
+    allow_anonymous_entries = models.BooleanField(default=False)
+    allow_voting = models.BooleanField(default=False)
+
+
+class ContestEntry(models.Model):
+    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    contest = models.ForeignKey('Contest', null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    date_entered = models.DateTimeField(null=True, blank=True)
+    date_notified = models.DateTimeField(null=True, blank=True)
+
+
+class ContestVote(models.Model):
+    entry = models.ForeignKey('ContestEntry', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True)
+    date_voted = models.DateTimeField(null=True, blank=True)
