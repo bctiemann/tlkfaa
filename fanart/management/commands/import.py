@@ -14,10 +14,6 @@ from fanart import models as fanart_models
 
 class Command(BaseCommand):
 
-#    all_chars = (unichr(i) for i in xrange(0x110000))
-#    control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
-#    control_char_re = re.compile('[%s]' % re.escape(control_chars))
-
     do_users = False
     do_folders = False
     do_pictures = False
@@ -45,7 +41,8 @@ class Command(BaseCommand):
     do_contests = False
     do_contestpics = False
     do_contestvotes = False
-    do_pms = True
+    do_pms = False
+    do_specials = True
 
     GENDERS = {
         0: 'neither',
@@ -763,3 +760,14 @@ class Command(BaseCommand):
 
         if self.do_pms:
             self.get_child_pms(c, 0, None)
+
+        if self.do_specials:
+            c.execute("""SELECT * FROM specials""")
+            for a in c.fetchall():
+                print a
+                f = fanart_models.SpecialFeature.objects.create(
+                    keyword = a['keyword'],
+                    title = a['title'],
+                    description = a['title'],
+                    is_visible = a['visible'],
+                )

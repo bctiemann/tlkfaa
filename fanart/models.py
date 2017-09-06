@@ -464,3 +464,10 @@ class PrivateMessage(models.Model):
     date_replied = models.DateTimeField(null=True, blank=True)
     deleted_by_sender = models.BooleanField(default=False)
     deleted_by_recipient = models.BooleanField(default=False)
+
+
+class SpecialFeature(models.Model):
+    keyword = models.CharField(max_length=32, blank=True)
+    title = models.TextField(blank=True)
+    description = models.TextField(blank=True)
+    is_visible = models.BooleanField(default=True)
