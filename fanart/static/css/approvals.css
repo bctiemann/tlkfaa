@@ -1,0 +1,110 @@
+div#pendinglist {
+	margin: 10px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 1px 0px 0px 0px;
+}
+
+div.pending tr {
+	border-color: #000;
+	border-style: solid;
+	border-width: 0px 1px 1px 1px;
+}
+/*
+div.pending:first-child tr {
+	border-width: 1px 1px 1px 1px;
+}
+*/
+
+div.pending table {
+	width: 100%;
+}
+div.pending table tr {
+	vertical-align: top;
+}
+div.pending td {
+	padding: 5px;
+}
+div.pending td.approve {
+	width: 300px;
+}
+div.pending td.thumb {
+	width: 60px;
+}
+div.pending td.thumb img {
+	border: 1px solid #000;
+}
+div.pending td.artist-info {
+	width: 100px;
+}
+div.pending td.resize {
+	width: 160px;
+}
+div.pending td.resize,
+div.pending td.resize input {
+	font-family: monospace;
+	font-size: 10px;
+}
+div.pending td.reject {
+	width: 100px;
+	font-size: 9px;
+}
+
+div.sendwarning,
+div.sendwarning input {
+	font-size: 9px;
+}
+
+div.imginfo {
+	margin-bottom: 4px;
+}
+div.imginfo span {
+	padding: 1px 3px;
+	border-radius: 2px;
+}
+span.warning {
+	background-color: #ff0;
+	border: 1px solid #aa0;
+}
+
+div.pendingartist {
+	border-radius: 3px;
+}
+div.flagartist {
+	background-color: #ff0;
+	border: 1px solid #aa0;
+	padding: 3px;
+}
+div.newartist {
+	background-color: #ccc;
+	border: 1px solid #888;
+	padding: 3px;
+}
+
+div.pendingdate {
+	font-size: 9px;
+}
+div.pendinginfo {
+	font-size: 9px;
+	display: none;
+}
+div.pendingfolder {
+	margin-bottom: 10px;
+}
+div.pendingtitle {
+	clear: left;
+	margin: 10px 0px;
+}
+div.pendingnotes {
+	margin-top: 5px;
+	padding-top: 5px;
+	font-size: 9px;
+	border-top: 1px solid #888;
+}
+div.pendingkeywords {
+	color: #888;
+}
+
+button.approve {
+	float: right;
+}

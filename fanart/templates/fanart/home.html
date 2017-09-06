@@ -1,0 +1,223 @@
+{% extends "fanart/base.html" %}
+
+{% block content %}
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+<jsp:useBean id="now" class="java.util.Date" scope="request" />
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<%
+  if (request.getParameter("logoff") != null) {
+    session.invalidate();
+    response.sendRedirect("index.jsp");
+    return;
+  }
+%>
+
+<sql:query var="qryCurrentContest">
+SELECT *,DATEDIFF(deadline,NOW()) AS days_left FROM contests
+WHERE type='global'
+AND active=1
+AND startdate<NOW()
+ORDER BY created DESC
+LIMIT 1
+</sql:query>
+<c:forEach var="contest" items="${qryCurrentContest.rows}">
+	<c:set var="currentContest" value="${contest}" />
+	<sql:query var="qryCurrentContestEntries">
+	SELECT * FROM contestpics
+	WHERE contestid=?
+	<sql:param value="${currentContest.contestid}" />
+	</sql:query>
+</c:forEach>
+
+<div class="frontpagebanners">
+
+    <div id="adminannouncements">
+        <h3>Admin Announcements</h3>
+        <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll">
+        <jsp:include page="ajax_adminannouncements.jsp?count=1" />
+        </div>
+        <div id="adminannouncementsmore">
+        <button class="small" onClick="getMoreAdminAnnouncements(adminannouncementsshown,10)">More</button>
+        </div>
+    </div>
+
+    <div id="bulletins">
+        <h3>Bulletins</h3>
+        <div id="bulletins_inner" class="bulletinsinner bulletinsstatic">
+        <jsp:include page="ajax_bulletins.jsp?count=5" />
+        </div>
+        <div id="bulletinsmore">
+        <button class="small" onClick="getMoreBulletins(bulletinsshown,10)">More</button>
+        </div>
+    </div>
+
+    <c:if test="${qryCurrentContest.rowCount > 0}">
+    <div class="current-contest">
+        <h3>Current Art Contest</h3>
+        <p class="contest-title"><a href="/Contests.jsp?contestid=${currentContest.contestid}">${currentContest.title}</a></p>
+	<c:set var="contestTheme" value="${currentContest.description}" />
+	<div class="contest-theme">
+		<%= formatText((String)pageContext.getAttribute("contestTheme")) %>
+	</div>
+        <p>${qryCurrentContestEntries.rowCount} <c:choose><c:when test="${qryCurrentContestEntries.rowCount == 1}">entry</c:when><c:otherwise>entries</c:otherwise></c:choose></p>
+        <c:choose>
+        <c:when test="${now < currentContest.deadline}">
+            <p><b>(${currentContest.days_left} day<c:if test="${currentContest.days_left != 1}">s</c:if> left)</b></p>
+        </c:when>
+        <c:otherwise>
+            <sql:query var="qryWinner">
+            SELECT *,count(contestvotes.pictureid) AS num_votes FROM contestvotes
+            INNER JOIN pictures ON pictures.pictureid=contestvotes.pictureid
+            INNER JOIN artists ON artists.artistid=pictures.artistid
+            WHERE contestid=?
+            GROUP BY contestvotes.pictureid
+            ORDER BY num_votes DESC
+            LIMIT 1
+            <sql:param value="${currentContest.contestid}" />
+            </sql:query>
+            <c:set var="contestWinner" value="${qryWinner.rows[0]}" />
+            Winner: ${contestWinner.artistname}
+        </c:otherwise>
+        </c:choose>
+    </div>
+    </c:if>
+
+</div>
+
+<sql:query var="qryArtists">
+SELECT * FROM artists
+WHERE enabled=true
+AND active=true
+AND numpictures>0
+${hideprivate}
+ORDER BY lastupload DESC
+LIMIT 10
+</sql:query>
+
+<div class="featurebox">
+
+<c:forEach var="artist" items="${qryArtists.rows}">
+
+	<sql:query var="qryPictures">
+	SELECT * FROM pictures
+	WHERE pictures.artistid=?
+	AND picpublic=true
+	AND deleted IS NULL
+	AND DATE(uploaded)>=DATE_SUB(DATE(NOW()), INTERVAL 3 DAY)
+	ORDER BY uploaded DESC
+	LIMIT 10
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<c:set var="i" value="0" />
+	<c:forEach var="picture" items="${qryPictures.rows}">
+
+		<c:set var="i" value="${i+1}" />
+		<c:choose>
+		<c:when test="${i == 1}">
+			<c:set var="picnumber" value="${picnumber+1}" />
+			<c:set var="title" value="${picture.title}" />
+			<tags:printPicture
+				pictureid="${picture.pictureid}"
+				basename="${picture.basename}"
+				extension="${picture.extension}"
+				type="${picture.type}"
+				title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
+				artistname="${artist.artistname}"
+				dirname="${artist.dirname}"
+				width="${picture.width}"
+				height="${picture.height}"
+				thumbheight="${picture.thumbheight}"
+				allowcomments="${picture.allowcomments_p && artist.allowcomments}"
+				numcomments="${picture.numcomments}"
+				numpicfaves="${picture.numpicfaves}"
+				gallery="last5"
+				folder="${picture.folderid}"
+				>
+				<jsp:attribute name="uploaded">
+					<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+				</jsp:attribute>
+				<jsp:attribute name="filesize">
+					<fmt:formatNumber value="${picture.filesize / 1024}" type="number" pattern="###" />
+				</jsp:attribute>
+			</tags:printPicture>
+		</c:when>
+		<c:otherwise>
+			<c:if test="${i == 2}">
+				<div class="also-today group masonry">
+			</c:if>
+
+			<div class="offertile picturetile">
+			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="/Artwork/Artists/${artist.dirname}/${fanart:encodeURI(picture.basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
+			<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+			</div>
+
+			<c:if test="${i == qryPictures.rowCount}">
+				</div>
+			</c:if>
+		</c:otherwise>
+		</c:choose>
+
+	</c:forEach>
+
+</c:forEach>
+
+<a class="button" href="/Artwork/?list=newest">More Recent Artwork</a>
+
+</div>
+
+<div class="featurebox">
+
+<%--
+<div class="birthday clearAfter">
+	<sql:query var="qryBdayToday">
+	SELECT *,
+	YEAR(birthdate) AS bdyear,
+	DATEDIFF(DATE_ADD(NOW(),INTERVAL 180 DAY),birthdate) as daysdiff
+	FROM artists
+	WHERE MONTH(birthdate)=MONTH(NOW())
+	AND DAY(birthdate)=DAY(NOW())
+	AND active=true
+	AND enabled=true
+	AND numpictures>0
+	AND showbirthdate=true
+	ORDER BY artistname
+	</sql:query>
+
+	<c:if test="${qryBdayToday.rowCount > 0}">
+	<div>Happy birthday to:</div>
+	<table>
+	<c:forEach var="bdartist" items="${qryBdayToday.rows}">
+		<tr>
+		<td><a href="/Artists/${bdartist.dirname}/">${bdartist.artistname}</a></td>
+		<td><c:if test="${bdartist.showbirthdate_age == true && bdartist.bdyear > 0}"><fmt:formatNumber value="${bdartist.daysdiff / 365}" type="number" pattern="###" /></c:if></td>
+		</tr>
+	</c:forEach>
+	</table>
+	</c:if>
+	<div class="birthdaylink"><a href="pop_birthdays.jsp" rel="shadowbox;width=500;height=600">Upcoming Birthdays</a></div>
+<br clear="all" />
+</div>
+--%>
+
+<jsp:include page="inc_root/inc_aotm.jsp" />
+
+</div>
+
+{% endblock %}
+
+<jsp:include page="inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="inc_root/inc_footer.jsp" />
+

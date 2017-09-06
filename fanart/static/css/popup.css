@@ -1,0 +1,45 @@
+body.popup {
+	background: none;
+	background-color: #dde5e7;
+	height: auto;
+	padding: 50px;
+}
+div.popcontent,
+div.pm {
+	margin: 10px 0px;
+	padding: 5px;
+	background-color: #fff;
+	border: 1px solid #d5d9df;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+div.popcontent {
+	margin: 0px;
+	padding: 15px;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+div.pmtext {
+	margin: 30px;
+}
+
+p,
+li {
+	margin: 18px;
+}
+div.popcontent p,
+div.popcontent ul {
+	color: #404048;
+}
+
+h1 {
+	font-size: 20px;
+	margin-bottom: 10px;
+}
+h3 {
+	font-size: 13px;
+	color: #404048;
+	margin-bottom: 10px;
+}

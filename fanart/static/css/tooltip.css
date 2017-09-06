@@ -1,0 +1,63 @@
+#previewPopupContainer
+{
+    position:absolute;
+    left:0;
+    top:0;
+    display:none;
+    z-index: 20000;
+	border-radius:8px;
+	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.8);
+	background-color: #edf5f7;
+	border: 3px solid #cdd5d7;
+}
+
+.previewPopupPopup
+{
+}
+
+#previewPopupContent
+{
+    min-width: 475px;
+    min-height: 50px;
+	margin: 10px;
+}
+
+.previewPopupPopup .previewPopupImage
+{
+    margin: 5px;
+    margin-right: 15px;
+}
+
+img.tooltippreview {
+	max-width: 200px;
+	max-width: 240px; 
+	border: 1px solid #000;
+}
+div.tooltipdata {
+	max-width: 240px;
+}
+div.tooltipdata p {
+	margin-bottom: 8px;
+}
+
+table.tooltip tr {
+	vertical-align: top;
+}
+table.tooltip td {
+	position: relative;
+}
+table.tooltip td.picturedetails {
+	max-width: 300px;
+	padding-left: 20px;
+}
+
+.video-preview {
+	background-image: url('/images/movie_icon.png');
+	width: 32px;
+	height: 32px;
+	background-size: 100% 100%;
+	position: absolute;
+	top: 0px;
+	right: 4px;
+}
+
