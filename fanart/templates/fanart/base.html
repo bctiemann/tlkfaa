@@ -90,8 +90,8 @@
 
 {% block grass %}{% endblock %}
 
-<div class="body<% if (doGrass == false) { %> utilpage<% } %>">
-<div class="bodyprop <c:if test="${bodyTopMargin == 1}">tall</c:if>"></div>
+<div class="body {% block utility_page %}{% endblock %}">
+<div class="bodyprop {% block body_prop %}{% endblock %}"></div>
 
 <div class="dialog" id="dialog_confirm" title="Confirmation">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog_confirm_text">Are you sure?</span></p>

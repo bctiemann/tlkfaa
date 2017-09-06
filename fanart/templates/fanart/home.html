@@ -6,46 +6,9 @@
 {% include "fanart/grass_home.html" %}
 {% endblock %}
 
+{% block body_prop %}{% endblock %}
+
 {% block content %}
-
-<jsp:include page="inc_root/inc_header.jsp" />
-<%@ include file="inc_root/inc_functions.jsp" %>
-<jsp:useBean id="now" class="java.util.Date" scope="request" />
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<%
-  if (request.getParameter("logoff") != null) {
-    session.invalidate();
-    response.sendRedirect("index.jsp");
-    return;
-  }
-%>
-
-<sql:query var="qryCurrentContest">
-SELECT *,DATEDIFF(deadline,NOW()) AS days_left FROM contests
-WHERE type='global'
-AND active=1
-AND startdate<NOW()
-ORDER BY created DESC
-LIMIT 1
-</sql:query>
-<c:forEach var="contest" items="${qryCurrentContest.rows}">
-	<c:set var="currentContest" value="${contest}" />
-	<sql:query var="qryCurrentContestEntries">
-	SELECT * FROM contestpics
-	WHERE contestid=?
-	<sql:param value="${currentContest.contestid}" />
-	</sql:query>
-</c:forEach>
 
 <div class="frontpagebanners">
 
@@ -72,12 +35,12 @@ LIMIT 1
     <c:if test="${qryCurrentContest.rowCount > 0}">
     <div class="current-contest">
         <h3>Current Art Contest</h3>
-        <p class="contest-title"><a href="/Contests.jsp?contestid=${currentContest.contestid}">${currentContest.title}</a></p>
-	<c:set var="contestTheme" value="${currentContest.description}" />
+        <p class="contest-title"><a href="/Contests.jsp?contestid=${currentContest.contestid}">{{ current_contest.title }}</a></p>
+	<c:set var="contestTheme" value="{{ current_contest.description }}" />
 	<div class="contest-theme">
-		<%= formatText((String)pageContext.getAttribute("contestTheme")) %>
+                {{ current_contest.description }}
 	</div>
-        <p>${qryCurrentContestEntries.rowCount} <c:choose><c:when test="${qryCurrentContestEntries.rowCount == 1}">entry</c:when><c:otherwise>entries</c:otherwise></c:choose></p>
+        <p>{{ current_contest.contestentry_set.count }}${qryCurrentContestEntries.rowCount} <c:choose><c:when test="${qryCurrentContestEntries.rowCount == 1}">entry</c:when><c:otherwise>entries</c:otherwise></c:choose></p>
         <c:choose>
         <c:when test="${now < currentContest.deadline}">
             <p><b>(${currentContest.days_left} day<c:if test="${currentContest.days_left != 1}">s</c:if> left)</b></p>

@@ -1,9 +1,7 @@
 <div class="grasswrap">
 <div class="grass">
 
-<c:set var="bodyTopMargin" scope="page" value="0" />
-
-{% block tab_main %}{% endblock %}
+{% block tab_main %}
 <c:choose>
 <c:when test="${tabPage == ''}">
     <div class="tab main">
@@ -30,15 +28,15 @@
     <c:set var="bodyTopMargin" scope="page" value="1" />
 </c:when>
 <c:when test="${tabPage == 'ColoringCave.jsp'}">
-<%--    <img src="/images/ground-coloringcave.png" />--%>
     <c:set var="bodyTopMargin" scope="page" value="1" />
 </c:when>
 <c:when test="${tabPage == 'Special'}">
-<%--    <img src="/images/ground-special.png" />--%>
     <c:set var="bodyTopMargin" scope="page" value="1" />
 </c:when>
 </c:choose>
-<%--<img src="/images/ground-<% if (thisPage.equals("")) { %>1<% } else if (thisPage.equals("Artists")) { %>2<% } else if (thisPage.equals("Artwork")) { %>3<% } else if (thisPage.equals("Special")) { %>4<% } %>.jpg" />--%>
+{% endblock %}
+
+{% block page_blurb %}
 
 <% if (thisPage.equals("")) { %>
 
@@ -84,10 +82,10 @@ This page contains special sections where our artists have created art to commem
 
 <% } %>
 
+{% endblock %}
+
     <div class="grass-tile"></div>
 </div>
 <div class="grassspacer"></div>
-<%--<div class="grassgradient"></div>--%>
 </div>
 
-<% } %>
