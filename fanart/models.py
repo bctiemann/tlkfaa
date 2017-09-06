@@ -375,6 +375,9 @@ class SocialMediaIdentity(models.Model):
     def __unicode__(self):
         return '{0}: {1}'.format(self.social_media, self.identity)
 
+    class Meta:
+        verbose_name_plural = 'social media identities'
+
 
 class UnviewedPicture(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
@@ -438,6 +441,9 @@ class Contest(models.Model):
     allow_anonymous_entries = models.BooleanField(default=False)
     allow_voting = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return self.title
+
 
 class ContestEntry(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
@@ -445,6 +451,13 @@ class ContestEntry(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True)
     date_entered = models.DateTimeField(null=True, blank=True)
     date_notified = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def num_votes(self):
+        return self.contestvote_set.count()
+
+    class Meta:
+        verbose_name_plural = 'contest entries'
 
 
 class ContestVote(models.Model):

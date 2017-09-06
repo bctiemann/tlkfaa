@@ -151,3 +151,18 @@ class SocialMediaIdentityAdmin(admin.ModelAdmin):
     user_id_for_formfield = None
 admin.site.register(fanart_models.SocialMediaIdentity, SocialMediaIdentityAdmin)
 
+
+class ContestAdmin(admin.ModelAdmin):
+    list_display = ('creator', 'title', 'type', 'date_end',)
+    list_filter = ('type',)
+    readonly_fields = ('creator',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.Contest, ContestAdmin)
+
+
+class ContestEntryAdmin(admin.ModelAdmin):
+    list_display = ('contest', 'picture', 'date_entered', 'num_votes',)
+    list_filter = ('contest',)
+    readonly_fields = ('picture',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.ContestEntry, ContestEntryAdmin)
