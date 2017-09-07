@@ -1,12 +1,18 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import Count, Avg
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 import uuid
+import datetime
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_media_path(instance, filename):
@@ -440,6 +446,23 @@ class Contest(models.Model):
     allow_multiple_entries = models.BooleanField(default=False)
     allow_anonymous_entries = models.BooleanField(default=False)
     allow_voting = models.BooleanField(default=False)
+
+    def get_winner(self):
+        try:
+            return self.contestentry_set.annotate(vote_count=Count('contestvote')).order_by('-vote_count')[0]
+        except IndexError:
+            return None
+
+    @property
+    def is_ended(self):
+        return self.date_end < timezone.now()
+
+    @property
+    def days_left(self):
+        logger.info(self.date_end)
+        logger.info(timezone.now())
+        logger.info(self.date_end - timezone.now())
+        return (self.date_end - timezone.now()).days
 
     def __unicode__(self):
         return self.title

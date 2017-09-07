@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <c:if test="${qryCurrentContest.rowCount > 0}">
+    {% if current_contest %}
     <div class="current-contest">
         <h3>Current Art Contest</h3>
         <p class="contest-title"><a href="/Contests.jsp?contestid=${currentContest.contestid}">{{ current_contest.title }}</a></p>
@@ -40,28 +40,14 @@
 	<div class="contest-theme">
                 {{ current_contest.description }}
 	</div>
-        <p>{{ current_contest.contestentry_set.count }}${qryCurrentContestEntries.rowCount} <c:choose><c:when test="${qryCurrentContestEntries.rowCount == 1}">entry</c:when><c:otherwise>entries</c:otherwise></c:choose></p>
-        <c:choose>
-        <c:when test="${now < currentContest.deadline}">
-            <p><b>(${currentContest.days_left} day<c:if test="${currentContest.days_left != 1}">s</c:if> left)</b></p>
-        </c:when>
-        <c:otherwise>
-            <sql:query var="qryWinner">
-            SELECT *,count(contestvotes.pictureid) AS num_votes FROM contestvotes
-            INNER JOIN pictures ON pictures.pictureid=contestvotes.pictureid
-            INNER JOIN artists ON artists.artistid=pictures.artistid
-            WHERE contestid=?
-            GROUP BY contestvotes.pictureid
-            ORDER BY num_votes DESC
-            LIMIT 1
-            <sql:param value="${currentContest.contestid}" />
-            </sql:query>
-            <c:set var="contestWinner" value="${qryWinner.rows[0]}" />
-            Winner: ${contestWinner.artistname}
-        </c:otherwise>
-        </c:choose>
+        <p>{{ current_contest.contestentry_set.count }} entr{{ current_contest.contestentry_set.count|pluralize:"y,ies" }}</p>
+        {% if contest.is_ended %}
+            Winner: {{ current_contest.get_winner.picture.artist.username }}
+        {% else %}
+            <p><b>({{ current_contest.days_left }} day{{ current_contest.days_left|pluralize }} left)</b></p>
+        {% endif %}
     </div>
-    </c:if>
+    {% endif %}
 
 </div>
 
