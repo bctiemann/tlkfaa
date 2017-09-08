@@ -1,5 +1,9 @@
 from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 
 from fanart.models import Contest
@@ -36,3 +40,5 @@ class ColoringCaveView(TemplateView):
 
 class SpecialFeaturesView(TemplateView):
     template_name = 'fanart/special.html'
+
+

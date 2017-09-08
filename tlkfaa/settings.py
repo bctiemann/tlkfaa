@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'precise_bbcode',
 
     'fanart',
+    'artmanager',
 ]
 
 MIDDLEWARE_CLASSES = [

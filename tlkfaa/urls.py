@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^TradingTree/$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
+
+    url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]
 
 if settings.DEBUG:
