@@ -1,0 +1,266 @@
+{% extends "fanart/base.html" %}
+
+{% block activetab_special %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_special.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+<%--
+Special/index.jsp
+Main navigation page for Special Features (e.g. the site-wide contest and the tribute pages).
+--%>
+
+<jsp:include page="../inc_root/inc_header.jsp" />
+<%@ include file="../inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"%>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="featureid" value="${param.featureid}" integerOnly="true" />
+<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
+</c:catch>
+
+<div class="featurebox">
+
+<c:choose>
+<c:when test="${featureid > 0}">
+
+	<sql:query var="qrySpecials" >
+	SELECT * FROM specials
+	WHERE visible=true
+	AND specialid=?
+	ORDER BY specialid
+	<sql:param value="${featureid}" />
+	</sql:query>
+
+	<c:forEach var="special" items="${qrySpecials.rows}">
+
+		<h2>${special.title}</h2>
+		<div class="pageinfo">
+		<p>${special.description}</p>
+		</div>
+
+		<c:set var="queryclause" value="+" />
+		<c:forEach var="word" items="${fn:split(special.keyword, ',')}">
+			<c:set var="queryclause" value="${queryclause} OR MATCH (keywords) AGAINST ('${word}')" />
+		</c:forEach>
+		<c:set var="queryclause" value="${fn:replace(queryclause,'+ OR','')}" />
+
+		<sql:query var="qrySpecialPicsFull">
+		SELECT pictures.*,artistname,dirname FROM pictures,artists
+		WHERE (${queryclause}) 
+		AND pictures.artistid=artists.artistid
+		ORDER BY uploaded DESC
+		</sql:query>
+
+		<c:set var="numItems" value="${qrySpecialPicsFull.rowCount} " />
+		<c:choose>
+		<c:when test="${page > 0}">
+		<c:set var="page" value="${page} " />
+		</c:when>
+		<c:otherwise>
+		<c:set var="page" value="0 " />
+		</c:otherwise>
+		</c:choose>
+		<%
+		  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
+		  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
+
+		  Hashtable Pages = pagesLink(numItems,100,pageNum,true,"","text",request.getQueryString());
+
+		  pageContext.setAttribute("offset",Pages.get("offset"));
+		  pageContext.setAttribute("thispage",Pages.get("thispage"));
+		  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
+		%>
+
+		<sql:query var="qrySpecialPics">
+		SELECT * FROM pictures,artists
+		WHERE (${queryclause}) 
+		AND pictures.artistid=artists.artistid
+		ORDER BY uploaded DESC
+		LIMIT ${offset},${thispage}
+		</sql:query>
+
+		<%= Pages.get("pages") %>
+
+		<c:forEach var="picture" items="${qrySpecialPics.rows}">
+
+			<c:set var="picnumber" value="${picnumber+1}" />
+			<c:set var="title" value="${picture.title}" />
+			<tags:printPicture
+				pictureid="${picture.pictureid}"
+				basename="${picture.basename}"
+				extension="${picture.extension}"
+				type="${picture.type}"
+				title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
+				artistname="${picture.artistname}"
+				dirname="${picture.dirname}"
+				width="${picture.width}"
+				height="${picture.height}"
+				thumbheight="${picture.thumbheight}"
+				allowcomments="${picture.allowcomments_p && picture.allowcomments}"
+				numcomments="${picture.numcomments}"
+				numpicfaves="${picture.numpicfaves}"
+				gallery="special"
+				folder="${picture.folderid}"
+				>
+				<jsp:attribute name="uploaded">
+					<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+				</jsp:attribute>
+				<jsp:attribute name="filesize">
+					<fmt:formatNumber value="${picture.filesize / 1024}" type="number" pattern="###" />
+				</jsp:attribute>
+			</tags:printPicture>
+
+		</c:forEach>
+
+	</c:forEach>
+
+</c:when>
+<c:otherwise>
+
+	<sql:query var="qryContest">
+	SELECT * FROM contests
+	WHERE type='global'
+	AND startdate<NOW()
+	AND active=true
+	ORDER BY created DESC
+	LIMIT 1
+	</sql:query>
+
+	<c:forEach var="contest" items="${qryContest.rows}">
+
+		<a class="archive-link" href="/Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
+		<h2>Current Art Contest</h2>
+
+		<div class="contest">
+
+		<h3><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></h3>
+
+		<div class="contestdetails">
+
+		<c:set var="contesttheme" value="${contest.description}" />
+		<div class="contesttheme">
+		<%= formatText((String)pageContext.getAttribute("contesttheme")) %>
+		</div>
+
+		<c:set var="contestrules" value="${contest.rules}" />
+		<div class="contestrules">
+		<%= formatText((String)pageContext.getAttribute("contestrules")) %>
+		</div>
+
+		<br clear="all" />
+		</div>
+		</div>
+
+		<c:set var="now" value="<%=new java.util.Date()%>" />
+		<c:choose>
+		<c:when test="${now < contest.deadline}">
+			Some random entries:
+			<sql:query var="qryEntries">
+			SELECT * FROM pictures,contestpics,artists
+			WHERE contestpics.pictureid=pictures.pictureid
+			AND pictures.artistid=artists.artistid
+			AND contestid=?
+			ORDER BY RAND()
+			LIMIT 20
+			<sql:param value="${contest.contestid}" />
+			</sql:query>
+		</c:when>
+		<c:otherwise>
+			Winning entries:
+			<sql:query var="qryEntries">
+			SELECT pictures.*,artistname,dirname,count(*) AS num FROM pictures,contestpics,contestvotes,artists
+			WHERE contestpics.pictureid=pictures.pictureid
+			AND contestvotes.pictureid=pictures.pictureid
+			AND contestpics.contestid=contestvotes.contestid
+			AND pictures.artistid=artists.artistid
+			AND contestvotes.contestid=?
+			GROUP BY contestvotes.pictureid,contestvotes.contestid
+			ORDER BY num DESC,entered
+			LIMIT 20
+			<sql:param value="${contest.contestid}" />
+			</sql:query>
+		</c:otherwise>
+		</c:choose>
+
+		<div class="masonry1">
+		<c:forEach var="contestpic" items="${qryEntries.rows}">
+			<div class="offertile picturetile">
+			<a id="picturetile_${contestpic.pictureid}" class="previewPopupTrigger" type="picture" itemid="${contestpic.pictureid}" popupheight="50" href="/Artists/${contestpic.dirname}/${contestpic.filename}?${contestpic.pictureid}" rel="shadowbox[contest]"><img src="/Artwork/Artists/${contestpic.dirname}/${fanart:encodeURI(contestpic.basename)}.s.jpg" width="60" height="${contestpic.thumbheight}" /></a>
+			</div>
+		</c:forEach>
+		</div>
+
+	</c:forEach>
+
+	</div>
+
+	<sql:query var="qrySpecials" >
+	SELECT * FROM specials
+	WHERE visible=true
+	ORDER BY specialid
+	</sql:query>
+
+	<c:forEach var="special" items="${qrySpecials.rows}">
+
+		<div class="featurebox">
+			<h2><a href="/Special/?featureid=${special.specialid}">${special.title}</a></h2>
+			<div class="pageinfo">
+			<p>${special.description}</p>
+			</div>
+
+			<c:set var="queryclause" value="+" />
+			<c:forEach var="word" items="${fn:split(special.keyword, ',')}">
+				<c:set var="queryclause" value="${queryclause} OR MATCH (keywords) AGAINST ('${word}')" />
+			</c:forEach>
+			<c:set var="queryclause" value="${fn:replace(queryclause,'+ OR','')}" />
+
+			<sql:query var="qrySpecialPics">
+			SELECT pictures.*,artistname,dirname FROM pictures,artists
+			WHERE (${queryclause}) 
+			AND pictures.artistid=artists.artistid
+			ORDER BY RAND()
+			LIMIT 20
+			</sql:query>
+
+			<div class="masonry1">
+			<c:forEach var="picture" items="${qrySpecialPics.rows}">
+			<div class="offertile picturetile">
+			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Artists/${picture.dirname}/${picture.filename}?${picture.pictureid}" rel="shadowbox[special_${special.specialid}]"><img src="/Artwork/Artists/${picture.dirname}/${fanart:encodeURI(picture.basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
+<%--
+			<script type="text/javascript">
+			  $('a#picturetile_${picture.pictureid}').wTooltip({
+			    ajax: "/ajax_tooltip_picture.jsp?pictureid=${picture.pictureid}"
+			  });
+			</script>
+--%>
+			</div>
+			</c:forEach>
+			</div>
+
+		</div>
+
+	</c:forEach>
+
+</c:otherwise>
+</c:choose>
+
+<jsp:include page="../inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="../inc_root/inc_footer.jsp" />
+
+{% endblock %}

@@ -1,40 +1,13 @@
 <div class="grasswrap">
 <div class="grass">
 
-{% block tab_main %}
-<c:choose>
-<c:when test="${tabPage == ''}">
-    <div class="tab main">
-    </div>
-</c:when>
-<c:when test="${tabPage == 'Artists'}">
-    <img src="/images/ground-artists.png" />
-    <c:set var="bodyTopMargin" scope="page" value="0" />
-</c:when>
-<c:when test="${tabPage == 'Artists.jsp'}">
-    <img src="/images/ground-artists.png" />
-    <c:set var="bodyTopMargin" scope="page" value="0" />
-</c:when>
-<c:when test="${tabPage == 'Artwork' || tab == 'artwork'}">
-    <img src="/images/ground-artwork.png" />
-    <c:set var="bodyTopMargin" scope="page" value="1" />
-</c:when>
-<c:when test="${tabPage == 'Characters'}">
-    <img src="/images/ground-characters.png" />
-    <c:set var="bodyTopMargin" scope="page" value="1" />
-</c:when>
-<c:when test="${tabPage == 'TradingTree.jsp'}">
-    <img src="/images/ground-tradingtree.png" />
-    <c:set var="bodyTopMargin" scope="page" value="1" />
-</c:when>
-<c:when test="${tabPage == 'ColoringCave.jsp'}">
-    <c:set var="bodyTopMargin" scope="page" value="1" />
-</c:when>
-<c:when test="${tabPage == 'Special'}">
-    <c:set var="bodyTopMargin" scope="page" value="1" />
-</c:when>
-</c:choose>
-{% endblock %}
+{% block tab_main %}{% endblock %}
+{% block tab_artists %}{% endblock %}
+{% block tab_artwork %}{% endblock %}
+{% block tab_characters %}{% endblock %}
+{% block tab_tradingtree %}{% endblock %}
+{% block tab_coloringcave %}{% endblock %}
+{% block tab_special %}{% endblock %}
 
 {% block page_blurb %}
 

@@ -57,29 +57,29 @@
 
 <ul id="tabs">
     <li class="tab main {% block activetab_home %}{% endblock %}">
-        <a href="/"></a>
+        <a href="{% url "home" %}"></a>
     </li>
     <li class="tab artists {% block activetab_artists %}{% endblock %}">
-        <a href="/Artists.jsp"></a>
+        <a href="{% url "artists" %}"></a>
     </li>
     <li class="tab artwork {% block activetab_artwork %}{% endblock %}">
-        <a href="/Artwork/">
+        <a href="{% url "artwork" %}">
         {% if request.user.unviewedpicture_set.count > 0 %}
             <div class="newpics-badge">{{ request.user.unviewedpicture_set.count }}</div>
         {% endif %}
         </a>
     </li>
     <li class="tab characters {% block activetab_characters %}{% endblock %}">
-        <a href="/Characters/"></a>
+        <a href="{% url "characters" %}"></a>
     </li>
     <li class="tab tradingtree {% block activetab_tradingtree %}{% endblock %}">
-        <a href="/TradingTree.jsp"></a>
+        <a href="{% url "trading-tree" %}"></a>
     </li>
     <li class="tab coloringcave {% block activetab_coloringcave %}{% endblock %}">
-        <a href="/ColoringCave.jsp"></a>
+        <a href="{% url "coloring-cave" %}"></a>
     </li>
     <li class="tab special {% block activetab_special %}{% endblock %}">
-        <a href="/Special/"></a>
+        <a href="{% url "special" %}"></a>
     </li>
 </ul>
 

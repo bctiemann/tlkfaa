@@ -1,0 +1,193 @@
+{% extends "fanart/base.html" %}
+
+{% block activetab_artwork %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_artwork.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+<%--
+Artwork/index.jsp
+Main navigation page for viewing artwork.
+--%>
+
+<jsp:include page="../inc_root/inc_header.jsp" />
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"%>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:set var="term" value="${param.term}" />
+<c:catch var="catchException">
+<fmt:parseNumber var="start" value="${param.start}" integerOnly="true" />
+<fmt:parseNumber var="count" value="${param.count}" integerOnly="true" />
+<fmt:parseNumber var="tag" value="${param.tag}" integerOnly="true" />
+</c:catch>
+<c:if test="${start == null}">
+<c:set var="start" value="0" />
+</c:if>
+<c:if test="${count == null}">
+<c:set var="count" value="10" />
+</c:if>
+
+<div class="pagenav">
+</div>
+
+
+<c:set var="list" value="${param.list}" />
+
+<c:if test="${
+list != 'newest' && 
+list != 'newestfaves' &&
+list != 'unviewed' &&
+list != 'toprated' &&
+list != 'topratedrecent' &&
+list != 'random' &&
+list != 'tag' &&
+list != 'character' &&
+list != 'search'
+}">
+<c:set var="list" value="${loggedin == 1 && newpics_count > 0 ? 'unviewed' : 'newest'}" />
+</c:if>
+
+<script type="text/javascript">
+artworklistopen = '${list}';
+</script>
+
+<div class="featurebox featureboxwide">
+<div class="itemlistheaders" id="artworkheaders">
+
+<c:if test="${loggedin == 1}">
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('unviewed',10)">
+	<h2 class="itemlist <c:if test="${list == 'unviewed'}">itemlist_selected</c:if>" id="artworklisth2_unviewed">Watched & Unviewed</h2>
+	</a>
+
+</div>
+</c:if>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newest',10)">
+	<h2 class="itemlist <c:if test="${list == 'newest'}">itemlist_selected</c:if>" id="artworklisth2_newest">Newest</h2>
+	</a>
+
+<%--
+	<div id="artwork_newest">
+
+	<c:if test="${list == 'newest'}">
+	<jsp:include page="../ajax_listartwork.jsp?list=newest&start=0&count=10" />
+	</c:if>
+
+	</div>
+--%>
+</div>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newestfaves',10)">
+	<h2 class="itemlist <c:if test="${list == 'newestfaves'}">itemlist_selected</c:if>" id="artworklisth2_newestfaves">Newest By Favorite Artists</h2>
+	</a>
+
+<%--
+	<div id="artwork_newestfaves">
+
+	<c:if test="${list == 'newestfaves'}">
+	<jsp:include page="../ajax_listartwork.jsp?list=newestfaves&start=0&count=10" />
+	</c:if>
+
+	</div>
+--%>
+</div>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('toprated',10)">
+	<h2 class="itemlist <c:if test="${list == 'toprated'}">itemlist_selected</c:if>" id="artworklisth2_toprated">Top Rated</h2>
+	</a>
+
+<%--
+	<div id="artwork_toprated">
+
+	<c:if test="${list == 'toprated'}">
+	<jsp:include page="../ajax_listartwork.jsp?list=toprated&start=0&count=10" />
+	</c:if>
+
+	</div>
+--%>
+</div>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('topratedrecent',10)">
+	<h2 class="itemlist <c:if test="${list == 'topratedrecent'}">itemlist_selected</c:if>" id="artworklisth2_topratedrecent">Top Rated Recent Uploads</h2>
+	</a>
+
+<%--
+	<div id="artwork_topratedrecent">
+
+	<c:if test="${list == 'topratedrecent'}">
+	<jsp:include page="../ajax_listartwork.jsp?list=topratedrecent&start=0&count=10" />
+	</c:if>
+
+	</div>
+--%>
+</div>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('random',5)">
+	<h2 class="itemlist <c:if test="${list == 'random'}">itemlist_selected</c:if>" id="artworklisth2_random">Randomly Selected</h2>
+	</a>
+
+<%--
+	<div id="artwork_random">
+
+	<c:if test="${list == 'random'}">
+	<jsp:include page="../ajax_listartwork.jsp?list=random&start=0&count=5" />
+	</c:if>
+
+	</div>
+--%>
+</div>
+
+
+<div class="itemlist">
+
+	<a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('search',0)">
+	<h2 class="itemlist <c:if test="${list == 'search' || list == 'tag' || list == 'character'}">itemlist_selected</c:if>" id="artworklisth2_search">Search</h2>
+	</a>
+
+</div>
+</div>
+<br clear="left" />
+
+<div id="artwork">
+
+<jsp:include page="../ajax_listartwork.jsp?list=${list}&start=${start}&count=10" />
+
+</div>
+
+</div>
+
+
+<jsp:include page="../inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="../inc_root/inc_footer.jsp" />
+
+{% endblock %}

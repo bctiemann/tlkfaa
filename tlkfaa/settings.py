@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'debug_toolbar',
+    'precise_bbcode',
 
     'fanart',
 ]

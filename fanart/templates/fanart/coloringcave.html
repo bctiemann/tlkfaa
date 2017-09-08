@@ -1,0 +1,254 @@
+{% extends "fanart/base.html" %}
+
+{% block activetab_coloringcave %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_coloringcave.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+<%--
+ColoringCave.jsp
+Allows artists to recolor others' base line-art and have it grouped both into their own galleries and with the original artwork.
+--%>
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="ccid" value="${param.ccid}" integerOnly="true" />
+<fmt:parseNumber var="ccpid" value="${param.ccpid}" integerOnly="true" />
+<fmt:parseNumber var="artistid" value="${param.artistid}" integerOnly="true" />
+</c:catch>
+
+
+<c:choose>
+<c:when test="${param.fnc == 'postnew'}">
+
+</c:when>
+<c:when test="${param.fnc == 'remove'}">
+
+</c:when>
+</c:choose>
+
+<h1>Coloring Cave</h1>
+
+<c:choose>
+<c:when test="${param.sortby == 'popularity'}">
+	<c:set var="orderclause" value="ORDER BY numcolored DESC" />
+	<c:set var="sortby" value="popularity" />
+</c:when>
+<c:otherwise>
+	<c:set var="orderclause" value="ORDER BY coloring_base.posted DESC" />
+	<c:set var="sortby" value="date" />
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${artistid > 0}">
+	<c:set var="artistclause" value="AND coloring_base.artistid='${artistid}'" />
+</c:when>
+<c:when test="${ccartistid > 0}">
+	<c:set var="artistclause" value="AND coloring_pics.artistid='${artistid}'" />
+</c:when>
+</c:choose>
+
+<div class="featurebox">
+
+<div class="selector">
+Sort by:
+<a class="<c:if test="${sortby == 'popularity'}">selected</c:if>" href="/ColoringCave.jsp?sortby=popularity">popularity</a>
+<a class="<c:if test="${sortby == 'date'}">selected</c:if>" href="/ColoringCave.jsp?sortby=date">date posted</a>
+</div>
+
+<c:choose>
+<c:when test="${ccpid > 0}">
+	<sql:query var="qryCCPic">
+	SELECT * FROM coloring_pics
+	WHERE coloring_picid=?
+	<sql:param value="${ccpid}" />
+	</sql:query>
+	<c:forEach var="ccpic" items="${qryCCPic.rows}">
+		<c:set var="basepic" value="${ccpic.basepic}" />
+		<%
+		  String basepic = (String)pageContext.getAttribute("basepic").toString();
+		  String ccpicid = (String)pageContext.getAttribute("ccpid").toString();
+		  String url = "/ColoringCave.jsp?ccid="+basepic+"#"+ccpicid;
+		  response.sendRedirect(url);
+		%>
+	</c:forEach>
+
+	<div class="error">
+	<h3>An error occurred</h3>
+	<p>The specified coloring picture ID is invalid.</p>
+	</div>
+
+</c:when>
+<c:when test="${ccid > 0}">
+
+	<sql:query var="qryCCBase">
+	SELECT coloring_base.*,pictures.*,artistname,dirname,allowcomments FROM coloring_base,pictures,artists
+	WHERE coloring_baseid=?
+	AND coloring_base.pictureid=pictures.pictureid
+	AND coloring_base.artistid=artists.artistid
+	AND picpublic=true
+	<sql:param value="${ccid}" />
+	</sql:query>
+	<c:forEach var="basepic" items="${qryCCBase.rows}">
+
+		<c:set var="title" value="${basepic.title}" />
+		<tags:printPicture
+			picnumber=""
+			pictureid="${basepic.pictureid}"
+			basename="${basepic.basename}"
+			extension="${basepic.extension}"
+			type="${basepic.type}"
+			title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
+			artistname="${basepic.artistname}"
+			dirname="${basepic.dirname}"
+			width="${basepic.width}"
+			height="${basepic.height}"
+			thumbheight="${basepic.thumbheight}"
+			allowcomments="${basepic.allowcomments_p && basepic.allowcomments}"
+			numcomments="${basepic.numcomments}"
+			numpicfaves="${basepic.numpicfaves}"
+			folder="${basepic.folderid}"
+			cc_base="${basepic.coloring_baseid}"
+			showcolored="1"
+			>
+			<jsp:attribute name="uploaded">
+				<fmt:formatDate value="${basepic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+			</jsp:attribute>  
+			<jsp:attribute name="filesize">
+				<fmt:formatNumber value="${basepic.filesize / 1024}" type="number" pattern="###" />
+			</jsp:attribute>
+		</tags:printPicture>
+
+		<c:choose>
+		<c:when test="${basepic.active == true}">
+			<form method="POST" id="ccform_${basepic.pictureid}">
+			<table class="formtable">
+			<tr>
+			<td class="label">Select file</td>
+			<td class="data"><input type="file" name="uploadfile" id="uploadfile" /></td>
+			</tr>
+			<tr>
+			<td class="label">Comment</td>
+			<td class="data"><textarea name="comment" id="comment"></textarea></td>
+			</tr>
+			<tr>
+			<td colspan="2" class="buttons">
+			<button type="button" onClick="uploadPicture('ccform_${basepic.pictureid}','uploadfile','cc_${basepic.pictureid}',null,false)">Upload Colored Picture</button>
+			</td>
+			</tr>
+			</table>
+			<input type="hidden" name="uploadop" value="ccpic" />
+			<input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
+			</form>
+		</c:when>
+		<c:otherwise>
+			<p>New colored versions cannot be posted for this line-art.</p>
+		</c:otherwise>
+		</c:choose>
+
+	</c:forEach>
+
+	<c:if test="${qryCCBase.rowCount == 0}">
+		<sql:query var="qryCCBaseRemoved">
+		SELECT * FROM coloring_base
+		WHERE coloring_baseid=?
+		<sql:param value="${ccid}" />
+		</sql:query>
+		<c:forEach var="ccbaseremoved" items="${qryCCBaseRemoved.rows}">
+			<div class="picture">
+			<jsp:include page="/ajax_colored.jsp?pictureid=${ccbaseremoved.pictureid}" />
+			</div>
+		</c:forEach>
+	</c:if>
+
+</c:when>
+<c:otherwise>
+
+<%--
+	<sql:query var="qryCC">
+	SELECT * FROM coloring_base,pictures,artists
+	WHERE coloring_base.pictureid=pictures.pictureid
+	AND coloring_base.artistid=artists.artistid
+	AND coloring_base.visible=true
+	AND coloring_base.posted > DATE_SUB(NOW(),INTERVAL 3 MONTH)
+	${artistclause}
+	${orderclause}
+	LIMIT 100
+	</sql:query>
+--%>
+
+	<sql:query var="qryCC">
+	SELECT * FROM coloring_base,artists
+	WHERE coloring_base.visible=true
+	AND coloring_base.artistid=artists.artistid
+<%--	AND coloring_base.posted > DATE_SUB(NOW(),INTERVAL 3 MONTH)--%>
+	${artistclause}
+	${orderclause}
+	LIMIT 100
+	</sql:query>
+
+	<div id="offerslayout">
+
+	<c:if test="${qryCC.rowCount == 0}">
+		<div class="noentries">
+		No coloring pictures.
+		</div>
+	</c:if>
+
+	<c:forEach var="ccbase" items="${qryCC.rows}">
+
+		<sql:query var="qryCCBasePic">
+		SELECT * FROM pictures
+		WHERE pictures.pictureid=?
+		AND deleted IS NULL
+		<sql:param value="${ccbase.pictureid}" />
+		</sql:query>
+
+		<c:set var="artistname" value="${ccbase.artistname}" />
+		<div class="offertile cctile">
+		<a href="/ColoringCave.jsp?ccid=${ccbase.coloring_baseid}">
+		<c:forEach var="ccbasepic" items="${qryCCBasePic.rows}">
+			<img class="" src="/Artwork/Artists/${ccbase.dirname}/${fanart:encodeURI(ccbasepic.basename)}.s.jpg" width="60" height="${ccbasepic.thumbheight}" />
+		</c:forEach>
+		<c:if test="${qryCCBasePic.rowCount == 0}">
+			<img src="/images/LineArtRemoved.gif" width="60" height="60" class="placeholdericon" />
+		</c:if>
+		</a>
+		<a href="/Artists/${ccbase.dirname}/"><%= truncateString((String)pageContext.getAttribute("artistname"),10) %></a><br />
+		<fmt:formatDate value="${ccbase.posted}" type="date" pattern="M/d/yyyy" /><br />
+		${ccbase.numcolored} colored
+		</div>
+
+	</c:forEach>
+
+	<br clear="left" />
+
+	</div>
+
+</c:otherwise>
+</c:choose>
+
+</div>
+
+<jsp:include page="inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="inc_root/inc_footer.jsp" />
+
+{% endblock %}
