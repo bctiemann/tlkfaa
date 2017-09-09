@@ -22,7 +22,7 @@ class ArtManagerRedirectView(RedirectView):
 
 
 class ArtManagerDashboardView(TemplateView):
-    template_name = 'fanart/special.html'
+    template_name = 'artmanager/dashboard.html'
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'dashboard'
@@ -34,7 +34,7 @@ class ArtManagerDashboardView(TemplateView):
 
 class ArtManagerPrefsView(DetailView):
 #class ArtManagerPrefsView(DetailView, FormMixin):
-    template_name = 'fanart/special.html'
+    template_name = 'artmanager/prefs.html'
     model = User
 
     def get(self, request, *args, **kwargs):

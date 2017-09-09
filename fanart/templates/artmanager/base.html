@@ -1,0 +1,244 @@
+{% extends "fanart/base.html" %}
+
+{% block activetab_special %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_special.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+<%--
+ArtManager.jsp
+Artist account management application.
+--%>
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" import="java.util.*,java.io.*,java.sql.*,javax.sql.*,javax.naming.*" contentType="text/html; charset=UTF-8" %>
+<%--<%@ page errorPage="uploadbean/ExceptionHandler.jsp" %>--%>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:choose>
+<c:when test="${loggedin == 1}">
+
+<c:set var="op" value="${param.op}" />
+<c:set var="artistid" value="${artist.artistid}" />
+
+
+<c:choose>
+<c:when test="${artist.active == 'true' && artist.enabled == 'true'}">
+
+	<c:if test="${
+	op != 'dashboard' && 
+	op != 'prefs' && 
+	op != 'upload' && 
+	op != 'pending' && 
+	op != 'artwork' && 
+	op != 'folders' && 
+	op != 'requests' && 
+	op != 'characters' && 
+	op != 'privatemsgs' && 
+	op != 'tradingtree' && 
+	op != 'coloringcave' && 
+	op != 'contests' && 
+	op != 'bulletins' && 
+	op != 'customize' && 
+	op != 'uploadhistory' &&
+	op != 'comments' && 
+	op != 'shouts' && 
+	op != 'fans' &&
+	op != 'blocks'
+	}">
+	<jsp:forward page="ArtManager.jsp?op=dashboard" />
+	</c:if>
+
+	<h1>ArtManager</h1>
+
+	<c:if test="${artist.ispaid == false}">
+	<c:set var="notpaidclass" value="notpaidfeature " />
+	</c:if>
+
+	<div class="am_panel">
+	<div class="am_tabs">
+	<a href="{% url "artmanager:dashboard" %}" class="{% block am_dashboard_class %}{% endblock %}">Artist Dashboard</a>
+	<a href="{% url "artmanager:prefs" %}" class="{% block am_prefs_class %}{% endblock %}">Artist Info/Prefs</a>
+	<a href="ArtManager.jsp?op=upload" class="<c:if test="${op == 'upload' || op == 'pending'}">selected</c:if>">Upload</a>
+	<a href="ArtManager.jsp?op=artwork" class="<c:if test="${op == 'artwork'}">selected</c:if>">Artwork</a>
+	<a href="ArtManager.jsp?op=folders" class="<c:if test="${op == 'folders'}">selected</c:if>">Folders</a>
+	<a href="ArtManager.jsp?op=requests" class="<c:if test="${op == 'requests'}">selected</c:if>">ArtWall</a>
+	<a href="ArtManager.jsp?op=characters" class="<c:if test="${op == 'characters'}">selected</c:if>">Characters</a>
+	<a href="ArtManager.jsp?op=customize" class="sectionend <c:if test="${op == 'customize'}">selected</c:if>">Gallery Appearance</a>
+	<a href="ArtManager.jsp?op=privatemsgs" class="${notpaidclass}<c:if test="${op == 'privatemsgs'}">selected</c:if>">Private Messages</a>
+	<a href="ArtManager.jsp?op=tradingtree" class="${notpaidclass}<c:if test="${op == 'tradingtree'}">selected</c:if>">Trading Tree</a>
+	<a href="ArtManager.jsp?op=coloringcave" class="${notpaidclass}<c:if test="${op == 'coloringcave'}">selected</c:if>">Coloring Cave</a>
+	<a href="ArtManager.jsp?op=contests" class="${notpaidclass}<c:if test="${op == 'contests'}">selected</c:if>">Contests</a>
+	<a href="ArtManager.jsp?op=bulletins" class="${notpaidclass}sectionend <c:if test="${op == 'bulletins'}">selected</c:if>">Bulletins</a>
+<%--	<a href="ArtManager.jsp?op=uploadhistory" class="<c:if test="${op == 'uploadhistory'}">selected</c:if>">Upload History</a>--%>
+	<a href="ArtManager.jsp?op=comments" class="<c:if test="${op == 'comments'}">selected</c:if>">Comments</a>
+	<a href="ArtManager.jsp?op=shouts" class="<c:if test="${op == 'shouts'}">selected</c:if>">Roars</a>
+	<a href="ArtManager.jsp?op=fans" class="<c:if test="${op == 'fans'}">selected</c:if>">Fans</a>
+	<a href="ArtManager.jsp?op=blocks" class="sectionend <c:if test="${op == 'blocks'}">selected</c:if>">Blocks</a>
+	</div>
+
+	<div class="am_content">
+
+	<c:choose>
+	<c:when test="${op == 'dashboard'}">
+	<jsp:include page="am_dashboard.jsp" />
+	</c:when>
+	<c:when test="${op == 'prefs'}">
+	<jsp:include page="am_prefs.jsp" />
+	</c:when>
+	<c:when test="${op == 'upload'}">
+	<jsp:include page="am_upload.jsp?commit=${commit}" />
+	</c:when>
+	<c:when test="${op == 'pending'}">
+	<jsp:include page="am_pending.jsp" />
+	</c:when>
+	<c:when test="${op == 'artwork'}">
+	<jsp:include page="am_artwork.jsp" />
+	</c:when>
+	<c:when test="${op == 'folders'}">
+	<jsp:include page="am_folders.jsp" />
+	</c:when>
+	<c:when test="${op == 'requests'}">
+	<jsp:include page="am_requests.jsp" />
+	</c:when>
+	<c:when test="${op == 'characters'}">
+	<jsp:include page="am_characters.jsp" />
+	</c:when>
+	<c:when test="${op == 'privatemsgs'}">
+	<jsp:include page="am_privatemsgs.jsp" />
+	</c:when>
+	<c:when test="${op == 'tradingtree'}">
+	<jsp:include page="am_tradingtree.jsp" />
+	</c:when>
+	<c:when test="${op == 'coloringcave'}">
+	<jsp:include page="am_coloringcave.jsp" />
+	</c:when>
+	<c:when test="${op == 'contests'}">
+	<jsp:include page="am_contests.jsp" />
+	</c:when>
+	<c:when test="${op == 'bulletins'}">
+	<jsp:include page="am_bulletins.jsp" />
+	</c:when>
+	<c:when test="${op == 'customize'}">
+	<jsp:include page="am_customize.jsp" />
+	</c:when>
+	<c:when test="${op == 'uploadhistory'}">
+	<jsp:include page="am_uploadhistory.jsp" />
+	</c:when>
+	<c:when test="${op == 'comments'}">
+	<jsp:include page="am_comments.jsp" />
+	</c:when>
+	<c:when test="${op == 'shouts'}">
+	<jsp:include page="am_shouts.jsp" />
+	</c:when>
+	<c:when test="${op == 'fans'}">
+	<jsp:include page="am_fans.jsp" />
+	</c:when>
+	<c:when test="${op == 'blocks'}">
+	<jsp:include page="am_blocks.jsp" />
+	</c:when>
+	<c:otherwise>
+	<jsp:include page="am_dashboard.jsp" />
+	</c:otherwise>
+	</c:choose>
+
+	</div>
+	</div>
+
+</c:when>
+<c:when test="${artist.active == 'false' && artist.enabled == 'true'}">
+
+	<c:if test="${
+	op != 'dashboard' && 
+	op != 'prefs' && 
+	op != 'comments' &&
+	op != 'shouts' &&
+	op != 'privatemsgs' &&
+	op != 'tradingtree'
+	}">
+	<jsp:forward page="ArtManager.jsp?op=dashboard" />
+	</c:if>
+
+	<h1>Your Profile</h1>
+
+	<div class="am_panel">
+	<div class="am_tabs">
+	<a href="ArtManager.jsp?op=dashboard" class="<c:if test="${op == 'dashboard'}">selected</c:if>">Dashboard</a>
+	<a href="ArtManager.jsp?op=prefs" class="<c:if test="${op == 'prefs'}">selected</c:if>">Profile Info</a>
+	<a href="ArtManager.jsp?op=comments" class="<c:if test="${op == 'comments'}">selected</c:if>">Comments</a>
+	<a href="ArtManager.jsp?op=shouts" class="<c:if test="${op == 'shouts'}">selected</c:if>">Shouts</a>
+	<a href="ArtManager.jsp?op=privatemsgs" class="<c:if test="${op == 'privatemsgs'}">selected</c:if>">Private Messages</a>
+	<a href="ArtManager.jsp?op=tradingtree" class="<c:if test="${op == 'tradingtree'}">selected</c:if>">Trading Tree</a>
+	</div>
+
+	<div class="am_content">
+
+	<c:choose>
+	<c:when test="${op == 'dashboard'}">
+	<jsp:include page="am_dashboard.jsp" />
+	</c:when>
+	<c:when test="${op == 'prefs'}">
+	<jsp:include page="am_prefs.jsp" />
+	</c:when>
+	<c:when test="${op == 'comments'}">
+	<jsp:include page="am_comments.jsp" />
+	</c:when>
+	<c:when test="${op == 'shouts'}">
+	<jsp:include page="am_shouts.jsp" />
+	</c:when>
+	<c:when test="${op == 'privatemsgs'}">
+	<jsp:include page="am_privatemsgs.jsp" />
+	</c:when>
+	<c:when test="${op == 'tradingtree'}">
+	<jsp:include page="am_tradingtree.jsp" />
+	</c:when>
+	<c:otherwise>
+	<jsp:include page="am_dashboard.jsp" />
+	</c:otherwise>
+	</c:choose>
+
+	</div>
+	</div>
+
+</c:when>
+<c:otherwise>
+
+	<div class="error">
+	<h3>Account Disabled</h3>
+	Your account has been disabled.
+	</div>
+
+</c:otherwise>
+</c:choose>
+
+
+
+</c:when>
+<c:otherwise>
+
+<div class="error">
+<h3>An error occurred</h3>
+You are not logged in. Please log in at right.
+</div>
+
+</c:otherwise>
+</c:choose>
+
+
+<jsp:include page="inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="inc_root/inc_footer.jsp" />
+
+{% endblock %}
