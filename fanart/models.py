@@ -65,6 +65,7 @@ class User(AbstractUser):
 
     dir_name = models.CharField(max_length=150, blank=True)
     sort_name = models.CharField(max_length=150, blank=True)
+    is_artist = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_enabled = models.BooleanField(default=True)
     is_public = models.BooleanField(default=True)

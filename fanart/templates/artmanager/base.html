@@ -1,96 +1,40 @@
 {% extends "fanart/base.html" %}
 
-{% block activetab_special %}active{% endblock %}
+{% block grass %}{% endblock %}
 
-{% block grass %}
-{% include "fanart/grass_special.html" %}
-{% endblock %}
+{% block body_prop %}{% endblock %}
 
-{% block body_prop %}tall{% endblock %}
+{% block utility_page %}utilpage{% endblock %}
 
 {% block content %}
 
-<%--
-ArtManager.jsp
-Artist account management application.
---%>
+{% if request.user.is_authenticated %}
+    {% if request.user.is_artist and request.user.is_enabled %}
 
-<jsp:include page="inc_root/inc_header.jsp" />
-<%@ include file="inc_root/inc_functions.jsp" %>
+    <h1>ArtManager</h1>
 
-<%@ page language="java" import="java.util.*,java.io.*,java.sql.*,javax.sql.*,javax.naming.*" contentType="text/html; charset=UTF-8" %>
-<%--<%@ page errorPage="uploadbean/ExceptionHandler.jsp" %>--%>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:choose>
-<c:when test="${loggedin == 1}">
-
-<c:set var="op" value="${param.op}" />
-<c:set var="artistid" value="${artist.artistid}" />
-
-
-<c:choose>
-<c:when test="${artist.active == 'true' && artist.enabled == 'true'}">
-
-	<c:if test="${
-	op != 'dashboard' && 
-	op != 'prefs' && 
-	op != 'upload' && 
-	op != 'pending' && 
-	op != 'artwork' && 
-	op != 'folders' && 
-	op != 'requests' && 
-	op != 'characters' && 
-	op != 'privatemsgs' && 
-	op != 'tradingtree' && 
-	op != 'coloringcave' && 
-	op != 'contests' && 
-	op != 'bulletins' && 
-	op != 'customize' && 
-	op != 'uploadhistory' &&
-	op != 'comments' && 
-	op != 'shouts' && 
-	op != 'fans' &&
-	op != 'blocks'
-	}">
-	<jsp:forward page="ArtManager.jsp?op=dashboard" />
-	</c:if>
-
-	<h1>ArtManager</h1>
-
-	<c:if test="${artist.ispaid == false}">
-	<c:set var="notpaidclass" value="notpaidfeature " />
-	</c:if>
-
-	<div class="am_panel">
-	<div class="am_tabs">
-	<a href="{% url "artmanager:dashboard" %}" class="{% block am_dashboard_class %}{% endblock %}">Artist Dashboard</a>
-	<a href="{% url "artmanager:prefs" %}" class="{% block am_prefs_class %}{% endblock %}">Artist Info/Prefs</a>
-	<a href="ArtManager.jsp?op=upload" class="<c:if test="${op == 'upload' || op == 'pending'}">selected</c:if>">Upload</a>
-	<a href="ArtManager.jsp?op=artwork" class="<c:if test="${op == 'artwork'}">selected</c:if>">Artwork</a>
-	<a href="ArtManager.jsp?op=folders" class="<c:if test="${op == 'folders'}">selected</c:if>">Folders</a>
-	<a href="ArtManager.jsp?op=requests" class="<c:if test="${op == 'requests'}">selected</c:if>">ArtWall</a>
-	<a href="ArtManager.jsp?op=characters" class="<c:if test="${op == 'characters'}">selected</c:if>">Characters</a>
-	<a href="ArtManager.jsp?op=customize" class="sectionend <c:if test="${op == 'customize'}">selected</c:if>">Gallery Appearance</a>
-	<a href="ArtManager.jsp?op=privatemsgs" class="${notpaidclass}<c:if test="${op == 'privatemsgs'}">selected</c:if>">Private Messages</a>
-	<a href="ArtManager.jsp?op=tradingtree" class="${notpaidclass}<c:if test="${op == 'tradingtree'}">selected</c:if>">Trading Tree</a>
-	<a href="ArtManager.jsp?op=coloringcave" class="${notpaidclass}<c:if test="${op == 'coloringcave'}">selected</c:if>">Coloring Cave</a>
-	<a href="ArtManager.jsp?op=contests" class="${notpaidclass}<c:if test="${op == 'contests'}">selected</c:if>">Contests</a>
-	<a href="ArtManager.jsp?op=bulletins" class="${notpaidclass}sectionend <c:if test="${op == 'bulletins'}">selected</c:if>">Bulletins</a>
-<%--	<a href="ArtManager.jsp?op=uploadhistory" class="<c:if test="${op == 'uploadhistory'}">selected</c:if>">Upload History</a>--%>
-	<a href="ArtManager.jsp?op=comments" class="<c:if test="${op == 'comments'}">selected</c:if>">Comments</a>
-	<a href="ArtManager.jsp?op=shouts" class="<c:if test="${op == 'shouts'}">selected</c:if>">Roars</a>
-	<a href="ArtManager.jsp?op=fans" class="<c:if test="${op == 'fans'}">selected</c:if>">Fans</a>
-	<a href="ArtManager.jsp?op=blocks" class="sectionend <c:if test="${op == 'blocks'}">selected</c:if>">Blocks</a>
-	</div>
-
-	<div class="am_content">
+    <div class="am_panel">
+        <div class="am_tabs">
+            <a href="{% url "artmanager:dashboard" %}" class="{% block am_dashboard_class %}{% endblock %}">Artist Dashboard</a>
+            <a href="{% url "artmanager:prefs" %}" class="{% block am_prefs_class %}{% endblock %}">Artist Info/Prefs</a>
+            <a href="{% url "artmanager:upload" %}" class="{% block am_upload_class %}{% endblock %}">Upload</a>
+            <a href="{% url "artmanager:artwork" %}" class="{% block am_artwork_class %}{% endblock %}">Artwork</a>
+            <a href="{% url "artmanager:folders" %}" class="{% block am_folders_class %}{% endblock %}">Folders</a>
+            <a href="{% url "artmanager:artwall" %}" class="{% block am_artwall_class %}{% endblock %}">ArtWall</a>
+            <a href="{% url "artmanager:characters" %}" class="{% block am_characters_class %}{% endblock %}">Characters</a>
+            <a href="{% url "artmanager:customize" %}" class="sectionend {% block am_customize_class %}{% endblock %}">Gallery Appearance</a>
+            <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_private_msgs_class %}{% endblock %}">Private Messages</a>
+            <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_trading_tree_class %}{% endblock %}">Trading Tree</a>
+            <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_coloring_cave_class %}{% endblock %}">Coloring Cave</a>
+            <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_contests_class %}{% endblock %}">Contests</a>
+            <a href="{% url "artmanager:bulletins" %}" class="sectionend {% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_bulletins_class %}{% endblock %}">Bulletins</a>
+{#            <a href="{% url "artmanager:upload-history" %}" class="{% block am_upload_history_class %}{% endblock %}">Upload History</a> #}
+            <a href="{% url "artmanager:comments" %}" class="{% block am_comments_class %}{% endblock %}">Comments</a>
+            <a href="{% url "artmanager:shouts" %}" class="{% block am_shouts_class %}{% endblock %}">Roars</a>
+            <a href="{% url "artmanager:fans" %}" class="{% block am_fans_class %}{% endblock %}">Fans</a>
+            <a href="{% url "artmanager:blocks" %}" class="sectionend {% block am_blocks_class %}{% endblock %}">Blocks</a>
+        </div>
+        <div class="am_content">
 
 	<c:choose>
 	<c:when test="${op == 'dashboard'}">
@@ -158,8 +102,7 @@ Artist account management application.
 	</div>
 	</div>
 
-</c:when>
-<c:when test="${artist.active == 'false' && artist.enabled == 'true'}">
+    {% elif request.user.is_enabled %}
 
 	<c:if test="${
 	op != 'dashboard' && 
@@ -213,32 +156,22 @@ Artist account management application.
 	</div>
 	</div>
 
-</c:when>
-<c:otherwise>
+    {% else %}
 
-	<div class="error">
-	<h3>Account Disabled</h3>
-	Your account has been disabled.
-	</div>
+        <div class="error">
+            <h3>Account Disabled</h3>
+            Your account has been disabled.
+        </div>
 
-</c:otherwise>
-</c:choose>
+    {% endif %}
 
+{% else %}
 
+    <div class="error">
+        <h3>An error occurred</h3>
+        You are not logged in. Please log in at right.
+    </div>
 
-</c:when>
-<c:otherwise>
-
-<div class="error">
-<h3>An error occurred</h3>
-You are not logged in. Please log in at right.
-</div>
-
-</c:otherwise>
-</c:choose>
-
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
+{% endif %}
 
 {% endblock %}

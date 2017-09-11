@@ -12,7 +12,7 @@ class PictureCharacterInline(admin.TabularInline):
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'num_pictures', 'date_joined',)
-    list_filter = ()
+    search_fields = ('username', 'email',)
     readonly_fields = ()
     user_id_for_formfield = None
 

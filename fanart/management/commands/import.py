@@ -163,6 +163,7 @@ class Command(BaseCommand):
                 c.execute("""SELECT * FROM artists WHERE userid=%s""", (user['userid'],))
                 artist = c.fetchone()
                 if artist:
+                    u.is_artist = True
                     u.artist_id_orig = artist['artistid']
                     u.dir_name = artist['dirname']
                     u.sort_name = artist['sortname']
