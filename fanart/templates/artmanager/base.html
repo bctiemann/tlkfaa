@@ -9,32 +9,52 @@
 {% block content %}
 
 {% if request.user.is_authenticated %}
-    {% if request.user.is_artist and request.user.is_enabled %}
 
-    <h1>ArtManager</h1>
+    {% if request.user.is_active %}
+
+    {% if request.user.is_artist %}
+        <h1>ArtManager</h1>
+    {% else %}
+	<h1>Your Profile</h1>
+    {% endif %}
 
     <div class="am_panel">
+
+        {% with request.resolver_match.url_name as page %}
         <div class="am_tabs">
-            <a href="{% url "artmanager:dashboard" %}" class="{% block am_dashboard_class %}{% endblock %}">Artist Dashboard</a>
-            <a href="{% url "artmanager:prefs" %}" class="{% block am_prefs_class %}{% endblock %}">Artist Info/Prefs</a>
-            <a href="{% url "artmanager:upload" %}" class="{% block am_upload_class %}{% endblock %}">Upload</a>
-            <a href="{% url "artmanager:artwork" %}" class="{% block am_artwork_class %}{% endblock %}">Artwork</a>
-            <a href="{% url "artmanager:folders" %}" class="{% block am_folders_class %}{% endblock %}">Folders</a>
-            <a href="{% url "artmanager:artwall" %}" class="{% block am_artwall_class %}{% endblock %}">ArtWall</a>
-            <a href="{% url "artmanager:characters" %}" class="{% block am_characters_class %}{% endblock %}">Characters</a>
-            <a href="{% url "artmanager:customize" %}" class="sectionend {% block am_customize_class %}{% endblock %}">Gallery Appearance</a>
-            <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_private_msgs_class %}{% endblock %}">Private Messages</a>
-            <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_trading_tree_class %}{% endblock %}">Trading Tree</a>
-            <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_coloring_cave_class %}{% endblock %}">Coloring Cave</a>
-            <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_contests_class %}{% endblock %}">Contests</a>
-            <a href="{% url "artmanager:bulletins" %}" class="sectionend {% if not request.user.is_paid %}notpaidfeature{% endif %} {% block am_bulletins_class %}{% endblock %}">Bulletins</a>
-{#            <a href="{% url "artmanager:upload-history" %}" class="{% block am_upload_history_class %}{% endblock %}">Upload History</a> #}
-            <a href="{% url "artmanager:comments" %}" class="{% block am_comments_class %}{% endblock %}">Comments</a>
-            <a href="{% url "artmanager:shouts" %}" class="{% block am_shouts_class %}{% endblock %}">Roars</a>
-            <a href="{% url "artmanager:fans" %}" class="{% block am_fans_class %}{% endblock %}">Fans</a>
-            <a href="{% url "artmanager:blocks" %}" class="sectionend {% block am_blocks_class %}{% endblock %}">Blocks</a>
+        {% if request.user.is_artist %}
+            <a href="{% url "artmanager:dashboard" %}" class="{% if page == "dashboard" %}selected{% endif %}">Artist Dashboard</a>
+            <a href="{% url "artmanager:prefs" %}" class="{% if page == "prefs" %}selected{% endif %}">Artist Info/Prefs</a>
+            <a href="{% url "artmanager:upload" %}" class="{% if page == "upload" %}selected{% endif %}">Upload</a>
+            <a href="{% url "artmanager:artwork" %}" class="{% if page == "artwork" %}selected{% endif %}">Artwork</a>
+            <a href="{% url "artmanager:folders" %}" class="{% if page == "folders" %}selected{% endif %}">Folders</a>
+            <a href="{% url "artmanager:artwall" %}" class="{% if page == "artwall" %}selected{% endif %}">ArtWall</a>
+            <a href="{% url "artmanager:characters" %}" class="{% if page == "characters" %}selected{% endif %}">Characters</a>
+            <a href="{% url "artmanager:customize" %}" class="sectionend {% if page == "customize" %}selected{% endif %}">Gallery Appearance</a>
+            <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">Private Messages</a>
+            <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "trading-tree" %}selected{% endif %}">Trading Tree</a>
+            <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "coloring-cave" %}selected{% endif %}">Coloring Cave</a>
+            <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "contest" %}selected{% endif %}">Contests</a>
+            <a href="{% url "artmanager:bulletins" %}" class="sectionend {% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "bulletins" %}selected{% endif %}">Bulletins</a>
+{#            <a href="{% url "artmanager:upload-history" %}" class="{% if page == "upload-history" %}selected{% endif %}">Upload History</a> #}
+            <a href="{% url "artmanager:comments" %}" class="{% if page == "comments" %}selected{% endif %}">Comments</a>
+            <a href="{% url "artmanager:shouts" %}" class="{% if page == "shouts" %}selected{% endif %}">Roars</a>
+            <a href="{% url "artmanager:fans" %}" class="{% if page == "fans" %}selected{% endif %}">Fans</a>
+            <a href="{% url "artmanager:blocks" %}" class="sectionend {% if page == "blocks" %}selected{% endif %}">Blocks</a>
+        {% else %}
+            <a href="{% url "artmanager:dashboard" %}" class="{% if page == "dashboard" %}selected{% endif %}">Dashboard</a>
+            <a href="{% url "artmanager:prefs" %}" class="{% if page == "prefs" %}selected{% endif %}">Profile Info</a>
+            <a href="{% url "artmanager:comments" %}" class="{% if page == "comments" %}selected{% endif %}">Comments</a>
+            <a href="{% url "artmanager:shouts" %}" class="{% if page == "shouts" %}selected{% endif %}">Roars</a>
+            <a href="{% url "artmanager:private-msgs" %}" class="{% if page == "private-msgs" %}selected{% endif %}">Private Messages</a>
+            <a href="{% url "artmanager:trading-tree" %}" class="{% if page == "trading-tree" %}selected{% endif %}">Trading Tree</a>
+        {% endif %}
         </div>
+        {% endwith %}
+
         <div class="am_content">
+
+        {% block am_content %}
 
 	<c:choose>
 	<c:when test="${op == 'dashboard'}">
@@ -99,62 +119,10 @@
 	</c:otherwise>
 	</c:choose>
 
-	</div>
-	</div>
+        {% endblock %}
 
-    {% elif request.user.is_enabled %}
-
-	<c:if test="${
-	op != 'dashboard' && 
-	op != 'prefs' && 
-	op != 'comments' &&
-	op != 'shouts' &&
-	op != 'privatemsgs' &&
-	op != 'tradingtree'
-	}">
-	<jsp:forward page="ArtManager.jsp?op=dashboard" />
-	</c:if>
-
-	<h1>Your Profile</h1>
-
-	<div class="am_panel">
-	<div class="am_tabs">
-	<a href="ArtManager.jsp?op=dashboard" class="<c:if test="${op == 'dashboard'}">selected</c:if>">Dashboard</a>
-	<a href="ArtManager.jsp?op=prefs" class="<c:if test="${op == 'prefs'}">selected</c:if>">Profile Info</a>
-	<a href="ArtManager.jsp?op=comments" class="<c:if test="${op == 'comments'}">selected</c:if>">Comments</a>
-	<a href="ArtManager.jsp?op=shouts" class="<c:if test="${op == 'shouts'}">selected</c:if>">Shouts</a>
-	<a href="ArtManager.jsp?op=privatemsgs" class="<c:if test="${op == 'privatemsgs'}">selected</c:if>">Private Messages</a>
-	<a href="ArtManager.jsp?op=tradingtree" class="<c:if test="${op == 'tradingtree'}">selected</c:if>">Trading Tree</a>
-	</div>
-
-	<div class="am_content">
-
-	<c:choose>
-	<c:when test="${op == 'dashboard'}">
-	<jsp:include page="am_dashboard.jsp" />
-	</c:when>
-	<c:when test="${op == 'prefs'}">
-	<jsp:include page="am_prefs.jsp" />
-	</c:when>
-	<c:when test="${op == 'comments'}">
-	<jsp:include page="am_comments.jsp" />
-	</c:when>
-	<c:when test="${op == 'shouts'}">
-	<jsp:include page="am_shouts.jsp" />
-	</c:when>
-	<c:when test="${op == 'privatemsgs'}">
-	<jsp:include page="am_privatemsgs.jsp" />
-	</c:when>
-	<c:when test="${op == 'tradingtree'}">
-	<jsp:include page="am_tradingtree.jsp" />
-	</c:when>
-	<c:otherwise>
-	<jsp:include page="am_dashboard.jsp" />
-	</c:otherwise>
-	</c:choose>
-
-	</div>
-	</div>
+        </div>
+    </div>
 
     {% else %}
 

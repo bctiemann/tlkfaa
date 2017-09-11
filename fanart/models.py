@@ -65,10 +65,9 @@ class User(AbstractUser):
 
     dir_name = models.CharField(max_length=150, blank=True)
     sort_name = models.CharField(max_length=150, blank=True)
-    is_artist = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_enabled = models.BooleanField(default=True)
-    is_public = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, help_text='Controls whether user is allowed to log in. Uncheck this to disable accounts.')
+    is_artist = models.BooleanField(default=True, help_text='Controls whether user has a visible artist page and has access to artist modules in ArtManager, or simply a Profile for following others.')
+    is_public = models.BooleanField(default=True, help_text='Controls whether user\'s art page is publicly visible to unauthenticated users')
     is_paid = models.BooleanField(default=True)
     num_pictures = models.IntegerField(default=0)
     num_faves = models.IntegerField(default=0)
