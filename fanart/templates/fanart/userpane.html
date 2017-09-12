@@ -1,70 +1,42 @@
-<%--
-inc_userpane.jsp
-Structural component which contains all the userboxes in the right column.
---%>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
 <div id="genstatus"></div>
 
 
 <div class="userbox">
 <div class="userboxinner" id="loginbox">
 
-<c:choose>
-<c:when test="${loggedin == 1}">
+{% if user.is_authenticated %}
 
 <p>
 Logged in as 
-<c:choose>
-<c:when test="${artist.active == true}">
-<a href="/Artists/${artist.dirname}/">${artist.artistname}</a>
-</c:when>
-<c:otherwise>
+{% if user.is_artist %}
+<a href="/Artists/${artist.dirname}/">{{ user.username }}</a>
+{% else %}
 ${artist.artistname}
-</c:otherwise>
-</c:choose>
+{% endif %}
 </p>
 
-<a class="button smallbutton" href="/ArtManager.jsp"><c:choose><c:when test="${artist.active == true}">ArtManager</c:when><c:otherwise>Profile</c:otherwise></c:choose></a>
-<a class="button smallbutton" href="javascript:nop()" onclick="doLogout()">Log out</a>
+<a class="button smallbutton" href="{% url "artmanager:home" %}">{% if user.is_artist %}ArtManager{% else %}Profile{% endif %}</a>
+<a class="button smallbutton" href="{% url "logout" %}">Log out</a>
 
-<sql:query var="qryPMs">
-SELECT * FROM pms
-WHERE recptid=?
-AND viewed=false
-<sql:param value="${user.userid}" />
-</sql:query>
-<c:choose>
-<c:when test="${qryPMs.rowCount > 0}">
-<div class="unread-pms">${qryPMs.rowCount} unread PM<c:if test="${qryPMs.rowCount != 1}">s</c:if></div>
-</c:when>
-<c:otherwise>
+{% if user.unread_received_pms_count > 0 %}
+<div class="unread-pms">{{ user.unread_received_pms_count }} unread PM{{ user.unread_received_pms_count|pluralize }}</div>
+{% else %}
 <div class="unread-pms no-unread">No unread PMs</div>
-</c:otherwise>
-</c:choose>
+{% endif %}
 
-<c:set var="loggedin" scope="session" value="1" />
+{% else %}
 
-</c:when>
-<c:otherwise>
-
-<form name="loginform" method="post" action="/Picture.jsp" onSubmit="return doLogin()">
+<form name="loginform" method="post" action="{% url "login" %}" !onSubmit="return doLogin()">
+{% csrf_token %}
 
 <table class="formtable">
 <tr>
 <td class="label">Artist login</td>
-<td class="data"><input type="text" name="artistlogin" id="artistlogin" /></td>
+<td class="data"><input type="text" name="username" id="artistlogin" /></td>
 </tr>
 <tr>
 <td class="label">Password</td>
-<td class="data"><input type="password" name="artistpasswd" id="artistpasswd" /></td>
+<td class="data"><input type="password" name="password" id="artistpasswd" /></td>
 </tr>
 <tr>
 <td colspan="2" class="buttons">
@@ -75,12 +47,14 @@ AND viewed=false
 </tr>
 </table>
 
+<input type="hidden" name="next" value="{% url "home" %}" />
 </form>
 
 <c:set var="loggedin" scope="session" value="0" />
 
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 </div>
 </div>

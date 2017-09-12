@@ -112,6 +112,10 @@ class User(AbstractUser):
     is_approver = models.BooleanField(default=False)
     is_sketcher_mod = models.BooleanField(default=False)
 
+    @property
+    def unread_received_pms_count(self):
+        return self.pms_received.filter(date_viewed__isnull=True).count()
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
