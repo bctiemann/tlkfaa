@@ -60,43 +60,35 @@ ${artist.artistname}
 </div>
 
 
-<c:if test="${loggedin == 1}">
+{% if user.is_authenticated %}
 
 <div class="userbox">
 <h1>
-<a id="favoriteartistsbox_toggle" class="toggle <c:choose><c:when test="${user.showfavoriteartistsbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('favoriteartistsbox')"></a>
+<a id="favoriteartistsbox_toggle" class="toggle {% if user.show_favorite_artists_box %}">toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favoriteartistsbox')"></a>
 Favorite Artists</h1>
-<div class="userboxinner <c:if test="${user.showfavoriteartistsbox == false}">hidden</c:if>" id="favoriteartistsbox">
+<div class="userboxinner {% if not user.show_favorite_artists_box %}hidden{% endif %}" id="favoriteartistsbox">
 
-<c:choose>
-<c:when test="${user.showfavoriteartistsbox == true}">
+{% if user.show_favorite_artists_box %}
 <%@include file="ajax_favoriteartistsbox.jsp"%>
 <script type="text/javascript">
 showUserBox["favoriteartistsbox"] = 1;
 </script>
-</c:when>
-<c:otherwise>
+{% else %}
 <script type="text/javascript">
 showUserBox["favoriteartistsbox"] = 0;
 </script>
-</c:otherwise>
-</c:choose>
+{% endif %}
 
 </div>
 <div class="userboxfooter">
-<sql:query var="qryFavoritesAll">
-SELECT * FROM favorites
-WHERE userid=?
-<sql:param value="${user.userid}" />
-</sql:query>
-${qryFavoritesAll.rowCount} artists watched
+{{ user.artists_watched.count }} artist{{ user.show_favorite_artists_box|pluralize }} watched
 </div>
 </div>
 
 
 <div class="userbox">
 <h1>
-<a id="favoritepicturesbox_toggle" class="toggle <c:choose><c:when test="${user.showfavoritepicturesbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('favoritepicturesbox')"></a>
+<a id="favoritepicturesbox_toggle" class="toggle {% if user.show_favorite_pictures_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favoritepicturesbox')"></a>
 Favorite Pictures</h1>
 <div class="userboxinner <c:if test="${user.showfavoritepicturesbox == false}">hidden</c:if>" id="favoritepicturesbox">
 
@@ -131,7 +123,7 @@ AND active=true
 
 <div class="userbox">
 <h1>
-<a id="sketcherbox_toggle" class="toggle <c:choose><c:when test="${user.showsketcherbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('sketcherbox')"></a>
+<a id="sketcherbox_toggle" class="toggle {% if user.show_sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcherbox')"></a>
 Sketcher</h1>
 <div class="userboxinner <c:if test="${user.showsketcherbox == false}">hidden</c:if>" id="sketcherbox">
 
@@ -158,7 +150,7 @@ showUserBox["sketcherbox"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="communityartbox_toggle"class="toggle <c:choose><c:when test="${user.showcommunityartbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('communityartbox')"></a>
+<a id="communityartbox_toggle"class="toggle {% if user.show_community_art_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('communityartbox')"></a>
 Community Art</h1>
 <div class="userboxinner <c:if test="${user.showcommunityartbox == false}">hidden</c:if>" id="communityartbox">
 
@@ -186,7 +178,7 @@ showUserBox["communityartbox"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="contestsbox_toggle"class="toggle <c:choose><c:when test="${user.showcontestsbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('contestsbox')"></a>
+<a id="contestsbox_toggle"class="toggle {% if user.show_contests_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('contestsbox')"></a>
 Art Contests</h1>
 <div class="userboxinner <c:if test="${user.showcontestsbox == false}">hidden</c:if>" id="contestsbox">
 
@@ -213,7 +205,7 @@ showUserBox["contestsbox"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="toolbox_toggle" class="toggle <c:choose><c:when test="${user.showtoolbox == true}">toggleopen</c:when><c:otherwise>toggleclosed</c:otherwise></c:choose>" href="javascript:nop()" onclick="toggleUserBox('toolbox')"></a>
+<a id="toolbox_toggle" class="toggle {% if user.show_tool_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('toolbox')"></a>
 Toolbox</h1>
 <div class="userboxinner <c:if test="${user.showtoolbox == false}">hidden</c:if>" id="toolbox">
 
@@ -235,4 +227,4 @@ showUserBox["toolbox"] = 0;
 <div class="userboxfooter"></div>
 </div>
 
-</c:if>
+{% endif %}

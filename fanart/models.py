@@ -116,6 +116,10 @@ class User(AbstractUser):
     def unread_received_pms_count(self):
         return self.pms_received.filter(date_viewed__isnull=True).count()
 
+    @property
+    def artists_watched(self):
+        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True)
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
