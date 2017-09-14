@@ -177,7 +177,7 @@ function toggleUserBox(boxname) {
     });
     showUserBox[boxname] = 0;
   } else {
-    var boxcontenturl = "/ajax_"+boxname+".jsp";
+    var boxcontenturl = "/userbox/"+boxname;
     $('#'+boxname).load(boxcontenturl,function() {
       $('#'+boxname+'_toggle').attr("class","toggle toggleopen");
       Shadowbox.setup('#'+boxname+' a.thumb');
@@ -1316,7 +1316,7 @@ function toggleFave(id,type) {
     var faveurl = "/ajax_favoritepicturesbox.jsp";
   } else if (type == 'artist') {
     var url = "/ajax_fave.jsp?artistid="+id;
-    var faveurl = "/ajax_favoriteartistsbox.jsp";
+    var faveurl = "/userbox/favorite_artists/";
   }
   $('#togglefave'+type+'_'+id).load(url,function() {
     if (isfave) {

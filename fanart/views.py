@@ -6,7 +6,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 
-from fanart.models import Contest
+from fanart.models import Contest, Favorite
 
 
 class HomeView(TemplateView):
@@ -42,3 +42,10 @@ class SpecialFeaturesView(TemplateView):
     template_name = 'fanart/special.html'
 
 
+class FavoriteArtistsBoxView(TemplateView):
+    template_name = 'fanart/userpane/favorite_artists.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FavoriteArtistsBoxView, self).get_context_data(**kwargs)
+        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
+        return context

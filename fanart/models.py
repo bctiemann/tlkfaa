@@ -118,7 +118,7 @@ class User(AbstractUser):
 
     @property
     def artists_watched(self):
-        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True)
+        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
@@ -243,6 +243,18 @@ class Character(models.Model):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
 
 
+class FavoriteManager(models.Manager):
+
+    def for_user(self, user):
+        return self.get_queryset().filter(user=user, artist__isnull=False).annotate(new=models.Sum(
+            models.Case(
+                models.When(artist__new_pictures__user=user, then=1),
+                default=0,
+                output_field=models.IntegerField()
+            )
+        )).order_by('artist__sort_name')
+
+
 class Favorite(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
     artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
@@ -251,6 +263,8 @@ class Favorite(models.Model):
     is_visible = models.BooleanField(default=True)
     date_added = models.DateTimeField(null=True, blank=True)
     last_viewed = models.DateTimeField(null=True, blank=True)
+
+    objects = FavoriteManager()
 
 
 class Pending(models.Model):
@@ -396,6 +410,7 @@ class SocialMediaIdentity(models.Model):
 class UnviewedPicture(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
     picture = models.ForeignKey('Picture', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='new_pictures')
     date_added = models.DateTimeField(null=True, blank=True)
 
 
