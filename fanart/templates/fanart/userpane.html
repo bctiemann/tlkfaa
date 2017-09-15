@@ -64,24 +64,24 @@ ${artist.artistname}
 
 <div class="userbox">
 <h1>
-<a id="favorite_artists_toggle" class="toggle {% if user.show_favorite_artists_box %}">toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_artists')"></a>
+<a id="favorite_artists_toggle" class="toggle {% if request.session.favorite_artists %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_artists')"></a>
 Favorite Artists</h1>
-<div class="userboxinner {% if not user.show_favorite_artists_box %}hidden{% endif %}" id="favorite_artists">
+<div class="userboxinner {% if not request.session.favorite_artists %}hidden{% endif %}" id="favorite_artists">
 
-{% if user.show_favorite_artists_box %}
-<%@include file="ajax_favoriteartistsbox.jsp"%>
+{% if request.session.favorite_artists %}
+{% include "fanart/userpane/favorite_artists.html" %}
 <script type="text/javascript">
-showUserBox["favoriteartistsbox"] = 1;
+showUserBox["favorite_artists"] = 1;
 </script>
 {% else %}
 <script type="text/javascript">
-showUserBox["favoriteartistsbox"] = 0;
+showUserBox["favorite_artists"] = 0;
 </script>
 {% endif %}
 
 </div>
 <div class="userboxfooter">
-{{ user.artists_watched.count }} artist{{ user.show_favorite_artists_box|pluralize }} watched
+{{ user.artists_watched|length }} artist{{ user.artists_watched|length|pluralize }} watched
 </div>
 </div>
 

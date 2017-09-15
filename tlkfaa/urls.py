@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^ColoringCave/$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
 
+    url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
     url(r'^userbox/favorite_artists', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),

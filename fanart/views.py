@@ -6,7 +6,14 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 
+from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+
 from fanart.models import Contest, Favorite
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class HomeView(TemplateView):
@@ -40,6 +47,15 @@ class ColoringCaveView(TemplateView):
 
 class SpecialFeaturesView(TemplateView):
     template_name = 'fanart/special.html'
+
+
+class UserBoxSetView(APIView):
+
+    def get(self, request, box=None, show=None):
+        response = {}
+        if box in ('favorite_artists', 'favorite_pictures',):
+            request.session[box] = True if show == '1' else False
+        return Response(response)
 
 
 class FavoriteArtistsBoxView(TemplateView):

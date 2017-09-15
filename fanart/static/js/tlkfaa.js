@@ -171,8 +171,11 @@ function refreshCharCount(sel,max,obj) {
 function toggleUserBox(boxname) {
   if (showUserBox[boxname] == 1) {
     $('#'+boxname).slideUp('fast',function() {
-      var url = "/ajax_showuserbox.jsp?box="+boxname+"&show=0";
-      $('#genstatus').load(url);
+      var url = "/userbox/set/"+boxname+"/0";
+//      $('#genstatus').load(url);
+      $.getJSON(url, function(data) {
+console.log(data);
+      });
       $('#'+boxname+'_toggle').attr("class","toggle toggleclosed");
     });
     showUserBox[boxname] = 0;
@@ -182,8 +185,11 @@ function toggleUserBox(boxname) {
       $('#'+boxname+'_toggle').attr("class","toggle toggleopen");
       Shadowbox.setup('#'+boxname+' a.thumb');
       $('#'+boxname).slideDown('fast',function() {
-        var url = "/ajax_showuserbox.jsp?box="+boxname+"&show=1";
-        $('#genstatus').load(url);
+        var url = "/userbox/set/"+boxname+"/1";
+//        $('#genstatus').load(url);
+        $.getJSON(url, function(data) {
+console.log(data);
+        });
       });
     });
     showUserBox[boxname] = 1;
