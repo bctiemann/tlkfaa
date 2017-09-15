@@ -1,10 +1,10 @@
 {% load static %}
 
 <table class="favorites">
-{% for fave in favorite_artists %}
+{% for fave in user.artists_watched %}
 <tr>
 <td><img class="favevisible" src="{% if fave.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" /></td>
-<td><a {% if fave.new > 0 %}class="hasnewpics"{% endif %} href="/Artists/${fave.dirname}/">{{ fave.artist.username }}</a></td>
+<td><a {% if fave.new > 0 %}class="hasnewpics"{% endif %} href="/Artists/${fave.dirname}/">{{ fave.username }}</a></td>
 <td class="newpics">{% if fave.new > 0 %}<a href="/Artists/${fave.dirname}/?list=bydate">{{ fave.new }} new</a>{% endif %}</td>
 <td>
 <a href="javascript:nop()" title="{{ fave.artist.username }} is {% if fave.artist.commissions_open %}not {% endif %}accepting requests/commissions."><div class="commlight" style="background-image: url('{% if fave.artist.commissions_open %}{% static "images/commissions-on.gif" %}{% else %}{% static "images/commissions-off.gif" %}{% endif %}"></div></a>
@@ -16,4 +16,3 @@
 {% if user.artists_watched.count == 0 %}
 No favorite artists yet.
 {% endif %}
-

@@ -47,5 +47,5 @@ class FavoriteArtistsBoxView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FavoriteArtistsBoxView, self).get_context_data(**kwargs)
-        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
+#        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
         return context

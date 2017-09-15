@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.db import models
+from django.db import models, connection
 from django.db.models import Count, Avg
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
@@ -10,6 +10,8 @@ from django.utils import timezone
 
 import uuid
 import datetime
+
+from fanart.utils import dictfetchall
 
 import logging
 logger = logging.getLogger(__name__)
@@ -118,7 +120,26 @@ class User(AbstractUser):
 
     @property
     def artists_watched(self):
-        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
+#        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
+
+        with connection.cursor() as cursor:
+            query = """
+SELECT fanart_favorite.artist_id,fanart_user.username,fanart_user.dir_name,fanart_favorite.is_visible,fanart_user.commissions_open,count(distinct fanart_unviewedpicture.picture_id) AS new
+FROM fanart_user,fanart_favorite
+LEFT JOIN fanart_unviewedpicture ON fanart_unviewedpicture.artist_id=fanart_favorite.artist_id AND fanart_unviewedpicture.user_id=fanart_favorite.user_id
+WHERE fanart_user.id=fanart_favorite.artist_id
+AND fanart_favorite.user_id=%s
+AND fanart_favorite.picture_id IS NULL
+AND fanart_favorite.character_id IS NULL
+AND fanart_user.is_active=true
+AND fanart_user.is_artist=true
+GROUP BY fanart_favorite.artist_id
+ORDER BY fanart_user.sort_name
+"""
+            print query
+            cursor.execute(query, [self.id])
+            result = dictfetchall(cursor)
+        return result
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
