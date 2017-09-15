@@ -1,6 +1,13 @@
 {% for fave in user.favorite_pictures|slice:"0:12" %}
 
-<a class="" href="{{ settings.MEDIA_URL }}{{ fave.picture.artist.dir_name }}/{{ fave.picture.filename }}?{{ fave.picture.id }}" title="{{ fave.picture.filename }} by {{ fave.artist.username }}" rel="shadowbox[favepics]"><img class="favepic" src="{{ settings.MEDIA_URL }}{{ fave.picture.artist.dir_name }}/{{ fave.picture.basename }}.s.jpg" width="60" height="{{ fave.picture.thumb_height }}" /></a>
+<a class="" 
+    href="{{ settings.MEDIA_URL }}{{ fave.picture.artist.dir_name }}/{{ fave.picture.filename }}?{{ fave.picture.id }}" 
+    title="{{ fave.picture.filename }} by {{ fave.picture.artist.username }}" 
+    rel="shadowbox[favepics]"><img class="favepic" 
+        src="{{ settings.MEDIA_URL }}{{ fave.picture.artist.dir_name }}/{{ fave.picture.basename }}.s.jpg" 
+        width="60" 
+        height="{{ fave.picture.thumb_height }}" 
+/></a>
 
 {% endfor %}
 
