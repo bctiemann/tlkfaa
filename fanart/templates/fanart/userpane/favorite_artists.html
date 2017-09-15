@@ -1,6 +1,7 @@
 {% load static %}
 
 <table class="favorites">
+{#{% for fave in favorite_artists %}#}
 {% for fave in user.artists_watched %}
 <tr>
 <td><img class="favevisible" src="{% if fave.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" /></td>

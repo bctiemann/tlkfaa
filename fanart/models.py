@@ -273,7 +273,7 @@ class FavoriteManager(models.Manager):
                 default=0,
                 output_field=models.IntegerField()
             )
-        )).order_by('artist__sort_name')
+        )).prefetch_related('artist').order_by('artist__sort_name')
 
 
 class Favorite(models.Model):
