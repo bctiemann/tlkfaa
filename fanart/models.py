@@ -119,7 +119,7 @@ class User(AbstractUser):
         return self.pms_received.filter(date_viewed__isnull=True).count()
 
     @property
-    def artists_watched(self):
+    def favorite_artists(self):
 #        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
 
         with connection.cursor() as cursor:
@@ -140,6 +140,10 @@ ORDER BY fanart_user.sort_name
             cursor.execute(query, [self.id])
             result = dictfetchall(cursor)
         return result
+
+    @property
+    def favorite_pictures(self):
+        return self.favorite_set.filter(artist__isnull=True, picture__isnull=False, character__isnull=True).prefetch_related('picture').order_by('-date_added')
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
@@ -180,6 +184,10 @@ class Picture(models.Model):
     needs_poster = models.BooleanField(default=False)
     characters = models.ManyToManyField('Character', through='PictureCharacter')
     tags = models.ManyToManyField('Tag', blank=True)
+
+    @property
+    def basename(self):
+        return '.'.join(self.filename.split('.')[:-1])
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)

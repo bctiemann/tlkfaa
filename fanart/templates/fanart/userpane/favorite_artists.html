@@ -2,7 +2,7 @@
 
 <table class="favorites">
 {#{% for fave in favorite_artists %}#}
-{% for fave in user.artists_watched %}
+{% for fave in user.favorite_artists %}
 <tr>
 <td><img class="favevisible" src="{% if fave.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" /></td>
 <td><a {% if fave.new > 0 %}class="hasnewpics"{% endif %} href="/Artists/${fave.dirname}/">{{ fave.username }}</a></td>
@@ -14,6 +14,6 @@
 {% endfor %}
 </table>
 
-{% if user.artists_watched.count == 0 %}
+{% if user.favorite_artists|length == 0 %}
 No favorite artists yet.
 {% endif %}

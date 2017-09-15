@@ -148,8 +148,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
-MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
-MEDIA_URL = '/media/'
+#MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
+#MEDIA_URL = '/media/'
+
+MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT/Artists'
+MEDIA_URL = '/Artwork/Artists/'
 
 # This logging setup has the following attributes:
 # When DEBUG = True, debug information will be displayed on requested page.

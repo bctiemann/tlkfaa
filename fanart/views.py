@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
@@ -23,6 +24,7 @@ class HomeView(TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['current_contest'] = Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
 #        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
+        context['settings'] = settings
         return context
 
 
@@ -65,4 +67,13 @@ class FavoriteArtistsBoxView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(FavoriteArtistsBoxView, self).get_context_data(**kwargs)
 #        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
+        return context
+
+
+class FavoritePicturesBoxView(TemplateView):
+    template_name = 'fanart/userpane/favorite_pictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FavoritePicturesBoxView, self).get_context_data(**kwargs)
+        context['settings'] = settings
         return context
