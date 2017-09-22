@@ -23,8 +23,8 @@ class Command(BaseCommand):
     do_coloringpics = False
     do_characters = False
     do_favorites = False
-    do_offers = False
-    do_claims = False
+    do_offers = True
+    do_claims = True
     do_picturecharacters = False
     do_tags = False
     do_approvers = False
@@ -43,7 +43,7 @@ class Command(BaseCommand):
     do_contestvotes = False
     do_pms = False
     do_specials = False
-    do_votes = True
+    do_votes = False
 
     GENDERS = {
         0: 'neither',

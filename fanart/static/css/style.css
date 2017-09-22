@@ -709,11 +709,6 @@ div.userbox h1 a.toggleopen {
 div.userbox h1 a.toggleclosed {
 	background: url('../images/toggleclosed.png');
 }
-div#communityartbox {
-	background-image: url('/images/tradingtree-small.png');
-	background-position: 100% -20px;
-	background-repeat: no-repeat;
-}
 div.userbox p {
 	margin-bottom: 8px;
 }
