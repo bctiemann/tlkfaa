@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart.models import Contest, Favorite, TradingOffer, TradingClaim, ColoringBase, Contest
+from fanart.models import Contest, Favorite, TradingOffer, TradingClaim, ColoringBase, Contest, Bulletin
 
 from datetime import timedelta
 
@@ -57,6 +57,7 @@ class HomeView(UserPaneView):
         context['current_contest'] = Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
+        context['admin_announcements'] = [Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
         return context
 
 
@@ -121,3 +122,6 @@ class ContestsBoxView(UserPaneView):
 class ToolBoxView(UserPaneView):
     template_name = 'fanart/userpane/toolbox.html'
 
+
+class AdminAnnouncementsView(TemplateView):
+    template_name = 'fanart/admin_announcements.html'

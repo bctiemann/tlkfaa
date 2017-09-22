@@ -16,7 +16,7 @@
     <div id="adminannouncements">
         <h3>Admin Announcements</h3>
         <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll">
-        <jsp:include page="ajax_adminannouncements.jsp?count=1" />
+        {% include "fanart/admin_announcements.html" %}
         </div>
         <div id="adminannouncementsmore">
         <button class="small" onClick="getMoreAdminAnnouncements(adminannouncementsshown,10)">More</button>

@@ -23,13 +23,15 @@ urlpatterns = [
     url(r'^ColoringCave/$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
 
-    url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
-    url(r'^userbox/favorite_artists', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
-    url(r'^userbox/favorite_pictures', fanart_views.FavoritePicturesBoxView.as_view(), name='favorite-pictures-box'),
-    url(r'^userbox/sketcher', fanart_views.SketcherBoxView.as_view(), name='sketcher-box'),
-    url(r'^userbox/community_art', fanart_views.CommunityArtBoxView.as_view(), name='community-art-box'),
-    url(r'^userbox/contests', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
-    url(r'^userbox/tool', fanart_views.ToolBoxView.as_view(), name='tool-box'),
+    url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)$', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
+    url(r'^userbox/favorite_artists_box/$', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
+    url(r'^userbox/favorite_pictures_box/$', fanart_views.FavoritePicturesBoxView.as_view(), name='favorite-pictures-box'),
+    url(r'^userbox/sketcher_box/$', fanart_views.SketcherBoxView.as_view(), name='sketcher-box'),
+    url(r'^userbox/community_art_box/$', fanart_views.CommunityArtBoxView.as_view(), name='community-art-box'),
+    url(r'^userbox/contests_box/$', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
+    url(r'^userbox/tool_box/$', fanart_views.ToolBoxView.as_view(), name='tool-box'),
+
+    url(r'^admin_announcements/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]
