@@ -1,52 +1,15 @@
-<%--
-ajax_contestsbox.jsp
-Shows the contents of the "Art Contests" userbox.
---%>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:if test="${loggedin == 1}">
-
 <h3>Art Contests</h3>
   
-	<sql:query var="qryContestsNew">
-	SELECT * FROM contests,artists
-	WHERE contests.artistid=artists.artistid
-	AND type='personal'
-	AND contests.active=true
-	AND contests.cancelled=false
-	AND deadline>NOW()
-	ORDER BY startdate DESC
-	LIMIT 5
-	</sql:query>
+    <h4>New Contests</h4>
 
-	<h4>New Contests</h4>
+    {% for contest in contests_data.contests_new %}
+        <div><a href="/Contests.jsp?contestid={{ contest.id }}">{{ contest.title }}</a></div>
+    {% endfor %}
 
-	<c:forEach var="contest" items="${qryContestsNew.rows}">
-		<div><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></div>
-	</c:forEach>
+    <h4>Upcoming Deadlines</h4>
 
-	<sql:query var="qryContestsEnding">
-	SELECT * FROM contests,artists
-	WHERE contests.artistid=artists.artistid
-	AND type='personal'
-	AND contests.active=true
-	AND contests.cancelled=false
-	AND deadline>NOW()
-	ORDER BY deadline DESC
-	LIMIT 5
-	</sql:query>
-
-	<h4>Upcoming Deadlines</h4>
-
-	<c:forEach var="contest" items="${qryContestsEnding.rows}">
-		<div><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></div>
-	</c:forEach>
+    {% for contest in contests_data.contests_ending %}
+        <div><a href="/Contests.jsp?contestid={{ contest.id }}">{{ contest.title }}</a></div>
+    {% endfor %}
 
 </c:if>
