@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart.models import Contest, Favorite, TradingOffer
+from fanart.models import Contest, Favorite, TradingOffer, TradingClaim
 
 from datetime import timedelta
 
@@ -31,6 +31,26 @@ class HomeView(TemplateView):
 
         icons_publish_start_date = timezone.now() - timedelta(weeks=3)
         context['icons'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
+        context['icons_today'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
+        context['icons_mine'] = TradingClaim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', date_posted__gt=icons_publish_start_date, user=self.request.user)
+
+#        SELECT * FROM claims,offers
+#        WHERE claims.offerid=offers.offerid
+#        AND type='icon'
+#        AND active=true
+#        AND visible=true
+#        AND claims.filename IS NOT NULL
+#        AND fulfilled IS NULL
+#        AND claims.userid=?
+#        AND offers.posted>DATE_SUB(NOW(),INTERVAL 3 WEEK)
+
+#        <sql:query var="qryIconsToday">
+#        SELECT * FROM offers
+#        WHERE type='icon'
+#        AND active=true
+#        AND visible=true
+#        AND posted>DATE(NOW())
+#        </sql:query>
 
 #        SELECT * FROM offers
 #        WHERE type='icon'
@@ -69,7 +89,7 @@ class UserBoxSetView(APIView):
 
     def get(self, request, box=None, show=None):
         response = {}
-        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'toolbox',):
+        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'tool_box',):
             request.session[box] = True if show == '1' else False
         return Response(response)
 
@@ -98,4 +118,10 @@ class SketcherBoxView(UserBoxView):
 
 class CommunityArtBoxView(UserBoxView):
     template_name = 'fanart/userpane/community_art.html'
+
+class ContestsBoxView(UserBoxView):
+    template_name = 'fanart/userpane/contests.html'
+
+class ToolBoxView(UserBoxView):
+    template_name = 'fanart/userpane/toolbox.html'
 

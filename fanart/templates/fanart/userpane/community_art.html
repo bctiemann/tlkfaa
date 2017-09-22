@@ -71,15 +71,15 @@
 <table>
 <tr>
 <td class="label">Total icons</td>
-<td class="data">${qryIcons.rowCount}</td>
+<td class="data">{{ icons.count }}</td>
 </tr>
 <tr>
 <td class="label">New icons today</td>
-<td class="data">${qryIconsToday.rowCount}</td>
+<td class="data">{{ icons_today.count }}</td>
 </tr>
 <tr>
 <td class="label">New icons for you</td>
-<td class="data">${qryIconsMine.rowCount}</td>
+<td class="data">{{ icons_mine.count }}</td>
 </tr>
 </table>
 
@@ -87,15 +87,15 @@
 <table>
 <tr>
 <td class="label">Total adoptables</td>
-<td class="data">${qryAdoptables.rowCount}</td>
+<td class="data">{{ adoptables.count }}</td>
 </tr>
 <tr>
 <td class="label">Unclaimed adoptables</td>
-<td class="data">${numunclaimedadoptables}</td>
+<td class="data">{{ adoptables_unclaimed.count }}</td>
 </tr>
 <tr>
 <td class="label">Adoptables for you</td>
-<td class="data">${qryAdoptablesMine.rowCount}</td>
+<td class="data">{{ adoptables_mine.count }}</td>
 </tr>
 </table>
 
@@ -104,6 +104,6 @@
 <table>
 <tr>
 <td class="label">Total colorable line-art</td>
-<td class="data">${qryCCBase.rowCount}</td>
+<td class="data">{{ coloring_bases.count }}</td>
 </tr>
 </table>

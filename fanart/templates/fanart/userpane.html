@@ -119,7 +119,7 @@ Sketcher</h1>
 Community Art</h1>
 <div class="userboxinner {% if not request.session.community_art_box %}hidden{% endif %}" id="community_art_box">
 
-{% if request.session.favorite_pictures_box %}
+{% if request.session.community_art_box %}
 {% include "fanart/userpane/community_art.html" %}
 {% endif %}
 
@@ -133,23 +133,13 @@ Community Art</h1>
 
 <div class="userbox">
 <h1>
-<a id="contestsbox_toggle"class="toggle {% if user.show_contests_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('contestsbox')"></a>
+<a id="contests_box_toggle"class="toggle {% if request.session.contests_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('contests_box')"></a>
 Art Contests</h1>
-<div class="userboxinner <c:if test="${user.showcontestsbox == false}">hidden</c:if>" id="contestsbox">
+<div class="userboxinner {% if not request.session.contests_box %}hidden{% endif %}" id="contests_box">
 
-<c:choose>
-<c:when test="${user.showcontestsbox == true}">
-<jsp:include page="/ajax_contestsbox.jsp" />
-<script type="text/javascript">
-showUserBox["contestsbox"] = 1;
-</script>
-</c:when>
-<c:otherwise>
-<script type="text/javascript">
-showUserBox["contestsbox"] = 0;
-</script>
-</c:otherwise>
-</c:choose>
+{% if request.session.contests_box %}
+{% include "fanart/userpane/contests.html" %}
+{% endif %}
 
 </div>
 <div class="userboxfooter">
@@ -160,23 +150,13 @@ showUserBox["contestsbox"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="toolbox_toggle" class="toggle {% if user.show_tool_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('toolbox')"></a>
+<a id="tool_box_toggle" class="toggle {% if request.session.tool_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('tool_box')"></a>
 Toolbox</h1>
-<div class="userboxinner <c:if test="${user.showtoolbox == false}">hidden</c:if>" id="toolbox">
+<div class="userboxinner {% if not request.session.tool_box %}hidden{% endif %}" id="tool_box">
 
-<c:choose>
-<c:when test="${user.showtoolbox == true}">
-<jsp:include page="/ajax_toolbox.jsp" />
-<script type="text/javascript">
-showUserBox["toolbox"] = 1;
-</script>
-</c:when>
-<c:otherwise>
-<script type="text/javascript">
-showUserBox["toolbox"] = 0;
-</script>
-</c:otherwise>
-</c:choose>
+{% if request.session.tool_box %}
+{% include "fanart/userpane/toolbox.html" %}
+{% endif %}
 
 </div>
 <div class="userboxfooter"></div>
