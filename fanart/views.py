@@ -25,6 +25,7 @@ class HomeView(TemplateView):
         context['current_contest'] = Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
 #        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
         context['settings'] = settings
+        context['sketcher_users'] = range(12)
         return context
 
 
@@ -77,3 +78,14 @@ class FavoritePicturesBoxView(TemplateView):
         context = super(FavoritePicturesBoxView, self).get_context_data(**kwargs)
         context['settings'] = settings
         return context
+
+
+class SketcherBoxView(TemplateView):
+    template_name = 'fanart/userpane/sketcher.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SketcherBoxView, self).get_context_data(**kwargs)
+        context['settings'] = settings
+        context['sketcher_users'] = range(12)
+        return context
+

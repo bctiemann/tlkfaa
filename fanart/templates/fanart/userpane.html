@@ -112,23 +112,20 @@ showUserBox["favorite_pictures"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="sketcherbox_toggle" class="toggle {% if user.show_sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcherbox')"></a>
+<a id="sketcher_toggle" class="toggle {% if request.session.sketcher %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcherbox')"></a>
 Sketcher</h1>
-<div class="userboxinner <c:if test="${user.showsketcherbox == false}">hidden</c:if>" id="sketcherbox">
+<div class="userboxinner {% if not request.session.sketcher %}hidden{% endif %}" id="sketcherbox">
 
-<c:choose>
-<c:when test="${user.showsketcherbox == true}">
-<jsp:include page="/ajax_sketcherbox.jsp" />
+{% if request.session.favorite_pictures %}
+{% include "fanart/userpane/sketcher.html" %}
 <script type="text/javascript">
 showUserBox["sketcherbox"] = 1;
 </script>
-</c:when>
-<c:otherwise>
+{% else %}
 <script type="text/javascript">
 showUserBox["sketcherbox"] = 0;
 </script>
-</c:otherwise>
-</c:choose>
+{% endif %}
 
 </div>
 <div class="userboxfooter">
