@@ -64,19 +64,12 @@ ${artist.artistname}
 
 <div class="userbox">
 <h1>
-<a id="favorite_artists_toggle" class="toggle {% if request.session.favorite_artists %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_artists')"></a>
+<a id="favorite_artists_box_toggle" class="toggle {% if request.session.favorite_artists_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_artists_box')"></a>
 Favorite Artists</h1>
-<div class="userboxinner {% if not request.session.favorite_artists %}hidden{% endif %}" id="favorite_artists">
+<div class="userboxinner {% if not request.session.favorite_artists_box %}hidden{% endif %}" id="favorite_artists_box">
 
-{% if request.session.favorite_artists %}
+{% if request.session.favorite_artists_box %}
 {% include "fanart/userpane/favorite_artists.html" %}
-<script type="text/javascript">
-showUserBox["favorite_artists"] = 1;
-</script>
-{% else %}
-<script type="text/javascript">
-showUserBox["favorite_artists"] = 0;
-</script>
 {% endif %}
 
 </div>
@@ -88,19 +81,12 @@ showUserBox["favorite_artists"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="favorite_pictures_toggle" class="toggle {% if request.session.favorite_pictures %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_pictures')"></a>
+<a id="favorite_pictures_box_toggle" class="toggle {% if request.session.favorite_pictures_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('favorite_pictures_box')"></a>
 Favorite Pictures</h1>
-<div class="userboxinner {% if not request.session.favorite_pictures %}hidden{% endif %}" id="favorite_pictures">
+<div class="userboxinner {% if not request.session.favorite_pictures_box %}hidden{% endif %}" id="favorite_pictures_box">
 
-{% if request.session.favorite_pictures %}
+{% if request.session.favorite_pictures_box %}
 {% include "fanart/userpane/favorite_pictures.html" %}
-<script type="text/javascript">
-showUserBox["favorite_pictures"] = 1;
-</script>
-{% else %}
-<script type="text/javascript">
-showUserBox["favorite_pictures"] = 0;
-</script>
 {% endif %}
 
 </div>
@@ -112,19 +98,12 @@ showUserBox["favorite_pictures"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="sketcher_toggle" class="toggle {% if request.session.sketcher %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcherbox')"></a>
+<a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
 Sketcher</h1>
-<div class="userboxinner {% if not request.session.sketcher %}hidden{% endif %}" id="sketcherbox">
+<div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
 
-{% if request.session.favorite_pictures %}
+{% if request.session.sketcher_box %}
 {% include "fanart/userpane/sketcher.html" %}
-<script type="text/javascript">
-showUserBox["sketcherbox"] = 1;
-</script>
-{% else %}
-<script type="text/javascript">
-showUserBox["sketcherbox"] = 0;
-</script>
 {% endif %}
 
 </div>
@@ -136,23 +115,13 @@ showUserBox["sketcherbox"] = 0;
 
 <div class="userbox">
 <h1>
-<a id="communityartbox_toggle"class="toggle {% if user.show_community_art_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('communityartbox')"></a>
+<a id="community_art_box_toggle"class="toggle {% if request.session.community_art_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('community_art_box')"></a>
 Community Art</h1>
-<div class="userboxinner <c:if test="${user.showcommunityartbox == false}">hidden</c:if>" id="communityartbox">
+<div class="userboxinner {% if not request.session.community_art_box %}hidden{% endif %}" id="community_art_box">
 
-<c:choose>
-<c:when test="${user.showcommunityartbox == true}">
-<jsp:include page="/ajax_communityartbox.jsp" />
-<script type="text/javascript">
-showUserBox["communityartbox"] = 1;
-</script>
-</c:when>
-<c:otherwise>
-<script type="text/javascript">
-showUserBox["communityartbox"] = 0;
-</script>
-</c:otherwise>
-</c:choose>
+{% if request.session.favorite_pictures_box %}
+{% include "fanart/userpane/community_art.html" %}
+{% endif %}
 
 </div>
 <div class="userboxfooter">

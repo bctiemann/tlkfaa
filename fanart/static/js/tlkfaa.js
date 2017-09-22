@@ -169,7 +169,7 @@ function refreshCharCount(sel,max,obj) {
 }
 
 function toggleUserBox(boxname) {
-  if (showUserBox[boxname] == 1) {
+  if ($('#'+boxname+'_toggle').hasClass('toggleopen')) {
     $('#'+boxname).slideUp('fast',function() {
       var url = "/userbox/set/"+boxname+"/0";
 //      $('#genstatus').load(url);

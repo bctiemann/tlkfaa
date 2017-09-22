@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^userbox/favorite_artists', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
     url(r'^userbox/favorite_pictures', fanart_views.FavoritePicturesBoxView.as_view(), name='favorite-pictures-box'),
     url(r'^userbox/sketcher', fanart_views.SketcherBoxView.as_view(), name='sketcher-box'),
+    url(r'^userbox/community_art', fanart_views.CommunityArtBoxView.as_view(), name='community-art-box'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]

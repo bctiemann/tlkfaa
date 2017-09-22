@@ -11,7 +11,9 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart.models import Contest, Favorite
+from fanart.models import Contest, Favorite, TradingOffer
+
+from datetime import timedelta
 
 import logging
 logger = logging.getLogger(__name__)
@@ -26,6 +28,16 @@ class HomeView(TemplateView):
 #        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
         context['settings'] = settings
         context['sketcher_users'] = range(12)
+
+        icons_publish_start_date = timezone.now() - timedelta(weeks=3)
+        context['icons'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
+
+#        SELECT * FROM offers
+#        WHERE type='icon'
+#        AND active=true
+#        AND visible=true
+#        AND posted>DATE_SUB(NOW(),INTERVAL 3 WEEK)
+
         return context
 
 
@@ -57,35 +69,33 @@ class UserBoxSetView(APIView):
 
     def get(self, request, box=None, show=None):
         response = {}
-        if box in ('favorite_artists', 'favorite_pictures',):
+        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'toolbox',):
             request.session[box] = True if show == '1' else False
         return Response(response)
 
 
-class FavoriteArtistsBoxView(TemplateView):
-    template_name = 'fanart/userpane/favorite_artists.html'
+class UserBoxView(TemplateView):
 
     def get_context_data(self, **kwargs):
-        context = super(FavoriteArtistsBoxView, self).get_context_data(**kwargs)
-#        context['favorite_artists'] = Favorite.objects.for_user(self.request.user)
-        return context
-
-
-class FavoritePicturesBoxView(TemplateView):
-    template_name = 'fanart/userpane/favorite_pictures.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(FavoritePicturesBoxView, self).get_context_data(**kwargs)
-        context['settings'] = settings
-        return context
-
-
-class SketcherBoxView(TemplateView):
-    template_name = 'fanart/userpane/sketcher.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SketcherBoxView, self).get_context_data(**kwargs)
+        context = super(UserBoxView, self).get_context_data(**kwargs)
         context['settings'] = settings
         context['sketcher_users'] = range(12)
+
+        icons_publish_start_date = timezone.now() - timedelta(weeks=3)
+        context['icons'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
+
         return context
+
+
+class FavoriteArtistsBoxView(UserBoxView):
+    template_name = 'fanart/userpane/favorite_artists.html'
+
+class FavoritePicturesBoxView(UserBoxView):
+    template_name = 'fanart/userpane/favorite_pictures.html'
+
+class SketcherBoxView(UserBoxView):
+    template_name = 'fanart/userpane/sketcher.html'
+
+class CommunityArtBoxView(UserBoxView):
+    template_name = 'fanart/userpane/community_art.html'
 

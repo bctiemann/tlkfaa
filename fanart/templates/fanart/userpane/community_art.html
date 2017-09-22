@@ -1,0 +1,109 @@
+	<sql:query var="qryIcons">
+	SELECT * FROM offers 
+	WHERE type='icon' 
+	AND active=true
+	AND visible=true
+	AND posted>DATE_SUB(NOW(),INTERVAL 3 WEEK)
+	</sql:query>
+
+	<sql:query var="qryIconsToday">
+	SELECT * FROM offers 
+	WHERE type='icon' 
+	AND active=true
+	AND visible=true
+	AND posted>DATE(NOW())
+	</sql:query>
+
+	<sql:query var="qryIconsMine">
+	SELECT * FROM claims,offers
+	WHERE claims.offerid=offers.offerid 
+	AND type='icon'
+	AND active=true
+	AND visible=true
+	AND claims.filename IS NOT NULL
+	AND fulfilled IS NULL
+	AND claims.userid=?
+	AND offers.posted>DATE_SUB(NOW(),INTERVAL 3 WEEK)
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<sql:query var="qryAdoptables">
+	SELECT * FROM offers 
+	WHERE type='adoptable' 
+	AND active=true
+	AND visible=true
+	AND posted>DATE_SUB(NOW(),INTERVAL 6 MONTH)
+	</sql:query>
+
+	<sql:query var="qryAdoptablesUnclaimed">
+	SELECT * FROM offers 
+	WHERE type='adoptable' 
+	AND active=true
+	AND visible=true
+	AND adoptedby IS NOT NULL
+	AND posted>DATE_SUB(NOW(),INTERVAL 6 MONTH)
+	</sql:query>
+
+	<c:set var="numunclaimedadoptables" value="${qryAdoptables.rowCount - qryAdoptablesUnclaimed.rowCount}" />
+
+	<sql:query var="qryAdoptablesMine">
+	SELECT * FROM claims,offers
+	WHERE claims.offerid=offers.offerid 
+	AND type='adoptable'
+	AND active=true
+	AND visible=true
+	AND claims.filename IS NULL
+	AND fulfilled IS NOT NULL
+	AND claims.userid=?
+	AND offers.posted>DATE_SUB(NOW(),INTERVAL 1 MONTH)
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<sql:query var="qryCCBase">
+	SELECT * FROM coloring_base 
+	WHERE active=true
+	AND visible=true
+	</sql:query>
+
+<h3>Trading Tree</h3>
+
+<h4><a href="/TradingTree.jsp?offertype=icon">icons</a></h4>
+<table>
+<tr>
+<td class="label">Total icons</td>
+<td class="data">${qryIcons.rowCount}</td>
+</tr>
+<tr>
+<td class="label">New icons today</td>
+<td class="data">${qryIconsToday.rowCount}</td>
+</tr>
+<tr>
+<td class="label">New icons for you</td>
+<td class="data">${qryIconsMine.rowCount}</td>
+</tr>
+</table>
+
+<h4><a href="/TradingTree.jsp?offertype=adoptable">adoptables</a></h4>
+<table>
+<tr>
+<td class="label">Total adoptables</td>
+<td class="data">${qryAdoptables.rowCount}</td>
+</tr>
+<tr>
+<td class="label">Unclaimed adoptables</td>
+<td class="data">${numunclaimedadoptables}</td>
+</tr>
+<tr>
+<td class="label">Adoptables for you</td>
+<td class="data">${qryAdoptablesMine.rowCount}</td>
+</tr>
+</table>
+
+<h3><a href="/ColoringCave.jsp">Coloring Cave</a></h3>
+
+<table>
+<tr>
+<td class="label">Total colorable line-art</td>
+<td class="data">${qryCCBase.rowCount}</td>
+</tr>
+</table>
