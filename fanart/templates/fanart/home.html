@@ -26,7 +26,7 @@
     <div id="bulletins">
         <h3>Bulletins</h3>
         <div id="bulletins_inner" class="bulletinsinner bulletinsstatic">
-        <jsp:include page="ajax_bulletins.jsp?count=5" />
+        {% include "fanart/bulletins.html" %}
         </div>
         <div id="bulletinsmore">
         <button class="small" onClick="getMoreBulletins(bulletinsshown,10)">More</button>

@@ -31,7 +31,8 @@ urlpatterns = [
     url(r'^userbox/contests_box/$', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
     url(r'^userbox/tool_box/$', fanart_views.ToolBoxView.as_view(), name='tool-box'),
 
-    url(r'^admin_announcements/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
+    url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
+    url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='admin-announcements'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]

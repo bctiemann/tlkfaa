@@ -197,7 +197,8 @@ console.log(data);
 }
 
 function getMoreAdminAnnouncements(start,count) {
-  var url = "/ajax_adminannouncements.jsp?count="+count+"&start="+start;
+  var url = "/admin_announcements/"+count+"/"+start+"/";
+console.log(url);
   $.ajax({ url: url, success: function(data) {
     $('#adminannouncements_inner').addClass('bulletinsscroll');
     adminannouncementsshown += count;    
@@ -208,7 +209,7 @@ function getMoreAdminAnnouncements(start,count) {
 }
 
 function getMoreBulletins(start,count) {
-  var url = "/ajax_bulletins.jsp?count="+count+"&start="+start;
+  var url = "/bulletins/"+count+"/"+start+"/";
   $.ajax({ url: url, success: function(data) {
     $('#bulletins_inner').addClass('bulletinsscroll');
     bulletinsshown += count;    

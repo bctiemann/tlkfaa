@@ -58,6 +58,7 @@ class HomeView(UserPaneView):
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
         context['admin_announcements'] = [Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
+        context['bulletins'] = Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
         return context
 
 
@@ -125,3 +126,22 @@ class ToolBoxView(UserPaneView):
 
 class AdminAnnouncementsView(TemplateView):
     template_name = 'fanart/admin_announcements.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AdminAnnouncementsView, self).get_context_data(**kwargs)
+        start = int(kwargs.get('start'))
+        count = int(kwargs.get('count'))
+        end = start + count
+        context['admin_announcements'] = Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted')[start:end]
+        return context
+
+class BulletinsView(TemplateView):
+    template_name = 'fanart/bulletins.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BulletinsView, self).get_context_data(**kwargs)
+        start = int(kwargs.get('start'))
+        count = int(kwargs.get('count'))
+        end = start + count
+        context['bulletins'] = Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[start:end]
+        return context
