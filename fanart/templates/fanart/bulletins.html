@@ -1,0 +1,15 @@
+{% load bbcode_tags %}
+{% for bulletin in bulletins %}
+
+<div class="bulletinlink">
+<div class="bulletindate">{{ bulletin.date_posted|date:"H:m D n/j/Y" }}</div>
+<div class="bulletinname"><a href="/Artists/${bulletin.dirname}/">{{ bulletin.user.username }}</a></div>
+<p class="bulletintitle"><a href="/pop_bulletin.jsp?bulletin={{ bulletin.id }}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
+<c:if test="${bulletin.profilepic > 0}">
+<img class="bulletinprofilepic" src="/profiles/${bulletin.profilepic}.s.${bulletin.profilepic_ext}" />
+</c:if>
+{{ bulletin.bulletin|bbcode|safe|truncatechars_html:100 }}
+
+</div>
+
+{% endfor %}

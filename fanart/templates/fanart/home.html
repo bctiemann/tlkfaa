@@ -51,35 +51,20 @@
 
 </div>
 
-<sql:query var="qryArtists">
-SELECT * FROM artists
-WHERE enabled=true
-AND active=true
-AND numpictures>0
-${hideprivate}
-ORDER BY lastupload DESC
-LIMIT 10
-</sql:query>
-
 <div class="featurebox">
 
+{% for artist in recently_active_artists %}
 <c:forEach var="artist" items="${qryArtists.rows}">
 
-	<sql:query var="qryPictures">
-	SELECT * FROM pictures
-	WHERE pictures.artistid=?
-	AND picpublic=true
-	AND deleted IS NULL
-	AND DATE(uploaded)>=DATE_SUB(DATE(NOW()), INTERVAL 3 DAY)
-	ORDER BY uploaded DESC
-	LIMIT 10
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
 	<c:set var="i" value="0" />
+        {% for picture in artist.recently_uploaded_pictures %}
 	<c:forEach var="picture" items="${qryPictures.rows}">
 
 		<c:set var="i" value="${i+1}" />
+                {% if forloop.counter == 1 %}
+
+                    {% include "includes/picture.html" %}
+
 		<c:choose>
 		<c:when test="${i == 1}">
 			<c:set var="picnumber" value="${picnumber+1}" />
@@ -109,25 +94,29 @@ LIMIT 10
 				</jsp:attribute>
 			</tags:printPicture>
 		</c:when>
+                {% else %}
 		<c:otherwise>
-			<c:if test="${i == 2}">
+                        {% if forloop.counter == 2 %}
 				<div class="also-today group masonry">
-			</c:if>
+                        {% endif %}
 
 			<div class="offertile picturetile">
-			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="/Artwork/Artists/${artist.dirname}/${fanart:encodeURI(picture.basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
-			<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+                        {{ picture.date_uploaded|date:"H:m D n/j/Y" }}
 			</div>
 
-			<c:if test="${i == qryPictures.rowCount}">
+                        {% if forloop.counter == artist.recently_uploaded_pictures|length %}
 				</div>
-			</c:if>
+                        {% endif %}
 		</c:otherwise>
 		</c:choose>
+                {% endif %}
 
 	</c:forEach>
+        {% endfor %}
 
 </c:forEach>
+{% endfor %}
 
 <a class="button" href="/Artwork/?list=newest">More Recent Artwork</a>
 

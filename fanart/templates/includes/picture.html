@@ -1,0 +1,215 @@
+{% load bbcode_tags %}
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<%@ attribute name="picnumber" %>
+<%@ attribute name="pictureid" %>
+<%@ attribute name="basename" %>
+<%@ attribute name="extension" %>
+<%@ attribute name="artistname" %>
+<%@ attribute name="dirname" %>
+<%@ attribute name="title" %>
+<%@ attribute name="thumbheight" %>
+<%@ attribute name="uploaded" %>
+<%@ attribute name="allowcomments" %>
+<%@ attribute name="numcomments" %>
+<%@ attribute name="numpicfaves" %>
+<%@ attribute name="width" %>
+<%@ attribute name="height" %>
+<%@ attribute name="filesize" %>
+<%@ attribute name="type" %>
+<%@ attribute name="folder" %>
+<%@ attribute name="gallery" %>
+<%@ attribute name="cc_base" %>
+<%@ attribute name="showcolored" %>
+<%@ attribute name="contest" %>
+<%@ attribute name="contestform" %>
+<%@ attribute name="contestvote" %>
+<%@ attribute name="contestvotes" %>
+<%@ attribute name="contestplace" %>
+<%@ attribute name="voted" %>
+<%@ attribute name="contestremove" %>
+<%@ attribute name="newpic" %>
+<%@ attribute name="picpublic" %>
+
+<c:if test="${loggedin == 1}">
+	<sql:query var="qryFavePic">
+	SELECT * FROM favepics
+	WHERE pictureid=?
+	AND userid=?
+	<sql:param value="${pictureid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+	<c:if test="${newpic}">
+		<sql:update var="updNewPic">
+		DELETE FROM newpics
+		WHERE pictureid=?
+		AND userid=?
+		<sql:param value="${pictureid}" />
+		<sql:param value="${user.userid}" />
+		</sql:update>
+	</c:if>
+</c:if>
+
+<sql:query var="qryTags">
+SELECT * FROM picturetags
+INNER JOIN tags ON tags.tagid=picturetags.tagid
+WHERE pictureid=?
+<sql:param value="${pictureid}" />
+</sql:query>
+
+<sql:query var="qryPictureCharacters">
+SELECT * FROM picturecharacters
+WHERE pictureid=?
+<sql:param value="${pictureid}" />
+</sql:query>
+
+<div class="picture <c:if test="${newpic}">newpic</c:if> <c:if test="${picpublic == false}">privatepicture</c:if>">
+<table>
+<tr>
+<td class="thumb"><a href="/Picture.jsp?pictureid=${pictureid}" class="previewPopupTrigger" type="picture" itemid="${pictureid}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
+<td class="fullwidth picturedetails">
+<c:if test="${loggedin == 1}">
+<a class="addfavorites <c:if test="${qryFavePic.rowCount > 0}">isfave</c:if>" id="togglefavepicture_${pictureid}" href="javascript:nop()" onClick="toggleFave(${pictureid},'picture')" title="Favorite Picture"></a>
+</c:if>
+
+<div class="picturedetails">
+
+<div class="picnumber">${picnumber}</div>
+<div class="picdate">{{ picture.date_uploaded }}</div>
+<c:if test="${artistname != null}"><div class="picartist"><a href="/Artists/${dirname}/">{{ picture.artist.username }}</a></div></c:if>
+<c:if test="${folder != ''}">
+	<c:choose>
+	<c:when test="${folder > 0}">
+	<sql:query var="qryFolder">
+	SELECT name FROM folders
+	WHERE folderid=?
+	<sql:param value="${folder}" />
+	</sql:query>
+	<c:forEach var="thefolder" items="${qryFolder.rows}">
+	<a href="/Artists/${dirname}/?list=gallery&folder=${folder}"><div class="picfolder">${thefolder.name}</div></a>
+	</c:forEach>
+	</c:when>
+	<c:otherwise>
+	<a href="/Artists/${dirname}/?list=gallery"><div class="picfolder">Main Folder</div></a>
+	</c:otherwise>
+	</c:choose>
+</c:if>
+
+<c:if test="${contestvotes > 0}">
+	<p class="contest-place <c:if test="${contestplace == 1}">first-place</c:if>">#${contestplace}: ${contestvotes} vote<c:if test="${contestvotes != 1}">s</c:if></p>
+</c:if>
+
+<div class="pictitle">
+{{ picture.title|bbcode|safe }}
+</div>
+
+<c:if test="${contest > 0}">
+<div class="picvote">
+<c:if test="${contestvote == true}"><input type="radio" <c:if test="${voted == pictureid}">checked</c:if> onClick="votePicture(${contest},${pictureid})" /> Vote for this picture</c:if>
+<c:if test="${contestremove == 1}"><button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button></c:if>
+</div>
+</c:if>
+
+<ul class="characters group">
+<c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
+
+	<sql:query var="qryCharacter">
+	SELECT characters.*,artistname,dirname,basename,extension
+	FROM characters
+	LEFT JOIN artists ON characters.artistid=artists.artistid
+	LEFT JOIN pictures ON characters.profilepic=pictureid
+	WHERE characterid=?
+	<sql:param value="${picturecharacter.characterid}" />
+	</sql:query>
+	<c:if test="${qryCharacter.rowCount > 0}">
+		<c:set var="character" value="${qryCharacter.rows[0]}" />
+	</c:if>
+	<li>
+		<a href="/Characters/?characterid=${character.characterid}" class="previewPopupTrigger" type="character" itemid="${character.characterid}"><img class="thumb characterpic smallthumb" src="
+		<c:choose>
+		<c:when test="${character.artistid == null}">
+			/images/canon_characters/${character.characterid}.s.jpg
+		</c:when>
+		<c:when test="${character.profilepic > 0}">
+			/Artwork/Artists/${character.dirname}/${character.basename}.s.jpg
+		</c:when>
+		<c:when test="${character.profilepic_c > 0}">
+			/Artwork/coloring/${character.profilepic_c}.s.jpg
+		</c:when>
+		<c:otherwise>
+			/images/blank_characterthumb.jpg
+		</c:otherwise>
+		</c:choose>" />
+		</a>
+		<p class="charactername"><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></p>
+		<p class="characterowner">
+			<c:choose>
+			<c:when test="${character.artistid == null}">(Canon)</c:when>
+			<c:otherwise>by <a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise>
+			</c:choose>
+		</p>
+	</li>
+</c:forEach>
+</ul>
+
+<div class="tags">
+<c:forEach var="tag" items="${qryTags.rows}">
+	<a class="tag" href="/Artwork/?list=tag&term=${tag.tag}">${tag.tag}</a>
+</c:forEach>
+</div>
+
+</div>
+
+</td>
+</tr>
+<tr>
+<td></td>
+<td class="picinfo">
+<div class="picinfowrapper">
+<div class="picinfo">
+<div class="picinfodata piclink"><c:if test="${allowcomments == true}"><a href="javascript:nop()" onClick="toggleComments(${pictureid})">comments (${numcomments})</a></c:if></div>
+<div class="picinfodata piclink"><a href="/Picture.jsp?pictureid=${pictureid}">link</a></div>
+<div class="picinfodata">{{ picture.width }} x {{ picture.height }}</div>
+<div class="picinfodata">{{ picture.file_size|filesizeformat }}</div>
+<div class="picinfodata pictype">{{ picture.type }}</div>
+<c:if test="${numpicfaves > 0}">
+<div class="picinfodata">{{ picture.fans.count }} fave{{ picture.fans.count|pluralize }}</div>
+</c:if>
+</div>
+</td>
+</tr>   
+</table>
+<div class="inlinecomments" id="comments_${pictureid}"></div>
+
+<c:if test="${cc_base > 0}">
+	<sql:query var="qryCCPics">
+	SELECT * FROM coloring_base
+	WHERE pictureid=?
+	AND visible=true
+	<sql:param value="${pictureid}" />
+	</sql:query>
+	<c:forEach var="ccpic" items="${qryCCPics.rows}">
+		<div class="cclink">
+		<c:choose>
+		<c:when test="${showcolored == 1}">
+		${ccpic.numcolored} colored versions
+		</c:when>
+		<c:otherwise>
+		<a href="javascript:nop()" onClick="toggleCCPics(${pictureid})">${ccpic.numcolored} colored versions</a>
+		</c:otherwise>
+		</c:choose>
+		</div>
+		<div id="cc_${pictureid}" class="cclist<c:if test="${showcolored == 1}"> expanded</c:if>">
+		<c:if test="${showcolored == 1}">
+			<jsp:include page="/ajax_colored.jsp?pictureid=${pictureid}" />
+		</c:if>
+		</div>
+	</c:forEach>
+</c:if>
+
+</div>

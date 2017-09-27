@@ -34,6 +34,12 @@ class OverwriteStorage(FileSystemStorage):
         return name
 
 
+class UserManager(models.Manager):
+
+    def recently_active(self):
+        return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
+
+
 class User(AbstractUser):
     GENDER_CHOICES = (
         ('male', 'Male'),
@@ -114,6 +120,8 @@ class User(AbstractUser):
     is_approver = models.BooleanField(default=False)
     is_sketcher_mod = models.BooleanField(default=False)
 
+    objects = UserManager()
+
     @property
     def unread_received_pms_count(self):
         return self.pms_received.filter(date_viewed__isnull=True).count()
@@ -144,6 +152,11 @@ ORDER BY fanart_user.sort_name
     @property
     def favorite_pictures(self):
         return self.favorite_set.filter(artist__isnull=True, picture__isnull=False, character__isnull=True).prefetch_related('picture').order_by('-date_added')
+
+    @property
+    def recently_uploaded_pictures(self):
+        three_days_ago = timezone.now() - datetime.timedelta(days=30)
+        return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
