@@ -1,40 +1,5 @@
 {% load bbcode_tags %}
-
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<%@ attribute name="picnumber" %>
-<%@ attribute name="pictureid" %>
-<%@ attribute name="basename" %>
-<%@ attribute name="extension" %>
-<%@ attribute name="artistname" %>
-<%@ attribute name="dirname" %>
-<%@ attribute name="title" %>
-<%@ attribute name="thumbheight" %>
-<%@ attribute name="uploaded" %>
-<%@ attribute name="allowcomments" %>
-<%@ attribute name="numcomments" %>
-<%@ attribute name="numpicfaves" %>
-<%@ attribute name="width" %>
-<%@ attribute name="height" %>
-<%@ attribute name="filesize" %>
-<%@ attribute name="type" %>
-<%@ attribute name="folder" %>
-<%@ attribute name="gallery" %>
-<%@ attribute name="cc_base" %>
-<%@ attribute name="showcolored" %>
-<%@ attribute name="contest" %>
-<%@ attribute name="contestform" %>
-<%@ attribute name="contestvote" %>
-<%@ attribute name="contestvotes" %>
-<%@ attribute name="contestplace" %>
-<%@ attribute name="voted" %>
-<%@ attribute name="contestremove" %>
-<%@ attribute name="newpic" %>
-<%@ attribute name="picpublic" %>
+{% load picture_tags %}
 
 <c:if test="${loggedin == 1}">
 	<sql:query var="qryFavePic">
@@ -68,7 +33,7 @@ WHERE pictureid=?
 <sql:param value="${pictureid}" />
 </sql:query>
 
-<div class="picture <c:if test="${newpic}">newpic</c:if> <c:if test="${picpublic == false}">privatepicture</c:if>">
+<div class="picture {% view_picture picture user %} <c:if test="${newpic}">newpic</c:if> <c:if test="${picpublic == false}">privatepicture</c:if>">
 <table>
 <tr>
 <td class="thumb"><a href="/Picture.jsp?pictureid=${pictureid}" class="previewPopupTrigger" type="picture" itemid="${pictureid}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>

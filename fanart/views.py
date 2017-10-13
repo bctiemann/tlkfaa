@@ -28,10 +28,12 @@ class UserPaneView(TemplateView):
         adoptables_mine_start_date = timezone.now() - timedelta(days=30)
         community_art_data['icons'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
         community_art_data['icons_today'] = TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
-        community_art_data['icons_mine'] = TradingClaim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
+        if self.request.user.is_authenticated:
+            community_art_data['icons_mine'] = TradingClaim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
         community_art_data['adoptables'] = TradingOffer.objects.filter(type='adoptable', is_active=True, is_visible=True, date_posted__gt=adoptables_publish_start_date)
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
-        community_art_data['adoptables_mine'] = TradingClaim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
+        if self.request.user.is_authenticated:
+            community_art_data['adoptables_mine'] = TradingClaim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
         community_art_data['coloring_bases'] = ColoringBase.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 

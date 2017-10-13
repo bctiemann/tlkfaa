@@ -34,7 +34,7 @@ class OverwriteStorage(FileSystemStorage):
         return name
 
 
-class UserManager(models.Manager):
+class UserManager(BaseUserManager):
 
     def recently_active(self):
         return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
@@ -155,7 +155,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def recently_uploaded_pictures(self):
-        three_days_ago = timezone.now() - datetime.timedelta(days=30)
+        three_days_ago = timezone.now() - datetime.timedelta(days=60)
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
     def __unicode__(self):
