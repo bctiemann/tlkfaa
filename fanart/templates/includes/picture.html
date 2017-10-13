@@ -1,6 +1,9 @@
 {% load bbcode_tags %}
 {% load picture_tags %}
 
+
+{{ picture }} {{ user.id }}
+
 <c:if test="${loggedin == 1}">
 	<sql:query var="qryFavePic">
 	SELECT * FROM favepics
@@ -39,7 +42,7 @@ WHERE pictureid=?
 <td class="thumb"><a href="/Picture.jsp?pictureid=${pictureid}" class="previewPopupTrigger" type="picture" itemid="${pictureid}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
 <td class="fullwidth picturedetails">
 <c:if test="${loggedin == 1}">
-<a class="addfavorites <c:if test="${qryFavePic.rowCount > 0}">isfave</c:if>" id="togglefavepicture_${pictureid}" href="javascript:nop()" onClick="toggleFave(${pictureid},'picture')" title="Favorite Picture"></a>
+<a class="addfavorites {% is_favorite picture user %}" id="togglefavepicture_{{ picture.id }}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite Picture"></a>
 </c:if>
 
 <div class="picturedetails">
@@ -123,6 +126,7 @@ WHERE pictureid=?
 </ul>
 
 <div class="tags">
+{{ picture.picturetag_set.all }}
 <c:forEach var="tag" items="${qryTags.rows}">
 	<a class="tag" href="/Artwork/?list=tag&term=${tag.tag}">${tag.tag}</a>
 </c:forEach>
