@@ -126,10 +126,11 @@ WHERE pictureid=?
 </ul>
 
 <div class="tags">
-{{ picture.picturetag_set.all }}
+{% for tag in picture.tags.all %}
 <c:forEach var="tag" items="${qryTags.rows}">
-	<a class="tag" href="/Artwork/?list=tag&term=${tag.tag}">${tag.tag}</a>
+	<a class="tag" href="/Artwork/?list=tag&term={{ tag }}">{{ tag }}</a>
 </c:forEach>
+{% endfor %}
 </div>
 
 </div>

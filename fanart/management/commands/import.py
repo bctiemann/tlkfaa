@@ -23,10 +23,10 @@ class Command(BaseCommand):
     do_coloringpics = False
     do_characters = False
     do_favorites = False
-    do_offers = True
-    do_claims = True
+    do_offers = False
+    do_claims = False
     do_picturecharacters = False
-    do_tags = False
+    do_tags = True
     do_approvers = False
     do_sketcheradmins = False
     do_requests = False
@@ -527,6 +527,17 @@ class Command(BaseCommand):
                     num_pictures = tag['numpictures'],
                     is_visible = tag['visible'],
                 )
+            c.execute("""SELECT * FROM picturetags""")
+            for pt in c.fetchall():
+                print pt
+                try:
+                    picture = fanart_models.Picture.objects.get(id_orig=pt['pictureid'])
+                    tag = fanart_models.Tag.objects.get(id_orig=pt['tagid'])
+                    picture.tags.add(tag)
+                except fanart_models.Picture.DoesNotExist:
+                    pass
+                except fanart_models.Tag.DoesNotExist:
+                    pass
 
         if self.do_approvers:
             c.execute("""SELECT * FROM approvers""")
