@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models, connection
 from django.db.models import Count, Avg
 from django.core.files.storage import FileSystemStorage
@@ -280,6 +281,17 @@ class Character(models.Model):
     date_modified = models.DateTimeField(null=True, blank=True)
     date_adopted = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def thumb_url(self):
+        if not self.owner:
+            return '{0}images/canon_characters/{1}.s.jpg'.format(settings.STATIC_URL, self.id)
+        elif self.profile_picture:
+            return '/Artwork/Artists/{0}/{1}.s.jpg'.format(self.owner.dir_name, self.profile_picture.basename)
+        elif self.profile_coloring_picture:
+            return '/Artwork/coloring/{0}.s.jpg'.format(self.profile_coloring_picture.id)
+        else:
+            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
     def __unicode__(self):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)

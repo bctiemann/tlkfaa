@@ -4,39 +4,13 @@
 
 {{ picture }} {{ user.id }}
 
-<c:if test="${loggedin == 1}">
-	<sql:query var="qryFavePic">
-	SELECT * FROM favepics
-	WHERE pictureid=?
-	AND userid=?
-	<sql:param value="${pictureid}" />
-	<sql:param value="${user.userid}" />
-	</sql:query>
-	<c:if test="${newpic}">
-		<sql:update var="updNewPic">
-		DELETE FROM newpics
-		WHERE pictureid=?
-		AND userid=?
-		<sql:param value="${pictureid}" />
-		<sql:param value="${user.userid}" />
-		</sql:update>
-	</c:if>
-</c:if>
-
-<sql:query var="qryTags">
-SELECT * FROM picturetags
-INNER JOIN tags ON tags.tagid=picturetags.tagid
-WHERE pictureid=?
-<sql:param value="${pictureid}" />
-</sql:query>
-
 <sql:query var="qryPictureCharacters">
 SELECT * FROM picturecharacters
 WHERE pictureid=?
 <sql:param value="${pictureid}" />
 </sql:query>
 
-<div class="picture {% view_picture picture user %} <c:if test="${newpic}">newpic</c:if> <c:if test="${picpublic == false}">privatepicture</c:if>">
+<div class="picture {% view_picture picture user %} {% if picture.is_public %}privatepicture{% endif %}">
 <table>
 <tr>
 <td class="thumb"><a href="/Picture.jsp?pictureid=${pictureid}" class="previewPopupTrigger" type="picture" itemid="${pictureid}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
@@ -84,45 +58,16 @@ WHERE pictureid=?
 </c:if>
 
 <ul class="characters group">
+{% for pc in picture.picturecharacter_set.all %}
 <c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
 
-	<sql:query var="qryCharacter">
-	SELECT characters.*,artistname,dirname,basename,extension
-	FROM characters
-	LEFT JOIN artists ON characters.artistid=artists.artistid
-	LEFT JOIN pictures ON characters.profilepic=pictureid
-	WHERE characterid=?
-	<sql:param value="${picturecharacter.characterid}" />
-	</sql:query>
-	<c:if test="${qryCharacter.rowCount > 0}">
-		<c:set var="character" value="${qryCharacter.rows[0]}" />
-	</c:if>
 	<li>
-		<a href="/Characters/?characterid=${character.characterid}" class="previewPopupTrigger" type="character" itemid="${character.characterid}"><img class="thumb characterpic smallthumb" src="
-		<c:choose>
-		<c:when test="${character.artistid == null}">
-			/images/canon_characters/${character.characterid}.s.jpg
-		</c:when>
-		<c:when test="${character.profilepic > 0}">
-			/Artwork/Artists/${character.dirname}/${character.basename}.s.jpg
-		</c:when>
-		<c:when test="${character.profilepic_c > 0}">
-			/Artwork/coloring/${character.profilepic_c}.s.jpg
-		</c:when>
-		<c:otherwise>
-			/images/blank_characterthumb.jpg
-		</c:otherwise>
-		</c:choose>" />
-		</a>
-		<p class="charactername"><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></p>
-		<p class="characterowner">
-			<c:choose>
-			<c:when test="${character.artistid == null}">(Canon)</c:when>
-			<c:otherwise>by <a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise>
-			</c:choose>
-		</p>
+		<a href="/Characters/?characterid=${character.characterid}" class="previewPopupTrigger" type="character" itemid="${character.characterid}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+		<p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
+		<p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
 	</li>
 </c:forEach>
+{% endfor %}
 </ul>
 
 <div class="tags">
