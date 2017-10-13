@@ -2,71 +2,55 @@
 {% load picture_tags %}
 
 
-{{ picture }} {{ user.id }}
-
-<sql:query var="qryPictureCharacters">
-SELECT * FROM picturecharacters
-WHERE pictureid=?
-<sql:param value="${pictureid}" />
-</sql:query>
-
-<div class="picture {% view_picture picture user %} {% if picture.is_public %}privatepicture{% endif %}">
+<div class="picture {% view_picture picture user %} {% if not picture.is_public %}privatepicture{% endif %}">
 <table>
 <tr>
-<td class="thumb"><a href="/Picture.jsp?pictureid=${pictureid}" class="previewPopupTrigger" type="picture" itemid="${pictureid}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
+<td class="thumb"><a href="/Picture.jsp?pictureid={{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
 <td class="fullwidth picturedetails">
-<c:if test="${loggedin == 1}">
+
+{% if user.is_authenticated %}
 <a class="addfavorites {% is_favorite picture user %}" id="togglefavepicture_{{ picture.id }}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite Picture"></a>
-</c:if>
+{% endif %}
 
 <div class="picturedetails">
 
-<div class="picnumber">${picnumber}</div>
+<div class="picnumber">{{ sequence_number }}</div>
 <div class="picdate">{{ picture.date_uploaded }}</div>
 <c:if test="${artistname != null}"><div class="picartist"><a href="/Artists/${dirname}/">{{ picture.artist.username }}</a></div></c:if>
 <c:if test="${folder != ''}">
-	<c:choose>
-	<c:when test="${folder > 0}">
-	<sql:query var="qryFolder">
-	SELECT name FROM folders
-	WHERE folderid=?
-	<sql:param value="${folder}" />
-	</sql:query>
-	<c:forEach var="thefolder" items="${qryFolder.rows}">
-	<a href="/Artists/${dirname}/?list=gallery&folder=${folder}"><div class="picfolder">${thefolder.name}</div></a>
-	</c:forEach>
-	</c:when>
-	<c:otherwise>
-	<a href="/Artists/${dirname}/?list=gallery"><div class="picfolder">Main Folder</div></a>
-	</c:otherwise>
-	</c:choose>
+    {% if picture.folder %}
+        <a href="/Artists/${dirname}/?list=gallery&folder=${folder}"><div class="picfolder">{{ picture.folder.name }}</div></a>
+    {% else %}
+        <a href="/Artists/${dirname}/?list=gallery"><div class="picfolder">Main Folder</div></a>
+    {% endif %}
 </c:if>
 
+{% if contest %}
 <c:if test="${contestvotes > 0}">
 	<p class="contest-place <c:if test="${contestplace == 1}">first-place</c:if>">#${contestplace}: ${contestvotes} vote<c:if test="${contestvotes != 1}">s</c:if></p>
 </c:if>
+{% endif %}
 
 <div class="pictitle">
 {{ picture.title|bbcode|safe }}
 </div>
 
+{% if contest %}
 <c:if test="${contest > 0}">
 <div class="picvote">
 <c:if test="${contestvote == true}"><input type="radio" <c:if test="${voted == pictureid}">checked</c:if> onClick="votePicture(${contest},${pictureid})" /> Vote for this picture</c:if>
 <c:if test="${contestremove == 1}"><button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button></c:if>
 </div>
 </c:if>
+{% endif %}
 
 <ul class="characters group">
 {% for pc in picture.picturecharacter_set.all %}
-<c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
-
-	<li>
-		<a href="/Characters/?characterid=${character.characterid}" class="previewPopupTrigger" type="character" itemid="${character.characterid}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
-		<p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
-		<p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
-	</li>
-</c:forEach>
+    <li>
+        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+        <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
+        <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
+    </li>
 {% endfor %}
 </ul>
 
@@ -87,20 +71,21 @@ WHERE pictureid=?
 <td class="picinfo">
 <div class="picinfowrapper">
 <div class="picinfo">
-<div class="picinfodata piclink"><c:if test="${allowcomments == true}"><a href="javascript:nop()" onClick="toggleComments(${pictureid})">comments (${numcomments})</a></c:if></div>
-<div class="picinfodata piclink"><a href="/Picture.jsp?pictureid=${pictureid}">link</a></div>
+<div class="picinfodata piclink">{% if picture.allow_comments %}<a href="javascript:nop()" onClick="toggleComments({{ picture.id }})">comments ({{ picture.picturecomment_set.count }})</a>{% endif %}</div>
+<div class="picinfodata piclink"><a href="/Picture.jsp?pictureid={{ picture.id }}">link</a></div>
 <div class="picinfodata">{{ picture.width }} x {{ picture.height }}</div>
 <div class="picinfodata">{{ picture.file_size|filesizeformat }}</div>
 <div class="picinfodata pictype">{{ picture.type }}</div>
-<c:if test="${numpicfaves > 0}">
+{% if picture.fans.count > 0 %}
 <div class="picinfodata">{{ picture.fans.count }} fave{{ picture.fans.count|pluralize }}</div>
-</c:if>
+{% endif %}
 </div>
 </td>
 </tr>   
 </table>
-<div class="inlinecomments" id="comments_${pictureid}"></div>
+<div class="inlinecomments" id="comments_{{ picture.id }}"></div>
 
+{% if picture.coloringbase_set.count %}
 <c:if test="${cc_base > 0}">
 	<sql:query var="qryCCPics">
 	SELECT * FROM coloring_base
@@ -126,5 +111,6 @@ WHERE pictureid=?
 		</div>
 	</c:forEach>
 </c:if>
+{% endif %}
 
 </div>

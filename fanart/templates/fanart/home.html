@@ -54,68 +54,32 @@
 <div class="featurebox">
 
 {% for artist in recently_active_artists %}
-<c:forEach var="artist" items="${qryArtists.rows}">
 
-	<c:set var="i" value="0" />
-        {% for picture in artist.recently_uploaded_pictures %}
-	<c:forEach var="picture" items="${qryPictures.rows}">
+    {% for picture in artist.recently_uploaded_pictures %}
 
-		<c:set var="i" value="${i+1}" />
-                {% if forloop.counter == 1 %}
+        {% if forloop.counter == 1 %}
 
-                    {% include "includes/picture.html" %}
+            {% include "includes/picture.html" %}
 
-		<c:choose>
-		<c:when test="${i == 1}">
-			<c:set var="picnumber" value="${picnumber+1}" />
-			<c:set var="title" value="${picture.title}" />
-			<tags:printPicture
-				pictureid="${picture.pictureid}"
-				basename="${picture.basename}"
-				extension="${picture.extension}"
-				type="${picture.type}"
-				title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-				artistname="${artist.artistname}"
-				dirname="${artist.dirname}"
-				width="${picture.width}"
-				height="${picture.height}"
-				thumbheight="${picture.thumbheight}"
-				allowcomments="${picture.allowcomments_p && artist.allowcomments}"
-				numcomments="${picture.numcomments}"
-				numpicfaves="${picture.numpicfaves}"
-				gallery="last5"
-				folder="${picture.folderid}"
-				>
-				<jsp:attribute name="uploaded">
-					<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-				</jsp:attribute>
-				<jsp:attribute name="filesize">
-					<fmt:formatNumber value="${picture.filesize / 1024}" type="number" pattern="###" />
-				</jsp:attribute>
-			</tags:printPicture>
-		</c:when>
-                {% else %}
-		<c:otherwise>
-                        {% if forloop.counter == 2 %}
-				<div class="also-today group masonry">
-                        {% endif %}
+        {% else %}
 
-			<div class="offertile picturetile">
-			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
-                        {{ picture.date_uploaded|date:"H:m D n/j/Y" }}
-			</div>
+            {% if forloop.counter == 2 %}
+                <div class="also-today group masonry">
+            {% endif %}
 
-                        {% if forloop.counter == artist.recently_uploaded_pictures|length %}
-				</div>
-                        {% endif %}
-		</c:otherwise>
-		</c:choose>
-                {% endif %}
+            <div class="offertile picturetile">
+                <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+                {{ picture.date_uploaded|date:"H:m D n/j/Y" }}
+            </div>
 
-	</c:forEach>
-        {% endfor %}
+            {% if forloop.counter == artist.recently_uploaded_pictures|length %}
+                </div>
+            {% endif %}
 
-</c:forEach>
+        {% endif %}
+
+    {% endfor %}
+
 {% endfor %}
 
 <a class="button" href="/Artwork/?list=newest">More Recent Artwork</a>
