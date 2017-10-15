@@ -1361,7 +1361,8 @@ function toggleComments(pictureid) {
   if (status == "block") {
     $('#comments_'+pictureid).slideUp('fast');
   } else {
-    var url = "/ajax_comments.jsp?pictureid="+pictureid;
+//    var url = "/ajax_comments.jsp?pictureid="+pictureid;
+    var url = "/comments/" + pictureid;
     $('#comments_'+pictureid).load(url,function() {
       $('#comments_'+pictureid).slideDown('fast');
     });

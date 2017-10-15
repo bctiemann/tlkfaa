@@ -1,0 +1,270 @@
+<%--
+ajax_comments.jsp
+Invoked to reveal comments on a picture, and handles posting of new comments.
+Calls inc_commenttree.jsp to show actual comment content.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
+<fmt:parseNumber var="commentid" value="${param.commentid}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${pictureid > 0}">
+
+	<sql:query var="qryPicture">
+	SELECT userid,pictures.artistid,artistname,email,emailcomments FROM pictures,artists
+	WHERE pictureid=?
+	AND pictures.allowcomments_p=true
+	AND artists.allowcomments=true
+	AND pictures.artistid=artists.artistid
+	AND pictures.deleted IS NULL
+	<sql:param value="${pictureid}" />
+	</sql:query>
+
+	<c:forEach var="picture" items="${qryPicture.rows}">
+
+		<sql:query var="qryBlocked" scope="session">
+		SELECT * FROM blocks
+		WHERE userid=?
+		AND (artistid=? OR artistid=0)
+		<sql:param value="${user.userid}" />
+		<sql:param value="${picture.artistid}" />
+		</sql:query>
+
+		<sql:query var="qryCommentHash">
+		SELECT * FROM comments
+		WHERE hash=?
+		<sql:param value="${param.hash}" />
+		</sql:query>
+
+		<c:choose>
+		<c:when test="${qryCommentHash.rowCount > 0}">
+			<c:set var="userid" value="${user.userid}" />
+			<c:set var="artistname" value="${artist.artistname}" />
+			<c:set var="recptemail" value="${picture.email}" />
+			<c:set var="hash" value="${param.hash}" />
+			<%
+				String userid = (String)pageContext.getAttribute("userid").toString();
+				String hash = (String)pageContext.getAttribute("hash").toString();
+				String pictureid = (String)pageContext.getAttribute("pictureid").toString();
+				String artistname = (String)pageContext.getAttribute("artistname").toString();
+				String recptemail = (String)pageContext.getAttribute("recptemail").toString();
+				printLog("User " + userid + " attempted to post REPEATED comment " + hash + " (picture " + pictureid + ").");
+			%>
+		</c:when>
+		<c:when test="${loggedin == 1 && param.op == 'post' && param.reply != '' && qryBlocked.rowCount == 0}">
+
+			<sql:transaction>
+			<sql:update var="updComment">
+			INSERT INTO comments (userid,pictureid,comment,replyto,posted,hash)
+			VALUES (?,?,?,?,now(),?)
+			<sql:param value="${user.userid}" />
+			<sql:param value="${pictureid}" />
+			<sql:param value="${param.reply}" />
+			<sql:param value="${commentid > 0 ? commentid : null}" />
+			<sql:param value="${param.hash}" />
+			</sql:update>
+			<sql:query var="qryComment">
+			SELECT last_insert_id() AS commentid FROM comments
+			LIMIT 1
+			</sql:query>
+			<c:forEach var="lastcomment" items="${qryComment.rows}">
+			        <c:set var="commentid" value="${lastcomment.commentid}" />
+			</c:forEach>
+			</sql:transaction>
+
+			<sql:query var="qryComments">
+			SELECT commentid FROM comments
+			WHERE pictureid=?
+			<sql:param value="${pictureid}" />
+			</sql:query>
+
+			<sql:update var="updPicture">
+			UPDATE pictures SET
+			numcomments=?
+			WHERE pictureid=?
+			<sql:param value="${qryComments.rowCount}" />
+			<sql:param value="${pictureid}" />
+			</sql:update>
+
+			<c:set var="userid" value="${user.userid}" />
+			<c:set var="artistname" value="${artist.artistname}" />
+			<c:set var="recptemail" value="${picture.email}" />
+			<%
+				String userid = (String)pageContext.getAttribute("userid").toString();
+				String commentid = (String)pageContext.getAttribute("commentid").toString();
+				String pictureid = (String)pageContext.getAttribute("pictureid").toString();
+				String artistname = (String)pageContext.getAttribute("artistname").toString();
+				String recptemail = (String)pageContext.getAttribute("recptemail").toString();
+				printLog("User " + userid + " posted comment " + commentid + " (picture " + pictureid + ").");
+			%>
+			<c:if test="${picture.emailcomments && picture.artistid != artist.artistid}">
+				<%
+					String message = "A new comment from " + artistname + " has been posted on your picture at The Lion King Fan-Art Archive:\n\nhttp://fanart.lionking.org/Picture.jsp?pictureid=" + pictureid;
+					sendEmail("fanart@lionking.org", recptemail, "TLKFAA: New Comment Posted", message, true);
+				%>
+			</c:if>
+
+		</c:when>
+		</c:choose>
+
+		<div id="blockstatus"></div>
+
+		<jsp:include page="/inc_root/inc_commenttree.jsp?commentid=0&pictureid=${pictureid}&op=${picture.userid}" />
+
+
+<%--
+inc_commenttree.jsp
+Recursive component for displaying a hierarchical list of comments for a picture.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
+<fmt:parseNumber var="commentid" value="${param.commentid}" integerOnly="true" />
+<fmt:parseNumber var="op" value="${param.op}" integerOnly="true" />
+</c:catch>
+
+<sql:query var="qryComments" scope="page">
+SELECT comments.*,username,pictures.artistid,profilepic,profilepic_ext,dirname,artists.active FROM comments,pictures,users
+LEFT JOIN artists ON artists.userid=users.userid
+WHERE comments.userid=users.userid
+AND comments.pictureid=pictures.pictureid
+AND ${commentid > 0 ? 'replyto=' += commentid : 'replyto is null'}
+AND comments.pictureid=?
+ORDER BY posted
+<sql:param value="${pictureid}" />
+</sql:query>
+
+{% for comment in comments %}
+<c:forEach var="comment" items="${qryComments.rows}">
+	<c:set var="comment" value="${comment}" scope="request" />
+
+	<sql:query var="qryUserBlocked">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0);
+	<sql:param value="${comment.userid}" />
+	<sql:param value="${comment.artistid}" />
+	</sql:query>
+
+	<a name="${comment.commentid}"></a>
+	<div class="comment" id="comment_${comment.commentid}">
+	<div class="commentname">
+		<c:if test="${comment.deleted == false}">
+		<div class="commentdate"><fmt:formatDate value="${comment.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
+		<c:choose>
+		<c:when test="${comment.active == true}">
+			<a href="/Artists/${comment.dirname}/">${comment.username}</a>
+		</c:when>
+		<c:otherwise>
+			${comment.username}
+		</c:otherwise>
+		</c:choose>
+		<c:if test="${qryUserBlocked.rowCount > 0}">(blocked)</c:if>
+		</c:if>	
+	</div>
+	<div class="commenttext clearAfter <c:if test="${comment.deleted == true}">commentdeleted</c:if> <c:if test="${op == comment.userid}">op</c:if>" id="commenttext_${comment.commentid}">
+		<div class="commentprofilepic">
+			<c:if test="${comment.profilepic > 0 && comment.deleted == false}">
+				<c:choose>
+				<c:when test="${comment.active == true}">
+					<a href="/Artists/${comment.dirname}/"><img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" /></a>
+				</c:when>
+				<c:otherwise>
+					<img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" />
+				</c:otherwise>
+				</c:choose>
+			</c:if>
+		</div>
+		<c:choose>
+		<c:when test="${comment.deleted == true}">
+			Comment deleted.
+		</c:when>
+		<c:otherwise>
+			<c:set var="commenttext" value="${comment.comment}" />
+			<table><tr><td>
+			<div class="comment-text">
+                                {{ comment.obj.comment }}
+				<%= formatText(sanitizeHTML((String)pageContext.getAttribute("commenttext"),0)) %>
+			</div>
+			<div class="comment-edited">
+				<c:if test="${comment.edited != null}">
+				Edited <fmt:formatDate value="${comment.edited}" type="both" pattern="HH:mm E M/d/yyyy" />
+				</c:if>
+			</div>
+			<div id="reply_${comment.commentid}" class="reply">
+				<form name="commentform_${comment.commentid}" id="commentform_${comment.commentid}">
+				<textarea name="replytext" id="replytext_${comment.commentid}"></textarea>
+				</form>
+			</div>
+			</td></tr></table>
+			<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+				<div class="commentbuttons">
+				<c:if test="${comment.artistid == artist.artistid}">
+					<c:choose>
+					<c:when test="${qryUserBlocked.rowCount > 0}">
+						<button type="button" class="small" onClick="blockUser(${comment.userid},'unblock','comment',${comment.pictureid})">Unblock</button>
+					</c:when>
+					<c:otherwise>
+						<button type="button" class="small" onClick="blockUser(${comment.userid},'block','comment',${comment.pictureid})">Block</button>
+					</c:otherwise>
+					</c:choose>
+				</c:if>
+				<button type="button" class="small" id="replybutton_${comment.commentid}" onclick="doReply(${pictureid},${comment.commentid})">Reply</button>
+				<c:if test="${comment.artistid == artist.artistid || comment.userid == user.userid}"><button type="button" class="small" onClick="deleteComment(${pictureid},${comment.commentid})">Delete</button></c:if>
+				<c:if test="${comment.userid == user.userid}"><button type="button" class="small" onClick="setupEditComment(${comment.commentid})">Edit</button></c:if>
+				</div>
+			</c:if>
+		</c:otherwise>
+		</c:choose>
+		<br clear="all" />
+	</div>
+	<jsp:include page="inc_root/inc_commenttree.jsp?commentid=${comment.commentid}&pictureid=${pictureid}&op=${op}" />
+	</div>
+
+</c:forEach>
+{% endfor %}
+
+
+		<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+
+			<%
+			    String hash = UUID.randomUUID().toString();
+			    pageContext.setAttribute("hash",hash);
+			%>
+			<form name="commentform" onSubmit="return false">
+			<div class="commenttext commentreply">
+			Comment:<br />
+			<textarea name="replytext" id="replytext_picture_${pictureid}"></textarea>
+			<input type="hidden" name="hash" id="hash" value="${hash}" />
+			<div class="commentbuttons">
+			<button type="button" class="small" onClick="postReply(${pictureid},0)">Post</button>
+			</div>
+			</div>
+			</form>
+
+		</c:if>
+
+	</c:forEach>
+</c:if>
+
+
