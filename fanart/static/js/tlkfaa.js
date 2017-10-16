@@ -24,6 +24,38 @@ console.log(data);
     },
 });
 
+//$(document).ajaxError(function() {
+//    alert('An error occurred executing this function.');
+//  $( ".log" ).text( "Triggered ajaxError handler." );
+//});
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
 
 var showUserBox = new Array();
 
@@ -1406,9 +1438,11 @@ function postReply(pictureid,commentid) {
   } else {
     reply = document.getElementById('replytext_'+commentid).value;
   }
-  $.post("/ajax_comments.jsp",{ op: "post", pictureid: pictureid, commentid: commentid, reply: reply, hash: $('#hash').val() },function(data) {
-    $('#comments_'+pictureid).html(data);
-  });
+  var url = '/comments/' + pictureid + '/reply/' + commentid;
+  $.post(url,{ op: "post", picture: pictureid, commentid: commentid, comment: reply, hash: $('#hash').val() },function(data) {
+//    $('#comments_'+pictureid).html(data);
+    console.log(data);
+  }, 'json');
 }
 
 function postShout(artistid) {

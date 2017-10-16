@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models, connection
 from django.db.models import Count, Avg
+from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, AbstractUser
@@ -230,7 +231,7 @@ class BaseComment(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     user = models.ForeignKey('User', null=True, blank=True)
     comment = models.TextField(blank=True)
-    date_posted = models.DateTimeField()
+    date_posted = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     is_received = models.BooleanField(default=False)
@@ -250,6 +251,9 @@ class PictureComment(BaseComment):
     @property
     def num_replies(self):
         return self.replies.count()
+
+    def get_absolute_url(self):
+        return reverse('picture', kwargs={'picture_id': self.picture.id})
 
     def __unicode__(self):
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)

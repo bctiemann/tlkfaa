@@ -11,9 +11,10 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models, utils
+from fanart import models, forms, utils
 
 from datetime import timedelta
+import uuid
 
 import logging
 logger = logging.getLogger(__name__)
@@ -151,18 +152,31 @@ class BulletinsView(TemplateView):
 
 
 class CommentsView(TemplateView):
+    model = models.PictureComment
     template_name = 'includes/comments.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(CommentsView, self).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super(CommentsView, self).get_context_data(*args, **kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
+        context['hash'] = uuid.uuid4()
         return context
 
-#    for parent_client in utils.tree_to_list(Client.objects.filter(is_active=True).order_by('company_name'), sort_by='company_name'):
-#        indent = '&nbsp;&nbsp;&nbsp;&nbsp;'.join(['' for i in xrange(parent_client['depth'])])
-#        parent_client['indent'] = indent
-#        all_clients.append(parent_client)
 
+class PostCommentView(forms.AjaxableResponseMixin, CreateView):
+    model = models.PictureComment
+    form_class = forms.PictureCommentForm
+    template_name = 'includes/comments.html'
+
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.user = self.request.user
+        comment.save()
+        response = super(PostCommentView, self).form_valid(form)
+        return response
+
+
+class PictureView(TemplateView):
+    pass

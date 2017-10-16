@@ -69,25 +69,20 @@
 {% endfor %}
 
 
-                {% if user.is_authenticated and not current_user_is_blocked %}
-		<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+{% if user.is_authenticated and not current_user_is_blocked %}
 
-			<%
-			    String hash = UUID.randomUUID().toString();
-			    pageContext.setAttribute("hash",hash);
-			%>
-			<form name="commentform" onSubmit="return false">
-			<div class="commenttext commentreply">
-			Comment:<br />
-			<textarea name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
-			<input type="hidden" name="hash" id="hash" value="${hash}" />
-			<div class="commentbuttons">
-			<button type="button" class="small" onClick="postReply({{ picture.id }},0)">Post</button>
-			</div>
-			</div>
-			</form>
+<form name="commentform" onSubmit="return false">
+{% csrf_token %}
+<div class="commenttext commentreply">
+Comment:<br />
+<textarea name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
+<input type="hidden" name="hash" id="hash" value="{{ hash }}" />
+<div class="commentbuttons">
+<button type="button" class="small" onClick="postReply({{ picture.id }},0)">Post</button>
+</div>
+</div>
+</form>
 
-		</c:if>
-                {% endif %}
+{% endif %}
 
 
