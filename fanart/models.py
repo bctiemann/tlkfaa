@@ -159,6 +159,10 @@ ORDER BY fanart_user.sort_name
         three_days_ago = timezone.now() - datetime.timedelta(days=60)
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
+    @property
+    def blocked_commenters(self):
+        return [b.blocked_user for b in self.blocked_by.all()]
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
@@ -487,8 +491,8 @@ class ArtistName(models.Model):
 
 
 class Block(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
-    blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
+    user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
+    blocked_user = models.ForeignKey('User', null=True, blank=True)
     date_blocked = models.DateTimeField(null=True, blank=True)
 
 

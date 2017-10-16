@@ -151,12 +151,14 @@ class BulletinsView(TemplateView):
 
 
 class CommentsView(TemplateView):
-    template_name = 'fanart/comments.html'
+    template_name = 'includes/comments.html'
 
     def get_context_data(self, **kwargs):
         context = super(CommentsView, self).get_context_data(**kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        context['picture'] = picture
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
         return context
 
 #    for parent_client in utils.tree_to_list(Client.objects.filter(is_active=True).order_by('company_name'), sort_by='company_name'):

@@ -1,0 +1,93 @@
+{% load bbcode_tags %}
+{% load comment_tags %}
+
+{% for comment in comments %}
+
+	<a name="{{ comment.obj.id }}"></a>
+	<div class="comment" id="comment_{{ comment.obj.id }}" style="margin-left: {{ comment.depth|depth_indent }}px;">
+	<div class="commentname">
+                {% if not comment.obj.is_deleted %}
+		<div class="commentdate">{{ comment.obj.date_posted|date:"H:m D n/j/Y" }}</div>
+                {% if comment.obj.user.is_artist %}
+			<a href="/Artists/${comment.dirname}/">{{ comment.obj.user.username }}</a>
+                {% else %}
+			{{ comment.obj.user.username }}
+                {% endif %}
+                {% if comment.obj.user in picture.artist.blocked_commenters %}(blocked){% endif %}
+                {% endif %}
+	</div>
+	<div class="commenttext clearAfter {% if comment.obj.is_deleted %}commentdeleted{% endif %} {% if comment.obj.user == comment.obj.picture.artist %}op{% endif %}" id="commenttext_{{ comment.obj.id }}">
+		<div class="commentprofilepic">
+                        {% if comment.obj.user.profile_pic_id and not comment.obj.is_deleted %}
+			<c:if test="${comment.profilepic > 0 && comment.deleted == false}">
+                                {% if comment.obj.user.is_active %}
+					<a href="/Artists/${comment.dirname}/"><img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" /></a>
+                                {% else %}
+					<img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" />
+                                {% endif %}
+			</c:if>
+                        {% endif %}
+		</div>
+                {% if comment.obj.is_deleted %}
+			Comment deleted.
+                {% else %}
+			<c:set var="commenttext" value="${comment.comment}" />
+			<table><tr><td>
+			<div class="comment-text">
+                                {{ comment.obj.comment|bbcode|safe }}
+			</div>
+			<div class="comment-edited">
+                                {% if comment.obj.date_edited %}
+				Edited {{ comment.obj.date_edited|date:"H:m D n/j/Y" }}
+                                {% endif %}
+			</div>
+			<div id="reply_{{ comment.obj.id }}" class="reply">
+				<form name="commentform_{{ comment.obj.id }}" id="commentform_{{ comment.obj.id }}">
+				<textarea name="replytext" id="replytext_{{ comment.obj.id }}"></textarea>
+				</form>
+			</div>
+			</td></tr></table>
+                        {% if user.is_authenticated and not current_user_is_blocked %}
+				<div class="commentbuttons">
+                                {% if comment.obj.user == user %}
+                                        {% if comment.obj.user in picture.artist.blocked_commenters %}
+						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'unblock','comment',{{ comment.obj.picture.id }})">Unblock</button>
+                                        {% else %}
+						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'block','comment',{{ comment.obj.picture.id }})">Block</button>
+                                        {% endif %}
+                                {% endif %}
+				<button type="button" class="small" id="replybutton_{{ comment.obj.id }}" onclick="doReply({{ picture.id }},{{ comment.obj.id }})">Reply</button>
+				{% if comment.obj.user == user %}"><button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.obj.id }})">Delete</button>{% endif %}
+				{% if comment.obj.user == user %}"><button type="button" class="small" onClick="setupEditComment({{ comment.obj.id }})">Edit</button>{% endif %}
+				</div>
+                        {% endif %}
+                {% endif %}
+		<br clear="all" />
+	</div>
+	</div>
+
+{% endfor %}
+
+
+                {% if user.is_authenticated and not current_user_is_blocked %}
+		<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+
+			<%
+			    String hash = UUID.randomUUID().toString();
+			    pageContext.setAttribute("hash",hash);
+			%>
+			<form name="commentform" onSubmit="return false">
+			<div class="commenttext commentreply">
+			Comment:<br />
+			<textarea name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
+			<input type="hidden" name="hash" id="hash" value="${hash}" />
+			<div class="commentbuttons">
+			<button type="button" class="small" onClick="postReply({{ picture.id }},0)">Post</button>
+			</div>
+			</div>
+			</form>
+
+		</c:if>
+                {% endif %}
+
+
