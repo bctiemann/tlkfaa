@@ -51,3 +51,11 @@ class PictureCommentForm(forms.ModelForm):
         model = models.PictureComment
         fields = ['user', 'picture', 'reply_to', 'comment', 'hash']
 
+
+class PictureCommentUpdateForm(forms.ModelForm):
+    comment = forms.CharField(label='Comment:')
+
+    class Meta:
+        model = models.PictureComment
+        fields = ['comment']
+

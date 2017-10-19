@@ -1438,7 +1438,7 @@ function postReply(pictureid,commentid) {
   } else {
     reply = document.getElementById('replytext_'+commentid).value;
   }
-  var url = '/comments/' + pictureid + '/reply/' + commentid;
+  var url = '/comments/' + pictureid + '/reply/';
   $.post(url,{ op: "post", picture: pictureid, reply_to: commentid || null, comment: reply, hash: $('#hash').val() },function(response_html) {
     $('#comments_'+pictureid).html(response_html);
   });
@@ -1453,13 +1453,13 @@ function postShout(artistid) {
 }
 
 function setupEditComment(commentid) {
-    $.getJSON('/api/comment.jsp?commentid=' + commentid, function(data) {
-console.log(data);
+//    $.getJSON('/api/comment.jsp?commentid=' + commentid, function(data) {
+    $.getJSON('/comments/' + commentid + '/detail/', function(data) {
         if (data.success) {
             $('#commenttext_' + commentid + ' .comment-edited').empty();
             $('#commenttext_' + commentid + ' .comment-text').empty().append($('<textarea>', {
                 id: 'commentedit_' + commentid,
-                html: data.comment_raw,
+                html: data.comment.comment,
             })).append($('<br>')).append($('<button>', {
                 class: 'small',
                 html: 'Submit',
@@ -1477,7 +1477,8 @@ function editComment(commentid) {
         commentid: commentid,
         comment: $('#commentedit_' + commentid).val(),
     };
-    var url = '/api/editComment.jsp';
+//    var url = '/api/editComment.jsp';
+    var url = '/comments/' + commentid + '/edit/';
     $.post(url, params, function(data) {
 console.log(data);
         if (data.success) {

@@ -15,6 +15,7 @@ from fanart import models, forms, utils
 
 from datetime import timedelta
 import uuid
+import json
 
 import logging
 logger = logging.getLogger(__name__)
@@ -176,6 +177,48 @@ class PostCommentView(CreateView):
         comment.save()
         response = super(PostCommentView, self).form_valid(form)
         return response
+
+
+class CommentDetailView(DetailView):
+    model = models.PictureComment
+    form_class = forms.PictureCommentForm
+    template_name = 'includes/comments.html'
+
+    def get_object(self):
+        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        response = super(CommentDetailView, self).get(request, *args, **kwargs)
+        if request.is_ajax():
+            ajax_response = {
+                'success': True,
+                'comment': {
+                    'comment': self.object.comment,
+                }
+            }
+            return HttpResponse(json.dumps(ajax_response))
+        else:
+            return response
+
+class EditCommentView(forms.AjaxableResponseMixin, UpdateView):
+    model = models.PictureComment
+    form_class = forms.PictureCommentUpdateForm
+    template_name = 'includes/comments.html'
+
+    def get_object(self):
+        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+
+    def form_valid(self, form):
+        self.object.date_edited = timezone.now()
+#        self.object.custcontact_set.update(is_primary=False)
+#        if form.cleaned_data['primary_contact']:
+#            CustContact.objects.filter(pk=form.cleaned_data['primary_contact']).update(is_primary=True)
+        return super(EditCommentView, self).form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
+        context['date_edited'] = self.object.date_edited
+        return context
 
 
 class PictureView(TemplateView):
