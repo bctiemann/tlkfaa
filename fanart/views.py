@@ -129,7 +129,7 @@ class ToolBoxView(UserPaneView):
 
 
 class AdminAnnouncementsView(TemplateView):
-    template_name = 'fanart/admin_announcements.html'
+    template_name = 'includes/admin_announcements.html'
 
     def get_context_data(self, **kwargs):
         context = super(AdminAnnouncementsView, self).get_context_data(**kwargs)
@@ -140,7 +140,7 @@ class AdminAnnouncementsView(TemplateView):
         return context
 
 class BulletinsView(TemplateView):
-    template_name = 'fanart/bulletins.html'
+    template_name = 'includes/bulletins.html'
 
     def get_context_data(self, **kwargs):
         context = super(BulletinsView, self).get_context_data(**kwargs)
@@ -165,12 +165,12 @@ class CommentsView(TemplateView):
         return context
 
 
-class PostCommentView(forms.AjaxableResponseMixin, CreateView):
+class PostCommentView(CreateView):
     model = models.PictureComment
     form_class = forms.PictureCommentForm
-    template_name = 'includes/comments.html'
 
     def form_valid(self, form):
+        logger.info(form.cleaned_data)
         comment = form.save(commit=False)
         comment.user = self.request.user
         comment.save()

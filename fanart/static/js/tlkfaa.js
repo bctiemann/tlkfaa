@@ -1439,10 +1439,9 @@ function postReply(pictureid,commentid) {
     reply = document.getElementById('replytext_'+commentid).value;
   }
   var url = '/comments/' + pictureid + '/reply/' + commentid;
-  $.post(url,{ op: "post", picture: pictureid, commentid: commentid, comment: reply, hash: $('#hash').val() },function(data) {
-//    $('#comments_'+pictureid).html(data);
-    console.log(data);
-  }, 'json');
+  $.post(url,{ op: "post", picture: pictureid, reply_to: commentid || null, comment: reply, hash: $('#hash').val() },function(response_html) {
+    $('#comments_'+pictureid).html(response_html);
+  });
 }
 
 function postShout(artistid) {

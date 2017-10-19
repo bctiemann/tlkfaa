@@ -7,7 +7,7 @@
 	<div class="comment" id="comment_{{ comment.obj.id }}" style="margin-left: {{ comment.depth|depth_indent }}px;">
 	<div class="commentname">
                 {% if not comment.obj.is_deleted %}
-		<div class="commentdate">{{ comment.obj.date_posted|date:"H:m D n/j/Y" }}</div>
+		<div class="commentdate">{{ comment.obj.date_posted|date:"H:i D n/j/Y" }}</div>
                 {% if comment.obj.user.is_artist %}
 			<a href="/Artists/${comment.dirname}/">{{ comment.obj.user.username }}</a>
                 {% else %}
@@ -38,7 +38,7 @@
 			</div>
 			<div class="comment-edited">
                                 {% if comment.obj.date_edited %}
-				Edited {{ comment.obj.date_edited|date:"H:m D n/j/Y" }}
+				Edited {{ comment.obj.date_edited|date:"H:i D n/j/Y" }}
                                 {% endif %}
 			</div>
 			<div id="reply_{{ comment.obj.id }}" class="reply">
@@ -49,7 +49,7 @@
 			</td></tr></table>
                         {% if user.is_authenticated and not current_user_is_blocked %}
 				<div class="commentbuttons">
-                                {% if comment.obj.user == user %}
+                                {% if picture.user == user %}
                                         {% if comment.obj.user in picture.artist.blocked_commenters %}
 						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'unblock','comment',{{ comment.obj.picture.id }})">Unblock</button>
                                         {% else %}
@@ -57,8 +57,8 @@
                                         {% endif %}
                                 {% endif %}
 				<button type="button" class="small" id="replybutton_{{ comment.obj.id }}" onclick="doReply({{ picture.id }},{{ comment.obj.id }})">Reply</button>
-				{% if comment.obj.user == user %}"><button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.obj.id }})">Delete</button>{% endif %}
-				{% if comment.obj.user == user %}"><button type="button" class="small" onClick="setupEditComment({{ comment.obj.id }})">Edit</button>{% endif %}
+				{% if comment.obj.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.obj.id }})">Delete</button>{% endif %}
+				{% if comment.obj.user == user %}<button type="button" class="small" onClick="setupEditComment({{ comment.obj.id }})">Edit</button>{% endif %}
 				</div>
                         {% endif %}
                 {% endif %}

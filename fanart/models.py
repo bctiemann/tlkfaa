@@ -253,7 +253,7 @@ class PictureComment(BaseComment):
         return self.replies.count()
 
     def get_absolute_url(self):
-        return reverse('picture', kwargs={'picture_id': self.picture.id})
+        return reverse('comments', kwargs={'picture_id': self.picture.id})
 
     def __unicode__(self):
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)

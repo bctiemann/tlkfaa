@@ -5,6 +5,8 @@ from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidd
 
 from fanart import models
 
+import json
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,12 @@ class AjaxableResponseMixin(object):
         logger.warning(form.errors)
         response = super(AjaxableResponseMixin, self).form_invalid(form)
         if self.request.is_ajax():
-            return HttpResponse(form.errors.as_json())
+            ajax_response = {
+                'success': False,
+                'errors': form.errors,
+            }
+#            return HttpResponse(form.errors.as_json())
+            return HttpResponse(json.dumps(ajax_response))
         else:
             return response
 

@@ -16,7 +16,7 @@
     <div id="adminannouncements">
         <h3>Admin Announcements</h3>
         <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll">
-        {% include "fanart/admin_announcements.html" %}
+        {% include "includes/admin_announcements.html" %}
         </div>
         <div id="adminannouncementsmore">
         <button class="small" onClick="getMoreAdminAnnouncements(adminannouncementsshown,10)">More</button>
@@ -26,7 +26,7 @@
     <div id="bulletins">
         <h3>Bulletins</h3>
         <div id="bulletins_inner" class="bulletinsinner bulletinsstatic">
-        {% include "fanart/bulletins.html" %}
+        {% include "includes/bulletins.html" %}
         </div>
         <div id="bulletinsmore">
         <button class="small" onClick="getMoreBulletins(bulletinsshown,10)">More</button>
@@ -69,7 +69,7 @@
 
             <div class="offertile picturetile">
                 <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="{{ settings.MEDIA_URL }}{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
-                {{ picture.date_uploaded|date:"H:m D n/j/Y" }}
+                {{ picture.date_uploaded|date:"H:i D n/j/Y" }}
             </div>
 
             {% if forloop.counter == artist.recently_uploaded_pictures|length %}
