@@ -59,3 +59,10 @@ class PictureCommentUpdateForm(forms.ModelForm):
         model = models.PictureComment
         fields = ['comment']
 
+
+class PictureCommentDeleteForm(forms.ModelForm):
+
+    class Meta:
+        model = models.PictureComment
+        fields = []
+

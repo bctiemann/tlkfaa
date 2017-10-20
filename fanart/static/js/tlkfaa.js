@@ -1452,9 +1452,9 @@ function postShout(artistid) {
   });
 }
 
-function setupEditComment(commentid) {
+function setupEditComment(pictureid,commentid) {
 //    $.getJSON('/api/comment.jsp?commentid=' + commentid, function(data) {
-    $.getJSON('/comments/' + commentid + '/detail/', function(data) {
+    $.getJSON('/comment/' + commentid + '/detail/', function(data) {
         if (data.success) {
             $('#commenttext_' + commentid + ' .comment-edited').empty();
             $('#commenttext_' + commentid + ' .comment-text').empty().append($('<textarea>', {
@@ -1464,30 +1464,25 @@ function setupEditComment(commentid) {
                 class: 'small',
                 html: 'Submit',
                 commentid: commentid,
+                pictureid: pictureid,
                 click: function() {
-                    editComment($(this).attr('commentid'));
+                    editComment($(this).attr('pictureid'), $(this).attr('commentid'));
                 },
             }));
         }
     });
 }
 
-function editComment(commentid) {
+function editComment(pictureid,commentid) {
     var params = {
         commentid: commentid,
         comment: $('#commentedit_' + commentid).val(),
     };
 //    var url = '/api/editComment.jsp';
-    var url = '/comments/' + commentid + '/edit/';
-    $.post(url, params, function(data) {
-console.log(data);
-        if (data.success) {
-            $('#commenttext_' + commentid + ' .comment-text').empty().html(data.comment);
-            $('#commenttext_' + commentid + ' .comment-edited').empty().html('Edited ' + data.edited_str);
-        } else {
-            alert(data.message);
-        }
-    }, 'json');
+    var url = '/comment/' + commentid + '/edit/';
+    $.post(url, params, function(response_html) {
+        $('#comments_'+pictureid).html(response_html);
+    });
 }
 
 function deleteComment(pictureid,commentid) {
@@ -1498,10 +1493,15 @@ function deleteComment(pictureid,commentid) {
     buttons: {
       "Delete": function() {
         $(this).dialog('close');
-        var url = "/ajax_editcomment.jsp?op=delete&pictureid="+pictureid+"&commentid="+commentid;
-        $('#commenttext_'+commentid).load(url,function() {
-          $('#commenttext_'+commentid).addClass('commentdeleted');
-        });
+//        var url = "/ajax_editcomment.jsp?op=delete&pictureid="+pictureid+"&commentid="+commentid;
+        var url = '/comment/' + commentid + '/delete/';
+        var params = {};
+//        $('#commenttext_'+commentid).load(url,function() {
+//          $('#commenttext_'+commentid).addClass('commentdeleted');
+//        });
+          $.post(url, params, function(response_html) {
+              $('#comments_'+pictureid).html(response_html);
+          });
       },
       Cancel: function() {
         $(this).dialog('close');

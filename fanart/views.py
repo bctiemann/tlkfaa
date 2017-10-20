@@ -200,7 +200,7 @@ class CommentDetailView(DetailView):
         else:
             return response
 
-class EditCommentView(forms.AjaxableResponseMixin, UpdateView):
+class EditCommentView(UpdateView):
     model = models.PictureComment
     form_class = forms.PictureCommentUpdateForm
     template_name = 'includes/comments.html'
@@ -210,15 +210,34 @@ class EditCommentView(forms.AjaxableResponseMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.date_edited = timezone.now()
-#        self.object.custcontact_set.update(is_primary=False)
-#        if form.cleaned_data['primary_contact']:
-#            CustContact.objects.filter(pk=form.cleaned_data['primary_contact']).update(is_primary=True)
-        return super(EditCommentView, self).form_valid(form)
+        super(EditCommentView, self).form_valid(form)
+        return redirect('comments', picture_id=self.object.picture.id)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
-        context['date_edited'] = self.object.date_edited
-        return context
+#    def get_context_data(self, *args, **kwargs):
+#        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
+#        context['date_edited'] = self.object.date_edited
+#        return context
+
+
+class DeleteCommentView(UpdateView):
+    model = models.PictureComment
+    form_class = forms.PictureCommentDeleteForm
+    template_name = 'includes/comments.html'
+
+    def get_object(self):
+        logger.info('get_object')
+        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+
+    def form_valid(self, form):
+        logger.info('delete')
+        self.object.is_deleted = True
+        super(DeleteCommentView, self).form_valid(form)
+        return redirect('comments', picture_id=self.object.picture.id)
+
+#    def get_context_data(self, *args, **kwargs):
+#        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
+#        context['date_edited'] = self.object.date_edited
+#        return context
 
 
 class PictureView(TemplateView):
