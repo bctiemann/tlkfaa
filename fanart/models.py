@@ -323,7 +323,7 @@ class Favorite(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
     character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
     is_visible = models.BooleanField(default=True)
-    date_added = models.DateTimeField(null=True, blank=True)
+    date_added = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     last_viewed = models.DateTimeField(null=True, blank=True)
 
     objects = FavoriteManager()

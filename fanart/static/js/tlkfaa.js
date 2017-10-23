@@ -1351,20 +1351,24 @@ function deleteBulletin(selform,bulletin) {
 function toggleFave(id,type) {
   var isfave = $('#togglefave'+type+'_'+id).hasClass('isfave');
   if (type == 'picture') {
-    var url = "/ajax_fave.jsp?pictureid="+id;
-    var faveurl = "/ajax_favoritepicturesbox.jsp";
+//    var url = "/ajax_fave.jsp?pictureid="+id;
+    var url = '/fave/picture/' + id + '/';
+//    var faveurl = "/ajax_favoritepicturesbox.jsp";
+    var faveurl = '/userbox/favorite_pictures_box/';
   } else if (type == 'artist') {
-    var url = "/ajax_fave.jsp?artistid="+id;
-    var faveurl = "/userbox/favorite_artists/";
+//    var url = "/ajax_fave.jsp?artistid="+id;
+    var url = '/fave/artist/' + id + '/';
+    var faveurl = '/userbox/favorite_artists_box/';
   }
-  $('#togglefave'+type+'_'+id).load(url,function() {
+//  $('#togglefave'+type+'_'+id).load(url,function() {
+  $.getJSON(url, function(data) {
     if (isfave) {
       $('#togglefave'+type+'_'+id).removeClass('isfave');
       $('#togglevisible_'+id).removeClass('isvisible');
     } else {
       $('#togglefave'+type+'_'+id).addClass('isfave');
     }
-    $('#favorite'+type+'sbox').load(faveurl,function() {
+    $('#favorite_'+type+'s_box').load(faveurl,function() {
       if (type == 'picture') {
         Shadowbox.setup('#favoritepicturesbox a');
       } else if (type == 'artist') {

@@ -242,3 +242,28 @@ class DeleteCommentView(UpdateView):
 
 class PictureView(TemplateView):
     pass
+
+
+class ToggleFaveView(APIView):
+
+    def get(self, request, fave_type, object_id):
+        response = {}
+        if fave_type == 'picture':
+            picture = get_object_or_404(models.Picture, pk=object_id)
+            is_fave = True
+            fave, is_created = models.Favorite.objects.get_or_create(user=request.user, picture=picture)
+            if not is_created:
+                fave.delete()
+                is_fave = False
+            response['picture_id'] = picture.id
+            response['is_fave'] = is_fave
+        elif fave_type == 'artist':
+            artist = get_object_or_404(models.User, pk=object_id, is_artist=True)
+            is_fave = True
+            fave, is_created = models.Favorite.objects.get_or_create(user=request.user, artist=artist)
+            if not is_created:
+                fave.delete()
+                is_fave = False
+            response['artist_id'] = artist.id
+            response['is_fave'] = is_fave
+        return Response(response)
