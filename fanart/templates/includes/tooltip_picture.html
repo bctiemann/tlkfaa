@@ -1,0 +1,30 @@
+{% load humanize %}
+{% load bbcode_tags %}
+
+{% if picture %}
+
+<div class="previewPopupResult" id="preview_{{ picture.id }}">
+    <table class="tooltip">
+        <tr>
+            <td>
+            {% if picture.preview_extension == 'p.jpg' %}
+                <div class="video-preview {{ picture.extension }}"></div>
+            {% endif %}
+            <a href="/Picture.jsp?pictureid={{ picture.id }}"><img class="tooltippreview" src="{{ settings.MEDIA_URL }}{{ picture.artist.dir_name }}/{{ picture.basename }}.{{ picture.preview_extension }}" width="{{ settings.PREVIEW_WIDTH }}" height="{{ picture.preview_height }}" /></a>
+            </td>
+            <td class="picturedetails">
+                <div class="picturedetails">
+                    <div class="picuploaded">
+                        {{ picture.date_uploaded|naturaltime }}
+                    </div>
+                    <div class="picowner"><a href="/Artists/${picture.dirname}">{{ picture.artist.username }}</a></div>
+                        <div class="pictitle">
+                            {{ picture.title|bbcode|safe }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+    </table>
+</div>
+
+{% endif %}

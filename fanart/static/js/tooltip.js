@@ -111,8 +111,7 @@ var setupTooltipPreview = function() {
 
       $.ajax({
           type: 'GET',
-          url: '/ajax_tooltip_'+popuptype+'.jsp',
-          data: type+'id=' + id,
+          url: '/tooltip/' + popuptype + '/' + id + '/',
           success: function(data)
           {
               // Verify that we're pointed to a page that returned the expected results.

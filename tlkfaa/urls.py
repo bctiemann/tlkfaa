@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^userbox/contests_box/$', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
     url(r'^userbox/tool_box/$', fanart_views.ToolBoxView.as_view(), name='tool-box'),
 
-    url(r'picture/(?P<picture_id>[0-9]+)$', fanart_views.PictureView.as_view(), name='picture'),
+    url(r'^picture/(?P<picture_id>[0-9]+)$', fanart_views.PictureView.as_view(), name='picture'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^comment/(?P<comment_id>[0-9]+)/delete/$', fanart_views.DeleteCommentView.as_view(), name='delete-comment'),
 
     url(r'^fave/(?P<fave_type>[a-z]+)/(?P<object_id>[0-9]+)/$', fanart_views.ToggleFaveView.as_view(), name='toggle-fave'),
+    url(r'^tooltip/picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureTooltipView.as_view(), name='picture-tooltip'),
 
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='admin-announcements'),

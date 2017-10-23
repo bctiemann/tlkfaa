@@ -267,3 +267,13 @@ class ToggleFaveView(APIView):
             response['artist_id'] = artist.id
             response['is_fave'] = is_fave
         return Response(response)
+
+
+class PictureTooltipView(TemplateView):
+    template_name = 'includes/tooltip_picture.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PictureTooltipView, self).get_context_data(**kwargs)
+        context['picture'] = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        context['settings'] = settings
+        return context

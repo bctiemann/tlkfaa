@@ -208,6 +208,16 @@ class Picture(models.Model):
     def basename(self):
         return '.'.join(self.filename.split('.')[:-1])
 
+    @property
+    def preview_extension(self):
+        if self.mime_type in ['image/jpeg', 'image/png', 'image/gif']:
+            return self.extension
+        return 'p.jpg'
+
+    @property
+    def preview_height(self):
+        return int(self.height * settings.PREVIEW_WIDTH / self.width)
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)
 
