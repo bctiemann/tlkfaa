@@ -218,6 +218,48 @@ class Picture(models.Model):
     def preview_height(self):
         return int(self.height * settings.PREVIEW_WIDTH / self.width)
 
+    @property
+    def adjacent_pictures_in_artist(self):
+        return self.artist.picture_set.filter(rank_in_artist__gte=self.rank_in_artist - 1, rank_in_artist__lte=self.rank_in_artist + 1, is_public=True).exclude(pk=self.id).order_by('rank_in_artist')
+
+    @property
+    def adjacent_pictures_in_folder(self):
+        return self.artist.picture_set.filter(rank_in_folder__gte=self.rank_in_folder - 1, rank_in_folder__lte=self.rank_in_folder + 1, is_public=True, folder=self.folder).exclude(pk=self.id).order_by('rank_in_folder')
+
+    @property
+    def previous_picture_in_artist(self):
+        if self.adjacent_pictures_in_artist.count() == 0:
+            return None
+        if self.adjacent_pictures_in_artist[0].rank_in_artist > self.rank_in_artist:
+            return None
+        return self.adjacent_pictures_in_artist[0]
+
+    @property
+    def next_picture_in_artist(self):
+        if self.adjacent_pictures_in_artist.count() < 2:
+            return None
+        return self.adjacent_pictures_in_artist[1]
+
+    @property
+    def previous_picture_in_folder(self):
+        if self.adjacent_pictures_in_folder.count() == 0:
+            return None
+        if self.adjacent_pictures_in_folder[0].rank_in_artist > self.rank_in_folder:
+            return None
+        return self.adjacent_pictures_in_folder[0]
+
+    @property
+    def next_picture_in_folder(self):
+        if self.adjacent_pictures_in_folder.count() < 2:
+            return None
+        return self.adjacent_pictures_in_folder[1]
+
+    @property
+    def pictures_in_folder(self):
+        if self.folder == None:
+            return Picture.objects.filter(user=self.artist, folder=None)
+        return self.folder.picture_set
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)
 

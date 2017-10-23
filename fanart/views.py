@@ -240,10 +240,6 @@ class DeleteCommentView(UpdateView):
 #        return context
 
 
-class PictureView(TemplateView):
-    pass
-
-
 class ToggleFaveView(APIView):
 
     def get(self, request, fave_type, object_id):
@@ -269,11 +265,28 @@ class ToggleFaveView(APIView):
         return Response(response)
 
 
-class PictureTooltipView(TemplateView):
-    template_name = 'includes/tooltip_picture.html'
+class PictureView(TemplateView):
+    template_name = 'fanart/picture.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PictureTooltipView, self).get_context_data(**kwargs)
-        context['picture'] = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        context = super(PictureView, self).get_context_data(**kwargs)
+        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        context['picture'] = picture
+        context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
+        context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
+        context['picture_is_private'] = not picture.is_public and (not user.is_authenticated or picture.artist != user)
+
         context['settings'] = settings
+        context['video_types'] = [
+            'video/quicktime',
+            'video/mpeg',
+            'video/mp4',
+            'video/x-msvideo',
+            'video/x-ms-wmv',
+        ]
         return context
+
+
+class PictureTooltipView(PictureView):
+    template_name = 'includes/tooltip_picture.html'
+

@@ -1,0 +1,422 @@
+{% extends "fanart/base.html" %}
+
+{% load static %}
+{% load bbcode_tags %}
+{% load picture_tags %}
+
+{% block activetab_home %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_home.html" %}
+{% endblock %}
+
+{% block body_prop %}{% endblock %}
+
+{% block content %}
+
+{% if not picture %}
+
+<div class="error">
+<h3>An error occurred</h3>
+The specified picture was not found.
+</div>
+
+{% elif picture_is_private %}
+
+<div class="error">
+<h3>An error occurred</h3>
+The specified picture is private.
+</div>
+
+{% else %}
+
+<div class="featurebox">
+
+<div class="picture standalone">
+
+<p><a href="{{ settings.MEDIA_URL }}{{ picture.artist.dir_name }}/{{ picture.filename }}">{{ picture.filename }}</a></p>
+
+{% if picture.mime_type == 'application/x-shockwave-flash' %}
+	<object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
+	<param name="movie" value="/Artwork/Artists/${picture.dirname}/${picture.filename}">
+	<embed src="/Artwork/Artists/${picture.dirname}/${picture.filename}" class="inlinemovie" width="${picture.width}" height="${picture.height}">
+	</embed>
+	</object>
+{% elif picture.mime_type in video_types %}
+	<video id="video_display" class="video-js" controls preload="auto" width="${picture.width}" height="${picture.height}" poster="" data-setup="{}">
+		<source src="/Artwork/Artists/${picture.dirname}/${picture.filename}" type="${picture.mimetype}">
+		<p class="vjs-no-js">
+		To view this video please enable JavaScript, and consider upgrading to a web browser that
+		<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+		</p>
+	</video>
+{% else %}
+	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ settings.MEDIA_URL }}{{ picture.artist.dir_name }}/{{ picture.filename }}" /></a>
+{% endif %}
+
+</c:if>
+
+<c:if test="${loggedin == 1}">
+	<sql:query var="qryFaveArtist">
+	SELECT * FROM favorites
+	WHERE artistid=?
+	AND userid=?
+	<sql:param value="${picture.artistid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+	<sql:query var="qryFavePic">
+	SELECT * FROM favepics
+	WHERE pictureid=?
+	AND userid=?
+	<sql:param value="${picture.pictureid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+	<sql:update var="updNewPic">
+	DELETE FROM newpics   
+	WHERE pictureid=?
+	AND userid=?
+	<sql:param value="${picture.pictureid}" />
+	<sql:param value="${user.userid}" />
+	</sql:update>    
+</c:if>
+<c:forEach var="faveartist" items="${qryFaveArtist.rows}">
+	<c:set var="visible" value="${faveartist.visible}" />
+</c:forEach>
+
+<sql:query var="qryPrevInArtist">
+SELECT pictureid,picpublic FROM pictures
+WHERE artistid=?
+AND rankinartist=?
+AND deleted IS NULL
+<sql:param value="${picture.artistid}" />
+<sql:param value="${picture.rankinartist-1}" />
+</sql:query>
+
+<sql:query var="qryNextInArtist">
+SELECT pictureid,picpublic FROM pictures
+WHERE artistid=?
+AND rankinartist=?
+AND deleted IS NULL
+<sql:param value="${picture.artistid}" />
+<sql:param value="${picture.rankinartist+1}" />
+</sql:query>
+
+<sql:query var="qryPrevInFolder">
+SELECT pictureid,picpublic FROM pictures
+WHERE artistid=?
+AND rankinfolder=?
+AND folderid=?
+AND deleted IS NULL
+<sql:param value="${picture.artistid}" />
+<sql:param value="${picture.rankinfolder-1}" />
+<sql:param value="${picture.folderid}" />
+</sql:query>
+
+<sql:query var="qryNextInFolder">
+SELECT pictureid,picpublic FROM pictures
+WHERE artistid=?
+AND rankinfolder=?
+AND folderid=?
+AND deleted IS NULL
+<sql:param value="${picture.artistid}" />
+<sql:param value="${picture.rankinfolder+1}" />
+<sql:param value="${picture.folderid}" />
+</sql:query>
+
+<%--
+<sql:update var="updPictureSeq">
+CALL PictureSeq (?,?,?,@previnall,@nextinall,@previnfolder,@nextinfolder)
+<sql:param value="${picture.artistid}" />
+<sql:param value="${picture.folderid}" />
+<sql:param value="${picture.uploaded}" />
+</sql:update>
+<sql:query var="qryPictureSeq">
+SELECT @previnall,@nextinall,@previnfolder,@nextinfolder
+</sql:query>
+<c:forEach var="pictureseq" items="${qryPictureSeq.rows}">
+blah
+</c:forEach>
+--%>
+
+<c:choose>
+<c:when test="${picture.folderid > 0}">
+	<sql:query var="qryFolder">
+	SELECT * FROM folders
+	WHERE folderid=?
+	<sql:param value="${picture.folderid}" />
+	</sql:query>
+	<c:forEach var="thefolder" items="${qryFolder.rows}">
+		<c:set var="numpictures_folder" value="${thefolder.numpictures}" />
+	</c:forEach>
+</c:when>
+<c:otherwise>
+	<sql:query var="qryFolder">
+	SELECT * FROM pictures
+	WHERE folderid=0
+	AND artistid=?
+	AND deleted IS NULL
+	<sql:param value="${picture.artistid}" />
+	</sql:query>
+	<c:set var="numpictures_folder" value="${qryFolder.rowCount}" />
+</c:otherwise>
+</c:choose>
+
+
+<div class="pictureheading">
+
+<div class="artistname">
+    {% if user.is_authenticated %}
+        <div class="toggleartistfavorite">
+        <a id="togglefaveartist_{{ picture.artist.id }}" class="addfavorites {% if is_fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.artist.id }},'artist')" title="Follow this artist"></a>
+        <a id="togglevisible_{{ picture.artist.id }}" class="addvisible {% if is_fave_artist.is_visible %}isvisible{% endif %}" {% if not is_fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ picture.artist.id }})" title="Be visible to this artist"></a>
+        </div>
+    {% endif %}
+    <a href="/Artists/${picture.dirname}/">{{ picture.artist.username }}</a>
+</div>
+
+<div class="picturestats">
+<table class="picnav">
+<tr>
+<td class="link">
+{% if picture.previous_picture_in_artist %}
+    <a href="{% url "picture" picture_id=picture.previous_picture_in_artist.id %}" {% if picture.artist == user or picture.previous_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_artist.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
+{% endif %}
+</td>
+<td>All: {{ picture.rank_in_artist }}/{{ picture.artist.picture_set.count }}</td>
+<td class="link">
+{% if picture.next_picture_in_artist %}
+    <a href="{% url "picture" picture_id=picture.next_picture_in_artist.id %}" {% if picture.artist == user or picture.next_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_artist.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
+{% endif %}
+</td>
+</tr>
+<tr>
+<td class="link">
+{% if picture.previous_picture_in_folder %}
+    <a href="{% url "picture" picture_id=picture.previous_picture_in_folder.id %}" {% if picture.artist == user or picture.previous_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_folder.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
+{% endif %}
+</td>
+<td>Folder: {{ picture.rank_in_folder }}/{{ picture.pictures_in_folder.count }}</td>
+<td class="link">
+{% if picture.next_picture_in_folder %}
+    <a href="{% url "picture" picture_id=picture.next_picture_in_folder.id %}" {% if picture.artist == user or picture.next_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_folder.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
+{% endif %}
+</td>
+</tr>
+</table>
+<ul>
+<li>
+{% if picture.folder %}
+    <a href="/Artists/${picture.dirname}/?list=gallery&folder=${picture.folderid}" title="${picture.name}" class="tooltip"><div class="picfolder">{{ picture.folder.name }}</div></a>
+{% else %}
+    <a href="/Artists/${picture.dirname}/?list=gallery"><div class="picfolder">Main Folder</div></a>
+</c:choose>
+{% endif %}
+</li>
+<c:if test="${isdisplayed == 1}">
+<li><fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" /></li>
+<li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
+<li>{{ picture.file_size|filesizeformat }}</li>
+<li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</c:if></li>
+
+{% if user.is_authenticated %}
+<a id="togglefavepicture_{{ picture.id }}" class="addfavorites {% if fave_picture %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite this picture"></a>
+{% endif %}
+                        
+<li>{{ picture.fans.count }} favorite{{ picture.fans.count|pluralize }}</li>
+</c:if>
+
+{% if picture.picturecharacter_set.count %}
+<li>Characters tagged:</li>
+{% endif %}
+{% for pc in picture.picturecharacter_set.all %}
+        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+        <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
+        <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
+{% endfor %}
+
+{% if picture.tags.count %}
+<li>Keywords:</li>
+{% endif %}
+{% for tag in picture.tags.all %}
+    <a class="tag" href="/Artwork/?list=tag&term={{ tag }}">{{ tag }}</a>
+{% endfor %}
+
+{% if picture.giftpicture_set.count %}
+<li>Sent to:</li>
+{% endif %}
+{% for gp in picture.giftpicture_set.all %}
+    <li><a href="/Artists/${request.dirname}/">{{ gp.recipient.username }}</a></li>
+{% endfor %}
+
+</ul>
+
+</div>
+
+</div>
+
+<c:choose>
+<c:when test="${isdisplayed == 1}">
+
+<div class="picturecaption">
+{{ picture.title|bbcode|safe }}
+</div>
+
+<p>in artist: {{ picture.previous_picture_in_artist }} {{ picture.next_picture_in_artist }}</p>
+<p>in folder: {{ picture.adjacent_pictures_in_folder }}</p>
+
+</c:when>
+<c:otherwise>
+
+</c:otherwise>
+</c:choose>
+{% endif %}
+
+<br clear="right" />
+
+<c:if test="${isdisplayed == 1}">
+
+{% comment %}
+
+<sql:query var="qryColored">
+SELECT * FROM coloring_pics,coloring_base,artists
+WHERE basepic=coloring_baseid
+AND coloring_pics.artistid=artists.artistid
+AND visible=true
+AND pictureid=?
+ORDER BY coloring_pics.posted DESC
+<sql:param value="${picture.pictureid}" />
+</sql:query>
+<c:if test="${qryColored.rowCount > 0}">
+	<sql:query var="qryCCBase">
+	SELECT * FROM coloring_base
+	WHERE pictureid=?
+	AND visible=true
+	<sql:param value="${picture.pictureid}" />
+	</sql:query>
+	<c:forEach var="ccbase" items="${qryCCBase.rows}">
+		<h3>In the <a href="/ColoringCave.jsp?ccid=${ccbase.coloring_baseid}">Coloring Cave</a>:</h3>
+	</c:forEach>
+	<div id="offerslayout">
+	<c:forEach var="colored" items="${qryColored.rows}">
+		<c:set var="thumbheight" value="${colored.height * 60 / colored.width}" />
+		<c:set var="artistname" value="${colored.artistname}" />
+		<div class="offertile picturetile">
+		<a href="/Artwork/coloring/${colored.coloring_picid}.${colored.extension}" rel="shadowbox[Colored]"><img class="" src="/Artwork/coloring/${colored.coloring_picid}.s.jpg" width="60" height="<fmt:formatNumber value="${thumbheight}" pattern="0" />" /></a>		
+		<a href="/Artists/${colored.dirname}/"><%= truncateString((String)pageContext.getAttribute("artistname"),10) %></a>
+		</div>
+	</c:forEach>
+	</div>
+</c:if>
+
+<c:if test="${picture.allowcomments_p == true && picture.allowcomments == true}">
+	<div id="comments_${pictureid}">
+
+	<sql:query var="qryBlocked" scope="session">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${picture.artistid}" />
+	</sql:query>
+
+	<div id="blockstatus"></div>
+
+	<jsp:include page="inc_root/inc_commenttree.jsp?commentid=0&pictureid=${picture.pictureid}&op=${picture.userid}" />
+
+	<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+		<%
+		    String hash = UUID.randomUUID().toString();
+                    pageContext.setAttribute("hash",hash);
+		%>
+		<form name="commentform" method="POST" action="ajax_postcomment.jsp">
+		<div class="commenttext commentreply">
+		Comment:<br />
+		<textarea name="replytext" id="replytext_picture_${picture.pictureid}"></textarea>
+		<input type="hidden" name="hash" id="hash" value="${hash}" />
+		<div class="commentbuttons">
+		<button type="button" class="small" onclick="postReply(${picture.pictureid},0)">Reply</button>
+		</div>
+		</div>
+		</form>
+	</c:if>
+
+	</div>
+</c:if>
+
+</c:if>
+<sql:query var="qryColored">
+SELECT * FROM coloring_pics,coloring_base,artists
+WHERE basepic=coloring_baseid
+AND coloring_pics.artistid=artists.artistid
+AND visible=true
+AND pictureid=?
+ORDER BY coloring_pics.posted DESC
+<sql:param value="${picture.pictureid}" />
+</sql:query>
+<c:if test="${qryColored.rowCount > 0}">
+	<sql:query var="qryCCBase">
+	SELECT * FROM coloring_base
+	WHERE pictureid=?
+	AND visible=true
+	<sql:param value="${picture.pictureid}" />
+	</sql:query>
+	<c:forEach var="ccbase" items="${qryCCBase.rows}">
+		<h3>In the <a href="/ColoringCave.jsp?ccid=${ccbase.coloring_baseid}">Coloring Cave</a>:</h3>
+	</c:forEach>
+	<div id="offerslayout">
+	<c:forEach var="colored" items="${qryColored.rows}">
+		<c:set var="thumbheight" value="${colored.height * 60 / colored.width}" />
+		<c:set var="artistname" value="${colored.artistname}" />
+		<div class="offertile picturetile">
+		<a href="/Artwork/coloring/${colored.coloring_picid}.${colored.extension}" rel="shadowbox[Colored]"><img class="" src="/Artwork/coloring/${colored.coloring_picid}.s.jpg" width="60" height="<fmt:formatNumber value="${thumbheight}" pattern="0" />" /></a>		
+		<a href="/Artists/${colored.dirname}/"><%= truncateString((String)pageContext.getAttribute("artistname"),10) %></a>
+		</div>
+	</c:forEach>
+	</div>
+</c:if>
+
+{% endcomment %}
+
+<c:if test="${picture.allowcomments_p == true && picture.allowcomments == true}">
+	<div id="comments_${pictureid}">
+
+	<sql:query var="qryBlocked" scope="session">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${picture.artistid}" />
+	</sql:query>
+
+	<div id="blockstatus"></div>
+
+	<jsp:include page="inc_root/inc_commenttree.jsp?commentid=0&pictureid=${picture.pictureid}&op=${picture.userid}" />
+
+	<c:if test="${loggedin == 1 && qryBlocked.rowCount == 0}">
+		<%
+		    String hash = UUID.randomUUID().toString();
+                    pageContext.setAttribute("hash",hash);
+		%>
+		<form name="commentform" method="POST" action="ajax_postcomment.jsp">
+		<div class="commenttext commentreply">
+		Comment:<br />
+		<textarea name="replytext" id="replytext_picture_${picture.pictureid}"></textarea>
+		<input type="hidden" name="hash" id="hash" value="${hash}" />
+		<div class="commentbuttons">
+		<button type="button" class="small" onclick="postReply(${picture.pictureid},0)">Reply</button>
+		</div>
+		</div>
+		</form>
+	</c:if>
+
+	</div>
+</c:if>
+
+</c:if>
+
+</div>
+
+</div>
+
+{% endblock %}
+
