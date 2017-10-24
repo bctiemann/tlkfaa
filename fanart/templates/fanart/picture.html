@@ -59,11 +59,11 @@ The specified picture is private.
 <div class="artistname">
     {% if user.is_authenticated %}
         <div class="toggleartistfavorite">
-        <a id="togglefaveartist_{{ picture.artist.id }}" class="addfavorites {% if is_fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.artist.id }},'artist')" title="Follow this artist"></a>
-        <a id="togglevisible_{{ picture.artist.id }}" class="addvisible {% if is_fave_artist.is_visible %}isvisible{% endif %}" {% if not is_fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ picture.artist.id }})" title="Be visible to this artist"></a>
+        <a id="togglefaveartist_{{ picture.artist.id }}" class="addfavorites {% if fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.artist.id }},'artist')" title="Follow this artist"></a>
+        <a id="togglevisible_{{ picture.artist.id }}" class="addvisible {% if fave_artist.is_visible %}isvisible{% endif %}" {% if not fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ picture.artist.id }})" title="Be visible to this artist"></a>
         </div>
     {% endif %}
-    <a href="/Artists/${picture.dirname}/">{{ picture.artist.username }}</a>
+    <a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a>
 </div>
 
 <div class="picturestats">

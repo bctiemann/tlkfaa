@@ -10,9 +10,9 @@
 <p>
 Logged in as 
 {% if user.is_artist %}
-<a href="/Artists/${artist.dirname}/">{{ user.username }}</a>
+<a href="{% url "artist" dir_name=user.dir_name %}">{{ user.username }}</a>
 {% else %}
-${artist.artistname}
+{{ user.username }}
 {% endif %}
 </p>
 

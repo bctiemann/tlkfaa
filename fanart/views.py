@@ -291,3 +291,13 @@ class PictureView(TemplateView):
 class PictureTooltipView(PictureView):
     template_name = 'includes/tooltip_picture.html'
 
+
+class ArtistView(TemplateView):
+    template_name = 'fanart/artist.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtistView, self).get_context_data(**kwargs)
+        artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
+        context['artist'] = artist
+        context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
+        return context

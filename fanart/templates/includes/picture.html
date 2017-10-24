@@ -16,7 +16,7 @@
 
 <div class="picnumber">{{ sequence_number }}</div>
 <div class="picdate">{{ picture.date_uploaded }}</div>
-<c:if test="${artistname != null}"><div class="picartist"><a href="/Artists/${dirname}/">{{ picture.artist.username }}</a></div></c:if>
+<c:if test="${artistname != null}"><div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div></c:if>
 <c:if test="${folder != ''}">
     {% if picture.folder %}
         <a href="/Artists/${dirname}/?list=gallery&folder=${folder}"><div class="picfolder">{{ picture.folder.name }}</div></a>
