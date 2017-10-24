@@ -183,6 +183,16 @@ ORDER BY fanart_user.sort_name
         except AttributeError:
             return None
 
+    @property
+    def birthdate_age(self):
+        if not self.birth_date:
+            return None
+        now = timezone.now()
+        years = now.year - self.birth_date.year
+        if now.month < self.birth_date.month or (now.month == self.birth_date.month and now.day < self.birth_date.day):
+            years -= 1
+        return years
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 

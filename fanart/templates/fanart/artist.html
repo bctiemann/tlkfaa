@@ -172,18 +172,6 @@ The specified artist's gallery is not publicly visible.
 
 		<div class="artist_profiletable">
 
-			<sql:query var="qryProfilePictures">
-			SELECT min(uploaded) as firstupload,max(uploaded) as lastupload,count(pictureid) as count FROM pictures
-			WHERE artistid=?
-			<sql:param value="${thisartist.artistid}" />
-			</sql:query>
-
-			<sql:query var="qryCharacters">
-			SELECT * FROM characters
-			WHERE artistid=?
-			<sql:param value="${thisartist.artistid}" />
-			</sql:query>
-
                         {% if user.is_authenticated %}
 				<a id="togglefaveartist_{{ artist.id }}" class="addfavorites {% if fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ artist.id }},'artist')" title="Follow this artist"></a>
 				<a id="togglevisible_{{ artist.id }}" class="addvisible {% if fave_artist.is_visible %}isvisible{% endif %}" {% if not fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ artist.id }})" title="Be visible to this artist"></a>
@@ -220,45 +208,25 @@ The specified artist's gallery is not publicly visible.
 			<tr>
 			<td class="label">Age/Birthday</td>
 			<td class="data">
-			<c:choose>
-			<c:when test="${thisartist.birthdate != null && (thisartist.showbirthdate == true || thisartist.showbirthdate_age == true)}">
-				<c:choose>
-				<c:when test="${thisartist.showbirthdate_age == true}">
-					<sql:query var="qryBirthdateAge">
-					SELECT FLOOR(DATEDIFF(NOW(),birthdate)/365) as yearsold
-					FROM artists
-					WHERE artistid=?
-					AND YEAR(birthdate)>0
-					<sql:param value="${thisartist.artistid}" />
-					</sql:query>
-					<c:forEach var="birthdate" items="${qryBirthdateAge.rows}">
-						<c:choose>
-						<c:when test="${thisartist.showbirthdate == true}">
-							<fmt:formatDate value="${thisartist.birthdate}" type="date" /> (age ${birthdate.yearsold})
-						</c:when>
-						<c:otherwise>
-							${birthdate.yearsold}
-						</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</c:when>
-				<c:otherwise>
-					<fmt:formatDate value="${thisartist.birthdate}" type="date" pattern="MMM DD" />
-				</c:otherwise>
-				</c:choose>
-			</c:when>
-			<c:otherwise>
-				${thisartist.birthday}
-			</c:otherwise>
-			</c:choose>
+                            {% if artist.show_birthdate or artist.show_birthdate_age %}
+                                {% if artist.show_birthdate_age %}
+                                    {% if artist.show_birthdate %}
+                                        {{ artist.birth_date|date:"M j, Y" }} (age {{ artist.birthdate_age|default_if_none:'' }})
+                                    {% else %}
+                                        {{ artist.birthdate_age|default_if_none:'' }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ artist.birth_date|date:"M j, Y" }}
+                                {% endif %}
+                            {% else %}
+                                {{ artist.birthday }}
+                            {% endif %}
 			</td>
 			</tr>
-			<c:if test="${thisartist.gender > 0}">
 			<tr>
 			<td class="label">Gender</td>
 			<td class="data">{{ artist.gender|capfirst }}</td>
 			</tr>
-			</c:if>
 			<tr>
 			<td class="label">Location</td>
 			<td class="data">{{ artist.location }}</td>
@@ -271,39 +239,30 @@ The specified artist's gallery is not publicly visible.
 			<td class="label">IM Contact</td>
 			<td class="data">
 			<table class="ims">
-
                         {% for contact in artist.socialmediaidentity_set.all %}
 			<tr>
 			<td>{{ contact.social_media.name }}
 			<td>{{ contact.identity }}</td>
 			</tr>
                         {% endfor %}
-
 			</table>
-
 			</td>
 			</tr>
 			<tr>
 			<td class="label">Website</td>
-			<td class="data"><c:if test="${thisartist.website != ''}"><a href="${thisartist.website}">
-				<c:set var="barewebsite" value="${fn:replace(thisartist.website,'http://','')}" />
-				<c:choose>
-				<c:when test="${fn:length(barewebsite) > 30}">
-					${fn:substring(barewebsite,0,30)}&hellip;
-				</c:when>
-				<c:otherwise>
-					${barewebsite}
-				</c:otherwise>
-				</c:choose>
-				</a></c:if></td>
+			<td class="data">
+                            {% if artist.website and artist.website != 'http://' %}
+                                <a href="{{ artist.website }}">{{ artist.website|truncatechars:30 }}</a><c:if test="${thisartist.website != ''}"><a href="${thisartist.website}">
+                            {% endif %}
+                        </td>
 			</tr>
 			<tr>
 			<td class="label">Email</td>
-			<td class="data"><c:if test="${thisartist.email != '' && thisartist.showemail == true}"><a href="mailto:${thisartist.email}">${thisartist.email}</a></c:if></td>
+			<td class="data">{% if artist.email and artist.show_email %}<a href="mailto:{{ artist.email }}">{{ artist.email }}</a>{% endif %}</td>
 			</tr>
 			<tr>
 			<td class="label">Accepting Requests or Commissions</td>
-			<td class="data"><c:choose><c:when test="${thisartist.commissions}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></td>
+			<td class="data">{{ artist.accepting_commissions|yesno|capfirst }}</td>
 			</tr>
 			<tr>
 			<td class="label"></td>
@@ -315,13 +274,12 @@ The specified artist's gallery is not publicly visible.
 
 		<table class="artist_profile"><tr><td>
 
-		<c:if test="${thisartist.profilepic > 0}">
-		<img class="profilepic" src="/profiles/${thisartist.profilepic}.${thisartist.profilepic_ext}" />
-		</c:if>
+                {% if artist.profile_pic_id %}
+		<img class="profilepic" src="{{ MEDIA_URL }}profiles/{{ artist.profile_pic_id }}.{{ artist.profile_pic_ext }}" />
+                {% endif %}
 
 		<div class="artistdesc">
-		<c:set var="artistdesc" value="${thisartist.artistdesc}" />
-		<%= formatText((String)pageContext.getAttribute("artistdesc")) %>
+                {{ artist.description|bbcode|safe }}
 		</div>
 
 		</td></tr></table>
