@@ -213,7 +213,7 @@ blah
 {% endif %}
 </li>
 <c:if test="${isdisplayed == 1}">
-<li><fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" /></li>
+<li>{{ picture.date_uploaded|date:"H:i D n/j/Y" }}</li>
 <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
 <li>{{ picture.file_size|filesizeformat }}</li>
 <li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</c:if></li>
@@ -261,14 +261,6 @@ blah
 {{ picture.title|bbcode|safe }}
 </div>
 
-<p>in artist: {{ picture.previous_picture_in_artist }} {{ picture.next_picture_in_artist }}</p>
-<p>in folder: {{ picture.adjacent_pictures_in_folder }}</p>
-
-</c:when>
-<c:otherwise>
-
-</c:otherwise>
-</c:choose>
 {% endif %}
 
 <br clear="right" />

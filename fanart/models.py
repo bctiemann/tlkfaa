@@ -244,7 +244,7 @@ class Picture(models.Model):
     def previous_picture_in_folder(self):
         if self.adjacent_pictures_in_folder.count() == 0:
             return None
-        if self.adjacent_pictures_in_folder[0].rank_in_artist > self.rank_in_folder:
+        if self.adjacent_pictures_in_folder[0].rank_in_folder > self.rank_in_folder:
             return None
         return self.adjacent_pictures_in_folder[0]
 

@@ -26,10 +26,10 @@ class Command(BaseCommand):
     do_offers = False
     do_claims = False
     do_picturecharacters = False
-    do_tags = True
+    do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = False
+    do_requests = True
     do_imclients = False
     do_imids = False
     do_newpics = False
@@ -563,11 +563,11 @@ class Command(BaseCommand):
             for a in c.fetchall():
                 print a
                 try:
-                    artist = fanart_models.User.objects.get(id_orig=a['artistid'])
+                    artist = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
                 except fanart_models.User.DoesNotExist:
                     artist = None
                 try:
-                    recipient = fanart_models.User.objects.get(id_orig=a['recptid'])
+                    recipient = fanart_models.User.objects.get(artist_id_orig=a['recptid'])
                 except fanart_models.User.DoesNotExist:
                     recipient = None
                 try:
