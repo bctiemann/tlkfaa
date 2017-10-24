@@ -161,8 +161,27 @@ ORDER BY fanart_user.sort_name
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
     @property
+    def last_nine_uploads(self):
+        return self.picture_set.filter(is_public=True, date_deleted__isnull=True).order_by('-date_uploaded')[0:9]
+
+    @property
+    def nine_most_popular_pictures(self):
+        return self.picture_set.filter(num_faves__gt=0, is_public=True, date_deleted__isnull=True).order_by('-num_faves')[0:9]
+
+    @property
+    def last_nine_coloring_pictures(self):
+        return self.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
+
+    @property
     def blocked_commenters(self):
         return [b.blocked_user for b in self.blocked_by.all()]
+
+    @property
+    def first_upload(self):
+        try:
+            return self.picture_set.all().order_by('date_uploaded').first().date_uploaded
+        except AttributeError:
+            return None
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)

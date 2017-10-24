@@ -211,6 +211,9 @@ class Command(BaseCommand):
                     u.sketcher_ban_reason = artist['sketcherbanreason'] if artist['sketcherbanreason'] else ''
                     u.save()
 
+                    u.date_joined = user['created'] if user['created'] else timezone.now(),
+                    u.save()
+
         if self.do_folders:
             self.get_child_folders(c, None, None)
 

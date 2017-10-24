@@ -111,96 +111,60 @@ The specified artist's gallery is not publicly visible.
 
 	<div class="artist_newestpics">
 		<h4>Newest Pictures:</h4>
-		<div class="masonry-foo">
+		<div class="masonry">
 
-		<sql:query var="qryNewest">
-		SELECT * FROM pictures
-		WHERE artistid=?
-		AND picpublic=true
-		AND deleted IS NULL
-		ORDER BY uploaded DESC
-		LIMIT 9
-		<sql:param value="${thisartist.artistid}" />
-		</sql:query>
-
-		<c:forEach var="picture" items="${qryNewest.rows}">
-			<c:set var="basename" value="${picture.basename}" />
+                {% for picture in artist.last_nine_uploads %}
 			<div class="offertile picturetile">
-			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="/Artwork/Artists/${thisartist.dirname}/${fanart:encodeURI(basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
-			<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+                        {{ picture.date_uploaded|date:"H:i D n/j/Y" }}
 			</div>
-		</c:forEach>
+                {% endfor %}
 
 		</div>
-		<div class="viewmoretile"><a href="/Artists/${thisartist.dirname}/?list=bydate">View more...</a></div>
+		<div class="viewmoretile"><a href="{% url "artist" dir_name=artist.dir_name subview="bydate" %}">View more...</a></div>
 	</div>
 
-	<c:if test="${thisartist.numfavepics > 0}">
+        {% if artist.num_favepics > 0 %}
 	<div class="artist_newestpics">
 		<h4>Most Popular Pictures:</h4>
-		<div class="masonry-foo">
+		<div class="masonry">
 
-		<sql:query var="qryPopular">
-		SELECT * FROM pictures
-		WHERE artistid=?
-		AND numpicfaves>0
-		AND picpublic=true
-		AND deleted IS NULL
-		ORDER BY numpicfaves DESC
-		LIMIT 9
-		<sql:param value="${thisartist.artistid}" />
-		</sql:query>
-
-		<c:forEach var="picture" items="${qryPopular.rows}">
+                {% for picture in artist.nine_most_popular_pictures %}
 			<div class="offertile picturetile">
-			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Picture.jsp?pictureid=${picture.pictureid}"><img src="/Artists/${thisartist.dirname}/${fanart:encodeURI(picture.basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
-			${picture.numpicfaves} fave<c:if test="${picture.numpicfaves != 1}">s</c:if>
+			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+			{{ picture.num_faves }} fave{{ picture.num_faves|pluralize }}
 			</div>
-		</c:forEach>
+                {% endfor %}
 
 		</div>
-		<div class="viewmoretile"><a href="/Artists/${thisartist.dirname}/?list=popular">View more...</a></div>
+		<div class="viewmoretile"><a href="{% url "artist" dir_name=artist.dir_name subview="popular" %}">View more...</a></div>
 	</div>
 	</c:if>
+        {% endif %}
 
-	<c:if test="${thisartist.showcc == true}">
-
-	<sql:query var="qryColored">
-	SELECT * FROM coloring_base,coloring_pics
-	WHERE basepic=coloring_baseid
-	AND coloring_base.visible=true
-	AND coloring_pics.artistid=?
-	ORDER BY coloring_pics.posted DESC
-	LIMIT 9
-	<sql:param value="${thisartist.artistid}" />
-	</sql:query>
-
-	<c:if test="${qryColored.rowCount > 0}">
+        {% if artist.show_coloring_cave %}
 	<div class="artist_coloringpics">
 		<h4>Colored Line-Art:</h4>
-		<div class="masonry-foo">
+		<div class="masonry">
 
-		<c:set var="thumbwidth" value="60" />
-		<c:forEach var="ccpic" items="${qryColored.rows}">
-			<c:set var="thumbheight" value="${ccpic.height*(thumbwidth/ccpic.width)}" />
+                {% for coloring_picture in artist.last_nine_coloring_pictures %}
 			<div class="offertile picturetile">
-			<a id="picturetile_${ccpic.coloring_picid}" class="previewPopupTrigger" type="ccpic" itemid="${ccpic.coloring_picid}" href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img src="/Artwork/coloring/${ccpic.coloring_picid}.s.jpg" width="60" height="${thumbheight}" /></a>
-			<fmt:formatDate value="${ccpic.posted}" type="both" pattern="HH:mm E M/d/yyyy" />
+			<a id="picturetile_{{ coloring_picture.id }}" class="previewPopupTrigger" type="ccpic" itemid="{{ coloring_picture.id }}" href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img src="{{ MEDIA_URL }}Artwork/coloring/{{ coloring_picture.id_orig }}.s.jpg" width="60" height="{{ coloring_picture.thumb_height }}" /></a>
+                        {{ coloring_picture.date_posted|date:"H:i D n/j/Y" }}
 			</div>
-		</c:forEach>
+                {% endfor %}
 
 		</div>
 		<div class="viewmoretile"><a href="/ColoringCave.jsp?artistid=${thisartist.artistid}">View more...</a></div>
 	</div>
-	</c:if>
-	</c:if>
+        {% endif %}
 
-	<%--
+        {% comment %}
 
 	<div class="artist_contests">
 	</div>
 
-	--%>
+        {% endcomment %}
 
 	</div>
 
@@ -220,51 +184,38 @@ The specified artist's gallery is not publicly visible.
 			<sql:param value="${thisartist.artistid}" />
 			</sql:query>
 
-			<c:if test="${loggedin == 1}">
-				<sql:query var="qryFaveArtist">
-				SELECT * FROM favorites
-				WHERE artistid=?
-				AND userid=?
-				<sql:param value="${thisartist.artistid}" />
-				<sql:param value="${user.userid}" />
-				</sql:query>
-				<c:forEach var="faveartist" items="${qryFaveArtist.rows}">
-					<c:set var="visible" value="${faveartist.visible}" />
-				</c:forEach>
+                        {% if user.is_authenticated %}
 				<a id="togglefaveartist_{{ artist.id }}" class="addfavorites {% if fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ artist.id }},'artist')" title="Follow this artist"></a>
 				<a id="togglevisible_{{ artist.id }}" class="addvisible {% if fave_artist.is_visible %}isvisible{% endif %}" {% if not fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ artist.id }})" title="Be visible to this artist"></a>
-			</c:if>
+                        {% endif %}
 
 			<table class="profile">
 			<tr>
 			<td class="label">Pictures</td>
-			<td class="data"><a href="/Artists/${thisartist.dirname}/?list=gallery">${thisartist.numpictures}</a></td>
+			<td class="data"><a href="{% url "artist" dir_name=artist.dir_name subview="gallery" %}">{{ artist.num_pictures }}</a></td>
 			</tr>
 			<tr>
 			<td class="label">Characters</td>
-			<td class="data"><a href="/Characters/?mode=fan&list=artist&term=${thisartist.artistid}">${thisartist.numcharacters}</a></td>
+			<td class="data"><a href="/Characters/?mode=fan&list=artist&term=${thisartist.artistid}">{{ artist.num_characters }}</a></td>
 			</tr>
-<%--
+{% comment %}
 			<tr>
 			<td class="label">Fans</td>
 			<td class="data">${thisartist.numfaves}</td>
 			</tr>
---%>
+{% endcomment %}
 			<tr>
 			<td class="label">Joined</td>
-			<td class="data"><fmt:formatDate value="${thisartist.created}" type="date" /></td>
+			<td class="data">{{ artist.date_joined|date:"M j, Y" }}</td>
 			</tr>
 			<tr>
 			<td class="label">First Upload</td>
-			<td class="data">
-			<c:forEach var="picture" items="${qryProfilePictures.rows}">
-			<fmt:formatDate value="${picture.firstupload}" type="date" />
-			</c:forEach>
+			<td class="data">{{ artist.first_upload|default_if_none:''|date:"M j, Y" }}
 			</td>
 			</tr>
 			<tr>
 			<td class="label">Latest Upload</td>
-			<td class="data"><fmt:formatDate value="${thisartist.lastupload}" type="date" /></td>
+			<td class="data">{{ artist.last_upload|date:"M j, Y" }}</td>
 			</tr>
 			<tr>
 			<td class="label">Age/Birthday</td>
@@ -305,39 +256,28 @@ The specified artist's gallery is not publicly visible.
 			<c:if test="${thisartist.gender > 0}">
 			<tr>
 			<td class="label">Gender</td>
-			<td class="data"><c:choose><c:when test="${thisartist.gender == 1}">Male</c:when><c:when test="${thisartist.gender == 2}">Female</c:when></c:choose></td>
+			<td class="data">{{ artist.gender|capfirst }}</td>
 			</tr>
 			</c:if>
 			<tr>
 			<td class="label">Location</td>
-			<td class="data">${thisartist.location}</td>
+			<td class="data">{{ artist.location }}</td>
 			</tr>
 			<tr>
 			<td class="label">Occupation</td>
-			<td class="data">${thisartist.occupation}</td>
+			<td class="data">{{ artist.occupation }}</td>
 			</tr>
 			<tr>
 			<td class="label">IM Contact</td>
 			<td class="data">
-			<sql:query var="qryIMIDs" scope="page">  
-			SELECT imidid,imclient,imids.imclientid,imid FROM imclients,imids
-			WHERE artistid=?
-			AND imids.imclientid=imclients.imclientid
-			<sql:param value="${thisartist.artistid}" />
-			</sql:query>
-
 			<table class="ims">
 
-			<c:if test="${qryIMIDs.rowCount > 0}">
-
-			<c:forEach var="imid" items="${qryIMIDs.rows}">
+                        {% for contact in artist.socialmediaidentity_set.all %}
 			<tr>
-			<td>${imid.imclient}</td>
-			<td>${imid.imid}</td>
+			<td>{{ contact.social_media.name }}
+			<td>{{ contact.identity }}</td>
 			</tr>
-			</c:forEach>
-
-			</c:if>
+                        {% endfor %}
 
 			</table>
 
