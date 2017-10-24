@@ -6,7 +6,7 @@
 <div class="bulletinname"><a href="/Artists/${bulletin.dirname}/">{{ bulletin.user.username }}</a></div>
 <p class="bulletintitle"><a href="/pop_bulletin.jsp?bulletin={{ bulletin.id }}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
 <c:if test="${bulletin.profilepic > 0}">
-<img class="bulletinprofilepic" src="/profiles/${bulletin.profilepic}.s.${bulletin.profilepic_ext}" />
+<img class="bulletinprofilepic" src="{{ MEDIA_URL }}profiles/{{ bulletin.user.profile_pic_id }}.s.{{ bulletin.user.profile_pic_ext }}" />
 </c:if>
 {{ bulletin.bulletin|bbcode|safe|truncatechars_html:100 }}
 

@@ -47,7 +47,6 @@ class UserPaneView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(UserPaneView, self).get_context_data(**kwargs)
-        context['settings'] = settings
         context['sketcher_users'] = range(12)
 
         return context
@@ -279,7 +278,6 @@ class PictureView(TemplateView):
         context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
         context['hash'] = uuid.uuid4()
 
-        context['settings'] = settings
         context['video_types'] = [
             'video/quicktime',
             'video/mpeg',

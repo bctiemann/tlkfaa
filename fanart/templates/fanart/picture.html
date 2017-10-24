@@ -34,7 +34,7 @@ The specified picture is private.
 
 <div class="picture standalone">
 
-<p><a href="{{ settings.MEDIA_URL }}{{ picture.artist.dir_name }}/{{ picture.filename }}">{{ picture.filename }}</a></p>
+<p><a href="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.filename }}">{{ picture.filename }}</a></p>
 
 {% if picture.mime_type == 'application/x-shockwave-flash' %}
 	<object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
@@ -51,7 +51,7 @@ The specified picture is private.
 		</p>
 	</video>
 {% else %}
-	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ settings.MEDIA_URL }}{{ picture.artist.dir_name }}/{{ picture.filename }}" /></a>
+	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.filename }}" /></a>
 {% endif %}
 
 <div class="pictureheading">
