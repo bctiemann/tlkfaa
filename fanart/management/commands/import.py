@@ -20,7 +20,7 @@ class Command(BaseCommand):
     do_comments = False
     do_shouts = False
     do_coloringbase = False
-    do_coloringpics = False
+    do_coloringpics = True
     do_characters = False
     do_favorites = False
     do_offers = False
@@ -29,7 +29,7 @@ class Command(BaseCommand):
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = True
+    do_requests = False
     do_imclients = False
     do_imids = False
     do_newpics = False
@@ -328,7 +328,7 @@ class Command(BaseCommand):
             for cp in c.fetchall():
                 print cp
                 try:
-                    artist = fanart_models.User.objects.get(id_orig=cp['artistid'])
+                    artist = fanart_models.User.objects.get(artist_id_orig=cp['artistid'])
                     print artist
                     base = fanart_models.ColoringBase.objects.get(id_orig=cp['basepic'])
                     print base

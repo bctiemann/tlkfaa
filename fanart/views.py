@@ -275,6 +275,9 @@ class PictureView(TemplateView):
         context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
         context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
         context['picture_is_private'] = not picture.is_public and (not user.is_authenticated or picture.artist != user)
+        context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
+        context['hash'] = uuid.uuid4()
 
         context['settings'] = settings
         context['video_types'] = [
