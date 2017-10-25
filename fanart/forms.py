@@ -1,11 +1,15 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import (
+    authenticate, get_user_model, password_validation,
+)
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden
 
 from fanart import models
 
 import json
+import hashlib
 
 import logging
 logger = logging.getLogger(__name__)
@@ -42,6 +46,28 @@ class AjaxableResponseMixin(object):
             return JsonResponse(data)
         else:
             return response
+
+
+class LoginForm(AuthenticationForm):
+
+    def clean(self):
+        m = hashlib.md5()
+        username = self.cleaned_data.get('username')
+        m.update(self.cleaned_data.get('password'))
+        password = m.hexdigest()
+
+        if username is not None and password:
+            self.user_cache = authenticate(self.request, username=username, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError(
+                    self.error_messages['invalid_login'],
+                    code='invalid_login',
+                    params={'username': self.username_field.verbose_name},
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
 
 
 class PictureCommentForm(forms.ModelForm):

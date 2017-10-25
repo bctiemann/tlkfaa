@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
+from django.contrib.auth.views import LoginView
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -19,6 +20,10 @@ import json
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+class LoginView(LoginView):
+    form_class = forms.LoginForm
 
 
 class UserPaneView(TemplateView):
@@ -290,6 +295,15 @@ class PictureView(TemplateView):
 
 class PictureTooltipView(PictureView):
     template_name = 'includes/tooltip_picture.html'
+
+class ColoringPictureTooltipView(TemplateView):
+    template_name = 'includes/tooltip_coloring_picture.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ColoringPictureTooltipView, self).get_context_data(**kwargs)
+        coloring_picture = get_object_or_404(models.ColoringPicture, pk=kwargs['coloring_picture_id'])
+        context['coloring_picture'] = coloring_picture
+        return context
 
 
 class ArtistView(TemplateView):

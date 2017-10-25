@@ -98,6 +98,10 @@ var setupTooltipPreview = function() {
 
       $('#previewPopupContent').html('&nbsp;');
 
+//      var popuptype = {
+//          'picture': 'picture',
+//          'coloring_picture': 'coloring_picture',
+//      }
       var popuptype;
       if (type == 'picture' || type == 'ccpic') {
         popuptype = "picture";
@@ -111,7 +115,7 @@ var setupTooltipPreview = function() {
 
       $.ajax({
           type: 'GET',
-          url: '/tooltip/' + popuptype + '/' + id + '/',
+          url: '/tooltip/' + type + '/' + id + '/',
           success: function(data)
           {
               // Verify that we're pointed to a page that returned the expected results.
