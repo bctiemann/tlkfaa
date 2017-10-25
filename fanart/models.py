@@ -244,6 +244,10 @@ class Picture(models.Model):
         return 'p.jpg'
 
     @property
+    def preview_width(self):
+        return settings.PREVIEW_WIDTH
+
+    @property
     def preview_height(self):
         return int(self.height * settings.PREVIEW_WIDTH / self.width)
 
@@ -463,6 +467,14 @@ class ColoringPicture(models.Model):
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
     thumb_height = models.IntegerField(blank=True)
+
+    @property
+    def preview_width(self):
+        return settings.PREVIEW_WIDTH
+
+    @property
+    def preview_height(self):
+        return int(self.height * settings.PREVIEW_WIDTH / self.width)
 
 
 class TradingOffer(models.Model):
