@@ -1548,7 +1548,8 @@ console.log(data);
                 Shadowbox.setup('#shouts a.button');
             });
         } else if (type == 'comment') {
-            var refreshurl = "/ajax_comments.jsp?pictureid="+itemid;
+//            var refreshurl = "/ajax_comments.jsp?pictureid="+itemid;
+            var refreshurl = '/comments/' + itemid + '/';
             $('#comments_'+itemid).load(refreshurl,function() {
 //                Shadowbox.setup('#comments_'+itemid+' a.button');
             });
