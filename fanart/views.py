@@ -7,6 +7,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -314,4 +315,8 @@ class ArtistView(TemplateView):
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
         context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
+        shouts_received = artist.shouts_received.order_by('-date_posted')
+        shouts_paginator = Paginator(shouts_received, 10)
+        context['shouts'] = shouts_paginator.page(1)
+
         return context

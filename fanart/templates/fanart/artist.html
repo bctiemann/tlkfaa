@@ -290,6 +290,7 @@ The specified artist's gallery is not publicly visible.
 	</div>
 
 
+        {% if artist.allow_shouts %}
 	<c:if test="${thisartist.allowshouts == true}">
 
 		<div class="featurebox">
@@ -298,6 +299,7 @@ The specified artist's gallery is not publicly visible.
 
 		<div class="shouts" id="shouts">
 
+                {% include "includes/shouts.html" %}
 		<jsp:include page="/ajax_shouts.jsp?artistid=${thisartist.artistid}&offset=0&count=10" />
 
 		<sql:query var="qryShoutsFull">
@@ -315,6 +317,7 @@ The specified artist's gallery is not publicly visible.
 		</div>
 
 	</c:if>
+        {% endif %}
 
 {% else %}
 </c:when>

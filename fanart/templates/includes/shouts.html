@@ -1,0 +1,240 @@
+{% load bbcode_tags %}
+{% load comment_tags %}
+<%--
+ajax_listshouts.jsp
+Lists shouts for an artist. Invoked from the artist's main page inline, and via an AJAX call to display more.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:set var="offset" value="0" />
+<c:set var="count" value="0" />
+<c:catch var="catchException">
+<fmt:parseNumber var="artistid" value="${param.artistid}" integerOnly="true" />
+<fmt:parseNumber var="shoutid" value="${param.shoutid}" integerOnly="true" />
+<fmt:parseNumber var="myoffset" value="${param.offset}" integerOnly="true" />
+<fmt:parseNumber var="count" value="${param.count}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${loggedin == 1 && param.op == 'delete' && shoutid > 0}">
+	<sql:update var="updShout">
+	UPDATE shouts
+	SET deleted=true
+	WHERE shoutid=?
+	AND (userid=? OR artistid=?)
+        <sql:param value="${shoutid}" />
+        <sql:param value="${user.userid}" />
+        <sql:param value="${artist.artistid}" />
+        </sql:update>
+                
+	Roar deleted.
+</c:if>
+
+<c:choose>
+<c:when test="${artistid > 0}">
+
+	<sql:query var="qryArtist">
+	SELECT * FROM artists
+	WHERE artistid=?
+	<sql:param value="${artistid}" />
+	</sql:query>
+	<c:forEach var="artist" items="${qryArtist.rows}">
+	<c:set var="thisartist" scope="page" value="${artist}" />
+	</c:forEach>
+
+	<sql:query var="qryBlocked">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${artistid}" />
+	</sql:query>
+
+	<c:if test="${loggedin == 1 && param.op == 'post' && param.shout != '' && qryBlocked.rowCount == 0 && thisartist.allowshouts == true}">
+		<sql:transaction>
+		<sql:update var="updShout">
+		INSERT INTO shouts (userid,artistid,comment,posted)
+		VALUES (?,?,?,now())
+		<sql:param value="${user.userid}" />
+		<sql:param value="${artistid}" />
+		<sql:param value="${param.shout}" />
+		</sql:update>
+		<sql:query var="qryShout">
+		SELECT last_insert_id() AS shoutid FROM shouts
+		LIMIT 1
+		</sql:query>
+		<c:forEach var="lastshout" items="${qryShout.rows}">
+			<c:set var="shoutid" value="${lastshout.shoutid}" />
+		</c:forEach>
+		</sql:transaction>
+
+		<sql:query var="qryRecpt">
+		SELECT * FROM artists
+		WHERE artistid=?
+		<sql:param value="${artistid}" />
+		</sql:query>
+
+		<c:forEach var="r" items="${qryRecpt.rows}">
+			<c:set var="recpt" value="${r}" />
+		</c:forEach>
+
+		<c:set var="artistname" value="${artist.artistname}" />
+		<c:set var="dirname" value="${recpt.dirname}" />
+		<c:set var="recptid" value="${artistid}" />
+		<c:set var="shoutid" value="${shoutid}" />
+		<c:set var="userid" value="${user.userid}" />
+		<c:set var="recptname" value="${recpt.artistname}" />
+		<c:set var="gender" value="${artist.gender}" />
+		<c:set var="recptemail" value="${recpt.email}" />
+		<%
+			String artistname = pageContext.getAttribute("artistname").toString();
+			String dirname = pageContext.getAttribute("dirname").toString();
+			String shoutid = pageContext.getAttribute("shoutid").toString();
+			String userid = pageContext.getAttribute("userid").toString();
+			String recptid = pageContext.getAttribute("recptid").toString();
+			String recptname = pageContext.getAttribute("recptname").toString();
+			String recptemail = pageContext.getAttribute("recptemail").toString();
+			printLog("User " + userid + " posted shout " + shoutid + " (artist " + recptid + ").");
+		%>
+
+		<c:if test="${recpt.emailshouts}">
+			<%
+				String message = "A new roar from " + artistname + " has been posted on your page at The Lion King Fan-Art Archive:\n\nhttp://fanart.lionking.org/Artists/" + dirname;
+				sendEmail("fanart@lionking.org", recptemail, "TLKFAA: New Roar Posted", message, true);
+			%>
+		</c:if>
+
+	</c:if>
+
+	<c:if test="${myoffset > 0}">
+		<c:set var="offset" value="${myoffset}" />
+	</c:if>
+
+	<c:if test="${offset == 0 && loggedin == 1 && qryBlocked.rowCount == 0}">
+		<div class="commenttext commentreply">
+		<form name="commentform" onSubmit="return false">
+		Roar:<br />
+		<textarea class="comment shout-text" name="shouttext" id="shouttext_${artistid}"></textarea>
+		<div class="commentbuttons">
+		<button type="button" class="small" onClick="postShout(${artistid},0)">Post</button>
+		</div>
+		</form>
+		</div>
+	</c:if>
+
+	<sql:query var="qryShoutsFull">
+	SELECT * FROM shouts
+	WHERE shouts.artistid=?
+	<sql:param value="${thisartist.artistid}" />
+	</sql:query>
+
+	<c:choose>
+	<c:when test="${count > 0}">
+		<c:set var="count" value="${count}" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="count" value="${qryShoutsFull.rowCount}" />
+	</c:otherwise>
+	</c:choose>
+
+	<sql:query var="qryShouts">
+	SELECT shouts.*,users.username,profilepic,profilepic_ext,dirname,artists.active,blockedon FROM shouts
+	LEFT JOIN blocks ON shouts.userid=blocks.userid AND shouts.artistid=blocks.artistid
+	,users 
+	LEFT JOIN artists ON artists.userid=users.userid
+	WHERE shouts.artistid=?
+	AND shouts.userid=users.userid
+	ORDER BY posted DESC
+	LIMIT ${offset},${count}
+	<sql:param value="${thisartist.artistid}" />
+	</sql:query>
+
+        {% for shout in shouts %}
+	<c:forEach var="shout" items="${qryShouts.rows}">
+
+		<div class="comment">
+		<div class="commentname"><c:if test="${shout.deleted == false}">
+			<div class="commentdate">{{ shout.date_posted|date:"H:i D n/j/Y" }}</div>
+                        {% if not shout.is_deleted %}
+			<c:if test="${shout.deleted == false}">
+                        {% if shout.user.is_artist %}
+			<c:choose>
+			<c:when test="${shout.active == true}">
+				<a href="/Artists/${shout.dirname}/">{{ shout.user.username }}</a>
+			</c:when>
+                        {% else %}
+			<c:otherwise>
+				{{ shout.user.username }}
+			</c:otherwise>
+			</c:choose>
+                        {% endif %}
+			{% if shout.user in artist.blocked_commenters %}(blocked){% endif %}
+			</c:if>
+                        {% endif %}
+		</c:if></div>
+		<div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
+			<div class="commentprofilepic">
+                        {% if shout.user.profile_pic_id and not shout.is_deleted %}
+			<c:if test="${shout.profilepic > 0 && shout.deleted == false}">
+                                {% if shout.user.is_artist %}
+                                        <a href="/Artists/${comment.dirname}/"><img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profile_pic_ext }}" /></a>
+                                {% else %}
+                                        <img src="/profiles/${comment.profilepic}.s.{{ shout.user.profilepic_ext }}" />
+				</c:otherwise>
+				</c:choose>
+                                {% endif %}
+			</c:if>
+                        {% endif %}
+			</div>
+                        {% if shout.is_deleted %}
+			<c:choose>
+			<c:when test="${shout.deleted == true}">
+				<table><tr><td>
+				Roar deleted.
+				</td></tr></table>
+			</c:when>
+                        {% else %}
+			<c:otherwise>
+				<c:set var="shouttext" value="${shout.comment}" />
+				<table><tr><td>
+				<div class="comment-text">
+                                        {{ shout.comment|bbcode|safe }}
+				</div>
+				</td></tr></table>
+				<div class="commentbuttons">
+				<c:if test="${shout.artistid == artist.artistid}">
+					<c:choose>
+					<c:when test="${shout.blockedon != null}">
+						<button type="button" class="small" onClick="blockUser(${shout.userid},'unblock','shout',${artist.artistid})">Unblock</button>
+					</c:when>
+					<c:otherwise>
+						<button type="button" class="small" onClick="blockUser(${shout.userid},'block','shout',${artist.artistid})">Block</button>
+					</c:otherwise>
+					</c:choose>
+				</c:if>
+				<c:if test="${shout.artistid == artist.artistid}"><button type="button" class="small" onClick="replyPM(${shout.userid},${shout.shoutid})">Reply PM</button></c:if>
+				<c:if test="${shout.artistid == artist.artistid || shout.userid == user.userid}"><button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button></c:if>
+				</div>
+			</c:otherwise>
+			</c:choose>
+                        {% endif %}
+			<br clear="all" />
+		</div>
+		</div>
+
+	</c:forEach>
+        {% endfor %}
+
+
+</c:when>
+<c:otherwise>
+</c:otherwise>
+</c:choose>

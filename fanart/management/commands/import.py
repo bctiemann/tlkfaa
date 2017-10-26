@@ -18,9 +18,9 @@ class Command(BaseCommand):
     do_folders = False
     do_pictures = False
     do_comments = False
-    do_shouts = False
+    do_shouts = True
     do_coloringbase = False
-    do_coloringpics = True
+    do_coloringpics = False
     do_characters = False
     do_favorites = False
     do_offers = False
@@ -212,6 +212,7 @@ class Command(BaseCommand):
                     u.save()
 
                     u.date_joined = user['created'] if user['created'] else timezone.now(),
+                    u.password = user['passwd']
                     u.save()
 
         if self.do_folders:
@@ -285,7 +286,7 @@ class Command(BaseCommand):
                 try:
                     user = fanart_models.User.objects.get(id_orig=comment['userid'])
                     print user
-                    artist = fanart_models.User.objects.get(id_orig=comment['artistid'])
+                    artist = fanart_models.User.objects.get(artist_id_orig=comment['artistid'])
                     print artist
                     f = fanart_models.Shout.objects.create(
                         id_orig = comment['shoutid'],
@@ -297,6 +298,8 @@ class Command(BaseCommand):
                         is_deleted = comment['deleted'],
                         is_received = comment['viewed'],
                     )
+                    f.date_posted = comment['posted']
+                    f.save()
                 except fanart_models.User.DoesNotExist:
                     pass
 
