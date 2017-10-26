@@ -245,6 +245,21 @@ class DeleteCommentView(UpdateView):
 #        return context
 
 
+class ShoutsView(TemplateView):
+    model = models.Shout
+    template_name = 'includes/shouts.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ShoutsView, self).get_context_data(*args, **kwargs)
+        artist = get_object_or_404(models.User, pk=kwargs['artist_id'])
+        logger.info(artist)
+        context['artist'] = artist
+        context['shouts'] = artist.shouts_received.order_by('-date_posted')
+        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
+        context['hash'] = uuid.uuid4()
+        return context
+
+
 class ToggleFaveView(APIView):
 
     def get(self, request, fave_type, object_id):
@@ -270,6 +285,21 @@ class ToggleFaveView(APIView):
         return Response(response)
 
 
+class ToggleBlockView(APIView):
+
+    def post(self, request, user_id):
+        response = {}
+        is_blocked = True
+        blocked_user = get_object_or_404(models.User, pk=user_id)
+        block, is_created = models.Block.objects.get_or_create(user=request.user, blocked_user=blocked_user)
+        if not is_created:
+            block.delete()
+            is_blocked = False
+        response['blocked_user_id'] = blocked_user.id
+        response['is_blocked'] = is_blocked
+        return Response(response)
+
+
 class PictureView(TemplateView):
     template_name = 'fanart/picture.html'
 
@@ -277,12 +307,13 @@ class PictureView(TemplateView):
         context = super(PictureView, self).get_context_data(**kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
-        context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
-        context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
         context['picture_is_private'] = not picture.is_public and (not user.is_authenticated or picture.artist != user)
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
-        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
         context['hash'] = uuid.uuid4()
+        if self.request.user.is_authenticated():
+            context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
+            context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
+            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
 
         context['video_types'] = [
             'video/quicktime',
@@ -314,9 +345,16 @@ class ArtistView(TemplateView):
         context = super(ArtistView, self).get_context_data(**kwargs)
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
-        context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
-        shouts_received = artist.shouts_received.order_by('-date_posted')
-        shouts_paginator = Paginator(shouts_received, 10)
-        context['shouts'] = shouts_paginator.page(1)
+#        shouts_received = artist.shouts_received.order_by('-date_posted')
+#        shouts_paginator = Paginator(shouts_received, 10)
+#        context['shouts'] = shouts_paginator.page(1)
+        context['shouts'] = artist.shouts_received.order_by('-date_posted')[0:10]
+
+        context['last_nine_uploads'] = artist.picture_set.filter(is_public=True, date_deleted__isnull=True).order_by('-date_uploaded')[0:9]
+        context['nine_most_popular_pictures'] = artist.picture_set.filter(num_faves__gt=0, is_public=True, date_deleted__isnull=True).order_by('-num_faves')[0:9]
+        context['last_nine_coloring_pictures'] = artist.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
+
+        if self.request.user.is_authenticated():
+            context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
 
         return context

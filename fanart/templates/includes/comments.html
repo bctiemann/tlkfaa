@@ -49,7 +49,7 @@
 			</td></tr></table>
                         {% if user.is_authenticated and not current_user_is_blocked %}
 				<div class="commentbuttons">
-                                {% if picture.user == user %}
+                                {% if picture.artist == user %}
                                         {% if comment.obj.user in picture.artist.blocked_commenters %}
 						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'unblock','comment',{{ comment.obj.picture.id }})">Unblock</button>
                                         {% else %}

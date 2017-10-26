@@ -73,7 +73,7 @@ class User(AbstractUser):
 
     artist_id_orig = models.IntegerField(null=True, blank=True, db_index=True)
 
-    dir_name = models.CharField(max_length=150, blank=True)
+    dir_name = models.CharField(max_length=150, blank=True, db_index=True)
     sort_name = models.CharField(max_length=150, blank=True)
     is_active = models.BooleanField(default=True, help_text='Controls whether user is allowed to log in. Uncheck this to disable accounts.')
     is_artist = models.BooleanField(default=True, help_text='Controls whether user has a visible artist page and has access to artist modules in ArtManager, or simply a Profile for following others.')
@@ -159,18 +159,6 @@ ORDER BY fanart_user.sort_name
     def recently_uploaded_pictures(self):
         three_days_ago = timezone.now() - datetime.timedelta(days=60)
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
-
-    @property
-    def last_nine_uploads(self):
-        return self.picture_set.filter(is_public=True, date_deleted__isnull=True).order_by('-date_uploaded')[0:9]
-
-    @property
-    def nine_most_popular_pictures(self):
-        return self.picture_set.filter(num_faves__gt=0, is_public=True, date_deleted__isnull=True).order_by('-num_faves')[0:9]
-
-    @property
-    def last_nine_coloring_pictures(self):
-        return self.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
 
     @property
     def blocked_commenters(self):
@@ -590,7 +578,7 @@ class ArtistName(models.Model):
 class Block(models.Model):
     user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
     blocked_user = models.ForeignKey('User', null=True, blank=True)
-    date_blocked = models.DateTimeField(null=True, blank=True)
+    date_blocked = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class Bulletin(models.Model):

@@ -158,79 +158,55 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 	</sql:query>
 
         {% for shout in shouts %}
-	<c:forEach var="shout" items="${qryShouts.rows}">
 
 		<div class="comment">
-		<div class="commentname"><c:if test="${shout.deleted == false}">
-			<div class="commentdate">{{ shout.date_posted|date:"H:i D n/j/Y" }}</div>
+		<div class="commentname">
                         {% if not shout.is_deleted %}
-			<c:if test="${shout.deleted == false}">
-                        {% if shout.user.is_artist %}
-			<c:choose>
-			<c:when test="${shout.active == true}">
-				<a href="/Artists/${shout.dirname}/">{{ shout.user.username }}</a>
-			</c:when>
+			<div class="commentdate">{{ shout.date_posted|date:"H:i D n/j/Y" }}</div>
+                        {% if shout.user.is_artist and shout.user.dir_name %}
+				<a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
                         {% else %}
-			<c:otherwise>
 				{{ shout.user.username }}
-			</c:otherwise>
-			</c:choose>
                         {% endif %}
 			{% if shout.user in artist.blocked_commenters %}(blocked){% endif %}
-			</c:if>
                         {% endif %}
-		</c:if></div>
+		</div>
 		<div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
 			<div class="commentprofilepic">
                         {% if shout.user.profile_pic_id and not shout.is_deleted %}
-			<c:if test="${shout.profilepic > 0 && shout.deleted == false}">
-                                {% if shout.user.is_artist %}
-                                        <a href="/Artists/${comment.dirname}/"><img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profile_pic_ext }}" /></a>
+                                {% if shout.user.is_artist and shout.user.dir_name %}
+                                        <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profile_pic_ext }}" /></a>
                                 {% else %}
-                                        <img src="/profiles/${comment.profilepic}.s.{{ shout.user.profilepic_ext }}" />
-				</c:otherwise>
-				</c:choose>
+                                        <img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profilepic_ext }}" />
                                 {% endif %}
-			</c:if>
                         {% endif %}
 			</div>
                         {% if shout.is_deleted %}
-			<c:choose>
-			<c:when test="${shout.deleted == true}">
 				<table><tr><td>
 				Roar deleted.
 				</td></tr></table>
-			</c:when>
                         {% else %}
-			<c:otherwise>
-				<c:set var="shouttext" value="${shout.comment}" />
 				<table><tr><td>
 				<div class="comment-text">
                                         {{ shout.comment|bbcode|safe }}
 				</div>
 				</td></tr></table>
 				<div class="commentbuttons">
-				<c:if test="${shout.artistid == artist.artistid}">
-					<c:choose>
-					<c:when test="${shout.blockedon != null}">
-						<button type="button" class="small" onClick="blockUser(${shout.userid},'unblock','shout',${artist.artistid})">Unblock</button>
-					</c:when>
-					<c:otherwise>
-						<button type="button" class="small" onClick="blockUser(${shout.userid},'block','shout',${artist.artistid})">Block</button>
-					</c:otherwise>
-					</c:choose>
-				</c:if>
-				<c:if test="${shout.artistid == artist.artistid}"><button type="button" class="small" onClick="replyPM(${shout.userid},${shout.shoutid})">Reply PM</button></c:if>
-				<c:if test="${shout.artistid == artist.artistid || shout.userid == user.userid}"><button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button></c:if>
+                                {% if shout.artist == user %}
+                                        {% if shout.user in artist.blocked_commenters %}
+						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'unblock','shout',{{ artist.id }})">Unblock</button>
+                                        {% else %}
+						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'block','shout',{{ artist.id }})">Block</button>
+                                        {% endif %}
+				<button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
+                                {% endif %}
+				{% if shout.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button>{% endif %}
 				</div>
-			</c:otherwise>
-			</c:choose>
                         {% endif %}
 			<br clear="all" />
 		</div>
 		</div>
 
-	</c:forEach>
         {% endfor %}
 
 

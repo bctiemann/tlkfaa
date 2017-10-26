@@ -206,7 +206,6 @@ function toggleUserBox(boxname) {
       var url = "/userbox/set/"+boxname+"/0";
 //      $('#genstatus').load(url);
       $.getJSON(url, function(data) {
-console.log(data);
       });
       $('#'+boxname+'_toggle').attr("class","toggle toggleclosed");
     });
@@ -220,7 +219,6 @@ console.log(data);
         var url = "/userbox/set/"+boxname+"/1";
 //        $('#genstatus').load(url);
         $.getJSON(url, function(data) {
-console.log(data);
         });
       });
     });
@@ -1535,7 +1533,8 @@ function deleteShout(shoutid) {
 }
 
 function blockUser(userid,fnc,type,itemid) {
-    var url = '/api/block.jsp';
+//    var url = '/api/block.jsp';
+    var url = '/block/' + (userid || $('#blockuserid').val()) + '/';
     var params = {
         'blockuserid': userid || $('#blockuserid').val(),
         'fnc': fnc,
@@ -1543,7 +1542,8 @@ function blockUser(userid,fnc,type,itemid) {
     $.post(url,params,function(data) {
 console.log(data);
         if (type == 'shout') {
-            var refreshurl = "/ajax_shouts.jsp?artistid="+itemid+"&offset=0&count=10";
+//            var refreshurl = "/ajax_shouts.jsp?artistid="+itemid+"&offset=0&count=10";
+            var refreshurl = '/shouts/' + itemid + '/';
             $('#shouts').load(refreshurl,function() {
                 Shadowbox.setup('#shouts a.button');
             });
