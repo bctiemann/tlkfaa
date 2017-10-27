@@ -264,19 +264,16 @@ class ShoutsView(TemplateView):
         return context
 
 
-class DeleteShoutView(UpdateView):
-    model = models.Shout
-    form_class = forms.ShoutDeleteForm
-    template_name = 'includes/shouts.html'
+class DeleteShoutView(APIView):
 
-    def get_object(self):
-        return get_object_or_404(models.Shout, Q(user=self.request.user) | Q(artist=self.request.user), pk=self.kwargs['shout_id'])
-
-    def form_valid(self, form):
-        logger.info('delete', self.object)
-        self.object.is_deleted = True
-        super(DeleteShoutView, self).form_valid(form)
-        return redirect('shouts', artist_id=self.object.artist.id)
+    def post(self, request, shout_id):
+        response = {'success': False}
+        shout = get_object_or_404(models.Shout, Q(user=self.request.user) | Q(artist=self.request.user), pk=shout_id)
+        shout.is_deleted = True
+        shout.save()
+        response['artist_id'] = shout.artist.id
+        response['success'] = True
+        return Response(response)
 
 
 class ToggleFaveView(APIView):

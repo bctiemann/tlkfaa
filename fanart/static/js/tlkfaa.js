@@ -1522,9 +1522,13 @@ function deleteShout(shoutid) {
         $(this).dialog('close');
 //        var url = "/ajax_shouts.jsp?op=delete&shoutid="+shoutid;
         var url = '/shout/' + shoutid + '/delete/';
-        $('#shouttext_'+shoutid).load(url,function() {
-          $('#shouttext_'+shoutid).addClass('commentdeleted');
-        });
+        params = {};
+        $.post(url,params,function(data) {
+            var refreshurl = '/shouts/' + data.artist_id + '/?shoutid=' + shoutid;
+            $.get(refreshurl, function(html) {
+                $('#shout_' + shoutid).empty().html($(html).find('#shout_' + shoutid).children());
+            });
+        }, 'json');
       },
       Cancel: function() {
         $(this).dialog('close');
