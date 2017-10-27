@@ -1449,7 +1449,9 @@ function postReply(pictureid,commentid) {
 function postShout(artistid) {
   var shout;
   shout = document.getElementById('shouttext_'+artistid).value;
-  $.post("/ajax_shouts.jsp",{ op: "post", artistid: artistid, shout: shout, offset: 0, count: 10 },function(data) {
+  var url = '/shouts/' + artistid + '/post/';
+  $.post(url,{ op: "post", artist: artistid, comment: shout, offset: 0, count: 10 },function(data) {
+console.log(data);
     $('#shouts').html(data);
   });
 }

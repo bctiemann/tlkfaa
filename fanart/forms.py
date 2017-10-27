@@ -91,3 +91,13 @@ class PictureCommentDeleteForm(forms.ModelForm):
     class Meta:
         model = models.PictureComment
         fields = []
+
+
+class ShoutForm(forms.ModelForm):
+    comment = forms.CharField(label='Comment:')
+
+    class Meta:
+        model = models.Shout
+        fields = ['user', 'artist', 'comment']
+
+

@@ -206,6 +206,7 @@ class CommentDetailView(DetailView):
         else:
             return response
 
+
 class EditCommentView(UpdateView):
     model = models.PictureComment
     form_class = forms.PictureCommentUpdateForm
@@ -262,6 +263,20 @@ class ShoutsView(TemplateView):
         context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         context['hash'] = uuid.uuid4()
         return context
+
+
+class PostShoutView(CreateView):
+    model = models.Shout
+    form_class = forms.ShoutForm
+    template_name = 'includes/shouts.html'
+
+    def form_valid(self, form):
+        shout = form.save(commit=False)
+        shout.user = self.request.user
+        logger.info(shout.user)
+        shout.save()
+        response = super(PostShoutView, self).form_valid(form)
+        return response
 
 
 class DeleteShoutView(APIView):

@@ -335,6 +335,9 @@ class PictureComment(BaseComment):
 class Shout(BaseComment):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received')
 
+    def get_absolute_url(self):
+        return reverse('shouts', kwargs={'artist_id': self.artist.id})
+
     def __unicode__(self):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
 

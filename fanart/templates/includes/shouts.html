@@ -122,9 +122,9 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 		<div class="commenttext commentreply">
 		<form name="commentform" onSubmit="return false">
 		Roar:<br />
-		<textarea class="comment shout-text" name="shouttext" id="shouttext_${artistid}"></textarea>
+		<textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}"></textarea>
 		<div class="commentbuttons">
-		<button type="button" class="small" onClick="postShout(${artistid},0)">Post</button>
+		<button type="button" class="small" onClick="postShout({{ artist.id }},0)">Post</button>
 		</div>
 		</form>
 		</div>
