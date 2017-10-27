@@ -159,7 +159,7 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 
         {% for shout in shouts %}
 
-		<div class="comment">
+		<div class="comment" id="shout_{{ shout.id }}">
 		<div class="commentname">
                         {% if not shout.is_deleted %}
 			<div class="commentdate">{{ shout.date_posted|date:"H:i D n/j/Y" }}</div>
@@ -194,13 +194,13 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 				<div class="commentbuttons">
                                 {% if shout.artist == user %}
                                         {% if shout.user in artist.blocked_commenters %}
-						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'unblock','shout',{{ artist.id }})">Unblock</button>
+						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'unblock','shout',{{ artist.id }},{{ shout.id }})">Unblock</button>
                                         {% else %}
-						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'block','shout',{{ artist.id }})">Block</button>
+						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'block','shout',{{ artist.id }},{{ shout.id }})">Block</button>
                                         {% endif %}
 				<button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
                                 {% endif %}
-				{% if shout.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button>{% endif %}
+				{% if shout.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
 				</div>
                         {% endif %}
 			<br clear="all" />

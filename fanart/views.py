@@ -8,6 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -231,7 +232,7 @@ class DeleteCommentView(UpdateView):
 
     def get_object(self):
         logger.info('get_object')
-        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+        return get_object_or_404(models.PictureComment, Q(user=self.request.user) | Q(picture__artist=self.request.user), pk=self.kwargs['comment_id'])
 
     def form_valid(self, form):
         logger.info('delete')
@@ -255,9 +256,27 @@ class ShoutsView(TemplateView):
         logger.info(artist)
         context['artist'] = artist
         context['shouts'] = artist.shouts_received.order_by('-date_posted')
+        shout_id = self.request.GET.get('shoutid', None)
+        if shout_id:
+            context['shouts'] = context['shouts'].filter(id=shout_id)
         context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         context['hash'] = uuid.uuid4()
         return context
+
+
+class DeleteShoutView(UpdateView):
+    model = models.Shout
+    form_class = forms.ShoutDeleteForm
+    template_name = 'includes/shouts.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Shout, Q(user=self.request.user) | Q(artist=self.request.user), pk=self.kwargs['shout_id'])
+
+    def form_valid(self, form):
+        logger.info('delete', self.object)
+        self.object.is_deleted = True
+        super(DeleteShoutView, self).form_valid(form)
+        return redirect('shouts', artist_id=self.object.artist.id)
 
 
 class ToggleFaveView(APIView):

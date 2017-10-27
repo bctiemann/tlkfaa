@@ -1520,7 +1520,8 @@ function deleteShout(shoutid) {
     buttons: {
       "Delete": function() {
         $(this).dialog('close');
-        var url = "/ajax_shouts.jsp?op=delete&shoutid="+shoutid;
+//        var url = "/ajax_shouts.jsp?op=delete&shoutid="+shoutid;
+        var url = '/shout/' + shoutid + '/delete/';
         $('#shouttext_'+shoutid).load(url,function() {
           $('#shouttext_'+shoutid).addClass('commentdeleted');
         });
@@ -1532,7 +1533,7 @@ function deleteShout(shoutid) {
   });
 }
 
-function blockUser(userid,fnc,type,itemid) {
+function blockUser(userid,fnc,type,itemid,commentid) {
 //    var url = '/api/block.jsp';
     var url = '/block/' + (userid || $('#blockuserid').val()) + '/';
     var params = {
@@ -1543,10 +1544,13 @@ function blockUser(userid,fnc,type,itemid) {
 console.log(data);
         if (type == 'shout') {
 //            var refreshurl = "/ajax_shouts.jsp?artistid="+itemid+"&offset=0&count=10";
-            var refreshurl = '/shouts/' + itemid + '/';
-            $('#shouts').load(refreshurl,function() {
-                Shadowbox.setup('#shouts a.button');
+            var refreshurl = '/shouts/' + itemid + '/?shoutid=' + commentid;
+            $.get(refreshurl, function(html) {
+                $('#shout_' + commentid).empty().html($(html).find('#shout_' + commentid).children());
             });
+//            $('#shouts').load(refreshurl,function() {
+//                Shadowbox.setup('#shouts a.button');
+//            });
         } else if (type == 'comment') {
 //            var refreshurl = "/ajax_comments.jsp?pictureid="+itemid;
             var refreshurl = '/comments/' + itemid + '/';
