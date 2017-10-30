@@ -1453,8 +1453,14 @@ function postShout(artistid) {
   var url = '/shouts/' + artistid + '/post/';
   $.post(url,{ op: "post", artist: artistid, comment: shout, offset: 0, count: 10 },function(data) {
 console.log(data);
-    $('#shouts').html(data);
-  });
+    var refreshurl = '/shouts/' + data.artist_id + '/?shoutid=' + data.shout_id;
+    $.get(refreshurl, function(html) {
+      $('#shouts').prepend(html);
+      $('#shouttext_'+artistid).val('');
+    });
+
+//    $('#shouts').html(data);
+  }, 'json');
 }
 
 function setupEditComment(pictureid,commentid) {

@@ -296,11 +296,9 @@ The specified artist's gallery is not publicly visible.
 
 		<div id="blockstatus"></div>
 
-		<div class="shouts" id="shouts">
-
                 {% if user.is_authenticated and not current_user_is_blocked %}
         <c:if test="${offset == 0 && loggedin == 1 && qryBlocked.rowCount == 0}">
-                <div class="commenttext commentreply">
+                <div class="commenttext commentreply shouts">
                 <form name="commentform" onSubmit="return false">
                 Roar:<br />
                 <textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}"></textarea>
@@ -311,6 +309,8 @@ The specified artist's gallery is not publicly visible.
                 </div>
         </c:if>
                 {% endif %}
+
+		<div class="shouts" id="shouts">
 
                 {% include "includes/shouts.html" %}
 

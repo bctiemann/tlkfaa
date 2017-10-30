@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
@@ -271,14 +271,13 @@ class PostShoutView(CreateView):
     template_name = 'includes/shouts.html'
 
     def form_valid(self, form):
-        logger.info(self.request.POST)
+        response = {'success': False}
         artist = models.User.objects.get(pk=self.request.POST.get('artist', None))
         current_user_is_blocked = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         if current_user_is_blocked:
             raise PermissionDenied
         shout = form.save(commit=False)
         shout.user = self.request.user
-        logger.info(shout.user)
         shout.save()
 
         email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
@@ -293,8 +292,10 @@ class PostShoutView(CreateView):
 
         logger.info('User {0} posted shout {1} (artist {2}).'.format(self.request.user, shout.id, artist))
 
-        response = super(PostShoutView, self).form_valid(form)
-        return response
+        response['shout_id'] = shout.id
+        response['artist_id'] = shout.artist.id
+        response['success'] = True
+        return JsonResponse(response)
 
 
 class DeleteShoutView(APIView):
