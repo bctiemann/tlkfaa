@@ -118,24 +118,6 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 		<c:set var="offset" value="${myoffset}" />
 	</c:if>
 
-	<c:if test="${offset == 0 && loggedin == 1 && qryBlocked.rowCount == 0}">
-		<div class="commenttext commentreply">
-		<form name="commentform" onSubmit="return false">
-		Roar:<br />
-		<textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}"></textarea>
-		<div class="commentbuttons">
-		<button type="button" class="small" onClick="postShout({{ artist.id }},0)">Post</button>
-		</div>
-		</form>
-		</div>
-	</c:if>
-
-	<sql:query var="qryShoutsFull">
-	SELECT * FROM shouts
-	WHERE shouts.artistid=?
-	<sql:param value="${thisartist.artistid}" />
-	</sql:query>
-
 	<c:choose>
 	<c:when test="${count > 0}">
 		<c:set var="count" value="${count}" />
@@ -144,18 +126,6 @@ Lists shouts for an artist. Invoked from the artist's main page inline, and via 
 		<c:set var="count" value="${qryShoutsFull.rowCount}" />
 	</c:otherwise>
 	</c:choose>
-
-	<sql:query var="qryShouts">
-	SELECT shouts.*,users.username,profilepic,profilepic_ext,dirname,artists.active,blockedon FROM shouts
-	LEFT JOIN blocks ON shouts.userid=blocks.userid AND shouts.artistid=blocks.artistid
-	,users 
-	LEFT JOIN artists ON artists.userid=users.userid
-	WHERE shouts.artistid=?
-	AND shouts.userid=users.userid
-	ORDER BY posted DESC
-	LIMIT ${offset},${count}
-	<sql:param value="${thisartist.artistid}" />
-	</sql:query>
 
         {% for shout in shouts %}
 

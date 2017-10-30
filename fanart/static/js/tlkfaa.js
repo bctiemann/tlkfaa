@@ -250,7 +250,8 @@ function getMoreBulletins(start,count) {
 }
 
 function getMoreShouts(artistid,offset,obj) {
-  var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
+//  var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
+  var url = '/shouts/' + artistid + '/?offset=' + offset;
   $.ajax({ url: url, success: function(data) {
     $('#shouts').append(data);
     obj.style.display='none';

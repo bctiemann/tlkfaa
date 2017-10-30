@@ -1,0 +1,6 @@
+A new roar from {{ user.username }} has been posted on your page at The Lion King Fan-Art Archive:
+
+{{ shout.comment }}
+
+{{ artist.get_absolute_url }}
+

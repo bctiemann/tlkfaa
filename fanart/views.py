@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models, forms, utils
+from fanart import models, forms, utils, tasks
 
 from datetime import timedelta
 import uuid
@@ -254,9 +254,9 @@ class ShoutsView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(ShoutsView, self).get_context_data(*args, **kwargs)
         artist = get_object_or_404(models.User, pk=kwargs['artist_id'])
-        logger.info(artist)
         context['artist'] = artist
-        context['shouts'] = artist.shouts_received.order_by('-date_posted')
+        offset = self.request.GET.get('offset', 0)
+        context['shouts'] = artist.shouts_received.order_by('-date_posted')[offset:]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
             context['shouts'] = context['shouts'].filter(id=shout_id)
@@ -271,10 +271,28 @@ class PostShoutView(CreateView):
     template_name = 'includes/shouts.html'
 
     def form_valid(self, form):
+        logger.info(self.request.POST)
+        artist = models.User.objects.get(pk=self.request.POST.get('artist', None))
+        current_user_is_blocked = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
+        if current_user_is_blocked:
+            raise PermissionDenied
         shout = form.save(commit=False)
         shout.user = self.request.user
         logger.info(shout.user)
         shout.save()
+
+        email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
+        tasks.send_email.delay(
+            recipients=['btman@mac.com'],
+            subject='TLKFAA: New Roar Posted',
+            context=email_context,
+            text_template='email/shout_posted.txt',
+            html_template='email/shout_posted.html',
+            bcc=['btman@lionking.org']
+        )
+
+        logger.info('User {0} posted shout {1} (artist {2}).'.format(self.request.user, shout.id, artist))
+
         response = super(PostShoutView, self).form_valid(form)
         return response
 
@@ -380,6 +398,7 @@ class ArtistView(TemplateView):
 #        shouts_paginator = Paginator(shouts_received, 10)
 #        context['shouts'] = shouts_paginator.page(1)
         context['shouts'] = artist.shouts_received.order_by('-date_posted')[0:10]
+        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
 
         context['last_nine_uploads'] = artist.picture_set.filter(is_public=True, date_deleted__isnull=True).order_by('-date_uploaded')[0:9]
         context['nine_most_popular_pictures'] = artist.picture_set.filter(num_faves__gt=0, is_public=True, date_deleted__isnull=True).order_by('-num_faves')[0:9]

@@ -124,6 +124,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    def get_absolute_url(self):
+        return '{0}/Artists/{1}/'.format(settings.SERVER_BASE_URL, self.dir_name)
+
     @property
     def unread_received_pms_count(self):
         return self.pms_received.filter(date_viewed__isnull=True).count()

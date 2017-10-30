@@ -31,6 +31,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['fanart-dj.lionking.org']
 
+SERVER_HOST = 'fanart.lionking.org'
+SERVER_URL_PREFIX = 'http://'
+SERVER_BASE_URL = '{0}{1}'.format(SERVER_URL_PREFIX, SERVER_HOST)
+
 INTERNAL_IPS = [
     '208.178.18.110',
     '23.246.74.58',
@@ -263,3 +267,9 @@ REST_FRAMEWORK = {
 
 
 PREVIEW_WIDTH = 240
+
+# Celery
+CELERY_BROKER_URL = 'amqp://tlkfaa:5zPM}XLh^Zgm-cAM@localhost:5672/tlkfaa'
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['pickle']

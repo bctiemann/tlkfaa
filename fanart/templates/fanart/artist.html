@@ -291,7 +291,6 @@ The specified artist's gallery is not publicly visible.
 
 
         {% if artist.allow_shouts %}
-	<c:if test="${thisartist.allowshouts == true}">
 
 		<div class="featurebox">
 
@@ -299,24 +298,30 @@ The specified artist's gallery is not publicly visible.
 
 		<div class="shouts" id="shouts">
 
+                {% if user.is_authenticated and not current_user_is_blocked %}
+        <c:if test="${offset == 0 && loggedin == 1 && qryBlocked.rowCount == 0}">
+                <div class="commenttext commentreply">
+                <form name="commentform" onSubmit="return false">
+                Roar:<br />
+                <textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}"></textarea>
+                <div class="commentbuttons">
+                <button type="button" class="small" onClick="postShout({{ artist.id }},0)">Post</button>
+                </div>
+                </form>
+                </div>
+        </c:if>
+                {% endif %}
+
                 {% include "includes/shouts.html" %}
-		<jsp:include page="/ajax_shouts.jsp?artistid=${thisartist.artistid}&offset=0&count=10" />
-
-		<sql:query var="qryShoutsFull">
-		SELECT * FROM shouts
-		WHERE shouts.artistid=?
-		<sql:param value="${thisartist.artistid}" />
-		</sql:query>
 
 		</div>
 
-		<c:if test="${qryShoutsFull.rowCount > 10}">
-			<button onClick="getMoreShouts(${thisartist.artistid},10,this)">Show all ${qryShoutsFull.rowCount} roars</button>
-		</c:if>
+                {% if artist.shouts_received.count > 10 %}
+			<button onClick="getMoreShouts({{ artist.id }},10,this)">Show all {{ artist.shouts_received.count }} roars</button>
+                {% endif %}
 
 		</div>
 
-	</c:if>
         {% endif %}
 
 {% else %}
