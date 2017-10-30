@@ -299,6 +299,10 @@ class Folder(models.Model):
     latest_picture = models.ForeignKey('Picture', null=True, blank=True, related_name='latest_folder')
     latest_picture_date = models.DateTimeField(null=True, blank=True)
 
+    @property
+    def latest_picture(self):
+        return self.picture_set.order_by('-date_uploaded').first()
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.name)
 

@@ -438,6 +438,15 @@ class FoldersView(APIView):
 
         folders = []
         for folder in artist.folder_set.all():
+            latest_picture = None
+            if folder.latest_picture:
+                latest_picture = {
+                    'pictureid': folder.latest_picture.id,
+                    'basename': folder.latest_picture.basename,
+                    'extension': folder.latest_picture.extension,
+                    'thumbheight': folder.latest_picture.thumb_height,
+                    'uploaded': folder.latest_picture.date_uploaded.strftime('%-m/%-d/%Y')
+                }
             folders.append({
                 'folderid': folder.id,
                 'artistid': artist.id,
@@ -447,37 +456,8 @@ class FoldersView(APIView):
                 'parent': folder.parent_id,
                 'numpictures': folder.picture_set.count(),
                 'newpics': 0,
+                'latestpicture': latest_picture,
             })
         response['folders'] = folders
-
-#<json:object>
-#    <json:array name="folders" var="folder" items="${qryFolders.rows}">
-#        <json:object>
-#            <json:property name="folderid" value="${folder.folderid}" />
-#            <json:property name="artistid" value="${folder.artistid}" />
-#            <json:property name="dirname" value="${folder.dirname}" />
-#            <json:property name="name" value="${folder.name}" />
-#            <json:property name="description" value="${folder.description}" />
-#            <json:property name="parent" value="${folder.parent}" />
-#            <json:property name="numpictures" value="${folder.numpictures}" />
-#            <json:property name="newpics" value="${folder.newpics}" />
-#            <c:choose>
-#            <c:when test="${!empty folder.latestpicture}">
-#                <json:object name="latestpicture">
-#                    <json:property name="pictureid" value="${folder.latestpicture}" />
-#                    <json:property name="basename" value="${folder.basename}" />
-#                    <json:property name="extension" value="${folder.extension}" />
-#                    <json:property name="thumbheight" value="${folder.thumbheight}" />
-#                    <fmt:formatDate var="uploadedFmt" value="${folder.uploaded}" type="date" dateStyle="short" />
-#                    <json:property name="uploaded" value="${uploadedFmt}" />
-#                </json:object>
-#            </c:when>
-#            <c:otherwise>
-#                <json:property name="latestpicture" value="${null}" />
-#            </c:otherwise>
-#            </c:choose>
-#        </json:object>
-#    </json:array>
-#</json:object>
 
         return Response(response)

@@ -1740,7 +1740,7 @@ console.log(folders);
                 itemid: folders[i].latestpicture.pictureid,
                 thumbheight: folders[i].latestpicture.thumbheight,
                 css: {
-                    backgroundImage: 'url(/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
+                    backgroundImage: 'url(/media/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
                 },
             });
             folderLi.append(latestPictureDiv);
