@@ -1639,9 +1639,9 @@ function foldersAtNode(folders, rootFolderId, isFlat) {
 }
 
 function getFolderTree(artistid, folderid, isFlat, pruneChildren, callback) {
-    var url = '/api/folders.jsp?artistid=' + artistid;
+//    var url = '/api/folders.jsp?artistid=' + artistid;
+    var url = '/folders/' + artistid;
     $.getJSON(url,function(data) {
-console.log(data);
 
         var roots = [];
         var sorted = [];
@@ -1694,9 +1694,6 @@ console.log(data);
             }
         }
 
-//        var result = foldersAtNode(sorted, folderid, isFlat);
-//console.log(result);
-
         callback(sorted, foldersKeyedById, folderid, isFlat, pruneChildren);
 
     });
@@ -1709,7 +1706,9 @@ function displayFolders(folders, foldersKeyedById, folderid, isFlat) {
         class: 'folders',
     });
 
+console.log(folders);
     folders = foldersAtNode(folders, folderid, isFlat);
+console.log(folders);
     // Make folder objects
     for (var i in folders) {
         var folderLi = $('<li>', {
@@ -1717,7 +1716,7 @@ function displayFolders(folders, foldersKeyedById, folderid, isFlat) {
             folderid: folders[i].folderid,
             dirname: folders[i].dirname,
             click: function() {
-                window.location.href = '/Artists/' + $(this).attr('dirname') + '/?list=gallery&folder=' + $(this).attr('folderid');
+                window.location.href = '/Artwork/Artists/' + $(this).attr('dirname') + '/gallery/?folder_id=' + $(this).attr('folderid');
             },
         });
 

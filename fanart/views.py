@@ -413,3 +413,71 @@ class ArtistView(TemplateView):
 
 class ArtistGalleryView(ArtistView):
     template_name = 'fanart/artist-gallery.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtistView, self).get_context_data(**kwargs)
+        artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
+        context['artist'] = artist
+        context['folder_id'] = self.request.GET.get('folder_id', 0)
+
+        subview = kwargs.get('subview', None)
+        if subview:
+            context['show_folders'] = False
+        else:
+            context['show_folders'] = True
+
+        return context
+
+
+class FoldersView(APIView):
+
+    def get(self, request, artist_id):
+        response = {}
+
+        artist = get_object_or_404(models.User, is_artist=True, id=artist_id)
+
+        folders = []
+        for folder in artist.folder_set.all():
+            folders.append({
+                'folderid': folder.id,
+                'artistid': artist.id,
+                'dirname': artist.dir_name,
+                'name': folder.name,
+                'description': folder.description,
+                'parent': folder.parent_id,
+                'numpictures': folder.picture_set.count(),
+                'newpics': 0,
+            })
+        response['folders'] = folders
+
+#<json:object>
+#    <json:array name="folders" var="folder" items="${qryFolders.rows}">
+#        <json:object>
+#            <json:property name="folderid" value="${folder.folderid}" />
+#            <json:property name="artistid" value="${folder.artistid}" />
+#            <json:property name="dirname" value="${folder.dirname}" />
+#            <json:property name="name" value="${folder.name}" />
+#            <json:property name="description" value="${folder.description}" />
+#            <json:property name="parent" value="${folder.parent}" />
+#            <json:property name="numpictures" value="${folder.numpictures}" />
+#            <json:property name="newpics" value="${folder.newpics}" />
+#            <c:choose>
+#            <c:when test="${!empty folder.latestpicture}">
+#                <json:object name="latestpicture">
+#                    <json:property name="pictureid" value="${folder.latestpicture}" />
+#                    <json:property name="basename" value="${folder.basename}" />
+#                    <json:property name="extension" value="${folder.extension}" />
+#                    <json:property name="thumbheight" value="${folder.thumbheight}" />
+#                    <fmt:formatDate var="uploadedFmt" value="${folder.uploaded}" type="date" dateStyle="short" />
+#                    <json:property name="uploaded" value="${uploadedFmt}" />
+#                </json:object>
+#            </c:when>
+#            <c:otherwise>
+#                <json:property name="latestpicture" value="${null}" />
+#            </c:otherwise>
+#            </c:choose>
+#        </json:object>
+#    </json:array>
+#</json:object>
+
+        return Response(response)

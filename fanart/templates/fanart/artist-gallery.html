@@ -124,7 +124,11 @@
 
 	<c:set var="picnumber" value="${pagetotal + 1}" />
 
+        {% if show_folders %}
+<b>{{ artist.folder_set.all }}</b>
+<b>{{ subfolders }}</b>
 	<c:if test="${showfolders == 1}">
+
 		<c:if test="${loggedin == 1 && false}">
 			<div class="selector">
 			View folders:
@@ -143,7 +147,7 @@
 		</div>
 		</c:if>
 
-		<div class="folders folders-new" id="folders" artistid="${thisartist.artistid}" folderid="${folder}">
+		<div class="folders folders-new" id="folders" artistid="{{ artist.id }}" folderid="{{ folder_id }}">
 <%--
 		<c:choose>
 		<c:when test="${user.folderstree == false}">
@@ -156,6 +160,7 @@
 --%>
 		</div>
 	</c:if>
+        {% endif %}
 
 	<%= Pages.get("pages") %>
 
