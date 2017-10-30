@@ -1,0 +1,230 @@
+{% extends "fanart/artist.html" %}
+
+{% load static %}
+{% load bbcode_tags %}
+{% load picture_tags %}
+
+{% block subview %}
+
+	<c:set var="showfolders" value="0" />
+	<c:if test="${folder > 0}">
+		<sql:query var="qryThisFolder">
+		SELECT * FROM folders
+		WHERE folderid=?
+		AND artistid=?
+		<sql:param value="${folder}" />
+		<sql:param value="${thisartist.artistid}" />
+		</sql:query>
+		<c:if test="${qryThisFolder.rowCount > 0}">
+			<c:set var="currentFolder" value="${qryThisFolder.rows[0]}" />
+		</c:if>
+	</c:if>
+	<c:if test="${param.list != 'bydate' && param.list != 'popular'}">
+		<c:choose>
+		<c:when test="${folder > 0}">
+			<c:set var="folderclause" value="AND folderid='${folder}' " />
+		</c:when>
+		<c:otherwise>
+			<c:set var="folderclause" value="AND (folderid IS NULL OR folderid=0)" />
+		</c:otherwise>
+		</c:choose>
+		<c:set var="showfolders" value="1" />
+	</c:if>
+	<c:if test="${param.list == 'popular'}">
+		<c:set var="numfavesclause" value="AND numpicfaves>0 " />
+	</c:if>
+
+	<c:set var="publicclause" value=" " />
+	<c:if test="${loggedin == 0 || thisartist.artistid != artist.artistid}"> 
+		<c:set var="publicclause" value="AND picpublic=1 " />
+	</c:if>
+
+	<c:choose>
+	<c:when test="${param.list == 'new' && loggedin == 1}">
+		<sql:query var="qryPicturesFull">
+		SELECT pictures.* FROM pictures,newpics
+		WHERE pictures.artistid=?
+		AND newpics.pictureid=pictures.pictureid
+		AND newpics.userid=?
+		AND deleted IS NULL
+		${publicclause}
+		<sql:param value="${thisartist.artistid}" />
+		<sql:param value="${user.userid}" />
+		</sql:query>
+	</c:when>
+	<c:otherwise>
+		<sql:query var="qryPicturesFull">
+		SELECT * FROM pictures
+		WHERE artistid=?
+		AND deleted IS NULL
+		${folderclause}
+		${numfavesclause}
+		${publicclause}
+		<sql:param value="${thisartist.artistid}" />
+		</sql:query>
+	</c:otherwise>
+	</c:choose>
+                
+	<c:set var="numItems" value="${qryPicturesFull.rowCount} " />
+	<c:choose>
+	<c:when test="${page > 0}">
+	<c:set var="page" value="${page} " />
+	</c:when>
+	<c:otherwise>
+	<c:set var="page" value="0 " />
+	</c:otherwise>
+	</c:choose>
+	<%
+	  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
+	  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
+
+	  Hashtable Pages = pagesLink(numItems,100,pageNum,true,"","text",request.getQueryString());
+
+	  pageContext.setAttribute("offset",Pages.get("offset"));
+	  pageContext.setAttribute("thispage",Pages.get("thispage"));
+	  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
+	%>
+
+	<c:choose>
+	<c:when test="${param.list == 'new'}">
+		<sql:query var="qryPictures">
+		SELECT pictures.* FROM pictures,newpics
+		WHERE pictures.artistid=?
+		AND newpics.pictureid=pictures.pictureid
+		AND newpics.userid=?
+		AND deleted IS NULL
+		${publicclause}
+		ORDER BY uploaded DESC
+		LIMIT ${offset},${thispage}
+		<sql:param value="${thisartist.artistid}" />
+		<sql:param value="${user.userid}" />
+		</sql:query>
+	</c:when>
+	<c:otherwise>
+		<c:set var="orderclause" value="ORDER BY uploaded DESC " />
+		<c:choose>
+		<c:when test="${param.list == 'popular'}">
+			<c:set var="orderclause" value="ORDER BY numpicfaves DESC " />
+		</c:when>
+		</c:choose>
+		<sql:query var="qryPictures">
+		SELECT pictures.*,coloring_baseid,numcolored FROM pictures 
+		LEFT JOIN coloring_base ON pictures.pictureid=coloring_base.pictureid
+		WHERE pictures.artistid=?
+		AND deleted IS NULL
+		${folderclause}
+		${numfavesclause}
+		${publicclause}
+		${orderclause}
+		LIMIT ${offset},${thispage}
+		<sql:param value="${thisartist.artistid}" />
+		</sql:query>
+	</c:otherwise>
+	</c:choose>
+
+	<c:set var="picnumber" value="${pagetotal + 1}" />
+
+	<c:if test="${showfolders == 1}">
+		<c:if test="${loggedin == 1 && false}">
+			<div class="selector">
+			View folders:
+			<a id="folderstree_list" class="<c:if test="${user.folderstree == false}">selected</c:if>" href="javascript:nop()" onClick="switchFolderMode('list',${folder},${thisartist.artistid})">list</a>
+			<a id="folderstree_tree" class="<c:if test="${user.folderstree == true}">selected</c:if>" href="javascript:nop()" onClick="switchFolderMode('tree',${folder},${thisartist.artistid})">tree</a>
+			</div>
+		</c:if>
+
+		<div class="foldernav">
+		</div>
+
+		<c:if test="${folder > 0}">
+		<div class="current-folder">
+			<h3>${currentFolder.name}</h3>
+			<p>${currentFolder.description}</p>
+		</div>
+		</c:if>
+
+		<div class="folders folders-new" id="folders" artistid="${thisartist.artistid}" folderid="${folder}">
+<%--
+		<c:choose>
+		<c:when test="${user.folderstree == false}">
+		<jsp:include page="/inc_root/inc_foldertree.jsp?folderid=${folder}&root=${folder}&mode=sum&artistid=${thisartist.artistid}" />
+		</c:when>
+		<c:otherwise>
+		<jsp:include page="/inc_root/inc_foldertree.jsp?folderid=${folder}&mode=display&artistid=${thisartist.artistid}" />
+		</c:otherwise>
+		</c:choose>
+--%>
+		</div>
+	</c:if>
+
+	<%= Pages.get("pages") %>
+
+	<div class="selector">
+	View by:
+	<a id="pictures_bydate" class="<c:if test="${param.list == 'bydate'}">selected</c:if>" href="?list=bydate">upload date</a>
+	<a id="pictures_normal" class="<c:if test="${param.list == 'popular'}">selected</c:if>" href="?list=popular">popularity</a>
+	<a id="pictures_normal" class="<c:if test="${param.list == 'gallery'}">selected</c:if>" href="?list=">folder</a>
+	</div>
+
+	<c:forEach var="picture" items="${qryPictures.rows}">
+
+	<%--
+	<sql:query var="qryComments">
+	SELECT commentid FROM comments
+	WHERE pictureid=?
+	<sql:param value="${picture.pictureid}" />
+	</sql:query>
+	--%>
+
+	<c:set var="newpic" value="0" />
+	<c:if test="${loggedin == 1}">
+	<sql:query var="qryNewPic">
+	SELECT * FROM newpics
+	WHERE pictureid=?
+	AND userid=?
+	<sql:param value="${picture.pictureid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+	<c:set var="newpic" value="${qryNewPic.rowCount > 0}" />
+	</c:if>
+
+	<c:set var="picnumber" value="${picnumber-1}" />
+	<c:set var="title" value="${picture.title}" />
+	<c:set var="pictype" value="${picture.type}" />
+	<c:if test="${showfolders == 0}"><c:set var="picfolder" value="${picture.folderid}" /></c:if>
+	<tags:printPicture
+		picnumber="${picnumber}"
+		pictureid="${picture.pictureid}"
+		basename="${picture.basename}"
+		extension="${picture.extension}"
+		type="${picture.type}"
+		folder="${picfolder}"
+		title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
+		dirname="${thisartist.dirname}"
+		width="${picture.width}"
+		height="${picture.height}"
+		thumbheight="${picture.thumbheight}"
+		allowcomments="${picture.allowcomments_p && thisartist.allowcomments}"
+		numcomments="${picture.numcomments}"
+		numpicfaves="${picture.numpicfaves}"
+		gallery="${thisartist.dirname}"
+		cc_base="${picture.coloring_baseid}"
+		showcolored="0"
+		newpic="${newpic}"
+		picpublic="${picture.picpublic}"
+		>
+		<jsp:attribute name="uploaded">
+			<fmt:formatDate value="${picture.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
+		</jsp:attribute>
+		<jsp:attribute name="filesize">
+			<fmt:formatNumber value="${picture.filesize / 1024}" type="number" pattern="###" />
+		</jsp:attribute>
+	</tags:printPicture>
+
+	</c:forEach>
+
+	<%= Pages.get("pages") %>
+
+{% endblock %}
+
+

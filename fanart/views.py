@@ -409,3 +409,7 @@ class ArtistView(TemplateView):
             context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
 
         return context
+
+
+class ArtistGalleryView(ArtistView):
+    template_name = 'fanart/artist-gallery.html'
