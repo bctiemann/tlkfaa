@@ -282,12 +282,12 @@ class PostShoutView(CreateView):
 
         email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
         tasks.send_email.delay(
-            recipients=['btman@mac.com'],
+            recipients=[artist.email],
             subject='TLKFAA: New Roar Posted',
             context=email_context,
             text_template='email/shout_posted.txt',
             html_template='email/shout_posted.html',
-            bcc=['btman@lionking.org']
+            bcc=[settings.DEBUG_EMAIL]
         )
 
         logger.info('User {0} posted shout {1} (artist {2}).'.format(self.request.user, shout.id, artist))

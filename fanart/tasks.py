@@ -5,9 +5,13 @@ from django.template.loader import get_template
 
 from celery import shared_task
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 TEXT_TEMPLATE = 'email/notification.txt'
 HTML_TEMPLATE = 'email/notification.html'
-FROM_ADDRESS = 'fanart@lionking.org'
+FROM_ADDRESS = settings.SITE_EMAIL
 
 
 @shared_task
@@ -19,6 +23,9 @@ def send_email(recipients,
     attachments=None,
     bcc=[],
 ):
+    if settings.DEBUG:
+        recipients = [settings.DEBUG_EMAIL]
+
     plaintext = get_template(text_template)
     htmly = get_template(html_template)
     connection = mail.get_connection()
