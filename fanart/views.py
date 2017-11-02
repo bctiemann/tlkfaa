@@ -426,6 +426,11 @@ class ArtistGalleryView(ArtistView):
         else:
             context['show_folders'] = True
 
+        pictures = artist.picture_set.filter(date_deleted__isnull=True).order_by('-date_uploaded')
+        pictures = pictures.filter(folder__isnull=True)
+        pictures_paginator = Paginator(pictures, 100)
+        context['pictures'] = pictures_paginator.page(1)
+
         return context
 
 
