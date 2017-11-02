@@ -125,9 +125,6 @@
 	<c:set var="picnumber" value="${pagetotal + 1}" />
 
         {% if show_folders %}
-<b>{{ artist.folder_set.all }}</b>
-<b>{{ subfolders }}</b>
-	<c:if test="${showfolders == 1}">
 
 		<c:if test="${loggedin == 1 && false}">
 			<div class="selector">
@@ -140,35 +137,23 @@
 		<div class="foldernav">
 		</div>
 
-		<c:if test="${folder > 0}">
+                {% if folder %}
 		<div class="current-folder">
-			<h3>${currentFolder.name}</h3>
-			<p>${currentFolder.description}</p>
+			<h3>{{ folder.name }}</h3>
+			<p>{{ folder.description }}</p>
 		</div>
-		</c:if>
+                {% endif %}
 
-		<div class="folders folders-new" id="folders" artistid="{{ artist.id }}" folderid="{{ folder_id }}">
-<%--
-		<c:choose>
-		<c:when test="${user.folderstree == false}">
-		<jsp:include page="/inc_root/inc_foldertree.jsp?folderid=${folder}&root=${folder}&mode=sum&artistid=${thisartist.artistid}" />
-		</c:when>
-		<c:otherwise>
-		<jsp:include page="/inc_root/inc_foldertree.jsp?folderid=${folder}&mode=display&artistid=${thisartist.artistid}" />
-		</c:otherwise>
-		</c:choose>
---%>
+		<div class="folders folders-new" id="folders" artistid="{{ artist.id }}" folderid="{{ folder.id }}">
 		</div>
-	</c:if>
+
         {% endif %}
-
-	<%= Pages.get("pages") %>
 
 	<div class="selector">
 	View by:
-	<a id="pictures_bydate" class="<c:if test="${param.list == 'bydate'}">selected</c:if>" href="?list=bydate">upload date</a>
-	<a id="pictures_normal" class="<c:if test="${param.list == 'popular'}">selected</c:if>" href="?list=popular">popularity</a>
-	<a id="pictures_normal" class="<c:if test="${param.list == 'gallery'}">selected</c:if>" href="?list=">folder</a>
+	<a id="pictures_bydate" class="{% if list == "bydate" %}selected{% endif %}" href="?list=bydate">upload date</a>
+	<a id="pictures_normal" class="{% if list == "popular" %}selected{% endif %}" href="?list=popular">popularity</a>
+	<a id="pictures_normal" class="{% if list == "folder" %}selected{% endif %}" href="?list=">folder</a>
 	</div>
 
         {% for picture in pictures.object_list %}
@@ -178,6 +163,22 @@
         {% endfor %}
 
 	<%= Pages.get("pages") %>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if pictures.has_previous %}
+            <a href="?page={{ pictures.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ pictures.number }} of {{ pictures.paginator.num_pages }}.
+        </span>
+
+        {% if pictures.has_next %}
+            <a href="?page={{ pictures.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 
 {% endblock %}
 

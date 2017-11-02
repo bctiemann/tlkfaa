@@ -1722,8 +1722,10 @@ console.log(folders);
             class: 'folder',
             folderid: folders[i].folderid,
             dirname: folders[i].dirname,
+            url: folders[i].url,
             click: function() {
-                window.location.href = '/Artwork/Artists/' + $(this).attr('dirname') + '/gallery/?folder_id=' + $(this).attr('folderid');
+//                window.location.href = '/Artwork/Artists/' + $(this).attr('dirname') + '/gallery/?folder_id=' + $(this).attr('folderid');
+                window.location.href = $(this).attr('url');
             },
         });
 
@@ -1747,7 +1749,8 @@ console.log(folders);
                 itemid: folders[i].latestpicture.pictureid,
                 thumbheight: folders[i].latestpicture.thumbheight,
                 css: {
-                    backgroundImage: 'url(/media/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
+//                    backgroundImage: 'url(/media/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
+                    backgroundImage: 'url(' + folders[i].latestpicture.preview_image_url + ')',
                 },
             });
             folderLi.append(latestPictureDiv);
@@ -1773,10 +1776,12 @@ console.log(folders);
                 title: he.decode(child.name),
                 folderid: child.folderid,
                 dirname: child.dirname,
+                target_url: child.url,
                 html: '&nbsp;',
                 click: function(e) {
                     e.stopPropagation();
-                    window.location.href = '/Artists/' + $(this).attr('dirname') + '/?list=gallery&folder=' + $(this).attr('folderid');
+//                    window.location.href = '/Artists/' + $(this).attr('dirname') + '/?list=gallery&folder=' + $(this).attr('folderid');
+                    window.location.href = $(this).attr('url');
                 },
             });
             }
@@ -1924,7 +1929,8 @@ function displayFoldersEditable(folders, foldersKeyedById, folderid, isFlat) {
                 itemid: folders[i].latestpicture.pictureid,
                 thumbheight: folders[i].latestpicture.thumbheight,
                 css: {
-                    backgroundImage: 'url(/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
+//                    backgroundImage: 'url(/Artwork/Artists/' + folders[i].dirname + '/' + folders[i].latestpicture.basename + '.p.jpg)',
+                    backgroundImage: 'url(' + folders[i].latestpicture.preview_image_url + ')',
                 },
             }));
             folderPreviewLi.append($('<p>', {

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
@@ -418,17 +419,21 @@ class ArtistGalleryView(ArtistView):
         context = super(ArtistView, self).get_context_data(**kwargs)
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
-        context['folder_id'] = self.request.GET.get('folder_id', 0)
+        context['folder'] = models.Folder.objects.filter(pk=self.request.GET.get('folder_id', None)).first()
 
         subview = kwargs.get('subview', None)
         if subview:
             context['show_folders'] = False
         else:
             context['show_folders'] = True
+        context['list'] = self.request.GET.get('list', 'folder')
 
-        pictures = artist.picture_set.filter(date_deleted__isnull=True).order_by('-date_uploaded')
-        pictures = pictures.filter(folder__isnull=True)
-        pictures_paginator = Paginator(pictures, 100)
+        pictures = artist.picture_set.filter(date_deleted__isnull=True, folder=context['folder']).order_by('-date_uploaded')
+#        if context['folder']:
+#            pictures = pictures.filter(folder=context['folder'])
+#        else:
+#            pictures = pictures.filter(folder__isnull=True)
+        pictures_paginator = Paginator(pictures, 10)
         context['pictures'] = pictures_paginator.page(1)
 
         return context
@@ -450,7 +455,8 @@ class FoldersView(APIView):
                     'basename': folder.latest_picture.basename,
                     'extension': folder.latest_picture.extension,
                     'thumbheight': folder.latest_picture.thumb_height,
-                    'uploaded': folder.latest_picture.date_uploaded.strftime('%-m/%-d/%Y')
+                    'uploaded': folder.latest_picture.date_uploaded.strftime('%-m/%-d/%Y'),
+                    'preview_image_url': '{0}Artwork{1}{2}.p.jpg'.format(settings.MEDIA_URL, reverse('artist', kwargs={'dir_name': artist.dir_name}), folder.latest_picture.basename)
                 }
             folders.append({
                 'folderid': folder.id,
@@ -462,6 +468,7 @@ class FoldersView(APIView):
                 'numpictures': folder.picture_set.count(),
                 'newpics': 0,
                 'latestpicture': latest_picture,
+                'url': '{0}?folder_id={1}'.format(reverse('artist-gallery', kwargs={'dir_name': artist.dir_name}), folder.id),
             })
         response['folders'] = folders
 
