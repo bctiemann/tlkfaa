@@ -160,7 +160,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def recently_uploaded_pictures(self):
-        three_days_ago = timezone.now() - datetime.timedelta(days=60)
+        three_days_ago = timezone.now() - datetime.timedelta(days=90)
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
     @property

@@ -1600,6 +1600,13 @@ function switchFolderMode(mode,folderid,artistid) {
     getFolderTree(artistid, folderid, mode == 'list' ? true : false);
 }
 
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
+
 function foldersAtNode(folders, rootFolderId, isFlat) {
     var foldersBelowRoot = [];
     var foundRoot = false;
@@ -1635,7 +1642,7 @@ function foldersAtNode(folders, rootFolderId, isFlat) {
     } else {
         result = foldersBelowRoot;
     }
-    return result;
+    return sortByKey(result, 'name');
 }
 
 function getFolderTree(artistid, folderid, isFlat, pruneChildren, callback) {
