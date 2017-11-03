@@ -162,27 +162,7 @@
 
         {% endfor %}
 
-	<%= Pages.get("pages") %>
-
-<div class="pagination">
-    <span class="step-links">
-{% for page in pictures_paginator.page_range %}
-{{ page }}
-{% endfor %}
-
-        {% if pictures.has_previous %}
-            <a href="?page={{ pictures.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ pictures.number }} of {{ pictures.paginator.num_pages }}.
-        </span>
-
-        {% if pictures.has_next %}
-            <a href="?page={{ pictures.next_page_number }}">next</a>
-        {% endif %}
-    </span>
-</div>
+        {{ pages_link.pages_nav|safe }}
 
 {% endblock %}
 

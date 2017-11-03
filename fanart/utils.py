@@ -65,3 +65,86 @@ def list_at_node(items, root):
                 new_list.append(node)
     return new_list
 
+class PagesLink(object):
+
+    def __init__(self, items_total, items_per_page, page_num, is_descending=True, base_url='', selection_type='text', query_dict={}):
+        pages_nav = ''
+
+        if items_total <= items_per_page:
+            num_pages = int((items_total - 1) / items_per_page)
+            if selection_type in ['text', 'ajax']:
+                pages_nav = '<div class="pageslink"></div>'
+        else:
+            if selection_type in ['text', 'ajax']:
+                pages_nav = '<div class="pageslink">Page: '
+            elif selection_type == 'menu':
+                pages_nav = '<select name="pagenum">\n'
+            num_pages = int((items_total - 1) / items_per_page)
+            if page_num == 0:
+                page_num = num_pages + 1
+
+        prev_page = page_num - 1
+        next_page = page_num + 1
+        last_page = num_pages + 1
+        new_query_dict = query_dict.copy()
+        new_query_dict.pop('page', None)
+        new_query_str = '&'.join([k + '=' + str(v) for k, v in new_query_dict.items()])
+
+        if selection_type == 'text':
+            if page_num > 3:
+                pages_nav = '{0} <a href="{1}?{2}&page=1">&laquo; 1</a> '.format(pages_nav, base_url, new_query_str)
+                if page_num > 4:
+                    pages_nav = '{0}&hellip; '.format(pages_nav)
+            elif page_num > 2:
+                pages_nav = '{0} <a href="{1}?{2}&page={3}">Prev</a> '.format(pages_nav, base_url, new_query_str, prev_page)
+        elif selection_type == 'ajax':
+            if page_num > 3:
+                pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage(1,\'{1}\')">&laquo; 1</a> '.format(pages_nav, new_query_str)
+                if page_num > 4:
+                    pages_nav = '{0}&hellip; '.format(pages_nav)
+            elif page_num > 2:
+                pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage({1},\'{2}\')">Prev</a> '.format(pages_nav, prev_page, new_query_str)
+
+        for i in xrange(page_num - 2, page_num + 3):
+            if i > 0 and i < num_pages + 2:
+                if page_num == i:
+                    if selection_type in ['text', 'ajax']:
+                        pages_nav = '{0} <span class="thispage">{1}</span> '.format(pages_nav, i)
+                    elif selection_type == 'menu':
+                        pages_nav = '{0}<option value="{1}" selected>{2}</option>\n'.format(pages_nav, i, i)
+                else:
+                    pre_arrow = ''
+                    post_arrow = ''
+                    if i == 1:
+                        pre_arrow = '&laquo; '
+                    if i == num_pages + 1:
+                        post_arrow = ' &raquo;'
+                    if selection_type == 'text':
+                        pages_nav = '{0} <a href="{1}?{2}&page={3}">{4}{5}{6}</a> '.format(pages_nav, base_url, new_query_str, i, pre_arrow, i, post_arrow)
+                    elif selection_type == 'ajax':
+                        pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage({1},\'{2}\')">{3}{4}{5}</a> '.format(pages_nav, i, new_query_str, pre_arrow, i, post_arrow)
+                    elif selection_type == 'menu':
+                        pages_nav = '{0}<option value="{1}">{2}</option>\n'.format(pages_nav, i, i)
+
+        if selection_type == 'text':
+            if page_num < num_pages - 1:
+                if page_num < num_pages - 2:
+                    pages_nav = '{0} &hellip;'.format(pages_nav)
+                pages_nav = '{0} <a href="{1}?{2}&page={3}">{4} &raquo;</a> '.format(pages_nav, base_url, new_query_str, last_page, last_page)
+            if page_num < num_pages:
+                pages_nav = '{0} <a href="{1}?{2}&page={3}">Next</a> '.format(pages_nav, base_url, new_query_str, next_page)
+        elif selection_type == 'ajax':
+            if page_num < num_pages - 1:
+                if page_num < num_pages - 2:
+                    pages_nav = '{0} &hellip;'.format(pages_nav)
+                pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage({1},\'{2}\')">{3} &raquo;</a> '.format(pages_nav, last_page, new_query_str, last_page)
+            if page_num < num_pages:
+                pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage({1},\'{2}\')">Next</a> '.format(pages_nav, next_page, new_query_str)
+
+        if selection_type in ['text', 'ajax']:
+            pages_nav = '{0}</div>'.format(pages_nav)
+        elif selection_type == 'menu':
+            pages_nav = '{0}</select>'.format(pages_nav)
+
+        self.pages_nav = pages_nav
+        self.items_per_page = items_per_page

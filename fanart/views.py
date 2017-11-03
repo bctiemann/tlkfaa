@@ -429,21 +429,20 @@ class ArtistGalleryView(ArtistView):
         context['list'] = self.request.GET.get('list', 'folder')
 
         pictures = artist.picture_set.filter(date_deleted__isnull=True, folder=context['folder']).order_by('date_uploaded')
-#        if context['folder']:
-#            pictures = pictures.filter(folder=context['folder'])
-#        else:
-#            pictures = pictures.filter(folder__isnull=True)
-        context['pictures_paginator'] = Paginator(pictures, 10)
+        context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
         try:
             page = int(self.request.GET.get('page', 1))
         except ValueError:
             page = 1
         reversed_page = context['pictures_paginator'].num_pages - page + 1
-#        context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
+
         try:
             context['pictures'] = context['pictures_paginator'].page(reversed_page)
         except EmptyPage:
             context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
+        page_number = context['pictures_paginator'].num_pages - context['pictures'].number + 1
+
+        context['pages_link'] = utils.PagesLink(pictures.count(), settings.PICTURES_PER_PAGE, page_number, is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 
