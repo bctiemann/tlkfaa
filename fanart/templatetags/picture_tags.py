@@ -66,6 +66,19 @@ class IsVisibleNode(template.Node):
         return 'isvisible' if Favorite.objects.filter(artist=artist, user=user, is_visible=True).exists() else ''
 
 
+class PictureNumberNode(template.Node):
+
+    def __init__(self, picture, list):
+        self.picture = template.Variable(picture)
+        self.list = template.Variable(list)
+
+    def render(self, context):
+        picture = self.picture.resolve(context)
+        list = self.list.resolve(context)
+
+        return picture.get_pic_number(list)
+
+
 @register.tag(name='view_picture')
 def do_view_picture(parser, token):
     try:
@@ -105,3 +118,9 @@ def get_is_visible(parser, token):
             "%r tag requires two arguments, an artist and a user" % token.contents.split()[0]
         )
     return IsVisibleNode(artist, user)
+
+@register.simple_tag()
+def pic_number(pic_number, page_number, per_page, *args, **kwargs):
+    if not pic_number or not page_number or not per_page:
+        return ''
+    return pic_number + ((page_number - 1) * per_page)

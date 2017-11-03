@@ -91,7 +91,9 @@
 
         {% for picture in pictures.object_list reversed %}
 
-            {% include "includes/picture.html" %}
+            {% with forloop.revcounter as pic_number %}
+                {% include "includes/picture.html" %}
+            {% endwith %}
 
         {% endfor %}
 

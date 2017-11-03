@@ -14,7 +14,7 @@
 
 <div class="picturedetails">
 
-<div class="picnumber">{{ picture.rank_in_folder }}</div>
+<div class="picnumber">{% pic_number pic_number pictures.number pictures_paginator.per_page %}</div>
 <div class="picdate">{{ picture.date_uploaded }}</div>
 <c:if test="${artistname != null}"><div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div></c:if>
 <c:if test="${folder != ''}">
