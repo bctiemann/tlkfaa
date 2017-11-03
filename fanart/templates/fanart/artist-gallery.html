@@ -156,7 +156,7 @@
 	<a id="pictures_normal" class="{% if list == "folder" %}selected{% endif %}" href="?list=">folder</a>
 	</div>
 
-        {% for picture in pictures.object_list %}
+        {% for picture in pictures.object_list reversed %}
 
             {% include "includes/picture.html" %}
 
@@ -166,6 +166,10 @@
 
 <div class="pagination">
     <span class="step-links">
+{% for page in pictures_paginator.page_range %}
+{{ page }}
+{% endfor %}
+
         {% if pictures.has_previous %}
             <a href="?page={{ pictures.previous_page_number }}">previous</a>
         {% endif %}
