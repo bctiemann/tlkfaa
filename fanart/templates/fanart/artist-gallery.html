@@ -65,74 +65,7 @@
 	</c:otherwise>
 	</c:choose>
                 
-	<c:set var="numItems" value="${qryPicturesFull.rowCount} " />
-	<c:choose>
-	<c:when test="${page > 0}">
-	<c:set var="page" value="${page} " />
-	</c:when>
-	<c:otherwise>
-	<c:set var="page" value="0 " />
-	</c:otherwise>
-	</c:choose>
-	<%
-	  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
-	  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
-
-	  Hashtable Pages = pagesLink(numItems,100,pageNum,true,"","text",request.getQueryString());
-
-	  pageContext.setAttribute("offset",Pages.get("offset"));
-	  pageContext.setAttribute("thispage",Pages.get("thispage"));
-	  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
-	%>
-
-	<c:choose>
-	<c:when test="${param.list == 'new'}">
-		<sql:query var="qryPictures">
-		SELECT pictures.* FROM pictures,newpics
-		WHERE pictures.artistid=?
-		AND newpics.pictureid=pictures.pictureid
-		AND newpics.userid=?
-		AND deleted IS NULL
-		${publicclause}
-		ORDER BY uploaded DESC
-		LIMIT ${offset},${thispage}
-		<sql:param value="${thisartist.artistid}" />
-		<sql:param value="${user.userid}" />
-		</sql:query>
-	</c:when>
-	<c:otherwise>
-		<c:set var="orderclause" value="ORDER BY uploaded DESC " />
-		<c:choose>
-		<c:when test="${param.list == 'popular'}">
-			<c:set var="orderclause" value="ORDER BY numpicfaves DESC " />
-		</c:when>
-		</c:choose>
-		<sql:query var="qryPictures">
-		SELECT pictures.*,coloring_baseid,numcolored FROM pictures 
-		LEFT JOIN coloring_base ON pictures.pictureid=coloring_base.pictureid
-		WHERE pictures.artistid=?
-		AND deleted IS NULL
-		${folderclause}
-		${numfavesclause}
-		${publicclause}
-		${orderclause}
-		LIMIT ${offset},${thispage}
-		<sql:param value="${thisartist.artistid}" />
-		</sql:query>
-	</c:otherwise>
-	</c:choose>
-
-	<c:set var="picnumber" value="${pagetotal + 1}" />
-
-        {% if show_folders %}
-
-		<c:if test="${loggedin == 1 && false}">
-			<div class="selector">
-			View folders:
-			<a id="folderstree_list" class="<c:if test="${user.folderstree == false}">selected</c:if>" href="javascript:nop()" onClick="switchFolderMode('list',${folder},${thisartist.artistid})">list</a>
-			<a id="folderstree_tree" class="<c:if test="${user.folderstree == true}">selected</c:if>" href="javascript:nop()" onClick="switchFolderMode('tree',${folder},${thisartist.artistid})">tree</a>
-			</div>
-		</c:if>
+        {% if list == "folder" %}
 
 		<div class="foldernav">
 		</div>
@@ -151,9 +84,9 @@
 
 	<div class="selector">
 	View by:
-	<a id="pictures_bydate" class="{% if list == "bydate" %}selected{% endif %}" href="?list=bydate">upload date</a>
-	<a id="pictures_normal" class="{% if list == "popular" %}selected{% endif %}" href="?list=popular">popularity</a>
-	<a id="pictures_normal" class="{% if list == "folder" %}selected{% endif %}" href="?list=">folder</a>
+	<a id="pictures_bydate" class="{% if list == "bydate" %}selected{% endif %}" href="{% url "artist-gallery" dir_name=artist.dir_name %}?list=bydate">upload date</a>
+	<a id="pictures_normal" class="{% if list == "popular" %}selected{% endif %}" href="{% url "artist-gallery" dir_name=artist.dir_name %}?list=popular">popularity</a>
+	<a id="pictures_normal" class="{% if list == "folder" %}selected{% endif %}" href="{% url "artist-gallery" dir_name=artist.dir_name %}">folder</a>
 	</div>
 
         {% for picture in pictures.object_list reversed %}

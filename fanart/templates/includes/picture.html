@@ -19,9 +19,9 @@
 <c:if test="${artistname != null}"><div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div></c:if>
 <c:if test="${folder != ''}">
     {% if picture.folder %}
-        <a href="/Artists/${dirname}/?list=gallery&folder=${folder}"><div class="picfolder">{{ picture.folder.name }}</div></a>
+        <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
     {% else %}
-        <a href="/Artists/${dirname}/?list=gallery"><div class="picfolder">Main Folder</div></a>
+        <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
     {% endif %}
 </c:if>
 

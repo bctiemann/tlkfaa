@@ -1781,7 +1781,7 @@ console.log(folders);
                 click: function(e) {
                     e.stopPropagation();
 //                    window.location.href = '/Artists/' + $(this).attr('dirname') + '/?list=gallery&folder=' + $(this).attr('folderid');
-                    window.location.href = $(this).attr('url');
+                    window.location.href = $(this).attr('target_url');
                 },
             });
             }
@@ -1815,6 +1815,7 @@ console.log(folders);
             folderid: 0,
             name: 'Main',
             noSeparator: true,
+            url: '?folder_id=0',
         });
         for (var navItem in folderPath) {
             var navLi = $('<li>', {
@@ -1822,7 +1823,7 @@ console.log(folders);
                 html: folderPath[navItem].noSeparator ? '' : ' &raquo; ',
             });
             navLi.append($('<a>', {
-                href: './?list=gallery&folder=' + folderPath[navItem].folderid,
+                href: folderPath[navItem].url,
                 html: folderPath[navItem].name,
             }));
             navUl.append(navLi);
