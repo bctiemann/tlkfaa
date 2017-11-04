@@ -5,7 +5,7 @@
 <div class="picture {% view_picture picture user %} {% if not picture.is_public %}privatepicture{% endif %}">
 <table>
 <tr>
-<td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
+<td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
 <td class="fullwidth picturedetails">
 
 {% if user.is_authenticated %}

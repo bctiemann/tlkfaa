@@ -1,0 +1,23 @@
+{% extends "fanart/artist.html" %}
+
+{% block banner %}{% endblock %}
+
+{% block subview %}
+
+    <h2>ArtWall</h2>
+
+    {{ pages_link.pages_nav|safe }}
+
+    {% for picture in pictures.object_list reversed %}
+
+        {% with forloop.revcounter as pic_number %}
+            {% include "includes/picture.html" %}
+        {% endwith %}
+
+    {% endfor %}
+
+    {{ pages_link.pages_nav|safe }}
+
+{% endblock %}
+
+
