@@ -466,7 +466,7 @@ class ArtWallView(ArtistView):
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
 
-        pictures = [gp.picture for gp in artist.gifts_received.order_by('picture__date_uploaded')]
+        pictures = [gp.picture for gp in artist.gifts_received.order_by('picture__date_uploaded').filter(is_active=True, picture__is_public=True, picture__date_deleted__isnull=True)]
 
         context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
         try:
