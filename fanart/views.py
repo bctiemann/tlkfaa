@@ -79,8 +79,42 @@ class ArtistsView(UserPaneView):
 
     def get_context_data(self, **kwargs):
         context = super(ArtistsView, self).get_context_data(**kwargs)
-        context['list'] = self.request.GET.get('list', 'newest')
+#        context['list'] = self.request.GET.get('list', 'newest')
+
+        context['show_search_input'] = False
+
+        list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
+
+        artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
+        if list == 'newest':
+            artists = artists.order_by('-date_joined')
+        elif list == 'recentactive':
+            artists = artists.order_by('-last_upload')
+        elif list == 'toprated':
+            artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        elif list == 'topratedactive':
+#            one_month_ago = timezone.now() - timedelta(days=31)
+            one_month_ago = timezone.now() - timedelta(days=180)
+            artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        elif list == 'prolific':
+            artists = artists.order_by('-num_pictures')
+        elif list == 'random':
+            artists = artists.order_by('?')
+        elif list == 'search':
+            term = self.request.GET.get('term', None)
+            context['show_search_input'] = True
+            if term:
+                context['term'] = term
+                artists = artists.filter(username__icontains=term).order_by('sort_name')
+            else:
+                artists = artists.filter(id__isnull=True)
+
+        context['list'] = list
+        context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
+        context['artists'] = artists[0:context['count']]
+
         return context
+
 
 class ArtworkView(UserPaneView):
     template_name = 'fanart/artwork.html'
@@ -526,42 +560,6 @@ class FoldersView(APIView):
         return Response(response)
 
 
-class ArtistsListView(TemplateView):
+class ArtistsListView(ArtistsView):
     template_name = 'includes/artists-list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(ArtistsListView, self).get_context_data(**kwargs)
-
-        context['show_search_input'] = False
-
-        list = kwargs.get('list', 'active')
-
-        artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
-        if list == 'newest':
-            artists = artists.order_by('-date_joined')
-        elif list == 'recentactive':
-            artists = artists.order_by('-last_upload')
-        elif list == 'toprated':
-            artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list == 'topratedactive':
-#            one_month_ago = timezone.now() - timedelta(days=31)
-            one_month_ago = timezone.now() - timedelta(days=180)
-            artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list == 'prolific':
-            artists = artists.order_by('-num_pictures')
-        elif list == 'random':
-            artists = artists.order_by('?')
-        elif list == 'search':
-            term = self.request.GET.get('term', None)
-            context['show_search_input'] = True
-            if term:
-                context['term'] = term
-                artists = artists.filter(username__icontains=term).order_by('sort_name')
-            else:
-                artists = artists.filter(id__isnull=True)
-
-        context['count'] = int(self.request.GET.get('count', 0))
-        context['artists'] = artists[0:context['count']]
-
-        return context
 

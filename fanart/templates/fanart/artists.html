@@ -247,6 +247,7 @@ artistlistopen = '${list}';
 
 <div id="artists">
 
+{% include "includes/artists-list.html" %}
 <jsp:include page="ajax_listartists.jsp?list=${list}&start=${start}&count=10" />
 
 </div>

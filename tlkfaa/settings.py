@@ -268,6 +268,8 @@ REST_FRAMEWORK = {
 
 PREVIEW_WIDTH = 240
 PICTURES_PER_PAGE = 10
+ARTISTS_PER_PAGE = 10
+DEFAULT_ARTISTS_VIEW = 'newest'
 
 # Celery
 CELERY_BROKER_URL = 'amqp://tlkfaa:5zPM}XLh^Zgm-cAM@localhost:5672/tlkfaa'
