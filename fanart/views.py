@@ -428,7 +428,11 @@ class ArtistGalleryView(ArtistView):
             context['show_folders'] = True
         context['list'] = self.request.GET.get('list', 'folder')
 
-        pictures = artist.picture_set.filter(date_deleted__isnull=True)
+        if context['list'] == 'new' and self.request.user.is_authenticated():
+            pictures = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(picture__artist=artist, user=self.request.user).order_by('picture__date_uploaded')]
+        else:
+            pictures = artist.picture_set.filter(date_deleted__isnull=True)
+
         if context['list'] == 'folder':
             pictures = pictures.filter(folder=context['folder']).order_by('date_uploaded')
         elif context['list'] == 'popular':
@@ -449,7 +453,7 @@ class ArtistGalleryView(ArtistView):
             context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
         context['page_number'] = context['pictures_paginator'].num_pages - context['pictures'].number + 1
 
-        context['pages_link'] = utils.PagesLink(pictures.count(), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
+        context['pages_link'] = utils.PagesLink(len(pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 
