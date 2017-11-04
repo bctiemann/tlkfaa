@@ -2201,7 +2201,8 @@ function listArtwork(list,count) {
 }
 
 function getMoreArtists(start,list,count,term,obj) {
-  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
+//  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
+  var url = '/artists/' + list + '?start=' + start + '&count=' + count;
   $.ajax({ url: url, success: function(data) {
 //    $('#artists_'+list).append(data);
     $('#artists').append(data);
@@ -2213,7 +2214,8 @@ function getMoreArtists(start,list,count,term,obj) {
       if (term != '') {
         termstr = "&term="+term;
       }
-      window.history.replaceState('', '', "/Artists.jsp?list="+list+"&start="+start+termstr);
+//      window.history.replaceState('', '', "/Artists.jsp?list="+list+"&start="+start+termstr);
+      window.history.replaceState('', '', '/Artists/?list=' + list + '&start=' + start + termstr);
     }
   }});
   ArtistList[list] = start;

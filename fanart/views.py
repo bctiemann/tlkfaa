@@ -84,6 +84,10 @@ class ArtistsView(UserPaneView):
         context['show_search_input'] = False
 
         list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
+        if not list in ['newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']:
+            list = settings.DEFAULT_ARTISTS_VIEW
+
+        start = int(self.request.GET.get('start', 0))
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
         if list == 'newest':
@@ -111,7 +115,8 @@ class ArtistsView(UserPaneView):
 
         context['list'] = list
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
-        context['artists'] = artists[0:context['count']]
+        context['next_start'] = start + settings.ARTISTS_PER_PAGE
+        context['artists'] = artists[start:start + context['count']]
 
         return context
 
