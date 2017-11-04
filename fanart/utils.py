@@ -65,6 +65,7 @@ def list_at_node(items, root):
                 new_list.append(node)
     return new_list
 
+
 class PagesLink(object):
 
     def __init__(self, items_total, items_per_page, page_num, is_descending=True, base_url='', selection_type='text', query_dict={}):
@@ -73,7 +74,9 @@ class PagesLink(object):
         if items_total <= items_per_page:
             num_pages = int((items_total - 1) / items_per_page)
             if selection_type in ['text', 'ajax']:
-                pages_nav = '<div class="pageslink"></div>'
+                self.pages_nav = '<div class="pageslink"></div>'
+                self.items_per_page = items_per_page
+                return
         else:
             if selection_type in ['text', 'ajax']:
                 pages_nav = '<div class="pageslink">Page: '

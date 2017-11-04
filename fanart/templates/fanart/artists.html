@@ -8,258 +8,93 @@
 
 {% block body_prop %}{% endblock %}
 
-{% block content %}
-
+{% block pagenav %}
 <div class="pagenav">
     <div class="searchartist">
     Search: <input id="searchartist" />
     </div>
 
     By artist name:
-    <c:forEach var="i" items="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z">
-    <a href="/Artists.jsp?list=name&initial=${i}" <c:if test="${param.initial == i}">class="selected"</c:if>>${fn:toUpperCase(i)}</a>
-    </c:forEach>
+    {% for letter in 'abcdefghijklmnopqrstuvwxyz' %}
+        <a href="{% url "artists" %}?list=name&initial={{ letter }}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
+    {% endfor %}
 </div>
+{% endblock %}
 
-
-<c:set var="list" value="${param.list}" />
+{% block content %}
 
 {% if list == "name" and initial %}
-<c:choose>
-<c:when test="${list == 'name' && initial != ''}">
 
-	<%
-	  Hashtable Pages = new Hashtable();
-	%>
+    <div class="featurebox">
 
-	<c:set var="offset" value="0" />
-	<c:set var="perpage" value="10" />
+        {{ pages_link.pages_nav|safe }}
 
-	<c:choose>
-	<c:when test="${list == 'name' && initial != ''}">
+        <div id="artists">
 
-		<sql:query var="qryArtistsFull">
-		SELECT * FROM artists
-		WHERE enabled=true
-		AND active=true
-		AND numpictures>0
-		AND sortname LIKE "${param.initial}%"
-		${hideprivate}
-		</sql:query>
+        {% include "includes/artists-list.html" %}
 
-		<c:set var="numItems" value="${qryArtistsFull.rowCount} " />
-		<c:choose>
-		<c:when test="${page > 0}">
-		<c:set var="page" value="${page} " />
-		</c:when>
-		<c:otherwise>
-		<c:set var="page" value="1 " />
-		</c:otherwise>
-		</c:choose>   
-		<%
-		  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
-		  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
+        </div>
 
-		  Pages = pagesLink(numItems,100,pageNum,false,"","text",request.getQueryString());
+        {{ pages_link.pages_nav|safe }}
 
-		  pageContext.setAttribute("offset",Pages.get("offset"));
-		  pageContext.setAttribute("thispage",Pages.get("thispage"));
-		  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
-		%>
+    </div>
 
-		<sql:query var="qryArtists">
-		SELECT * FROM artists
-		WHERE enabled=true
-		AND active=true
-		AND numpictures>0
-		AND sortname LIKE "${param.initial}%"
-		${hideprivate}
-		ORDER BY sortname
-		LIMIT ${offset},${thispage}
-		</sql:query>
-
-	</c:when>
-	<c:when test="${list == 'search' && query != ''}">
-	</c:when>
-	</c:choose>
-
-
-	<div class="featurebox">
-
-	<%= Pages.get("pages") %>
-
-	<c:set var="artistnumber" value="${offset}" />
-                
-	<c:forEach var="artist" items="${qryArtists.rows}">
-
-	<c:set var="artistnumber" value="${artistnumber+1}" />
-
-	<c:choose>
-	<c:when test="${artist.examplepic > 0}">
-
-	<sql:query var="qryExamplePic">
-	SELECT filename,basename,extension
-	FROM pictures
-	WHERE pictureid=?
-	AND deleted IS NULL
-	<sql:param value="${artist.examplepic}" />
-	</sql:query>
-	<c:forEach var="examplepic" items="${qryExamplePic.rows}">
-	<c:set var="iconfilename" value="${examplepic.filename}" />
-	<c:set var="iconbasename" value="${examplepic.basename}" />
-	<c:set var="iconextension" value="${examplepic.extension}" />
-	</c:forEach>
-
-	</c:when>
-	<c:otherwise>
-
-	<sql:query var="qryExamplePic">
-	SELECT filename,basename,extension
-	FROM pictures
-	WHERE artistid=?
-	AND deleted IS NULL
-	ORDER BY RAND()
-	LIMIT 1
-	<sql:param value="${artist.artistid}" /> 
-	</sql:query>
-	<c:forEach var="examplepic" items="${qryExamplePic.rows}">
-	<c:set var="iconfilename" value="${examplepic.filename}" />
-	<c:set var="iconbasename" value="${examplepic.basename}" />
-	<c:set var="iconextension" value="${examplepic.extension}" />
-	</c:forEach>
-
-	</c:otherwise>
-	</c:choose>
-
-	<tags:printArtist
-		artistnumber="${artistnumber}"
-		artistid="${artist.artistid}"
-		name="${artist.artistname}"
-		dirname="${artist.dirname}"
-		iconbasename="${iconbasename}"
-		iconextension="${iconextension}"
-		>
-		<jsp:attribute name="numpictures">
-			<fmt:formatNumber value="${artist.numpictures}" type="number" />
-		</jsp:attribute>
-		<jsp:attribute name="lastupload">
-			<fmt:formatDate value="${artist.lastupload}" type="both" pattern="HH:mm E M/d/yyyy" />
-		</jsp:attribute>
-		<jsp:attribute name="joined">
-			<fmt:formatDate value="${artist.created}" type="both" pattern="HH:mm E M/d/yyyy" />
-		</jsp:attribute>
-	</tags:printArtist>
-	</c:forEach>
-
-	<%= Pages.get("pages") %>
-
-	</div>
-
-</c:when>
-<c:otherwise>
 {% else %}
 
-<c:if test="${
-list != 'newest' && 
-list != 'recentactive' &&
-list != 'toprated' &&
-list != 'topratedactive' &&
-list != 'prolific' &&
-list != 'random' &&
-list != 'search'
-}">
-<c:set var="list" value="newest" />
-</c:if>
+    <div class="featurebox featureboxwide">
+        <div class="itemlistheaders" id="artistheaders">
 
-<script type="text/javascript">
-artistlistopen = '${list}';
-</script>
+            <div class="itemlist">
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('newest',10)">
+                    <h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="artistlisth2_newest">Newest</h2>
+                </a>
+            </div>
 
-<div class="featurebox featureboxwide">
-<div class="itemlistheaders" id="artistheaders">
-<div class="itemlist">
+            <div class="itemlist">
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive',10)">
+                    <h2 class="itemlist {% if list == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
+                </a>
+            </div>
 
-	<a class="itemlistheading" href="javascript:nop()" onClick="listArtists('newest',10)">
-	<h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="artistlisth2_newest">Newest</h2>
-	</a>
+            <div class="itemlist">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated',10)">
+                    <h2 class="itemlist {% if list == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
+                </a>
+            </div>
 
-	<div id="artists_newest">
-	</div>
+            <div class="itemlist">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive',10)">
+                    <h2 class="itemlist {% if list == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
+                </a>
+            </div>
 
-</div>
+            <div class="itemlist">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific',10)">
+                    <h2 class="itemlist {% if list == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
+                </a>
+            </div>
 
+            <div class="itemlist">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('random',5)">
+                    <h2 class="itemlist {% if list == "random" %}itemlist_selected{% endif %}" id="artistlisth2_random">Randomly Selected</h2>
+                </a>
+            </div>
 
-<div class="itemlist">
+            <div class="itemlist">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('search',0)">
+                    <h2 class="itemlist {% if list == "search" %}itemlist_selected{% endif %}" id="artistlisth2_search">Search</h2>
+                </a>
+            </div>
 
-	<a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive',10)">
-	<h2 class="itemlist {% if list == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
-	</a>
+        </div>
+        <br clear="left" />
 
-</div>
+        <div id="artists">
+            {% include "includes/artists-list.html" %}
+        </div>
 
+    </div>
 
-<div class="itemlist">
-
-	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated',10)">
-	<h2 class="itemlist {% if list == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
-	</a>
-
-</div>
-
-
-<div class="itemlist">
-
-	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive',10)">
-	<h2 class="itemlist {% if list == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
-	</a>
-
-</div>
-
-
-<div class="itemlist">
-
-	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific',10)">
-	<h2 class="itemlist {% if list == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
-	</a>
-
-</div>
-
-
-<div class="itemlist">
-
-	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('random',5)">
-	<h2 class="itemlist {% if list == "random" %}itemlist_selected{% endif %}" id="artistlisth2_random">Randomly Selected</h2>
-	</a>
-
-</div>
-
-
-<div class="itemlist">
-
-	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('search',0)">
-	<h2 class="itemlist {% if list == "search" %}itemlist_selected{% endif %}" id="artistlisth2_search">Search</h2>
-	</a>
-
-</div>
-</div>
-<br clear="left" />
-
-
-<div id="artists">
-
-{% include "includes/artists-list.html" %}
-<jsp:include page="ajax_listartists.jsp?list=${list}&start=${start}&count=10" />
-
-</div>
-
-
-</div>
-
-</c:otherwise>
-</c:choose>
 {% endif %}
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}

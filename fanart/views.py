@@ -83,14 +83,30 @@ class ArtistsView(UserPaneView):
 
         context['show_search_input'] = False
 
+        logger.info(kwargs)
+        logger.info(self.request.GET)
         list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
-        if not list in ['newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']:
+        if not list in ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']:
             list = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
+        initial = self.request.GET.get('initial', None)
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
-        if list == 'newest':
+        logger.info(list)
+        if list == 'name':
+            logger.info(initial)
+            artists = artists.filter(username__istartswith=initial).order_by('username')
+            context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
+            try:
+                page = int(self.request.GET.get('page', 1))
+            except ValueError:
+                page = 1
+            try:
+                artists_page = context['artists_paginator'].page(page)
+            except EmptyPage:
+                artists_page = context['artists_paginator'].page(1)
+        elif list == 'newest':
             artists = artists.order_by('-date_joined')
         elif list == 'recentactive':
             artists = artists.order_by('-last_upload')
@@ -116,7 +132,14 @@ class ArtistsView(UserPaneView):
         context['list'] = list
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
+        context['initial'] = initial
         context['artists'] = artists[start:start + context['count']]
+        if list == 'name':
+            context['artists'] = artists_page
+            context['count'] = None
+            logger.info(len(artists))
+            context['pages_link'] = utils.PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+            logger.info(context['pages_link'].pages_nav)
 
         return context
 

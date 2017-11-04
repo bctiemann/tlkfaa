@@ -1,4 +1,4 @@
-{% extends "fanart/base.html" %}
+{% extends "fanart/artists.html" %}
 
 {% load static %}
 {% load bbcode_tags %}
@@ -22,17 +22,6 @@
 <c:if test="${folder == null}">
 <c:set var="folder" value="0" />
 </c:if>
-
-<div class="pagenav">
-    <div class="searchartist">
-    Search: <input id="searchartist" />
-    </div>
-
-    By artist name:
-    <c:forEach var="i" items="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z">
-    <a href="/Artists.jsp?list=name&initial=${i}" <c:if test="${param.initial == i}">class="selected"</c:if>>${fn:toUpperCase(i)}</a>
-    </c:forEach>
-</div>
 
 <c:choose>
 <c:when test="${thisartist.active == 'true' && thisartist.enabled == 'true' && thisartist.numpictures > 0}">
