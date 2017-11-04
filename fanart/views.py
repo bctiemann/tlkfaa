@@ -77,6 +77,10 @@ class HomeView(UserPaneView):
 class ArtistsView(UserPaneView):
     template_name = 'fanart/artists.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ArtistsView, self).get_context_data(**kwargs)
+        context['list'] = self.request.GET.get('list', 'newest')
+        return context
 
 class ArtworkView(UserPaneView):
     template_name = 'fanart/artwork.html'
@@ -520,4 +524,30 @@ class FoldersView(APIView):
         response['folders'] = folders
 
         return Response(response)
+
+
+class ArtistsListView(TemplateView):
+    template_name = 'includes/artists-list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtistsListView, self).get_context_data(**kwargs)
+        list = self.request.GET.get('list', 'newest')
+        if list == 'newest':
+            artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0).order_by('-date_joined')
+        context['artists'] = artists[0:10]
+        context['count'] = int(self.request.GET.get('count', 0))
+        return context
+
+
+#                <sql:query var="qryArtists">
+#                SELECT artistid,artistname,dirname,examplepic,created,numpictures,lastupload,(numfavepics/numpictures)*numfaves as rating FROM artists
+#                WHERE enabled=true
+#                AND active=true
+#                AND numpictures>0
+#                ${hideprivate}
+#                ORDER BY created DESC
+#                LIMIT ${start},${querycount}
+#                </sql:query>
+#
+#                <c:set var="shownumber" value="true" />
 

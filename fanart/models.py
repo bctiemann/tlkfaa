@@ -128,6 +128,12 @@ class User(AbstractUser):
         return '{0}/Artists/{1}/'.format(settings.SERVER_BASE_URL, self.dir_name)
 
     @property
+    def get_example_pic(self):
+        if self.example_pic:
+            return self.example.pic
+        return self.picture_set.order_by('?').first()
+
+    @property
     def unread_received_pms_count(self):
         return self.pms_received.filter(date_viewed__isnull=True).count()
 

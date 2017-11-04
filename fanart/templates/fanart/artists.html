@@ -24,6 +24,7 @@
 
 <c:set var="list" value="${param.list}" />
 
+{% if list == "name" and initial %}
 <c:choose>
 <c:when test="${list == 'name' && initial != ''}">
 
@@ -156,6 +157,7 @@
 
 </c:when>
 <c:otherwise>
+{% else %}
 
 <c:if test="${
 list != 'newest' && 
@@ -178,7 +180,7 @@ artistlistopen = '${list}';
 <div class="itemlist">
 
 	<a class="itemlistheading" href="javascript:nop()" onClick="listArtists('newest',10)">
-	<h2 class="itemlist <c:if test="${list == 'newest'}">itemlist_selected</c:if>" id="artistlisth2_newest">Newest</h2>
+	<h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="artistlisth2_newest">Newest</h2>
 	</a>
 
 	<div id="artists_newest">
@@ -190,97 +192,52 @@ artistlistopen = '${list}';
 <div class="itemlist">
 
 	<a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive',10)">
-	<h2 class="itemlist <c:if test="${list == 'recentactive'}">itemlist_selected</c:if>" id="artistlisth2_recentactive">Recently Active</h2>
+	<h2 class="itemlist {% if list == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
 	</a>
 
-<%--
-	<div id="artists_recentactive">
-
-	<c:if test="${list == 'recentactive'}">
-	<jsp:include page="ajax_listartists.jsp?list=recentactive&start=0&count=10" />
-	</c:if>
-
-	</div>
---%>
 </div>
 
 
 <div class="itemlist">
 
 	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated',10)">
-	<h2 class="itemlist <c:if test="${list == 'toprated'}">itemlist_selected</c:if>" id="artistlisth2_toprated">Top Rated</h2>
+	<h2 class="itemlist {% if list == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
 	</a>
 
-<%--
-	<div id="artists_toprated">
-
-	<c:if test="${list == 'toprated'}">
-	<jsp:include page="ajax_listartists.jsp?list=toprated&start=0&count=10" />
-	</c:if>
-
-	</div>
---%>
 </div>
 
 
 <div class="itemlist">
 
 	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive',10)">
-	<h2 class="itemlist <c:if test="${list == 'topratedactive'}">itemlist_selected</c:if>" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
+	<h2 class="itemlist {% if list == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
 	</a>
 
-<%--
-	<div id="artists_topratedactive">
-
-	<c:if test="${list == 'topratedactive'}">
-	<jsp:include page="ajax_listartists.jsp?list=topratedactive&start=0&count=10" />
-	</c:if>
-
-	</div>
---%>
 </div>
 
 
 <div class="itemlist">
 
 	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific',10)">
-	<h2 class="itemlist <c:if test="${list == 'prolific'}">itemlist_selected</c:if>" id="artistlisth2_prolific">Most Prolific</h2>
+	<h2 class="itemlist {% if list == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
 	</a>
 
-<%--
-	<div id="artists_prolific">
-
-	<c:if test="${list == 'prolific'}">
-	<jsp:include page="ajax_listartists.jsp?list=prolific&start=0&count=10" />
-	</c:if>
-
-	</div>
---%>
 </div>
 
 
 <div class="itemlist">
 
 	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('random',5)">
-	<h2 class="itemlist <c:if test="${list == 'random'}">itemlist_selected</c:if>" id="artistlisth2_random">Randomly Selected</h2>
+	<h2 class="itemlist {% if list == "random" %}itemlist_selected{% endif %}" id="artistlisth2_random">Randomly Selected</h2>
 	</a>
 
-<%--
-	<div id="artists_random">
-
-	<c:if test="${list == 'random'}">
-	<jsp:include page="ajax_listartists.jsp?list=random&start=0&count=5" />
-	</c:if>
-
-	</div>
---%>
 </div>
 
 
 <div class="itemlist">
 
 	<a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('search',0)">
-	<h2 class="itemlist <c:if test="${list == 'search'}">itemlist_selected</c:if>" id="artistlisth2_search">Search</h2>
+	<h2 class="itemlist {% if list == "search" %}itemlist_selected{% endif %}" id="artistlisth2_search">Search</h2>
 	</a>
 
 </div>
@@ -299,6 +256,7 @@ artistlistopen = '${list}';
 
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 <jsp:include page="inc_root/inc_lowerlayout.jsp" />
 <jsp:include page="inc_root/inc_footer.jsp" />

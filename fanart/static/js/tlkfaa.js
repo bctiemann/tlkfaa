@@ -2148,7 +2148,8 @@ console.log(data);
 }
 
 function listArtists(list,count) {
-  var url = "/ajax_listartists.jsp?start=0&list="+list+"&count="+count;
+//  var url = "/ajax_listartists.jsp?start=0&list="+list+"&count="+count;
+  var url = '/artists/' + list + '?start=0&count=' + count;
   var termstr = "";
   if (list == 'search' && count > 0) {
     termstr = "&term="+encodeURIComponent($('#searchtext').val());
@@ -2167,7 +2168,7 @@ function listArtists(list,count) {
       $('h2.itemlist').removeClass('itemlist_selected');
       $('#artistlisth2_'+list).addClass('itemlist_selected');
       if (typeof(window.history.replaceState) !== "undefined") {
-        window.history.replaceState('', '', "/Artists.jsp?list="+list+termstr);
+        window.history.replaceState('', '', '/Artists/?list=' + list + termstr);
       }
     });
   });
