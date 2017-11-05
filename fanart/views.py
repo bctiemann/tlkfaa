@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Subquery
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -79,12 +79,9 @@ class ArtistsView(UserPaneView):
 
     def get_context_data(self, **kwargs):
         context = super(ArtistsView, self).get_context_data(**kwargs)
-#        context['list'] = self.request.GET.get('list', 'newest')
 
         context['show_search_input'] = False
 
-        logger.info(kwargs)
-        logger.info(self.request.GET)
         list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
         if not list in ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']:
             list = settings.DEFAULT_ARTISTS_VIEW
@@ -93,9 +90,7 @@ class ArtistsView(UserPaneView):
         initial = self.request.GET.get('initial', None)
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
-        logger.info(list)
         if list == 'name':
-            logger.info(initial)
             artists = artists.filter(username__istartswith=initial).order_by('username')
             context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
             try:
@@ -138,15 +133,79 @@ class ArtistsView(UserPaneView):
         if list == 'name':
             context['artists'] = artists_page
             context['count'] = None
-            logger.info(len(artists))
             context['pages_link'] = utils.PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
-            logger.info(context['pages_link'].pages_nav)
 
         return context
 
 
 class ArtworkView(UserPaneView):
     template_name = 'fanart/artwork.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtworkView, self).get_context_data(**kwargs)
+
+        context['show_search_input'] = False
+
+        default_artwork_view = settings.DEFAULT_ARTWORK_VIEW
+        if self.request.user.is_authenticated():
+            default_artwork_view = 'unviewed'
+
+        list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
+        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search']:
+            list = default_artwork_view
+
+        start = int(self.request.GET.get('start', 0))
+        initial = self.request.GET.get('initial', None)
+
+        artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0, date_deleted__isnull=True)
+        if list == 'name':
+            artists = artists.filter(username__istartswith=initial).order_by('username')
+            context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
+            try:
+                page = int(self.request.GET.get('page', 1))
+            except ValueError:
+                page = 1
+            try:
+                artists_page = context['artists_paginator'].page(page)
+            except EmptyPage:
+                artists_page = context['artists_paginator'].page(1)
+        elif list == 'newest':
+            three_months_ago = timezone.now() - timedelta(days=90)
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_approved')
+        elif list == 'newestfaves':
+#            artwork = artwork.filter(artist__in=[fave.artist for fave in self.request.user.favorite_set.all()]).order_by('-date_approved')
+            artwork = artwork.filter(artist__in=Subquery(self.request.user.favorite_set.all().values('artist_id'))).order_by('-date_approved')
+        elif list == 'toprated':
+            artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        elif list == 'topratedactive':
+#            one_month_ago = timezone.now() - timedelta(days=31)
+            one_month_ago = timezone.now() - timedelta(days=180)
+            artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        elif list == 'prolific':
+            artists = artists.order_by('-num_pictures')
+        elif list == 'random':
+            artists = artists.order_by('?')
+        elif list == 'search':
+            term = self.request.GET.get('term', None)
+            if not term:
+                context['show_search_input'] = True
+            if term:
+                context['term'] = term
+                artists = artists.filter(username__icontains=term).order_by('sort_name')
+            else:
+                artists = artists.filter(id__isnull=True)
+
+        context['list'] = list
+        context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
+        context['next_start'] = start + settings.ARTISTS_PER_PAGE
+        context['initial'] = initial
+        context['artwork'] = artwork[start:start + context['count']]
+        if list == 'name':
+            context['artists'] = artists_page
+            context['count'] = None
+            context['pages_link'] = utils.PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
 
 
 class CharactersView(UserPaneView):
@@ -591,4 +650,8 @@ class FoldersView(APIView):
 
 class ArtistsListView(ArtistsView):
     template_name = 'includes/artists-list.html'
+
+
+class ArtworkListView(ArtworkView):
+    template_name = 'includes/artwork-list.html'
 

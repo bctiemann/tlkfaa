@@ -2149,7 +2149,7 @@ console.log(data);
 
 function listArtists(list,count) {
 //  var url = "/ajax_listartists.jsp?start=0&list="+list+"&count="+count;
-  var url = '/artists/' + list + '?start=0&count=' + count;
+  var url = '/artists/' + list + '/?start=0&count=' + count;
   var termstr = "";
   if (list == 'search' && count > 0) {
     termstr = "&term="+encodeURIComponent($('#searchtext').val());
@@ -2175,7 +2175,8 @@ function listArtists(list,count) {
 }
 
 function listArtwork(list,count) {
-  var url = "/ajax_listartwork.jsp?start=0&list="+list+"&count="+count;
+//  var url = "/ajax_listartwork.jsp?start=0&list="+list+"&count="+count;
+  var url = '/artwork/' + list + '/?count=' + count;
   var termstr = "";
   if ((list == 'search' || list == 'tag') && count > 0) {
     termstr = "&term="+encodeURIComponent($('#searchtext').val());
@@ -2202,7 +2203,7 @@ function listArtwork(list,count) {
 
 function getMoreArtists(start,list,count,term,obj) {
 //  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = '/artists/' + list + '?start=' + start + '&count=' + count + '&term=' + term;
+  var url = '/artists/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
   $.ajax({ url: url, success: function(data) {
 //    $('#artists_'+list).append(data);
     $('#artists').append(data);
@@ -2222,7 +2223,8 @@ function getMoreArtists(start,list,count,term,obj) {
 }
 
 function getMoreArtwork(start,list,count,term,obj) {
-  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
+//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
+  var url = '/artwork/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
   $.ajax({ url: url, success: function(data) {
 //    $('#artwork_'+list).append(data);
     $('#artwork').append(data);
