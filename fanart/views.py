@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, OuterRef, Subquery
+from django.db.models import Q, OuterRef, Subquery, Min, Max
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -20,6 +20,7 @@ from fanart import models, forms, utils, tasks
 from datetime import timedelta
 import uuid
 import json
+import random
 
 import logging
 logger = logging.getLogger(__name__)
@@ -90,6 +91,7 @@ class ArtistsView(UserPaneView):
         initial = self.request.GET.get('initial', None)
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
+        one_month_ago = timezone.now() - timedelta(days=180)
         if list == 'name':
             artists = artists.filter(username__istartswith=initial).order_by('username')
             context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
@@ -108,8 +110,6 @@ class ArtistsView(UserPaneView):
         elif list == 'toprated':
             artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
         elif list == 'topratedactive':
-#            one_month_ago = timezone.now() - timedelta(days=31)
-            one_month_ago = timezone.now() - timedelta(days=180)
             artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
         elif list == 'prolific':
             artists = artists.order_by('-num_pictures')
@@ -158,6 +158,8 @@ class ArtworkView(UserPaneView):
         initial = self.request.GET.get('initial', None)
 
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0, date_deleted__isnull=True)
+        one_month_ago = timezone.now() - timedelta(days=180)
+        three_months_ago = timezone.now() - timedelta(days=90)
         if list == 'name':
             artists = artists.filter(username__istartswith=initial).order_by('username')
             context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
@@ -170,23 +172,19 @@ class ArtworkView(UserPaneView):
             except EmptyPage:
                 artists_page = context['artists_paginator'].page(1)
         elif list == 'newest':
-            three_months_ago = timezone.now() - timedelta(days=90)
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_approved')
         elif list == 'newestfaves':
-#            artwork = artwork.filter(artist__in=[fave.artist for fave in self.request.user.favorite_set.all()]).order_by('-date_approved')
-            three_months_ago = timezone.now() - timedelta(days=90)
-            artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.all().values('artist_id'))).order_by('-date_approved')
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_approved')
             logger.info(artwork.query)
         elif list == 'toprated':
-            artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list == 'topratedactive':
-#            one_month_ago = timezone.now() - timedelta(days=31)
-            one_month_ago = timezone.now() - timedelta(days=180)
-            artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+            artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
+        elif list == 'topratedrecent':
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-num_faves')
         elif list == 'prolific':
             artists = artists.order_by('-num_pictures')
         elif list == 'random':
-            artists = artists.order_by('?')
+            random_ids = random.sample(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max']), 100)
+            artwork = artwork.filter(pk__in=random_ids)
         elif list == 'search':
             term = self.request.GET.get('term', None)
             if not term:
@@ -196,6 +194,7 @@ class ArtworkView(UserPaneView):
                 artists = artists.filter(username__icontains=term).order_by('sort_name')
             else:
                 artists = artists.filter(id__isnull=True)
+#        logger.info(artwork.query)
 
         context['list'] = list
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
