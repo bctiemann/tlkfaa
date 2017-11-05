@@ -174,7 +174,9 @@ class ArtworkView(UserPaneView):
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_approved')
         elif list == 'newestfaves':
 #            artwork = artwork.filter(artist__in=[fave.artist for fave in self.request.user.favorite_set.all()]).order_by('-date_approved')
-            artwork = artwork.filter(artist__in=Subquery(self.request.user.favorite_set.all().values('artist_id'))).order_by('-date_approved')
+            three_months_ago = timezone.now() - timedelta(days=90)
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.all().values('artist_id'))).order_by('-date_approved')
+            logger.info(artwork.query)
         elif list == 'toprated':
             artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
         elif list == 'topratedactive':
