@@ -122,7 +122,8 @@ class ArtistsView(UserPaneView):
             artists = artists.order_by('?')
         elif list == 'search':
             term = self.request.GET.get('term', None)
-            context['show_search_input'] = True
+            if not term:
+                context['show_search_input'] = True
             if term:
                 context['term'] = term
                 artists = artists.filter(username__icontains=term).order_by('sort_name')

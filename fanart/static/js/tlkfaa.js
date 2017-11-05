@@ -2202,7 +2202,7 @@ function listArtwork(list,count) {
 
 function getMoreArtists(start,list,count,term,obj) {
 //  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = '/artists/' + list + '?start=' + start + '&count=' + count;
+  var url = '/artists/' + list + '?start=' + start + '&count=' + count + '&term=' + term;
   $.ajax({ url: url, success: function(data) {
 //    $('#artists_'+list).append(data);
     $('#artists').append(data);
