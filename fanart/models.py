@@ -527,7 +527,7 @@ class PictureCharacter(models.Model):
 class Tag(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     tag = models.CharField(max_length=255, blank=True)
-    num_pictures = models.IntegerField(null=True, blank=True)
+#    num_pictures = models.IntegerField(null=True, blank=True)
     is_visible = models.BooleanField(default=True)
 
     def __unicode__(self):

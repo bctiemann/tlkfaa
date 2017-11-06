@@ -1,42 +1,4 @@
-<%--
-ajax_listartwork.jsp
-Lists a selection of pictures according to the specified listing method. Invoked via the View Artwork tab.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:set var="start" value="0" />
-<c:set var="count" value="0" />
-<c:catch var="catchException">
-<fmt:parseNumber var="start" value="${param.start}" integerOnly="true" />
-<fmt:parseNumber var="count" value="${param.count}" integerOnly="true" />
-<fmt:parseNumber var="tag" value="${param.tag}" integerOnly="true" />
-<%--
-<c:choose>
-<c:when test="${param.list == 'tag'}">
-	<fmt:parseNumber var="term" value="${param.term}" integerOnly="true" />
-</c:when>
-<c:otherwise>
-	<c:set var="term" value="${param.term}" />
-</c:otherwise>
-</c:choose>
---%>
-</c:catch>
-<c:set var="querycount" value="${count + 1}" />
-
 {% if show_search_input %}
-<c:if test="${param.list == 'search' && start == 0}">
-
-	<c:set var="term" value="${fn:replace(param.term,'\"','')}" />
 
 	<form name="searchform" onSubmit="listArtwork('search',10);return false;">
 	<input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
@@ -44,215 +6,30 @@ Lists a selection of pictures according to the specified listing method. Invoked
 	<button type="button" onClick="listArtwork('tag',10)">Search Tags</button>
 	</form>
 
-	<c:if test="${param.list == 'search' && param.term == null}">
+        <div class="tags">
 
-	<div class="tags">
-
-	<sql:query var="qryTags">
-	SELECT * FROM 
-	(SELECT * FROM tags
-	WHERE visible=true
-	ORDER BY numpictures DESC
-	LIMIT 300) AS toptags
-	ORDER BY tag
-	</sql:query>
-	<div class="tagcolumn">
-	<c:set var="tagcount" value="0" />
-	<c:forEach var="tag" items="${qryTags.rows}">
-		<c:set var="tagcount" value="${tagcount + 1}" />
-		<c:if test="${tagcount == 51}">
-			</div>
-			<div class="tagcolumn">
-			<c:set var="tagcount" value="1" />
-		</c:if>
-		<div class="tag"><a class="tag" href="/Artwork/?list=tag&term=${tag.tagid}">${tag.tag} <span class="tagcount">${tag.numpictures}</span></a></div>
-	</c:forEach>
+        {% for tag in top_300_tags %}
+        <div class="tagcolumn">
+                <div class="tag"><a class="tag" href="{% url "artwork" %}?list=tag&term={{ tag.tag }}">{{ tag.tag }} <span class="tagcount">{{ tag.num_pictures }}</span></a></div>
 	</div>
+        {% endfor %}
 
 	</div>
 	<br clear="left" />
 
-	</c:if>
-
-</c:if>
 {% endif %}
 
-<c:if test="${param.list != null && count > 0}">
+{% for picture in artwork %}
 
-	<c:set var="picturecount" value="10" />
-
-	<c:when test="${param.list == 'search' && param.term != null && param.term != ''}">
-
-		<c:set var="term" value="${fn:replace(param.term,'\"','\\\\\"')}" />
-
-		<sql:query var="qryPictures">
-		SELECT * FROM pictures,artists
-		WHERE pictures.artistid=artists.artistid
-		AND enabled=true
-		AND active=true
-		AND numpictures>0
-<%--
-		AND (title LIKE "%${term}%"
-		OR keywords LIKE "%${term}%")
---%>
-		AND MATCH title AGAINST ("${term}")
-		AND pictures.deleted IS NULL
-		${hideprivate}
-		ORDER BY pictures.numpicfaves DESC
-		LIMIT ${start},${querycount}
-		</sql:query>
-
-	</c:when>
-	<c:when test="${param.list == 'tag'}">
-
-		<c:catch var="catchException">
-		<fmt:parseNumber var="term" value="${param.term}" integerOnly="true" />
-		</c:catch>
-
-		<c:if test="${term == null}">
-			<sql:query var="qryTagId">
-			SELECT * FROM tags
-			WHERE tag=?
-			AND visible=true
-			<sql:param value="${param.term}" />
-			</sql:query>
-			<c:forEach var="tagid" items="${qryTagId.rows}">
-				<c:set var="term" value="${tagid.tagid}" />
-			</c:forEach>
-			<c:if test="${qryTagId.rowCount == 0}">
-				There are no pictures using the specified tag (<b>${param.term}</b>).
-			</c:if>
-		</c:if>
-
-		<sql:query var="qryTag">
-		SELECT * FROM tags
-		WHERE tagid=?
-		AND visible=true
-		<sql:param value="${term}" />
-		</sql:query>
-		<c:forEach var="tag" items="${qryTag.rows}">
-			<c:if test="${start == 0}">
-				Tag: ${tag.tag}
-			</c:if>
-			<c:set var="term" value="${tag.tagid}" />
-
-			<sql:query var="qryPictures">
-			SELECT * FROM pictures,artists,picturetags
-			WHERE pictures.artistid=artists.artistid
-			AND pictures.pictureid=picturetags.pictureid
-			AND enabled=true
-			AND active=true
-			AND artists.numpictures>0
-			AND tagid=?
-			AND pictures.deleted IS NULL
-			${hideprivate}
-			ORDER BY pictures.numpicfaves DESC
-			LIMIT ${start},${querycount}
-			<sql:param value="${term}" />
-			</sql:query>
-		</c:forEach>
-
-	</c:when>
-	<c:when test="${param.list == 'character' && param.term != null && param.term != ''}">
-
-		<c:set var="characterid" value="0" />
-		<c:set var="numotherchars" value="0" />
-		<c:set var="filtertablesclause" value="" />
-		<c:set var="filterpictureidclause" value="" />
-		<c:set var="filtercharacteridclause" value="" />
-		<c:set var="tagheader" value="" />
-		<c:forEach var="addchar" items="${fn:split(param.term, ',')}">
-			<c:set var="c" value="0" />
-			<c:catch var="catchException">
-			<fmt:parseNumber var="c" value="${addchar}" integerOnly="true" />
-			</c:catch>
-			<c:if test="${c > 0 && numotherchars < 3}">
-				<c:choose>
-				<c:when test="${characterid == 0}">
-					<c:set var="characterid" value="${c}" />
-				</c:when>
-				<c:otherwise>
-					<c:set var="numotherchars" value="${numotherchars+1}" />
-					<c:set var="filtertablesclause" value="${filtertablesclause},picturecharacters as picturecharacters${c}" />
-					<c:set var="filterpictureidclause" value="${filterpictureidclause} AND picturecharacters.pictureid=picturecharacters${c}.pictureid" />
-					<c:set var="filtercharacteridclause" value="${filtercharacteridclause} AND picturecharacters${c}.characterid=${c}" />
-				</c:otherwise>
-				</c:choose>
-				<sql:query var="qryCharacter">
-				SELECT * FROM characters
-				WHERE characterid=?
-				<sql:param value="${c}" />
-				</sql:query>
-				<c:forEach var="character" items="${qryCharacter.rows}">
-					<c:choose>
-					<c:when test="${tagheader == ''}">
-						<c:set var="tagheader" value="Characters: " />
-					</c:when>
-					<c:otherwise>
-						<c:set var="tagheader" value="${tagheader}, " />
-					</c:otherwise>
-					</c:choose>
-					<c:set var="tagheader" value="${tagheader}<a href=\"/Characters/?characterid=${c}\">${character.charactername}</a>" />
-				</c:forEach>
-			</c:if>
-		</c:forEach>
-		<c:set var="filtercharsclause" value="${filtercharsclause})" />
-
-		<sql:query var="qryPictures">
-		SELECT pictures.*,artists.* FROM pictures,artists,picturecharacters
-		${filtertablesclause}
-		WHERE pictures.pictureid=picturecharacters.pictureid
-		${filterpictureidclause}
-		AND picturecharacters.characterid=?
-		AND pictures.artistid=artists.artistid
-		AND pictures.deleted IS NULL
-		${filtercharacteridclause}
-		ORDER BY picturecharacters.tagged_on DESC
-		LIMIT ${start},${querycount}
-		<sql:param value="${characterid}" />
-		</sql:query>
-
-<%--
-		<c:if test="${start == 50}">
-		</c:if>
---%>
-		${tagheader}
-
-	</c:when>
-	<c:otherwise>
-
-		<c:set var="nolist" value="1" />
-
-	</c:otherwise>
-	</c:choose>
-
-
-	<c:set var="picnumber" value="${start}" />
-
-        {% for picture in artwork %}
-	<c:forEach var="picture" items="${qryPictures.rows}">
-
-                {% include "includes/picture.html" %}
+    {% include "includes/picture.html" %}
 
     {% if forloop.counter == count %}
-
-			<c:if test="${nolist != 1}">
-			<button onClick="getMoreArtwork({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
-			</c:if>
-
+        <button onClick="getMoreArtwork({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
     {% endif %}
 
-		</c:otherwise>
-		</c:choose>
+{% endfor %}
 
-	</c:forEach>
-        {% endfor %}
 
-        {% if artwork.length == 0 %}
-	<c:if test="${qryPictures.rowCount == 0}">
-		No results.
-	</c:if>
-        {% endif %}
-
-</c:if>
-
+{% if artwork|length == 0 %}
+    No results.
+{% endif %}

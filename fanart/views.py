@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, OuterRef, Subquery, Min, Max
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -180,23 +180,21 @@ class ArtworkView(UserPaneView):
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
+                context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.tag)
             if term:
                 context['term'] = term
                 if list == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
                 elif list == 'tag':
-                    artwork = []
-                    for tag in models.Tag.objects.filter(tag=term):
-                        logger.info(tag)
-                        logger.info(tag.picture_set.all())
-                        if artwork:
-                            artwork = artwork.union(tag.picture_set.all())
-                        else:
-                            artwork = tag.picture_set.all()
-                    artwork = artwork.order_by('-num_faves')
+                    logger.info(term)
+                    tag = models.Tag.objects.filter(tag=term).first()
+                    logger.info(tag)
+                    if tag:
+                        artwork = tag.picture_set.all().order_by('-num_faves')
+                    else:
+                        artwork = artwork.filter(id__isnull=True)
             else:
                 artwork = artwork.filter(id__isnull=True)
-        logger.info(artwork.query)
 
         context['list'] = list
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))

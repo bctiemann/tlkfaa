@@ -530,7 +530,7 @@ class Command(BaseCommand):
                 f = fanart_models.Tag.objects.create(
                     id_orig = tag['tagid'],
                     tag = tag['tag'],
-                    num_pictures = tag['numpictures'],
+#                    num_pictures = tag['numpictures'],
                     is_visible = tag['visible'],
                 )
             c.execute("""SELECT * FROM picturetags""")
