@@ -39,7 +39,7 @@ Lists a selection of pictures according to the specified listing method. Invoked
 	<c:set var="term" value="${fn:replace(param.term,'\"','')}" />
 
 	<form name="searchform" onSubmit="listArtwork('search',10);return false;">
-	<input class="std" name="searchtext" id="searchtext" value="${term}" />
+	<input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
 	<button type="button" onClick="listArtwork('search',10)">Search Pictures</button>
 	<button type="button" onClick="listArtwork('tag',10)">Search Tags</button>
 	</form>
@@ -237,7 +237,7 @@ Lists a selection of pictures according to the specified listing method. Invoked
     {% if forloop.counter == count %}
 
 			<c:if test="${nolist != 1}">
-			<button onClick="getMoreArtwork(${start + picturecount},'${param.list}',${picturecount},'${param.term}',this)">More</button>
+			<button onClick="getMoreArtwork({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
 			</c:if>
 
     {% endif %}
@@ -248,9 +248,11 @@ Lists a selection of pictures according to the specified listing method. Invoked
 	</c:forEach>
         {% endfor %}
 
+        {% if artwork.length == 0 %}
 	<c:if test="${qryPictures.rowCount == 0}">
 		No results.
 	</c:if>
+        {% endif %}
 
 </c:if>
 

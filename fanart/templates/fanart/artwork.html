@@ -135,6 +135,7 @@ artworklistopen = '${list}';
 
 <div id="artwork">
 
+{% include "includes/artwork-list.html" %}
 <jsp:include page="../ajax_listartwork.jsp?list=${list}&start=${start}&count=10" />
 
 </div>

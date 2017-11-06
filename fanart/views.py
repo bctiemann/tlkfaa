@@ -147,11 +147,11 @@ class ArtworkView(UserPaneView):
         context['show_search_input'] = False
 
         default_artwork_view = settings.DEFAULT_ARTWORK_VIEW
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated() and self.request.user.unviewedpicture_set.exists():
             default_artwork_view = 'unviewed'
 
         list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
-        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search']:
+        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag']:
             list = default_artwork_view
 
         start = int(self.request.GET.get('start', 0))
@@ -160,21 +160,12 @@ class ArtworkView(UserPaneView):
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0, date_deleted__isnull=True)
         one_month_ago = timezone.now() - timedelta(days=180)
         three_months_ago = timezone.now() - timedelta(days=90)
-        if list == 'name':
-            artists = artists.filter(username__istartswith=initial).order_by('username')
-            context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
-            try:
-                page = int(self.request.GET.get('page', 1))
-            except ValueError:
-                page = 1
-            try:
-                artists_page = context['artists_paginator'].page(page)
-            except EmptyPage:
-                artists_page = context['artists_paginator'].page(1)
+        if list == 'unviewed':
+            artwork = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(user=self.request.user).order_by('-picture__date_uploaded')]
         elif list == 'newest':
-            artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_approved')
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_uploaded')
         elif list == 'newestfaves':
-            artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_approved')
+            artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_uploaded')
             logger.info(artwork.query)
         elif list == 'toprated':
             artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
@@ -185,16 +176,27 @@ class ArtworkView(UserPaneView):
         elif list == 'random':
             random_ids = random.sample(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max']), 100)
             artwork = artwork.filter(pk__in=random_ids)
-        elif list == 'search':
+        elif list in ['search', 'tag']:
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
             if term:
                 context['term'] = term
-                artists = artists.filter(username__icontains=term).order_by('sort_name')
+                if list == 'search':
+                    artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
+                elif list == 'tag':
+                    artwork = []
+                    for tag in models.Tag.objects.filter(tag=term):
+                        logger.info(tag)
+                        logger.info(tag.picture_set.all())
+                        if artwork:
+                            artwork = artwork.union(tag.picture_set.all())
+                        else:
+                            artwork = tag.picture_set.all()
+                    artwork = artwork.order_by('-num_faves')
             else:
-                artists = artists.filter(id__isnull=True)
-#        logger.info(artwork.query)
+                artwork = artwork.filter(id__isnull=True)
+        logger.info(artwork.query)
 
         context['list'] = list
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
