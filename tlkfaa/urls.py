@@ -18,7 +18,8 @@ urlpatterns = [
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
     url(r'^Artwork/$', fanart_views.ArtworkView.as_view(), name='artwork'),
     url(r'^Artists/$', fanart_views.ArtistsView.as_view(), name='artists'),
-    url(r'^Characters/$', fanart_views.CharactersView.as_view(), name='characters'),
+#    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
+    url(r'^Characters/(?:(?P<mode>[a-z]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^TradingTree/$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
@@ -37,6 +38,7 @@ urlpatterns = [
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
 
     url(r'^picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureView.as_view(), name='picture'),
+    url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),

@@ -201,16 +201,68 @@ class ArtworkView(UserPaneView):
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
         context['initial'] = initial
         context['artwork'] = artwork[start:start + context['count']]
-        if list == 'name':
-            context['artists'] = artists_page
-            context['count'] = None
-            context['pages_link'] = utils.PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 
 
 class CharactersView(UserPaneView):
     template_name = 'fanart/characters.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CharactersView, self).get_context_data(**kwargs)
+
+        character_id = kwargs.get('character_id', None)
+        if character_id:
+            context['character'] = get_object_or_404(models.Character, pk=character_id)
+        context['mode'] = kwargs.get('mode', None)
+
+        if context['mode'] == 'canon':
+            context['characters'] = models.Character.objects.filter(is_canon=True).annotate(num_tagged=Count('picturecharacter')).order_by('-num_tagged')
+        elif context['mode'] == 'fan':
+            term = self.request.GET.get('term', None)
+            match_type = self.request.GET.get('match', 'exact')
+            if term:
+                characters = models.Character.objects.filter(owner__is_active=True).order_by('name')
+                if match_type == 'exact':
+                    characters = characters.filter(species=term)
+                else:
+                    characters = characters.filter(species__contains=term)
+
+                context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
+                try:
+                    page = int(self.request.GET.get('page', 1))
+                except ValueError:
+                    page = 1
+                try:
+                    characters_page = context['characters_paginator'].page(page)
+                except EmptyPage:
+                    characters_page = context['characters_paginator'].page(1)
+
+                context['characters'] = characters_page
+                context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+#                <sql:query var="qryCharactersFull">
+#                SELECT characterid
+#                FROM artists,characters
+#                WHERE characters.artistid=artists.artistid
+#                <c:choose>
+#                <c:when test="${param.match == 'exact'}">
+#                AND species = "${term}"
+#                </c:when>
+#                <c:otherwise>
+#                AND species LIKE "%${term}%"
+#                </c:otherwise>
+#                </c:choose>
+#                AND enabled=true
+#                AND active=true
+#                AND numpictures>0
+#                AND characters.deleted IS NULL
+#                ${hideprivate}
+#                </sql:query>
+            else:
+                context['popular_species'] = models.Character.objects.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
+
+        return context
 
 
 class TradingTreeView(UserPaneView):
@@ -513,6 +565,17 @@ class ColoringPictureTooltipView(TemplateView):
         context = super(ColoringPictureTooltipView, self).get_context_data(**kwargs)
         coloring_picture = get_object_or_404(models.ColoringPicture, pk=kwargs['coloring_picture_id'])
         context['coloring_picture'] = coloring_picture
+        return context
+
+
+class CharacterView(TemplateView):
+    template_name = 'fanart/character.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CharacterView, self).get_context_data(**kwargs)
+
+        context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
+
         return context
 
 

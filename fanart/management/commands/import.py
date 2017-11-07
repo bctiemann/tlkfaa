@@ -18,14 +18,14 @@ class Command(BaseCommand):
     do_folders = False
     do_pictures = False
     do_comments = False
-    do_shouts = True
+    do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
-    do_characters = False
+    do_characters = True
     do_favorites = False
     do_offers = False
     do_claims = False
-    do_picturecharacters = False
+    do_picturecharacters = True
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
@@ -362,18 +362,24 @@ class Command(BaseCommand):
             for ch in c.fetchall():
                 print ch
 
-                try:
-                    creator = fanart_models.User.objects.get(id_orig=ch['creator'])
-                except fanart_models.User.DoesNotExist:
-                    creator = None
-                try:
-                    owner = fanart_models.User.objects.get(id_orig=ch['artistid'])
-                except fanart_models.User.DoesNotExist:
-                    owner = None
-                try:
-                    adopted_from = fanart_models.User.objects.get(id_orig=ch['adoptedfrom'])
-                except fanart_models.User.DoesNotExist:
-                    adopted_from = None
+                creator = None
+                if ch['creator']:
+                    try:
+                        creator = fanart_models.User.objects.get(artist_id_orig=ch['creator'])
+                    except fanart_models.User.DoesNotExist:
+                        creator = None
+                owner = None
+                if ch['artistid']:
+                    try:
+                        owner = fanart_models.User.objects.get(artist_id_orig=ch['artistid'])
+                    except fanart_models.User.DoesNotExist:
+                        owner = None
+                adopted_from = None
+                if ch['adoptedfrom']:
+                    try:
+                        adopted_from = fanart_models.User.objects.get(artist_id_orig=ch['adoptedfrom'])
+                    except fanart_models.User.DoesNotExist:
+                        adopted_from = None
                 try:
                     profile_picture = fanart_models.Picture.objects.get(id_orig=ch['profilepic'])
                 except fanart_models.Picture.DoesNotExist:
@@ -386,6 +392,7 @@ class Command(BaseCommand):
                     id_orig = ch['characterid'],
                     creator = creator,
                     owner = owner,
+                    is_canon = True if ch['artistid'] == None else False,
                     adopted_from = adopted_from,
                     name = ch['charactername'],
                     description = ch['description'],
