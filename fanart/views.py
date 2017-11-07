@@ -711,3 +711,18 @@ class ArtistsListView(ArtistsView):
 class ArtworkListView(ArtworkView):
     template_name = 'includes/artwork-list.html'
 
+
+class CharactersAutocompleteView(APIView):
+
+    def get(self, request, term):
+        response = {}
+
+        response['characters'] = []
+        for character in models.Character.objects.filter(name__contains=term)[0:20]:
+            response['characters'].append({
+                'name': character.name,
+                'characterid': character.id,
+                'artistname': character.owner.username,
+            })
+
+        return Response(response)

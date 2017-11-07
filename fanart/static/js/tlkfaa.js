@@ -1233,10 +1233,11 @@ function setupAutocompleteCharacter(obj,selectfn) {
   $('input#character_pick_'+obj).autocomplete({
     source: function(request, response) {
       $.ajax({
-        url: "/ajax_ac_characters.jsp",
+//        url: "/ajax_ac_characters.jsp",
+        url: '/characters-ac/' + request.term,
         dataType: "json",
         data: {
-          term: request.term
+//          term: request.term
         },
         success: function(data) {
           response($.map(data.characters, function(item) {
@@ -1305,8 +1306,10 @@ console.log(url);
 }
 
 function updateCharacterList(list,term,page) {
-  var url = "/ajax_listcharacters.jsp?mode=fan&list="+list+"&term="+escape(term)+"&page="+page;
-  $('#characterlist').load(url);
+  var url = '/Characters/fan/?list=' + list + '&term=' + escape(term) + '&page=' + page
+//  var url = "/ajax_listcharacters.jsp?mode=fan&list="+list+"&term="+escape(term)+"&page="+page;
+  window.location = url;
+//  $('#characterlist').load(url);
 }
 
 function filterCharacter(newcharacterid,fnc) {
