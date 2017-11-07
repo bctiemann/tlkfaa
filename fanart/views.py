@@ -211,56 +211,48 @@ class CharactersView(UserPaneView):
     def get_context_data(self, **kwargs):
         context = super(CharactersView, self).get_context_data(**kwargs)
 
-        character_id = kwargs.get('character_id', None)
-        if character_id:
-            context['character'] = get_object_or_404(models.Character, pk=character_id)
-        context['mode'] = kwargs.get('mode', None)
+        dir_name = kwargs.get('dir_name', None)
+        if dir_name:
+            context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
 
-        if context['mode'] == 'canon':
-            context['characters'] = models.Character.objects.filter(is_canon=True).annotate(num_tagged=Count('picturecharacter')).order_by('-num_tagged')
+        context['mode'] = kwargs.get('mode', None)
+        if not context['mode'] and not dir_name:
+            context['mode'] = 'canon'
+
+        characters = models.Character.objects.all()
+        if dir_name:
+            characters = characters.filter(owner=context['artist']).order_by('name')
+        elif context['mode'] == 'canon':
+            characters = characters.filter(is_canon=True).annotate(num_tagged=Count('picturecharacter')).order_by('-num_tagged')
         elif context['mode'] == 'fan':
             term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'exact')
             if term:
-                characters = models.Character.objects.filter(owner__is_active=True).order_by('name')
+                characters = characters.filter(owner__is_active=True).order_by('name')
                 if match_type == 'exact':
                     characters = characters.filter(species=term)
                 else:
                     characters = characters.filter(species__contains=term)
-
-                context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
-                try:
-                    page = int(self.request.GET.get('page', 1))
-                except ValueError:
-                    page = 1
-                try:
-                    characters_page = context['characters_paginator'].page(page)
-                except EmptyPage:
-                    characters_page = context['characters_paginator'].page(1)
-
-                context['characters'] = characters_page
-                context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
-
-#                <sql:query var="qryCharactersFull">
-#                SELECT characterid
-#                FROM artists,characters
-#                WHERE characters.artistid=artists.artistid
-#                <c:choose>
-#                <c:when test="${param.match == 'exact'}">
-#                AND species = "${term}"
-#                </c:when>
-#                <c:otherwise>
-#                AND species LIKE "%${term}%"
-#                </c:otherwise>
-#                </c:choose>
-#                AND enabled=true
-#                AND active=true
-#                AND numpictures>0
-#                AND characters.deleted IS NULL
-#                ${hideprivate}
-#                </sql:query>
             else:
-                context['popular_species'] = models.Character.objects.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
+                context['popular_species'] = characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
+                characters = characters.filter(id__isnull=True)
+        elif context['mode'] == 'mosttagged':
+            characters = characters.annotate(num_tagged=Count('picturecharacter')).filter(num_tagged__gt=0).order_by('-num_tagged')
+        elif context['mode'] == 'recentlytagged':
+            characters = characters.annotate(num_tagged=Count('picturecharacter')).filter(num_tagged__gt=0).order_by('-date_tagged')
+
+        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            characters_page = context['characters_paginator'].page(page)
+        except EmptyPage:
+            characters_page = context['characters_paginator'].page(1)
+
+        context['characters'] = characters_page
+        context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 

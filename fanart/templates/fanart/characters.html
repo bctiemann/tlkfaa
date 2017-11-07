@@ -156,7 +156,16 @@ Main navigation page for viewing characters.
 
 		<h3>Most Tagged Characters</h3>
 
+                {{ pages_link.pages_nav|safe }}
+
+		<div id="characterlist">
+                {% for character in characters %}
+                        {% include "includes/character.html" %}
 		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
+                {% endfor %}
+                </div>
+
+                {{ pages_link.pages_nav|safe }}
 
         {% elif mode == "recentlytagged" %}
 	</c:when>
@@ -164,7 +173,33 @@ Main navigation page for viewing characters.
 
 		<h3>Recently Tagged Characters</h3>
 
-		<jsp:include page="/ajax_listcharacters.jsp?list=recentlytagged&page=${page}" />
+                {{ pages_link.pages_nav|safe }}
+
+		<div id="characterlist">
+                {% for character in characters %}
+                        {% include "includes/character.html" %}
+		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
+                {% endfor %}
+                </div>
+
+                {{ pages_link.pages_nav|safe }}
+
+        {% elif artist %}
+	</c:when>
+	<c:when test="${mode == 'recentlytagged'}">
+
+		<h3>Characters Owned by {{ artist.username }}</h3>
+
+                {{ pages_link.pages_nav|safe }}
+
+		<div id="characterlist">
+                {% for character in characters %}
+                        {% include "includes/character.html" %}
+		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
+                {% endfor %}
+                </div>
+
+                {{ pages_link.pages_nav|safe }}
 
 	</c:when>
 	</c:choose>

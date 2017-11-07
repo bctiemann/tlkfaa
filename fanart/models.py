@@ -379,6 +379,7 @@ class Character(models.Model):
     date_modified = models.DateTimeField(null=True, blank=True)
     date_adopted = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
+    date_tagged = models.DateTimeField(null=True, blank=True)
 
     @property
     def last_tagged(self):
@@ -387,7 +388,7 @@ class Character(models.Model):
     @property
     def thumb_url(self):
         if not self.owner:
-            return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
             return '{0}/Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.profile_picture.artist.dir_name, self.profile_picture.basename)
         elif self.profile_coloring_picture:
@@ -398,7 +399,7 @@ class Character(models.Model):
     @property
     def preview_url(self):
         if not self.owner:
-            return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
             return '{0}/Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.profile_picture.artist.dir_name, self.profile_picture.basename)
         elif self.profile_coloring_picture:

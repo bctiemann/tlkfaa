@@ -47,7 +47,7 @@ The specified artist's gallery is not publicly visible.
 
 <div class="toolbar">
 <ul>
-<li><a class="button" href="/Characters/?mode=fan&list=artist&term=${thisartist.artistid}">Characters</a></li>
+<li><a class="button" href="{% url "artist-characters" dir_name=artist.dir_name %}">Characters</a></li>
 <li><a class="button" href="{% url "artist-artwall" dir_name=artist.dir_name %}">ArtWall</a></li>
 <li><a class="button" href="{% url "artist-gallery" dir_name=artist.dir_name %}">Gallery</a></li>
 </ul>

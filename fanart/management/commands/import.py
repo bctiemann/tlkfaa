@@ -21,7 +21,7 @@ class Command(BaseCommand):
     do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
-    do_characters = True
+    do_characters = False
     do_favorites = False
     do_offers = False
     do_claims = False
@@ -529,6 +529,9 @@ class Command(BaseCommand):
                     character = character,
                     date_tagged = pc['tagged_on'],
                 )
+                if f.date_tagged and (character.date_tagged == None or f.date_tagged.replace(tzinfo=timezone.utc) > character.date_tagged):
+                    character.date_tagged = f.date_tagged
+                    character.save()
 
         if self.do_tags:
             c.execute("""SELECT * FROM tags""")
