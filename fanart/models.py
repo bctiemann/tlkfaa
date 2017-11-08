@@ -18,6 +18,8 @@ from fanart.utils import dictfetchall
 import logging
 logger = logging.getLogger(__name__)
 
+THREE = 90
+
 
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
@@ -165,7 +167,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def recently_uploaded_pictures(self):
-        three_days_ago = timezone.now() - datetime.timedelta(days=90)
+        three_days_ago = timezone.now() - datetime.timedelta(days=THREE)
         return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
 
     @property
@@ -178,6 +180,14 @@ ORDER BY fanart_user.sort_name
             return self.picture_set.all().order_by('date_uploaded').first().date_uploaded
         except AttributeError:
             return None
+
+    @property
+    def icon_claims_ready(self):
+        return models.TradingClaim.objects.filter(type='icon', offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+
+    @property
+    def adoptable_claims_ready(self):
+        return models.TradingClaim.objects.filter(type='adoptable', offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
 
     @property
     def birthdate_age(self):
@@ -518,6 +528,14 @@ class TradingOffer(models.Model):
     adopted_by = models.ForeignKey('User', null=True, blank=True, related_name='trades_offered')
     is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
+
+    @property
+    def open_claims(self):
+        return self.tradingclaim_set.filter(date_fulfilled__isnull=True)
+
+    @property
+    def completed_claims(self):
+        return self.tradingclaim_set.filter(date_fulfilled__isnull=False)
 
 
 class TradingClaim(models.Model):

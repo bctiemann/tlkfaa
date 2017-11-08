@@ -1,7 +1,7 @@
 from django import template
 from django.template.defaultfilters import stringfilter
 
-from fanart.models import UnviewedPicture, Favorite
+from fanart.models import UnviewedPicture, Favorite, TradingOffer, TradingClaim
 
 import logging
 logger = logging.getLogger(__name__)
@@ -79,6 +79,19 @@ class PictureNumberNode(template.Node):
         return picture.get_pic_number(list)
 
 
+class IsAppliedOfferNode(template.Node):
+
+    def __init__(self, picture, user):
+        self.offer = template.Variable(picture)
+        self.user = template.Variable(user)
+
+    def render(self, context):
+        offer = self.offer.resolve(context)
+        user = self.user.resolve(context)
+
+        return 'offer_applied' if TradingClaim.objects.filter(offer=offer, user=user).exists() else ''
+
+
 @register.tag(name='view_picture')
 def do_view_picture(parser, token):
     try:
@@ -118,6 +131,16 @@ def get_is_visible(parser, token):
             "%r tag requires two arguments, an artist and a user" % token.contents.split()[0]
         )
     return IsVisibleNode(artist, user)
+
+@register.tag(name='applied_offer')
+def get_applied_offer(parser, token):
+    try:
+        tag_name, offer, user = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(
+            "%r tag requires two arguments, an offer and a user" % token.contents.split()[0]
+        )
+    return IsAppliedOfferNode(offer, user)
 
 @register.simple_tag()
 def pic_number(pic_number, page_number, per_page, *args, **kwargs):

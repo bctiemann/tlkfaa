@@ -26,6 +26,9 @@ import random
 import logging
 logger = logging.getLogger(__name__)
 
+THREE_MONTHS = 90
+ONE_MONTH = 180
+
 
 class LoginView(LoginView):
     form_class = forms.LoginForm
@@ -159,8 +162,8 @@ class ArtworkView(UserPaneView):
         initial = self.request.GET.get('initial', None)
 
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0, date_deleted__isnull=True)
-        one_month_ago = timezone.now() - timedelta(days=180)
-        three_months_ago = timezone.now() - timedelta(days=90)
+        three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
+        one_month_ago = timezone.now() - timedelta(days=ONE_MONTH)
         if list == 'unviewed':
             artwork = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(user=self.request.user).order_by('-picture__date_uploaded')]
         elif list == 'newest':
@@ -272,6 +275,23 @@ class CharactersView(UserPaneView):
 
 class TradingTreeView(UserPaneView):
     template_name = 'fanart/tradingtree.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TradingTreeView, self).get_context_data(**kwargs)
+
+        offer_type = kwargs.get('offer_type')
+        if not offer_type:
+            offer_type = 'icon'
+
+        offer_id = self.request.GET.get('offer_id', None)
+        if offer_id:
+            context['offer'] = get_object_or_404(models.TradingOffer, pk=offer_id)
+
+        three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
+        context['offers'] = models.TradingOffer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
+
+        context['offer_type'] = offer_type
+        return context
 
 
 class ColoringCaveView(UserPaneView):

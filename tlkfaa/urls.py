@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^Artists/$', fanart_views.ArtistsView.as_view(), name='artists'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<mode>[a-z]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
-    url(r'^TradingTree/$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
+    url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
 

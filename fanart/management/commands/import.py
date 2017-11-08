@@ -23,9 +23,9 @@ class Command(BaseCommand):
     do_coloringpics = False
     do_characters = False
     do_favorites = False
-    do_offers = False
-    do_claims = False
-    do_picturecharacters = True
+    do_offers = True
+    do_claims = True
+    do_picturecharacters = False
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
@@ -452,17 +452,19 @@ class Command(BaseCommand):
             for offer in c.fetchall():
                 print offer
                 try:
-                    artist = fanart_models.User.objects.get(id_orig=offer['artistid'])
+                    artist = fanart_models.User.objects.get(artist_id_orig=offer['artistid'])
                 except fanart_models.User.DoesNotExist:
                     artist = None
                 try:
                     character = fanart_models.Character.objects.get(id_orig=offer['characterid'])
                 except fanart_models.Character.DoesNotExist:
                     character = None
-                try:
-                    adopted_by = fanart_models.User.objects.get(id_orig=offer['adoptedby'])
-                except fanart_models.User.DoesNotExist:
-                    adopted_by = None
+                adopted_by = None
+                if offer['adoptedby']:
+                    try:
+                        adopted_by = fanart_models.User.objects.get(artist_id_orig=offer['adoptedby'])
+                    except fanart_models.User.DoesNotExist:
+                        adopted_by = None
                 f = fanart_models.TradingOffer.objects.create(
                     id_orig = offer['offerid'],
                     artist = artist,
