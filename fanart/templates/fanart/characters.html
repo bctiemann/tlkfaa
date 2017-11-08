@@ -11,203 +11,122 @@
 
 {% block content %}
 
-<%--
-Characters/index.jsp
-Main navigation page for viewing characters.
---%>
+<h1>Characters</h1>
 
-<jsp:include page="/inc_root/inc_header.jsp" />
-<%@ include file="../inc_root/inc_functions.jsp" %>
+<div class="featurebox">
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<div class="selector">
+    <a class="{% if mode == "canon" %}selected{% endif %}" href="{% url "characters" mode="canon" %}">Canon Characters</a>
+    <a class="{% if mode == "fan" %}selected{% endif %}" href="{% url "characters" mode="fan" %}">Fan Characters</a>
+    <a class="{% if mode == "mosttagged" %}selected{% endif %}" href="{% url "characters" mode="mosttagged" %}">Most Tagged</a>
+    <a class="{% if mode == "recentlytagged" %}selected{% endif %}" href="{% url "characters" mode="recentlytagged" %}">Recently Tagged</a>
+</div>
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+{% if mode == "canon" %}
 
-<sql:setDataSource dataSource="jdbc/Fanart" />
+    <h3>Canon Characters</h3>
 
-<c:catch var="catchException">
-<fmt:parseNumber var="characterid" value="${param.characterid}" integerOnly="true" />
-<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
-</c:catch>
+    {% for character in characters %}
+        <div class="character">
+        <table>
+            <tr>
+                <td class="thumb">
+                    <a href="{% url "character" character_id=character.id %}">
+                        <img class="thumb characterpic" src="{{ MEDIA_URL }}/canon_characters/{{ character.id_orig }}.p.jpg" />
+                    </a>
+                </td>
+                <td class="fullwidth">
+                    <p class="charactername">
+                        <a href="{% url "character" character_id=character.id %}">{{ character.name }}</a>
+                    </p>
+                    <p class="characterinfo">
+                        Debut: <i>{{ character.story_title }}</i>
+                    </p>
+                    <p class="characterinfo">
+                        Tagged in {{ character.num_tagged }} pictures
+                    </p>
+                    <div class="characterdesc">
+                        {{ character.description|bbcode|safe }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+        </div>
+    {% endfor %}
 
-<c:set var="count" value="50" />
-<c:set var="querycount" value="${count + 1}" />
+{% elif mode == "fan" %}
 
-<c:set var="mode" value="canon" />
-<c:if test="${param.mode == 'fan'}">
-<c:set var="mode" value="fan" />
-</c:if>
-<c:if test="${param.mode == 'mosttagged'}">
-<c:set var="mode" value="mosttagged" />
-</c:if>
-<c:if test="${param.mode == 'recentlytagged'}">
-<c:set var="mode" value="recentlytagged" />
-</c:if>
-<c:if test="${page == null}">
-<c:set var="page" value="1" />
-</c:if>
+    <h3>Original Fan Characters</h3>
 
-<%--
-<c:if test="${param.page > 0}">
-<c:set var="page" value="${param.page}" />
-</c:if>
---%>
+    Artist: <input id="artist_pick_search" onFocus="this.value=''" />
+    Species: <input id="species_pick_search" onFocus="this.value=''" />
+    Name: <input id="character_pick_search" onFocus="this.value=''" />
 
-	<h1>Characters</h1>
+    {{ pages_link.pages_nav|safe }}
 
-	<div class="featurebox">
+    <div id="characterlist">
+    {% for character in characters %}
+        {% include "includes/character.html" %}
+    {% endfor %}
+    {% if not characters %}
 
-	<div class="selector">
-	<a class="{% if mode == "canon" %}selected{% endif %}" href="{% url "characters" mode="canon" %}">Canon Characters</a>
-	<a class="{% if mode == "fan" %}selected{% endif %}" href="{% url "characters" mode="fan" %}">Fan Characters</a>
-	<a class="{% if mode == "mosttagged" %}selected{% endif %}" href="{% url "characters" mode="mosttagged" %}">Most Tagged</a>
-	<a class="{% if mode == "recentlytagged" %}selected{% endif %}" href="{% url "characters" mode="recentlytagged" %}">Recently Tagged</a>
-	</div>
+        <h2>Most Popular Species</h2>
 
-        {% if mode == "canon" %}
+        {% for species in popular_species %}
+            <div class="species">
+                <a href="{% url "characters" mode="fan" %}?match=exact&list=species&term={{ species.species }}">{{ species.species }}</a> ({{ species.num_characters }})
+            </div>
+        {% endfor %}
 
-		<h3>Canon Characters</h3>
+    {% endif %}
+    </div>
 
-                {% for character in characters %}
-			<div class="character">
-			<table>
-			<tr>
-				<td class="thumb">
-					<a href="{% url "character" character_id=character.id %}">
-<!--					<img class="thumb characterpic" src="/Artwork/coloring/${character.profilepic_c}.s.jpg" />-->
-					<img class="thumb characterpic" src="{{ MEDIA_URL }}/canon_characters/{{ character.id_orig }}.p.jpg" />
-					</a>
-				</td>
-				<td class="fullwidth">
-					<p class="charactername">
-						<a href="{% url "character" character_id=character.id %}">{{ character.name }}</a>
-					</p>
-					<p class="characterinfo">
-						Debut: <i>{{ character.story_title }}</i>
-					</p>
-					<p class="characterinfo">
-						Tagged in {{ character.num_tagged }} pictures
-					</p>
-					<div class="characterdesc">
-                                                {{ character.description|bbcode|safe }}
-					</div>
-				</td>
-			</tr>
-			</table>
-			</div>
-                {% endfor %}
+    {{ pages_link.pages_nav|safe }}
 
-        {% elif mode == "fan" %}
-	</c:when>
-	<c:when test="${mode == 'fan'}">
+{% elif mode == "mosttagged" %}
 
-		<h3>Original Fan Characters</h3>
+    <h3>Most Tagged Characters</h3>
 
-		Artist: <input id="artist_pick_search" onFocus="this.value=''" />
-		Species: <input id="species_pick_search" onFocus="this.value=''" />
-		Name: <input id="character_pick_search" onFocus="this.value=''" />
+    {{ pages_link.pages_nav|safe }}
 
-		<c:choose>
-		<c:when test="${param.list == 'artist'}">
-			<c:catch var="catchException">
-			<fmt:parseNumber var="term" value="${param.term}" integerOnly="true" />
-			</c:catch>
-		</c:when>
-		<c:when test="${param.list == 'species'}">
-			<c:set var="term" value="${param.term}" />
-		</c:when>
-		</c:choose>
+    <div id="characterlist">
+        {% for character in characters %}
+            {% include "includes/character.html" %}
+        {% endfor %}
+    </div>
 
-                {{ pages_link.pages_nav|safe }}
+    {{ pages_link.pages_nav|safe }}
 
-		<div id="characterlist">
-                {% for character in characters %}
-		<c:choose>
-		<c:when test="${(param.list == 'artist' && term > 0) || (param.list == 'species' && term != '') || (param.list == 'charactername' && term != '')}">
-                        {% include "includes/character.html" %}
-			<jsp:include page="/ajax_listcharacters.jsp?list=${param.list}&term=${term}&page=${page}&mode=fan" />
-		</c:when>
-		<c:otherwise>
-                {% endfor %}
-                {% if not characters %}
+{% elif mode == "recentlytagged" %}
 
-			<h2>Most Popular Species</h2>
+    <h3>Recently Tagged Characters</h3>
 
-                        {% for species in popular_species %}
-				<div class="species">
-				<a href="{% url "characters" mode="fan" %}?match=exact&list=species&term={{ species.species }}">{{ species.species }}</a> ({{ species.num_characters }})
-				</div>
-                        {% endfor %}
+    {{ pages_link.pages_nav|safe }}
 
-		</c:otherwise>
-		</c:choose>
-                {% endif %}
-		</div>
+    <div id="characterlist">
+    {% for character in characters %}
+        {% include "includes/character.html" %}
+    {% endfor %}
+    </div>
 
-                {{ pages_link.pages_nav|safe }}
+    {{ pages_link.pages_nav|safe }}
 
-        {% elif mode == "mosttagged" %}
-	</c:when>
-	<c:when test="${mode == 'mosttagged'}">
+{% elif artist %}
 
-		<h3>Most Tagged Characters</h3>
+    <h3>Characters Owned by {{ artist.username }}</h3>
 
-                {{ pages_link.pages_nav|safe }}
+    {{ pages_link.pages_nav|safe }}
 
-		<div id="characterlist">
-                {% for character in characters %}
-                        {% include "includes/character.html" %}
-		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
-                {% endfor %}
-                </div>
+    <div id="characterlist">
+    {% for character in characters %}
+        {% include "includes/character.html" %}
+    {% endfor %}
+    </div>
 
-                {{ pages_link.pages_nav|safe }}
+    {{ pages_link.pages_nav|safe }}
 
-        {% elif mode == "recentlytagged" %}
-	</c:when>
-	<c:when test="${mode == 'recentlytagged'}">
+{% endif %}
 
-		<h3>Recently Tagged Characters</h3>
-
-                {{ pages_link.pages_nav|safe }}
-
-		<div id="characterlist">
-                {% for character in characters %}
-                        {% include "includes/character.html" %}
-		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
-                {% endfor %}
-                </div>
-
-                {{ pages_link.pages_nav|safe }}
-
-        {% elif artist %}
-	</c:when>
-	<c:when test="${mode == 'recentlytagged'}">
-
-		<h3>Characters Owned by {{ artist.username }}</h3>
-
-                {{ pages_link.pages_nav|safe }}
-
-		<div id="characterlist">
-                {% for character in characters %}
-                        {% include "includes/character.html" %}
-		<jsp:include page="/ajax_listcharacters.jsp?list=mosttagged&page=${page}" />
-                {% endfor %}
-                </div>
-
-                {{ pages_link.pages_nav|safe }}
-
-	</c:when>
-	</c:choose>
-        {% endif %}
-
-	</div>
-
-</c:otherwise>
-</c:choose>
+</div>
 
 {% endblock %}

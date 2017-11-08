@@ -529,6 +529,8 @@ class Command(BaseCommand):
                     character = character,
                     date_tagged = pc['tagged_on'],
                 )
+                character.num_pictures = character.picturecharacter_set.count()
+                character.save()
                 if f.date_tagged and (character.date_tagged == None or f.date_tagged.replace(tzinfo=timezone.utc) > character.date_tagged):
                     character.date_tagged = f.date_tagged
                     character.save()

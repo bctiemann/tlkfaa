@@ -1203,10 +1203,11 @@ function setupAutocompleteArtist(obj,selectfn) {
   $("input#artist_pick_"+obj).autocomplete({
     source: function(request, response) {
       $.ajax({
-        url: "/ajax_ac_artists.jsp",
+//        url: "/ajax_ac_artists.jsp",
+        url: '/artists-ac/' + request.term,
         dataType: "json",
         data: {
-          term: request.term
+//          term: request.term
         },
         success: function(data) {
           response($.map(data.artists, function(item) {
@@ -1261,10 +1262,11 @@ function setupAutocompleteSpecies(obj,selectfn) {
   $('input#species_pick_'+obj).autocomplete({
     source: function(request, response) {
       $.ajax({
-        url: "/ajax_ac_species.jsp",
+//        url: "/ajax_ac_species.jsp",
+        url: '/species-ac/' + request.term,
         dataType: "json",
         data: {
-          term: request.term
+//          term: request.term
         },
         success: function(data) {
           response($.map(data.specieses, function(item) {

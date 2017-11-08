@@ -155,7 +155,6 @@ AND fanart_user.is_artist=true
 GROUP BY fanart_favorite.artist_id
 ORDER BY fanart_user.sort_name
 """
-            print query
             cursor.execute(query, [self.id])
             result = dictfetchall(cursor)
         return result
@@ -380,6 +379,7 @@ class Character(models.Model):
     date_adopted = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
     date_tagged = models.DateTimeField(null=True, blank=True)
+    num_pictures = models.IntegerField(null=True, blank=True)
 
     @property
     def last_tagged(self):

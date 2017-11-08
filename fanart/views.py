@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
+from django.db import connection
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -215,31 +216,42 @@ class CharactersView(UserPaneView):
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
 
-        context['mode'] = kwargs.get('mode', None)
-        if not context['mode'] and not dir_name:
-            context['mode'] = 'canon'
+        mode = kwargs.get('mode', None)
+        if not mode in ['canon', 'fan', 'mosttagged', 'recentlytagged', 'charactername'] and not dir_name:
+            mode = 'canon'
 
         characters = models.Character.objects.all()
         if dir_name:
             characters = characters.filter(owner=context['artist']).order_by('name')
-        elif context['mode'] == 'canon':
-            characters = characters.filter(is_canon=True).annotate(num_tagged=Count('picturecharacter')).order_by('-num_tagged')
-        elif context['mode'] == 'fan':
+        elif mode == 'canon':
+            characters = characters.filter(is_canon=True).order_by('-num_pictures')
+        elif mode == 'fan':
             term = self.request.GET.get('term', None)
-            match_type = self.request.GET.get('match', 'exact')
+            match_type = self.request.GET.get('match', 'contains')
             if term:
+                list = self.request.GET.get('list', None)
+                if not list in ['artist', 'species', 'charactername']:
+                    list = 'charactername'
                 characters = characters.filter(owner__is_active=True).order_by('name')
-                if match_type == 'exact':
-                    characters = characters.filter(species=term)
-                else:
-                    characters = characters.filter(species__contains=term)
+                if list == 'artist':
+                    characters = characters.filter(owner__id=term)
+                elif list == 'species':
+                    if match_type == 'exact':
+                        characters = characters.filter(species=term)
+                    else:
+                        characters = characters.filter(species__icontains=term)
+                elif list == 'charactername':
+                    if match_type == 'exact':
+                        characters = characters.filter(name=term)
+                    else:
+                        characters = characters.filter(name__icontains=term)
             else:
                 context['popular_species'] = characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
                 characters = characters.filter(id__isnull=True)
-        elif context['mode'] == 'mosttagged':
-            characters = characters.annotate(num_tagged=Count('picturecharacter')).filter(num_tagged__gt=0).order_by('-num_tagged')
-        elif context['mode'] == 'recentlytagged':
-            characters = characters.annotate(num_tagged=Count('picturecharacter')).filter(num_tagged__gt=0).order_by('-date_tagged')
+        elif mode == 'mosttagged':
+            characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')
+        elif mode == 'recentlytagged':
+            characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
 
         context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
         try:
@@ -251,6 +263,7 @@ class CharactersView(UserPaneView):
         except EmptyPage:
             characters_page = context['characters_paginator'].page(1)
 
+        context['mode'] = mode
         context['characters'] = characters_page
         context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
@@ -715,14 +728,44 @@ class ArtworkListView(ArtworkView):
 class CharactersAutocompleteView(APIView):
 
     def get(self, request, term):
-        response = {}
+        response = {'characters': []}
 
-        response['characters'] = []
-        for character in models.Character.objects.filter(name__contains=term)[0:20]:
+        for character in models.Character.objects.filter(name__icontains=term).order_by('-num_pictures')[0:20]:
             response['characters'].append({
                 'name': character.name,
                 'characterid': character.id,
-                'artistname': character.owner.username,
+                'artistname': getattr(character.owner, 'username', 'Canon'),
+                'num_pictures': character.num_pictures,
+            })
+
+        return Response(response)
+
+
+class SpeciesAutocompleteView(APIView):
+
+    def get(self, request, term):
+        response = {'specieses': []}
+
+        for species in models.Character.objects.filter(species__icontains=term).values('species').annotate(num=Count('species'))[0:20]:
+            response['specieses'].append({
+                'species': species['species'],
+                'num': species['num'],
+            })
+
+        return Response(response)
+
+
+class ArtistsAutocompleteView(APIView):
+
+     def get(self, request, term):
+        response = {'artists': []}
+
+        for artist in models.User.objects.filter(is_artist=True, is_active=True, username__icontains=term)[0:20]:
+            response['artists'].append({
+                'name': artist.username,
+                'artistid': artist.id,
+                'userid': artist.id,
+                'dirname': artist.dir_name,
             })
 
         return Response(response)
