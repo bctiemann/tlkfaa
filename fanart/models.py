@@ -553,7 +553,7 @@ class TradingClaim(models.Model):
 
     @property
     def is_ready(self):
-        return (self.offer.type == 'icon' and self.date_fulfilled != None) or (self.offer.type == 'adoptable' and not self.date_fulfilled and not self.filename)
+        return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and not self.filename)
 
 class PictureCharacter(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True)

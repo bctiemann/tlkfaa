@@ -16,15 +16,16 @@
 		<div class="offerinfo">
                         {% if claim.is_ready %}
 				<button type="button" onClick="acceptClaim({{ claim.id }})">Accept</button>
-                        {% endif %}
-                        {% if claim.offer.type == "icon" %}
-                            {% if claim.date_fulfilled == None %}
+                        {% else %}
+                            {% if claim.offer.type == "icon" %}
+                                {% if claim.date_fulfilled == None %}
 						This icon request has not yet been completed.
-                            {% else %}
+                                {% else %}
 						{# This icon has already been accepted. #}
-                            {% endif %}
-                        {% elif claim.offer.type == "adoptable" %}
+                                {% endif %}
+                            {% elif claim.offer.type == "adoptable" %}
 					This adoptable has not yet been awarded.
+                            {% endif %}
                         {% endif %}
 		</div>
 		</td>
@@ -36,7 +37,7 @@
 				<a href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.{{ claim.extension }}" rel="shadowbox"><img class="thumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.s.jpg" /></a>
                     {% endif %}
                 {% elif offer_type == "adoptable" %}
-			<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id }}.s.jpg" /></a>
+			<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id_orig }}.s.jpg" /></a>
                 {% endif %}
 		</td>
 		</tr>
