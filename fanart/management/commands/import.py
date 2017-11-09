@@ -18,14 +18,14 @@ class Command(BaseCommand):
     do_folders = False
     do_pictures = False
     do_comments = False
-    do_shouts = False
+    do_shouts = True
     do_coloringbase = False
     do_coloringpics = False
     do_characters = False
     do_favorites = False
     do_offers = False
     do_claims = False
-    do_picturecharacters = True
+    do_picturecharacters = False
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
@@ -68,6 +68,7 @@ class Command(BaseCommand):
                 print user
                 f = fanart_models.Folder.objects.create(
                     id_orig = folder['folderid'],
+                    id = folder['folderid'],
                     user = user,
                     name = folder['name'],
                     description = folder['description'],
@@ -86,12 +87,15 @@ class Command(BaseCommand):
             print comment
             f = None
             try:
-                user = fanart_models.User.objects.get(id_orig=comment['userid'])
+                user = None
+                if comment['userid']:
+                    user = fanart_models.User.objects.get(id_orig=comment['userid'])
                 print user
                 picture = fanart_models.Picture.objects.get(id_orig=comment['pictureid'])
                 print picture
                 f = fanart_models.PictureComment.objects.create(
                     id_orig = comment['commentid'],
+                    id = comment['commentid'],
                     user = user,
                     picture = picture,
                     comment = comment['comment'],
@@ -102,6 +106,8 @@ class Command(BaseCommand):
                     is_received = comment['viewed'],
                     hash = comment['hash'],
                 )
+                f.date_posted = comment['posted']
+                f.save()
             except fanart_models.User.DoesNotExist:
                 pass
             except fanart_models.Picture.DoesNotExist:
@@ -138,8 +144,8 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
-            c.execute("""SELECT * FROM users where userid=34383""")
-#            c.execute("""SELECT * FROM users""")
+#            c.execute("""SELECT * FROM users where userid=1484""")
+            c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
                 u = fanart_models.User.objects.create_user(
@@ -160,60 +166,70 @@ class Command(BaseCommand):
                     folders_tree = user['folderstree'],
                     h_size = user['h_size'],
                     v_size = user['v_size'],
+                    is_artist = False,
                 )
-                c.execute("""SELECT * FROM artists WHERE userid=%s""", (user['userid'],))
-                artist = c.fetchone()
-                if artist:
-                    u.artist_id_orig = artist['artistid']
-                    u.dir_name = artist['dirname']
-                    u.sort_name = artist['sortname']
-                    u.is_active = artist['enabled']
-                    u.is_artist = artist['active']
-                    u.is_public = artist['is_public'] if artist['is_public'] != None else True
-                    u.is_paid = artist['ispaid'] if artist['ispaid'] != None else True
-                    u.num_pictures = artist['numpictures']
-                    u.num_faves = artist['numfaves']
-                    u.num_favepics = artist['numfavepics']
-                    u.num_characters = artist['numcharacters']
-                    u.last_upload = artist['lastupload']
-                    u.description = artist['artistdesc']
-                    u.birthday = artist['birthday'] if artist['birthday'] else ''
-                    u.birth_date = artist['birthdate']
-                    u.location = artist['location'] if artist['location'] else ''
-                    u.timezone = artist['timezone'] if artist['timezone'] else ''
-                    u.occupation = artist['occupation'] if artist['occupation'] else ''
-                    u.website = artist['website'] if artist['website'] else ''
-                    u.featured = artist['featured']
-                    u.comments = artist['comments'] if artist['comments'] else ''
-                    u.gender = self.GENDERS[artist['gender']] if artist['gender'] else ''
-                    u.banner_text = artist['bannertext']
-                    u.banner_text_updated = artist['bannertextupdated']
-                    u.banner_text_min = artist['bannertext_min'] if artist['bannertext_min'] else ''
-                    u.zip_enabled = artist['makezip'] if artist['makezip'] != None else True
-                    u.show_email = artist['showemail'] if artist['showemail'] != None else True
-                    u.show_birthdate = artist['showbirthdate'] if artist['showbirthdate'] != None else True
-                    u.show_birthdate_age = artist['showbirthdate_age'] if artist['showbirthdate_age'] != None else True
-                    u.allow_shouts = artist['allowshouts'] if artist['allowshouts'] != None else True
-                    u.allow_comments = artist['allowcomments'] if artist['allowcomments'] != None else True
-                    u.email_shouts = artist['emailshouts'] if artist['emailshouts'] != None else True
-                    u.email_comments = artist['emailcomments'] if artist['emailcomments'] != None else True
-                    u.email_pms = artist['emailpms'] if artist['emailpms'] != None else True
-                    u.show_coloring_cave = artist['showcc'] if artist['showcc'] != None else True
-                    u.commissions_open = artist['commissions'] if artist['commissions'] != None else True
-                    u.profile_pic_id = artist['profilepic']
-                    u.profile_pic_ext = artist['profilepic_ext'] if artist['profilepic_ext'] else ''
-                    u.banner_id = artist['banner']
-                    u.banner_ext = artist['banner_ext'] if artist['banner_ext'] else ''
-                    u.suspension_message = artist['suspmessage'] if artist['suspmessage'] else ''
-                    u.auto_approve = artist['autoapprove']
-                    u.allow_sketcher = artist['allowsketcher']
-                    u.sketcher_banned = artist['sketcherbanned']
-#                    u.sketcher_banned_by = artist['sketcherbannedby']
-                    u.sketcher_ban_reason = artist['sketcherbanreason'] if artist['sketcherbanreason'] else ''
-                    u.save()
+                u.date_joined = user['created'] if user['created'] else timezone.now()
+                u.password = user['passwd']
+                u.save()
+#            c.execute("""SELECT * FROM artists WHERE userid=%s""", (user.id,))
+            c.execute("""SELECT * FROM artists""")
+#            artist = c.fetchone()
+            for artist in c.fetchall():
+                if artist['userid']:
+                    u, created = fanart_models.User.objects.get_or_create(id=artist['userid'])
+                else:
+                    u, created = fanart_models.User.objects.get_or_create(username=artist['artistname'])
+                print u
+                u.artist_id_orig = artist['artistid']
+                u.dir_name = artist['dirname'] if artist['dirname'] else ''
+                u.sort_name = artist['sortname'] if artist['sortname'] else ''
+                u.is_active = artist['enabled']
+                u.is_artist = artist['active']
+                u.is_public = artist['is_public'] if artist['is_public'] != None else True
+                u.is_paid = artist['ispaid'] if artist['ispaid'] != None else True
+                u.num_pictures = artist['numpictures']
+                u.num_faves = artist['numfaves']
+                u.num_favepics = artist['numfavepics']
+                u.num_characters = artist['numcharacters']
+                u.last_upload = artist['lastupload']
+                u.description = artist['artistdesc']
+                u.birthday = artist['birthday'] if artist['birthday'] else ''
+                u.birth_date = artist['birthdate']
+                u.location = artist['location'] if artist['location'] else ''
+                u.timezone = artist['timezone'] if artist['timezone'] else ''
+                u.occupation = artist['occupation'] if artist['occupation'] else ''
+                u.website = artist['website'] if artist['website'] else ''
+                u.featured = artist['featured']
+                u.comments = artist['comments'] if artist['comments'] else ''
+                u.gender = self.GENDERS[artist['gender']] if artist['gender'] else ''
+                u.banner_text = artist['bannertext']
+                u.banner_text_updated = artist['bannertextupdated']
+                u.banner_text_min = artist['bannertext_min'] if artist['bannertext_min'] else ''
+                u.zip_enabled = artist['makezip'] if artist['makezip'] != None else True
+                u.show_email = artist['showemail'] if artist['showemail'] != None else True
+                u.show_birthdate = artist['showbirthdate'] if artist['showbirthdate'] != None else True
+                u.show_birthdate_age = artist['showbirthdate_age'] if artist['showbirthdate_age'] != None else True
+                u.allow_shouts = artist['allowshouts'] if artist['allowshouts'] != None else True
+                u.allow_comments = artist['allowcomments'] if artist['allowcomments'] != None else True
+                u.email_shouts = artist['emailshouts'] if artist['emailshouts'] != None else True
+                u.email_comments = artist['emailcomments'] if artist['emailcomments'] != None else True
+                u.email_pms = artist['emailpms'] if artist['emailpms'] != None else True
+                u.show_coloring_cave = artist['showcc'] if artist['showcc'] != None else True
+                u.commissions_open = artist['commissions'] if artist['commissions'] != None else True
+                u.profile_pic_id = artist['profilepic']
+                u.profile_pic_ext = artist['profilepic_ext'] if artist['profilepic_ext'] else ''
+                u.banner_id = artist['banner']
+                u.banner_ext = artist['banner_ext'] if artist['banner_ext'] else ''
+                u.suspension_message = artist['suspmessage'] if artist['suspmessage'] else ''
+                u.auto_approve = artist['autoapprove']
+                u.allow_sketcher = artist['allowsketcher']
+                u.sketcher_banned = artist['sketcherbanned']
+#                u.sketcher_banned_by = artist['sketcherbannedby']
+                u.sketcher_ban_reason = artist['sketcherbanreason'] if artist['sketcherbanreason'] else ''
+                u.save()
 
-                    u.date_joined = user['created'] if user['created'] else timezone.now(),
-                    u.password = user['passwd']
+                if artist['created']:
+                    u.date_joined = artist['created']
                     u.save()
 
         if self.do_folders:
@@ -232,11 +248,13 @@ class Command(BaseCommand):
                         folder = None
                         print 'No folder'
 
-                    try:
-                        approver = fanart_models.User.objects.get(id_orig=picture['insertedby'])
-                    except fanart_models.User.DoesNotExist:
-                        approver = None
-                        print 'No approver'
+                    approver = None
+                    if picture['insertedby']:
+                        try:
+                            approver = fanart_models.User.objects.get(id_orig=picture['insertedby'])
+                        except fanart_models.User.DoesNotExist:
+                            approver = None
+                            print 'No approver'
 
                     p = fanart_models.Picture.objects.create(
                         id_orig = picture['pictureid'],

@@ -6,7 +6,7 @@ from django.db.models import Count, Avg
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
-from django.contrib.auth.models import BaseUserManager, AbstractUser
+from django.contrib.auth.models import BaseUserManager, UserManager, AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
@@ -38,7 +38,7 @@ class OverwriteStorage(FileSystemStorage):
         return name
 
 
-class UserManager(BaseUserManager):
+class FanartUserManager(UserManager):
 
     def recently_active(self):
         return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
@@ -124,7 +124,7 @@ class User(AbstractUser):
     is_approver = models.BooleanField(default=False)
     is_sketcher_mod = models.BooleanField(default=False)
 
-    objects = UserManager()
+    objects = FanartUserManager()
 
     def get_absolute_url(self):
         return '{0}/Artists/{1}/'.format(settings.SERVER_BASE_URL, self.dir_name)

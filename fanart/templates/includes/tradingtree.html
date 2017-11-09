@@ -54,7 +54,7 @@ ORDER BY posted DESC
 <a href="javascript:nop()" onClick="setupEditOffer(${offer.offerid})">edit</a>
 </c:if>
 <div id="editoffer_${offer.offerid}">
-<div class="offerartist">Offered by <a href="/Artists/${offer.dirname}/">${offer.artistname}</a></div>
+<div class="offerartist">Offered by <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username }}</a></div>
 <div class="offertitle">${offer.title}
 <fmt:formatDate value="${offer.posted}" type="both" pattern="HH:mm E M/d/yyyy" />
 </div>
