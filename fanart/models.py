@@ -183,11 +183,11 @@ ORDER BY fanart_user.sort_name
 
     @property
     def icon_claims_ready(self):
-        return models.TradingClaim.objects.filter(type='icon', offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True).exclude(filename='').order_by('-date_posted')
 
     @property
     def adoptable_claims_ready(self):
-        return models.TradingClaim.objects.filter(type='adoptable', offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
+        return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
 
     @property
     def birthdate_age(self):
@@ -551,6 +551,9 @@ class TradingClaim(models.Model):
     extension = models.CharField(max_length=5, blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
 
+    @property
+    def is_ready(self):
+        return (self.offer.type == 'icon' and self.date_fulfilled != None) or (self.offer.type == 'adoptable' and not self.date_fulfilled and not self.filename)
 
 class PictureCharacter(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True)

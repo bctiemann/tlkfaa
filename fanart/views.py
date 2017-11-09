@@ -290,6 +290,13 @@ class TradingTreeView(UserPaneView):
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         context['offers'] = models.TradingOffer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
 
+        if (offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists()):
+            context['show_for_you'] = True
+            if offer_type == 'icon':
+                context['claims_for_you'] = self.request.user.icon_claims_ready.all()
+            elif offer_type == 'adoptable':
+                context['claims_for_you'] = self.request.user.adoptable_claims_ready.all()
+
         context['offer_type'] = offer_type
         return context
 

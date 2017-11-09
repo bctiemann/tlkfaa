@@ -87,17 +87,11 @@ adoptables (donors post characters from their accounts, and other artists apply 
 	<sql:param value="${user.userid}" />
 	</sql:query>
 
-        {% if offer_type == "icon" and user.icon_claims_ready.exists %}
+        {% if show_for_you %}
 	<c:if test="${qryClaimsMine.rowCount > 0}">
 		<div class="newforme">
 		<h3>New for You</h3>
-		<jsp:include page="/inc_root/inc_ttforyou.jsp?offerype=${offertype}&showall=0" />
-		</div>
-	</c:if>
-        {% elif offer_type == "adoptable" and user.adoptable_claims_ready.exists %}
-	<c:if test="${qryClaimsMine.rowCount > 0}">
-		<div class="newforme">
-		<h3>New for You</h3>
+                {% include "includes/tradingtree_foryou.html" %}
 		<jsp:include page="/inc_root/inc_ttforyou.jsp?offerype=${offertype}&showall=0" />
 		</div>
 	</c:if>

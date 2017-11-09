@@ -1,0 +1,48 @@
+{% load bbcode_tags %}
+
+{% if user.is_authenticated %}
+
+        {% for claim in claims_for_you %}
+
+		<div class="offer" id="claim_{{ claim.id }}">
+		<table>   
+		<tr>
+		<td class="fullwidth">
+                {% if claim.offer.artist %}
+                    <div class="offerartist"><a href="{% url "artist" dir_name=claim.offer.artist.dir_name %}">{{ claim.offer.artist.username }}</a></div>
+                {% endif %}
+		<div class="offertitle"><a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}">{{ claim.offer.title }}</a></div>
+		{{ claim.comment|bbcode|safe }}
+		<div class="offerinfo">
+                        {% if claim.is_ready %}
+				<button type="button" onClick="acceptClaim({{ claim.id }})">Accept</button>
+                        {% endif %}
+                        {% if claim.offer.type == "icon" %}
+                            {% if claim.date_fulfilled == None %}
+						This icon request has not yet been completed.
+                            {% else %}
+						{# This icon has already been accepted. #}
+                            {% endif %}
+                        {% elif claim.offer.type == "adoptable" %}
+					This adoptable has not yet been awarded.
+                        {% endif %}
+		</div>
+		</td>
+		<td class="thumb">
+                {% if offer_type == "icon" %}
+                    {% if not claim.filename %}
+				<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id }}.s.jpg" /></a>
+                    {% else %}
+				<a href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.{{ claim.extension }}" rel="shadowbox"><img class="thumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.s.jpg" /></a>
+                    {% endif %}
+                {% elif offer_type == "adoptable" %}
+			<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id }}.s.jpg" /></a>
+                {% endif %}
+		</td>
+		</tr>
+		</table>
+		</div>
+
+        {% endfor %}
+
+{% endif %}

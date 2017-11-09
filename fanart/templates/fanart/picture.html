@@ -104,26 +104,26 @@ The specified picture is private.
 </c:choose>
 {% endif %}
 </li>
-<c:if test="${isdisplayed == 1}">
 <li>{{ picture.date_uploaded|date:"H:i D n/j/Y" }}</li>
 <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
 <li>{{ picture.file_size|filesizeformat }}</li>
-<li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</c:if></li>
+<li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</li>
 
 {% if user.is_authenticated %}
 <a id="togglefavepicture_{{ picture.id }}" class="addfavorites {% if fave_picture %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite this picture"></a>
 {% endif %}
                         
 <li>{{ picture.fans.count }} favorite{{ picture.fans.count|pluralize }}</li>
-</c:if>
 
 {% if picture.picturecharacter_set.count %}
 <li>Characters tagged:</li>
 {% endif %}
 {% for pc in picture.picturecharacter_set.all %}
+    <li>
         <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
         <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
         <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
+    </li>
 {% endfor %}
 
 {% if picture.tags.count %}
