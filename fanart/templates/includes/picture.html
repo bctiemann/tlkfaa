@@ -47,8 +47,8 @@
 <ul class="characters group">
 {% for pc in picture.picturecharacter_set.all %}
     <li>
-        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
-        <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
+        <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+        <p class="charactername"><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></p>
         <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
     </li>
 {% endfor %}

@@ -23,9 +23,9 @@ class Command(BaseCommand):
     do_coloringpics = False
     do_characters = False
     do_favorites = False
-    do_offers = True
-    do_claims = True
-    do_picturecharacters = False
+    do_offers = False
+    do_claims = False
+    do_picturecharacters = True
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
