@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load humanize %}
 {% load bbcode_tags %}
 
 {% block activetab_characters %}active{% endblock %}
@@ -43,7 +44,7 @@
                         Debut: <i>{{ character.story_title }}</i>
                     </p>
                     <p class="characterinfo">
-                        Tagged in {{ character.num_tagged }} pictures
+                        Tagged in {{ character.num_pictures|intcomma }} pictures
                     </p>
                     <div class="characterdesc">
                         {{ character.description|bbcode|safe }}

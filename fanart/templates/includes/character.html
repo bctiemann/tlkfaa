@@ -32,7 +32,7 @@
         <p class="characterinfo">{{ character.gender|capfirst }} {{ character.species }}</p>
         {% if character.picturecharacter_set.count > 0 %}
             <p class="characterinfo">
-                Tagged in {{ character.num_pictures }} pictures
+                Tagged in {{ character.num_pictures }} picture{{ character.num_pictures|pluralize }}
             </p>
         {% endif %}
         {% if character.last_tagged %}

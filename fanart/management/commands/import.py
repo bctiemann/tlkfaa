@@ -21,11 +21,11 @@ class Command(BaseCommand):
     do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
-    do_characters = False
+    do_characters = True
     do_favorites = False
-    do_offers = True
-    do_claims = True
-    do_picturecharacters = False
+    do_offers = False
+    do_claims = False
+    do_picturecharacters = True
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
@@ -390,6 +390,7 @@ class Command(BaseCommand):
                     profile_coloring_picture = None
                 f = fanart_models.Character.objects.create(
                     id_orig = ch['characterid'],
+                    id = ch['characterid'],
                     creator = creator,
                     owner = owner,
                     is_canon = True if ch['artistid'] == None else False,
@@ -407,6 +408,8 @@ class Command(BaseCommand):
                     profile_picture = profile_picture,
                     profile_coloring_picture = profile_coloring_picture,
                 )
+#                f.id = f.id_orig
+#                f.save()
 
         if self.do_favorites:
             c.execute("""SELECT * FROM favorites""")

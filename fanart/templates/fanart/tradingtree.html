@@ -33,6 +33,7 @@
 <c:choose>
 <c:when test="${offerid > 0}">
 
+        {% include "includes/tradingtree.html" %}
 	<jsp:include page="/ajax_tradingtree.jsp?offerid=${offerid}" />
 
 </c:when>
