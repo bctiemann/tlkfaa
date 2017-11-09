@@ -21,11 +21,11 @@ class Command(BaseCommand):
     do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
-    do_characters = True
+    do_characters = False
     do_favorites = False
-    do_offers = False
-    do_claims = False
-    do_picturecharacters = True
+    do_offers = True
+    do_claims = True
+    do_picturecharacters = False
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
@@ -144,6 +144,7 @@ class Command(BaseCommand):
                 print user
                 u = fanart_models.User.objects.create_user(
                     id_orig = user['userid'],
+                    id = user['userid'],
                     username = user['username'],
                     password = user['passwd'],
                     email = user['email'],
@@ -239,6 +240,7 @@ class Command(BaseCommand):
 
                     p = fanart_models.Picture.objects.create(
                         id_orig = picture['pictureid'],
+                        id = picture['pictureid'],
                         artist = user,
                         folder = folder,
                         filename = picture['filename'],
@@ -290,6 +292,7 @@ class Command(BaseCommand):
                     print artist
                     f = fanart_models.Shout.objects.create(
                         id_orig = comment['shoutid'],
+                        id = comment['shoutid'],
                         user = user,
                         artist = artist,
                         comment = comment['comment'],
@@ -315,6 +318,7 @@ class Command(BaseCommand):
                     print picture
                     f = fanart_models.ColoringBase.objects.create(
                         id_orig = cb['coloring_baseid'],
+                        id = cb['coloring_baseid'],
                         creator = creator,
                         picture = picture,
                         date_posted = cb['posted'],
@@ -340,6 +344,7 @@ class Command(BaseCommand):
                     print base
                     f = fanart_models.ColoringPicture.objects.create(
                         id_orig = cp['coloring_picid'],
+                        id = cp['coloring_picid'],
                         artist = artist,
                         base = base,
                         date_posted = cp['posted'],
@@ -470,6 +475,7 @@ class Command(BaseCommand):
                         adopted_by = None
                 f = fanart_models.TradingOffer.objects.create(
                     id_orig = offer['offerid'],
+                    id = offer['offerid'],
                     artist = artist,
                     type = offer['type'],
                     date_posted = offer['posted'],
@@ -499,6 +505,7 @@ class Command(BaseCommand):
                     user = None
                 f = fanart_models.TradingClaim.objects.create(
                     id_orig = claim['claimid'],
+                    id = claim['claimid'],
                     offer = offer,
                     user = user,
                     date_posted = claim['posted'],
@@ -546,6 +553,7 @@ class Command(BaseCommand):
                 print tag
                 f = fanart_models.Tag.objects.create(
                     id_orig = tag['tagid'],
+                    id = tag['tagid'],
                     tag = tag['tag'],
 #                    num_pictures = tag['numpictures'],
                     is_visible = tag['visible'],
@@ -615,6 +623,7 @@ class Command(BaseCommand):
                 print a
                 f = fanart_models.SocialMedia.objects.create(
                     id_orig = a['imclientid'],
+                    id = a['imclientid'],
                     name = a['imclient'],
                 )
 
@@ -740,6 +749,7 @@ class Command(BaseCommand):
                     creator = None
                 f = fanart_models.Contest.objects.create(
                     id_orig = a['contestid'],
+                    id = a['contestid'],
                     type = a['type'],
                     creator = creator,
                     title = a['title'],
@@ -769,6 +779,7 @@ class Command(BaseCommand):
                     picture = None
                 f = fanart_models.ContestEntry.objects.create(
                     id_orig = a['contestpicid'],
+                    id = a['contestpicid'],
                     contest = contest,
                     picture = picture,
                     date_entered = a['entered'],
