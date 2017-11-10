@@ -290,6 +290,8 @@ class TradingTreeView(UserPaneView):
         offer_id = self.request.GET.get('offer_id', None)
         if offer_id:
             context['offer'] = get_object_or_404(models.TradingOffer, pk=offer_id)
+            if self.request.user.is_authenticated():
+                context['my_claims_for_offer'] = context['offer'].tradingclaim_set.filter(user=self.request.user)
 
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         context['offers'] = models.TradingOffer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')

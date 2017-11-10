@@ -1,3 +1,4 @@
+{% load bbcode_tags %}
 <%--
 ajax_editadoptable.jsp
 AJAX helper for managing adoptables, both in the Trading Tree and in inc_tradingtree.jsp.
@@ -130,35 +131,27 @@ Allows the donor artist to choose/unchoose adopters, and allows users to apply f
                         {% else %}
                             {{ claim.user.username }}
                         {% endif %}
-                        - {{ claim.date_posted|date }}<fmt:formatDate value="${adoptableclaim.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
-			<c:if test="${adoptableclaim.userid == user.userid || offer.artistid == artist.artistid}">
-			<div class="claimaction"><a href="javascript:nop()" onClick="removeClaim(${adoptableclaim.claimid})">remove</a></div>
-			</c:if>
-			<c:if test="${adoptableclaim.fulfilled != null}">
+                        - {{ claim.date_posted|date }}</div>
+                        {% if claim.user == user or offer.artist == user %}
+                            <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
+                        {% endif %}
+                        {% if claim.date_fulfilled %}
 				Winner of this adoptable.
-			</c:if>
-			<div class="claimcomment"><%= formatText((String)pageContext.getAttribute("claimcomment")) %></div>
+                        {% endif %}
+			<div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
 			</div>
 
 		</c:forEach>
                 {% endfor %}
 
+                {% if user.is_authenticated and offer.artist != user and not offer.completed_claims.exists %}
 		<c:if test="${loggedin == 1 && offer.artistid != artist.artistid && qryAdopted.rowCount == 0}">
 
-			<sql:query var="qryOffer">
-			SELECT * FROM offers LEFT JOIN claims
-			ON claims.offerid=offers.offerid
-			WHERE offers.offerid=?
-			AND (offers.artistid=? OR claims.userid=?)
-			<sql:param value="${offerid}" />
-			<sql:param value="${artist.artistid}" />
-			<sql:param value="${user.userid}" />
-			</sql:query>
-
+                        {% if not my_claims_for_offer.exists %}
 			<c:if test="${qryOffer.rowCount == 0}">
 
 				<div class="claim">
-				<form name="claimform_new_${offer.offerid}" method="POST">
+				<form name="claimform_new_{{ offer.id }}" method="POST">
 				<table class="formtable">
 				<tr>
 				<td class="label">Message </td>
@@ -166,16 +159,18 @@ Allows the donor artist to choose/unchoose adopters, and allows users to apply f
 				</tr>
 				<tr>
 				<td colspan="2" class="buttons">
-				<button type="button" onClick="submitClaim(${offer.offerid},this.form)">Adopt Character</button>
+				<button type="button" onClick="submitClaim({{ offer.id }},this.form)">Adopt Character</button>
 				</td>
 				</tr>   
 				</table>
-				<input type="hidden" name="offertype" value="${offer.type}" />
+				<input type="hidden" name="offertype" value="{{ offer.type }}" />
 				</form>
 				</div>
 
 			</c:if>
+                        {% endif %}
 		</c:if>
+                {% endif %}
 
 	</c:forEach>
 

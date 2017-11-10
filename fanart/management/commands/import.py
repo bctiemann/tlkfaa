@@ -29,10 +29,10 @@ class Command(BaseCommand):
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = True
+    do_requests = False
     do_imclients = False
     do_imids = False
-    do_newpics = False
+    do_newpics = True
     do_approval_access = False
     do_adminblog = False
     do_artistnames = False

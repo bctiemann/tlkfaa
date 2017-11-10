@@ -1,154 +1,89 @@
-<%--
-ajax_tradingtree.jsp
-AJAX helper for displaying the details of an offer on the Trading Tree. Lists existing claims
-and allows the user to submit a new claim (inline for icons, via ajax_editadoptable.jsp for adoptables).
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="offerid" value="${param.offerid}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${offerid > 0}">
-
-<sql:query var="qryOffers">
-SELECT offers.*,artistname,dirname FROM offers,artists
-WHERE offers.artistid=artists.artistid
-AND offerid=?
-AND visible=true
-ORDER BY posted DESC
-<sql:param value="${offerid}" />
-</sql:query>
-
-<c:forEach var="offer" items="${qryOffers.rows}">
-
-<c:set var="offercomment" value="${offer.comment}" />
+{% load bbcode_tags %}
 
 <div class="offer editoffer">
 <form name="offerform_{{ offer.id }}" method="POST">
 <table>
 <tr>
 <td class="thumb">
-<c:choose>
 {% if offer.type == "icon" %}
-<c:when test="${offer.type == 'icon'}">
-	<a href="/Artwork/offers/${offer.offerid}.${offer.extension}" rel="shadowbox">
-</c:when>
+	<a href="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.{{ offer.extension }}" rel="shadowbox">
 {% elif offer.type == "adoptable" %}
-<c:when test="${offer.type == 'adoptable'}">
-	<a href="/Characters/?characterid=${offer.characterid}">
-</c:when>
-</c:choose>
+	<a href="{% url "character" character_id=offer.character.id %}">
 {% endif %}
-<img class="thumb offerthumb" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id_orig }}.s.jpg" /></a></td>
+<img class="thumb offerthumb" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.s.jpg" /></a></td>
+
 <td class="fullwidth">
-<c:if test="${loggedin == 1 && offer.artistid == artist.artistid}">
-<a href="javascript:nop()" onClick="setupEditOffer(${offer.offerid})">edit</a>
-</c:if>
-<div id="editoffer_${offer.offerid}">
+{% if offer.artist == user %}
+    <a href="javascript:nop()" onClick="setupEditOffer({{ offer.id }})">edit</a>
+{% endif %}
+<div id="editoffer_{{ offer.id }}">
 <div class="offerartist">Offered by <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username }}</a></div>
-<div class="offertitle">${offer.title}
-<fmt:formatDate value="${offer.posted}" type="both" pattern="HH:mm E M/d/yyyy" />
+<div class="offertitle">{{ offer.title }}
+{{ offer.date_posted|date }}
 </div>
 
-<sql:query var="qryCharacter">
-SELECT * FROM characters
-WHERE characterid=?
-<sql:param value="${offer.characterid}" />
-</sql:query>
-<c:forEach var="character" items="${qryCharacter.rows}">
-	Character: <a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a>
-</c:forEach>
+{% if offer.character %}
+Character: <a href="{% url "character" character_id=offer.character.id %}">{{ offer.character.name }}</a>
+{% endif %}
 
-<div class="offercomment"><%= formatText((String)pageContext.getAttribute("offercomment")) %></div>
+<div class="offercomment">{{ offer.comment|bbcode|safe }}</div>
 </div>
 </td>
 </tr>
 </table>
 </form>
 
-<sql:query var="qryClaims">
-SELECT claims.*,username,users.email,dirname 
-FROM claims,users LEFT JOIN artists
-ON artists.userid=users.userid
-WHERE users.userid=claims.userid
-AND offerid=?
-ORDER BY posted
-<sql:param value="${offer.offerid}" />
-</sql:query>
-
 {% if offer.type == "icon" %}
-<c:choose>
-<c:when test="${offer.type == 'icon'}">
 
 	<div id="iconrequests_{{ offer.id }}">
 
         {% for claim in offer.tradingclaim_set.all %}
-	<c:forEach var="iconrequest" items="${qryClaims.rows}">
-		<c:set var="claimcomment" value="${iconrequest.comment}" />
-		<form name="claimform_${iconrequest.claimid}" id="claimform_${iconrequest.claimid}" method="POST">
-		<div class="claim" id="claim_${iconrequest.claimid}">
-		<div class="claimthumb" id="claimthumb_${iconrequest.claimid}">
-		<c:if test="${iconrequest.filename != null}">
+		<form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
+		<div class="claim" id="claim_{{ claim.id }}">
+		<div class="claimthumb" id="claimthumb_{{ claim.id }}">
+                {% if claim.filename %}
 
-		<jsp:include page="/api/upload_success.jsp?op=claim&itemid=${iconrequest.claimid}" />
+                    <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.s.jpg" /></a>
+                    {% if offer.artist == user %}
+                        <a href="javascript:nop()" onClick="removeClaimPic({{ claim.id }})">remove</a>
+                    {% endif %}
 
-		</c:if>
+                {% endif %}
 		</div>
-		<div class="claimuser"><c:choose><c:when test="${iconrequest.dirname != null}"><a href="/Artists/${iconrequest.dirname}/">${iconrequest.username}</a></c:when><c:otherwise>${iconrequest.username}</c:otherwise></c:choose> - <fmt:formatDate value="${iconrequest.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
-		<c:if test="${iconrequest.userid == user.userid || offer.artistid == artist.artistid}">
-		<div class="claimaction"><a href="javascript:nop()" onClick="removeClaim(${iconrequest.claimid})">remove</a></div>
-		</c:if>
-		<div class="claimcomment"><%= formatText((String)pageContext.getAttribute("claimcomment")) %></div>
-		<c:if test="${iconrequest.refurl != null}">
-		<div class="claimrefurl"><a href="${iconrequest.refurl}" rel="shadowbox">Reference</a></div>
-		</c:if>
-		<c:choose>
-		<c:when test="${iconrequest.filename != null}">
-			<c:choose>
-			<c:when test="${iconrequest.fulfilled != null}">
-			Received <fmt:formatDate value="${iconrequest.fulfilled}" type="both" pattern="HH:mm E M/d/yyyy" />.
-			</c:when>
-			<c:otherwise>
-			Picture posted <fmt:formatDate value="${iconrequest.picdate}" type="both" pattern="HH:mm E M/d/yyyy" />; not yet received.
-			</c:otherwise>
-			</c:choose>
-		</c:when>
-		<c:otherwise>
-		</c:otherwise>
-		</c:choose>
-		<c:if test="${loggedin == 1 && offer.artistid == artist.artistid}">
-	        <div id="claimupload_${iconrequest.claimid}" <c:if test="${iconrequest.filename != null}">style="display: none"</c:if>>
-	        <input type="file" name="uploadfile" id="claim_upload_${iconrequest.claimid}" />
-	        <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_${iconrequest.claimid}','claimthumb_${iconrequest.claimid}','claimupload_${iconrequest.claimid}')">Upload</button>
-	        </div>
-		</c:if>
+		<div class="claimuser">
+                {% if claim.user.dir_name %}
+                    <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
+                {% else %}
+                    {{ claim.user.username }}
+                {% endif %}
+                - {{ claim.date_posted|date }}</div>
+                {% if claim.user == user or offer.artist == user %}
+                    <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
+                {% endif %}
+		<div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
+                {% if claim.reference_url %}
+                    <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
+                {% endif %}
+                {% if claim.filename %}
+                        {% if claim.date_fulfilld %}
+                            Received {{ claim.date_fulfilled|date }}.
+                        {% else %}
+                            Picture posted {{ claim.date_uploaded|date }}; not yet received.
+                        {% endif %}
+                {% endif %}
+                {% if offer.artist == user %}
+                    <div id="claimupload_${iconrequest.claimid}" <c:if test="${iconrequest.filename != null}">style="display: none"</c:if>>
+                        <input type="file" name="uploadfile" id="claim_upload_${iconrequest.claimid}" />
+                        <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_${iconrequest.claimid}','claimthumb_${iconrequest.claimid}','claimupload_${iconrequest.claimid}')">Upload</button>
+                    </div>
+                {% endif %}
 		</div>
 		<input type="hidden" name="uploadop" value="claim" />
-		<input type="hidden" name="itemid" value="${iconrequest.claimid}" />
+		<input type="hidden" name="itemid" value="{{ claim.id }}" />
 		</form>
-	</c:forEach>
         {% endfor %}
 
-	<sql:query var="qryOffer">
-	SELECT * FROM offers LEFT JOIN claims
-	ON claims.offerid=offers.offerid
-	WHERE offers.offerid=?
-	AND (offers.artistid=? OR claims.userid=?)
-	<sql:param value="${offerid}" />
-	<sql:param value="${artist.artistid}" />
-	<sql:param value="${user.userid}" />
-	</sql:query>
-
-	<c:if test="${loggedin == 1 && qryOffer.rowCount == 0}">
+        {% if user.is_authenticated and offer.artist != user and not my_claims_for_offer.exists %}
 
 	<div class="claim">
 	<form name="claimform_new_${offer.offerid}" method="POST" onSubmit="return false;">
@@ -171,29 +106,19 @@ ORDER BY posted
 	</form>
 	</div>
 
-	</c:if>
+        {% endif %}
 
 	</div>
 
 {% elif offer.type == "adoptable" %}
-</c:when>
-<c:when test="${offer.type == 'adoptable'}">
 
 	<div id="adoptableclaims_${offer.offerid}">
 
         {% include "includes/adoptable.html" %}
-	<jsp:include page="/ajax_editadoptable.jsp?offerid=${offer.offerid}" />
 
 	</div>
 
-</c:when>
-</c:choose>
 {% endif %}
 
 </div>
-
-</c:forEach>
-
-
-</c:if>
 
