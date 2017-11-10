@@ -101,3 +101,15 @@ class ShoutForm(forms.ModelForm):
         fields = ['user', 'artist', 'comment']
 
 
+class ClaimForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingClaim
+        fields = ['offer', 'comment', 'reference_url']
+
+
+class OfferForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingOffer
+        fields = ['title', 'comment']

@@ -1,124 +1,116 @@
 {% load bbcode_tags %}
 
 <div class="offer editoffer">
-<form name="offerform_{{ offer.id }}" method="POST">
-<table>
-<tr>
-<td class="thumb">
-{% if offer.type == "icon" %}
-	<a href="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.{{ offer.extension }}" rel="shadowbox">
-{% elif offer.type == "adoptable" %}
-	<a href="{% url "character" character_id=offer.character.id %}">
-{% endif %}
-<img class="thumb offerthumb" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.s.jpg" /></a></td>
+    {#<form name="offerform_{{ offer.id }}" method="POST">#}
+    <table>
+        <tr>
+            <td class="thumb">
+                {% if offer.type == "icon" %}
+                    <a href="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.{{ offer.extension }}" rel="shadowbox">
+                {% elif offer.type == "adoptable" %}
+                    <a href="{% url "character" character_id=offer.character.id %}">
+                {% endif %}
+                <img class="thumb offerthumb" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.s.jpg" /></a>
+            </td>
 
-<td class="fullwidth">
-{% if offer.artist == user %}
-    <a href="javascript:nop()" onClick="setupEditOffer({{ offer.id }})">edit</a>
-{% endif %}
-<div id="editoffer_{{ offer.id }}">
-<div class="offerartist">Offered by <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username }}</a></div>
-<div class="offertitle">{{ offer.title }}
-{{ offer.date_posted|date }}
-</div>
+            <td class="fullwidth">
+                {% if offer.artist == user %}
+                    <a href="javascript:nop()" onClick="setupEditOffer({{ offer.id }})">edit</a>
+                {% endif %}
+                <div id="editoffer_{{ offer.id }}">
+                    {% with offer as object %}
+                        {% include "includes/offer.html" %}
+                    {% endwith %}
+                </div>
+            </td>
+        </tr>
+    </table>
+    {#</form>#}
 
-{% if offer.character %}
-Character: <a href="{% url "character" character_id=offer.character.id %}">{{ offer.character.name }}</a>
-{% endif %}
-
-<div class="offercomment">{{ offer.comment|bbcode|safe }}</div>
-</div>
-</td>
-</tr>
-</table>
-</form>
-
-{% if offer.type == "icon" %}
+    {% if offer.type == "icon" %}
 
 	<div id="iconrequests_{{ offer.id }}">
 
-        {% for claim in offer.tradingclaim_set.all %}
-		<form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
-		<div class="claim" id="claim_{{ claim.id }}">
-		<div class="claimthumb" id="claimthumb_{{ claim.id }}">
-                {% if claim.filename %}
-
-                    <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.s.jpg" /></a>
-                    {% if offer.artist == user %}
-                        <a href="javascript:nop()" onClick="removeClaimPic({{ claim.id }})">remove</a>
-                    {% endif %}
-
-                {% endif %}
-		</div>
-		<div class="claimuser">
-                {% if claim.user.dir_name %}
-                    <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
-                {% else %}
-                    {{ claim.user.username }}
-                {% endif %}
-                - {{ claim.date_posted|date }}</div>
-                {% if claim.user == user or offer.artist == user %}
-                    <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
-                {% endif %}
-		<div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
-                {% if claim.reference_url %}
-                    <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
-                {% endif %}
-                {% if claim.filename %}
-                        {% if claim.date_fulfilld %}
-                            Received {{ claim.date_fulfilled|date }}.
+            {% for claim in offer.tradingclaim_set.all %}
+                <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
+                    <div class="claim" id="claim_{{ claim.id }}">
+                        <div class="claimthumb" id="claimthumb_{{ claim.id }}">
+                            {% if claim.filename %}
+                                <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.s.jpg" /></a>
+                                {% if offer.artist == user %}
+                                    <a href="javascript:nop()" onClick="removeClaimPic({{ claim.id }})">remove</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    <div class="claimuser">
+                        {% if claim.user.dir_name %}
+                            <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
                         {% else %}
-                            Picture posted {{ claim.date_uploaded|date }}; not yet received.
+                            {{ claim.user.username }}
                         {% endif %}
-                {% endif %}
-                {% if offer.artist == user %}
-                    <div id="claimupload_${iconrequest.claimid}" <c:if test="${iconrequest.filename != null}">style="display: none"</c:if>>
-                        <input type="file" name="uploadfile" id="claim_upload_${iconrequest.claimid}" />
-                        <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_${iconrequest.claimid}','claimthumb_${iconrequest.claimid}','claimupload_${iconrequest.claimid}')">Upload</button>
+                        - {{ claim.date_posted|date }}</div>
+                        {% if claim.user == user or offer.artist == user %}
+                            <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
+                        {% endif %}
+                        <div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
+                        {% if claim.reference_url %}
+                            <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
+                        {% endif %}
+                        {% if claim.filename %}
+                            {% if claim.date_fulfilld %}
+                                Received {{ claim.date_fulfilled|date }}.
+                            {% else %}
+                                Picture posted {{ claim.date_uploaded|date }}; not yet received.
+                            {% endif %}
+                        {% endif %}
+                        {% if offer.artist == user %}
+                            <div id="claimupload_${iconrequest.claimid}" {% if claim.filename %}style="display: none"{% endif %}>
+                                <input type="file" name="uploadfile" id="claim_upload_${iconrequest.claimid}" />
+                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_${iconrequest.claimid}','claimthumb_${iconrequest.claimid}','claimupload_${iconrequest.claimid}')">Upload</button>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
-		</div>
-		<input type="hidden" name="uploadop" value="claim" />
-		<input type="hidden" name="itemid" value="{{ claim.id }}" />
-		</form>
-        {% endfor %}
+                    <input type="hidden" name="uploadop" value="claim" />
+                    <input type="hidden" name="itemid" value="{{ claim.id }}" />
+                </form>
+            {% endfor %}
 
-        {% if user.is_authenticated and offer.artist != user and not my_claims_for_offer.exists %}
+            {% if user.is_authenticated and offer.artist != user and not my_claims_for_offer.exists %}
 
-	<div class="claim">
-	<form name="claimform_new_${offer.offerid}" method="POST" onSubmit="return false;">
-	<table class="formtable">
-	<tr>
-	<td class="label">Request this icon</td>
-	<td class="data"><textarea name="comment"></textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Reference URL</td>
-	<td class="data"><input type="text" class="std" name="refurl" /></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="submitClaim(${offer.offerid},this.form)">Submit Request</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="offertype" value="${offer.type}" />
-	</form>
-	</div>
+                <div class="claim">
+                    <form name="claimform_new_{{ offer.id }}" method="POST" onSubmit="return false;">
+                        <table class="formtable">
+                            <tr>
+                                <td class="label">Request this icon</td>
+                                <td class="data"><textarea name="comment"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td class="label">Reference URL</td>
+                                <td class="data"><input type="text" class="std" name="refurl" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="buttons">
+                                    <button type="button" onClick="submitClaim({{ offer.id }},this.form)">Submit Request</button>
+                                </td>
+                            </tr>
+                        </table>
+                        <input type="hidden" name="offertype" value="{{ offer.type }}" />
+                    </form>
+                </div>
 
-        {% endif %}
+            {% endif %}
 
-	</div>
+        </div>
 
-{% elif offer.type == "adoptable" %}
+    {% elif offer.type == "adoptable" %}
 
-	<div id="adoptableclaims_${offer.offerid}">
+        <div id="adoptableclaims_${offer.offerid}">
 
-        {% include "includes/adoptable.html" %}
+            {% include "includes/adoptable.html" %}
 
-	</div>
+        </div>
 
-{% endif %}
+    {% endif %}
 
 </div>
 

@@ -1,0 +1,13 @@
+{% load bbcode_tags %}
+
+<div class="offerartist">Offered by <a href="{% url "artist" dir_name=object.artist.dir_name %}">{{ object.artist.username }}</a></div>
+<div class="offertitle">{{ object.title }}
+{{ object.date_posted|date }}
+</div>
+
+{% if object.character %}
+Character: <a href="{% url "character" character_id=object.character.id %}">{{ object.character.name }}</a>
+{% endif %}
+
+<div class="offercomment">{{ object.comment|bbcode|safe }}</div>
+

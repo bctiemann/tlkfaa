@@ -644,7 +644,8 @@ function setupEditCCPic(ccpicid) {
 }
 
 function setupEditOffer(offerid) {
-  var url = "/ajax_editoffer.jsp?op=form&offerid="+offerid;
+//  var url = "/ajax_editoffer.jsp?op=form&offerid="+offerid;
+  var url = '/offer/' + offerid + '/edit/';
   $('#editoffer_'+offerid).load(url);
   $('div.actions_menu').hide();
 }
@@ -745,7 +746,7 @@ function editCCPic(ccpicid,ccpicform) {
 function editOffer(offerid,offerform) {
   var title = offerform.title.value;
   var comment = offerform.comment.value;
-  $.post("/ajax_editoffer.jsp",{ 
+  $.post('/offer/' + offerid + '/edit/', {
       op: "edit",
       offerid: offerid, 
       title: title,
@@ -770,15 +771,16 @@ function submitClaim(offerid,claimform) {
   if (offertype == 'icon') {
     var comment = claimform.comment.value;
     var refurl = claimform.refurl.value;
-    $.post("/ajax_editoffer.jsp",{
+//    $.post("/ajax_editoffer.jsp",{
+    $.post('/claim/post/',{
         op: "addclaim",
-        offerid: offerid,
+        offer: offerid,
         comment: comment,
-        refurl: refurl
+        reference_url: refurl
       },function(data) {
 //      $('#genstatus').html(data);
       window.location.reload();
-    });
+    }, 'json');
   } else if (offertype == 'adoptable') {
     var comment = claimform.comment.value;
     $.post("/ajax_editadoptable.jsp",{

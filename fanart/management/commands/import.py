@@ -32,7 +32,7 @@ class Command(BaseCommand):
     do_requests = False
     do_imclients = False
     do_imids = False
-    do_newpics = True
+    do_newpics = False
     do_approval_access = False
     do_adminblog = False
     do_artistnames = False

@@ -802,3 +802,39 @@ class ArtistsAutocompleteView(APIView):
             })
 
         return Response(response)
+
+
+class PostClaimView(CreateView):
+    model = models.TradingClaim
+    form_class = forms.ClaimForm
+    template_name = 'includes/tradingtree.html'
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        response = {'success': False}
+        offer = models.TradingOffer.objects.get(pk=self.request.POST.get('offer', None))
+
+        claim = form.save(commit=False)
+        claim.offer = offer
+        claim.user = self.request.user
+        claim.save()
+
+        return JsonResponse(response)
+
+
+class OfferView(DetailView):
+    models = models.TradingOffer
+    template_name = 'includes/offer.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
+
+
+class EditOfferView(UpdateView):
+    models = models.TradingOffer
+    form_class = forms.OfferForm
+    template_name = 'includes/edit_offer.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
+

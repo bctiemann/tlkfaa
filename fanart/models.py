@@ -517,7 +517,7 @@ class TradingOffer(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True, blank=True)
     type = models.CharField(max_length=10, choices = TYPE_CHOICES, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     title = models.CharField(max_length=64, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)
@@ -537,12 +537,15 @@ class TradingOffer(models.Model):
     def completed_claims(self):
         return self.tradingclaim_set.filter(date_fulfilled__isnull=False)
 
+    def get_absolute_url(self):
+        return reverse('offer', kwargs={'offer_id': self.id})
+
 
 class TradingClaim(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     offer = models.ForeignKey('TradingOffer', null=True, blank=True)
     user = models.ForeignKey('User', null=True, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
     reference_url = models.CharField(max_length=255, blank=True)
     date_fulfilled = models.DateTimeField(null=True, blank=True)
@@ -554,6 +557,10 @@ class TradingClaim(models.Model):
     @property
     def is_ready(self):
         return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and not self.filename)
+
+    class Meta:
+        ordering = ['date_posted']
+
 
 class PictureCharacter(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True)

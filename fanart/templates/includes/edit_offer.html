@@ -1,0 +1,111 @@
+{% comment %}
+<%--
+ajax_editoffer.jsp
+AJAX helper for editing the text of Trading Tree offers. Invoked from inc_tradingtree.jsp.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="offerid" value="${param.offerid}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${loggedin == 1 && offerid > 0}">
+
+<c:choose>
+<c:when test="${param.op == 'edit'}">
+
+	<c:set var="newtitle" value="${param.title}" />
+	<c:set var="newcomment" value="${param.comment}" />
+
+	<sql:update var="updOffer">
+	UPDATE offers SET
+	title=?,
+	comment=?
+	WHERE offerid=?
+	AND artistid=?
+	<sql:param value="${param.title}" />
+	<sql:param value="${param.comment}" />
+	<sql:param value="${offerid}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:update>
+
+</c:when>
+<c:when test="${param.op == 'addclaim'}">
+
+	<sql:query var="qryOffer">
+	SELECT * FROM offers LEFT JOIN claims
+	ON claims.offerid=offers.offerid
+	WHERE offers.offerid=?
+	AND (offers.artistid=? OR claims.userid=?)
+	<sql:param value="${offerid}" />
+	<sql:param value="${artist.artistid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<c:if test="${qryOffer.rowCount == 0}">
+
+		<c:set var="newcomment" value="${param.comment}" />
+		<c:set var="newrefurl" value="${param.refurl}" />
+
+		<sql:update var="updClaim">
+		INSERT INTO claims (offerid,userid,posted,comment,refurl) 
+		VALUES (?,?,NOW(),?,?)
+		<sql:param value="${offerid}" />
+		<sql:param value="${user.userid}" />
+		<sql:param value="${param.comment}" />
+		<sql:param value="${param.refurl}" />
+		</sql:update>
+
+	</c:if>
+
+</c:when>
+<c:when test="${param.op == 'deleteclaim'}">
+
+
+</c:when>
+</c:choose>
+
+<sql:query var="qryOffer">
+SELECT * FROM offers
+WHERE offerid=?
+AND artistid=?
+<sql:param value="${offerid}" />
+<sql:param value="${artist.artistid}" />
+</sql:query>
+
+<c:forEach var="offer" items="${qryOffer.rows}">
+
+<c:choose>
+<c:when test="${param.op == 'form'}">
+
+{% endcomment %}
+
+<form name="editoffer_{{ object.id }}" id="editoffer_{{ object.id }}" onSubmit="return false;">
+<table class="formtable">
+<tr>
+<td class="label">Title</td>
+<td class="data">{{ form.title }}</td>
+</tr>
+<tr>
+<td class="label">Comment</td>
+<td class="data">{{ form.comment }}</td>
+</tr>
+<tr>
+<td colspan="2" class="buttons">
+<button type="button" onClick="validateForm('editoffer_{{ object.id }}','editOffer({{ object.id }},document.editoffer_{{ object.id }})')">Save Changes</button>
+</td>
+</tr>
+</table>
+<input type="hidden" name="offerid" value="{{ object.id }}" />
+<input type="hidden" name="op" value="edit" />
+</form>
+
