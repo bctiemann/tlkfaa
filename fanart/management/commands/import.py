@@ -18,7 +18,7 @@ class Command(BaseCommand):
     do_folders = False
     do_pictures = False
     do_comments = False
-    do_shouts = True
+    do_shouts = False
     do_coloringbase = False
     do_coloringpics = False
     do_characters = False
@@ -29,7 +29,7 @@ class Command(BaseCommand):
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = False
+    do_requests = True
     do_imclients = False
     do_imids = False
     do_newpics = False
@@ -624,6 +624,7 @@ class Command(BaseCommand):
                 except fanart_models.Picture.DoesNotExist:
                     picture = None
                 f = fanart_models.GiftPicture.objects.create(
+                    id = a['requestid'],
                     artist = artist,
                     recipient = recipient,
                     picture = picture,

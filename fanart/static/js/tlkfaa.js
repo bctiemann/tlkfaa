@@ -2153,16 +2153,20 @@ console.log(data);
 }
 
 function listArtists(list,count) {
-//  var url = "/ajax_listartists.jsp?start=0&list="+list+"&count="+count;
-  var url = '/artists/' + list + '/?start=0&count=' + count;
-  var termstr = "";
-  if (list == 'search' && count > 0) {
-    termstr = "&term="+encodeURIComponent($('#searchtext').val());
-    url += termstr;
+  var url = '/artists/' + list + '/';
+  params = [];
+  if ((list == 'search' || list == 'tag') && count > 0) {
+    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
   }
-//  $('#artists_'+artistlistopen).slideUp('fast',function() {
+  var queryParts = [];
+  params.forEach(function(e){
+    queryParts.push(e.name + '=' + e.value);
+  });
+  queryPartsWithCount = queryParts.slice();
+  queryPartsWithCount.push('count=' + count);
+  queryStr = queryPartsWithCount.join('&');
+  url += '?' + queryStr;
   $('#artists').slideUp('fast',function() {
-//    $('#artists_'+list).load(url,function() {
     $('#artists').load(url,function() {
 //      Shadowbox.clearCache();
 //      Shadowbox.setup('td.thumb a,a.profilelink');
@@ -2173,23 +2177,28 @@ function listArtists(list,count) {
       $('h2.itemlist').removeClass('itemlist_selected');
       $('#artistlisth2_'+list).addClass('itemlist_selected');
       if (typeof(window.history.replaceState) !== "undefined") {
-        window.history.replaceState('', '', '/Artists/?list=' + list + termstr);
+        queryStr = queryParts.join('&');
+        window.history.replaceState('', '', '/Artists/' + list + '/' + (queryStr ? '?' : '') + queryStr);
       }
     });
   });
 }
 
 function listArtwork(list,count) {
-//  var url = "/ajax_listartwork.jsp?start=0&list="+list+"&count="+count;
-  var url = '/artwork/' + list + '/?count=' + count;
-  var termstr = "";
+  var url = '/artwork/' + list + '/';
+  params = [];
   if ((list == 'search' || list == 'tag') && count > 0) {
-    termstr = "&term="+encodeURIComponent($('#searchtext').val());
-    url += termstr;
+    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
   }
-//  $('#artwork_'+artworklistopen).slideUp('fast',function() {
+  var queryParts = [];
+  params.forEach(function(e){
+    queryParts.push(e.name + '=' + e.value);
+  });
+  queryPartsWithCount = queryParts.slice();
+  queryPartsWithCount.push('count=' + count);
+  queryStr = queryPartsWithCount.join('&');
+  url += '?' + queryStr;
   $('#artwork').slideUp('fast',function() {
-//    $('#artwork_'+list).load(url,function() {
     $('#artwork').load(url,function() {
 //      Shadowbox.clearCache();
 //      Shadowbox.setup('td.thumb a');
@@ -2200,7 +2209,8 @@ function listArtwork(list,count) {
       $('h2.itemlist').removeClass('itemlist_selected');
       $('#artworklisth2_'+list).addClass('itemlist_selected');
       if (typeof(window.history.replaceState) !== "undefined") {
-        window.history.replaceState('', '', "/Artwork/?list="+list+termstr);
+        queryStr = queryParts.join('&');
+        window.history.replaceState('', '', '/Artwork/' + list + '/' + (queryStr ? '?' : '') + queryStr);
       }
     });
   });
@@ -2221,7 +2231,7 @@ function getMoreArtists(start,list,count,term,obj) {
         termstr = "&term="+term;
       }
 //      window.history.replaceState('', '', "/Artists.jsp?list="+list+"&start="+start+termstr);
-      window.history.replaceState('', '', '/Artists/?list=' + list + '&start=' + start + termstr);
+      window.history.replaceState('', '', '/Artists/' + list + '/?start=' + start + termstr);
     }
   }});
   ArtistList[list] = start;
@@ -2241,7 +2251,7 @@ function getMoreArtwork(start,list,count,term,obj) {
       if (term != '') {
         termstr = "&term="+term;
       }
-      window.history.replaceState('', '', "/Artwork/?list="+list+"&start="+start+termstr);
+      window.history.replaceState('', '', '/Artwork/' + list + '/?start=' + start + termstr);
     }
   }});
   ArtworkList[list] = start;

@@ -154,6 +154,10 @@ class ArtworkView(UserPaneView):
         if self.request.user.is_authenticated() and self.request.user.unviewedpicture_set.exists():
             default_artwork_view = 'unviewed'
 
+#        mode = kwargs.get('mode', None)
+#        if not mode in ['canon', 'fan', 'mosttagged', 'recentlytagged', 'charactername'] and not dir_name:
+#            mode = 'canon'
+
         list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
         if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag']:
             list = default_artwork_view
