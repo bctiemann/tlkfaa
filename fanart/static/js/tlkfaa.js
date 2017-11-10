@@ -342,7 +342,8 @@ function uploadPicture(formid,fileinput,successdiv,hideformdiv,refresh,pausems) 
     $(this).hide();
   });
   $.ajaxFileUpload({
-    url: '/api/upload.jsp?'+formvars,
+    url: '/upload/?' + formvars,
+//    url: '/api/upload.jsp?'+formvars,
 //    url: '/ajax_upload.jsp?op='+op+'&itemid='+itemid,
     secureuri: false,
     fileElementId: fileinput,

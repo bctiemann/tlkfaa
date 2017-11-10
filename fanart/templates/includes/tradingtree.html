@@ -57,21 +57,22 @@
                             <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
                         {% endif %}
                         {% if claim.filename %}
-                            {% if claim.date_fulfilld %}
+                            {% if claim.date_fulfilled %}
                                 Received {{ claim.date_fulfilled|date }}.
                             {% else %}
                                 Picture posted {{ claim.date_uploaded|date }}; not yet received.
                             {% endif %}
                         {% endif %}
                         {% if offer.artist == user %}
-                            <div id="claimupload_${iconrequest.claimid}" {% if claim.filename %}style="display: none"{% endif %}>
-                                <input type="file" name="uploadfile" id="claim_upload_${iconrequest.claimid}" />
-                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_${iconrequest.claimid}','claimthumb_${iconrequest.claimid}','claimupload_${iconrequest.claimid}')">Upload</button>
+                            <div id="claimupload_{{ claim.id }}" {% if claim.filename %}style="display: none"{% endif %}>
+                                <input type="file" name="uploadfile" id="claim_upload_{{ claim.id }}" />
+                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>
                             </div>
                         {% endif %}
                     </div>
                     <input type="hidden" name="uploadop" value="claim" />
                     <input type="hidden" name="itemid" value="{{ claim.id }}" />
+                    {% csrf_token %}
                 </form>
             {% endfor %}
 
@@ -104,7 +105,7 @@
 
     {% elif offer.type == "adoptable" %}
 
-        <div id="adoptableclaims_${offer.offerid}">
+        <div id="adoptableclaims_{{ offer.id }}">
 
             {% include "includes/adoptable.html" %}
 

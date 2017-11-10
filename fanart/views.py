@@ -838,3 +838,11 @@ class EditOfferView(UpdateView):
     def get_object(self):
         return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
 
+
+class UploadPictureView(APIView):
+
+    def post(self, request):
+        logger.info(request.POST)
+        logger.info(request.FILES)
+        response = {'success': True}
+        return Response(response)
