@@ -69,7 +69,7 @@
 
             <div class="offertile picturetile">
                 <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
-                {{ picture.date_uploaded|date:"H:i D n/j/Y" }}
+                {{ picture.date_uploaded|date }}
             </div>
 
             {% if forloop.counter == artist.recently_uploaded_pictures|length %}

@@ -5,7 +5,7 @@
 		<div class="comment" id="shout_{{ shout.id }}">
 		<div class="commentname">
                         {% if not shout.is_deleted %}
-			<div class="commentdate">{{ shout.date_posted|date:"H:i D n/j/Y" }}</div>
+			<div class="commentdate">{{ shout.date_posted|date }}</div>
                         {% if shout.user.is_artist and shout.user.dir_name %}
 				<a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
                         {% else %}

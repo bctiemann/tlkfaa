@@ -157,7 +157,7 @@ Main navigation page for viewing characters.
 	<c:when test="${character.sex == 2}">Female</c:when>
 	</c:choose>
 	{{ character.species }}</li>
-	<li>{{ character.date_created|date:"H:i D n/j/Y" }}</li>
+	<li>{{ character.date_created|date }}</li>
 	{% if character.story_title %}
 	<li>
         {% if character.story_url %}

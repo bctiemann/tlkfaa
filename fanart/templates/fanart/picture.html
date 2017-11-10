@@ -104,7 +104,7 @@ The specified picture is private.
 </c:choose>
 {% endif %}
 </li>
-<li>{{ picture.date_uploaded|date:"H:i D n/j/Y" }}</li>
+<li>{{ picture.date_uploaded|date }}</li>
 <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
 <li>{{ picture.file_size|filesizeformat }}</li>
 <li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</li>

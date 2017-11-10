@@ -181,6 +181,7 @@ ORDER BY posted
 
 	<div id="adoptableclaims_${offer.offerid}">
 
+        {% include "includes/adoptable.html" %}
 	<jsp:include page="/ajax_editadoptable.jsp?offerid=${offer.offerid}" />
 
 	</div>

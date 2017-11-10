@@ -58,7 +58,7 @@
 		    <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
                 {% endif %}
 		{{ offer.title }}<br />
-                {{ offer.date_posted|date:"H:i D n/j/Y" }}<br />
+                {{ offer.date_posted|date }}<br />
                 {% if offer.type == "icon" %}
 			{{ offer.tradingclaim_set.count }} request{{ offer.tradingclaim_set.count|pluralize }}, {{ offer.open_claims.count }} open
                 {% elif offer.type == "adoptable" %}

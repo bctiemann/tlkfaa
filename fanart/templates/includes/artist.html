@@ -18,7 +18,7 @@
 
         <p class="picturecount">{{ artist.num_pictures|intcomma }} picture{{ artist.num_pictures|pluralize }}</p>
         <p class="artist-joined">Joined: {{ artist.date_joined|date:"n/j/Y" }}</p>
-       <p class="artist-lastupload">Last upload: {{ artist.last_upload|date:"H:i D n/j/Y" }}</p>
+       <p class="artist-lastupload">Last upload: {{ artist.last_upload|date }}</p>
 
     </div>
 
