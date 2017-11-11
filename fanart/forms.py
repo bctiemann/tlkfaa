@@ -113,3 +113,10 @@ class OfferForm(forms.ModelForm):
     class Meta:
         model = models.TradingOffer
         fields = ['title', 'comment']
+
+
+class UploadClaimForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingClaim
+        fields = ['picture']

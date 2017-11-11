@@ -26,6 +26,7 @@ import uuid
 import json
 import random
 import mimetypes
+import os
 
 import logging
 logger = logging.getLogger(__name__)
@@ -826,6 +827,55 @@ class PostClaimView(CreateView):
         return JsonResponse(response)
 
 
+class UploadClaimView(UpdateView):
+    model = models.TradingClaim
+    form_class = forms.UploadClaimForm
+    template_name = 'includes/icon_claim.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        self.object.picture = self.request.FILES['picture']
+        self.object.filename = self.request.FILES['picture'].name
+        super(UploadClaimView, self).form_valid(form)
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UploadClaimView, self).get_context_data(*args, **kwargs)
+        context['claim'] = self.object
+        return context
+
+
+class RemoveUploadClaimView(UpdateView):
+    model = models.TradingClaim
+    form_class = forms.UploadClaimForm
+    template_name = 'includes/icon_claim.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+
+    def form_valid(self, form):
+
+        self.object.filename = ''
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
+        except OSError:
+            pass
+        self.object.picture = None
+        return super(RemoveUploadClaimView, self).form_valid(form)
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(RemoveUploadClaimView, self).get_context_data(*args, **kwargs)
+        context['claim'] = self.object
+        return context
+
+
 class OfferView(DetailView):
     models = models.TradingOffer
     template_name = 'includes/offer.html'
@@ -843,7 +893,7 @@ class EditOfferView(UpdateView):
         return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
 
 
-class UploadPictureView(APIView):
+class BakUploadClaimView(APIView):
 
     def post(self, request):
         logger.info(request.POST)
@@ -853,7 +903,7 @@ class UploadPictureView(APIView):
         response =  {
             'url': 'blah', # obj.url,
             'name': 'foo', #order_name(obj.name),
-            'type': mimetypes.guess_type(obj.path)[0] or 'image/png',
+            'type': 'sdasdasd', #mimetypes.guess_type(obj.path)[0] or 'image/png',
             'thumbnailUrl': obj.url,
             'size': obj.size,
             'deleteUrl': reverse('upload-delete', args=[instance.pk]),

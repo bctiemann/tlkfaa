@@ -435,10 +435,16 @@ function clearClaim(claimid) {
 }
 
 function removeClaimPic(claimid) {
-  var url = "/ajax_upload.jsp?uploadop=removeclaimpic&itemid="+claimid;
-  $('#claimthumb_'+claimid).load(url,function() {
-    $('#claimupload_'+claimid).slideDown('fast');
+//  var url = "/ajax_upload.jsp?uploadop=removeclaimpic&itemid="+claimid;
+  var url = '/claim/' + claimid + '/upload/remove/';
+  $.post(url, {}, function(data) {
+    $('#claim_' + claimid).html(data);
+//    $('#claimthumb_'+claimid).html(data);
+//    $('#claimupload_'+claimid).slideDown('fast');
   });
+//  $('#claimthumb_'+claimid).load(url,function() {
+//    $('#claimupload_'+claimid).slideDown('fast');
+//  });
 }
 
 function toggleSelectAll(sel,myselitems) {

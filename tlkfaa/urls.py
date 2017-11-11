@@ -62,8 +62,10 @@ urlpatterns = [
     url(r'^offer/(?P<offer_id>[0-9]+)/$', fanart_views.OfferView.as_view(), name='offer'),
     url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', fanart_views.EditOfferView.as_view(), name='edit-offer'),
     url(r'^claim/post/$', fanart_views.PostClaimView.as_view(), name='post-claim'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/upload/$', fanart_views.UploadClaimView.as_view(), name='upload-claim'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/upload/remove/$', fanart_views.RemoveUploadClaimView.as_view(), name='remove-upload-claim'),
 
-    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
+#    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 
     url(r'^fave/(?P<fave_type>[a-z]+)/(?P<object_id>[0-9]+)/$', fanart_views.ToggleFaveView.as_view(), name='toggle-fave'),
     url(r'^block/(?P<user_id>[0-9]+)/$', fanart_views.ToggleBlockView.as_view(), name='toggle-block'),

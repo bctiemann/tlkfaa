@@ -39,8 +39,10 @@
 	<div id="iconrequests_{{ offer.id }}">
 
             {% for claim in offer.tradingclaim_set.all %}
-                <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
-                    <div class="claim" id="claim_{{ claim.id }}">
+                <div class="claim" id="claim_{{ claim.id }}">
+                    {% include "includes/icon_claim.html" %}
+{% comment %}
+                    <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
                         <div class="claimthumb" id="claimthumb_{{ claim.id }}">
                             {% if claim.filename %}
                                 <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.s.jpg" /></a>
@@ -74,12 +76,12 @@
                             <div id="claimupload_{{ claim.id }}" {% if claim.filename %}style="display: none"{% endif %}>
                                 <input type="file" name="uploadfile" id="claim_upload_{{ claim.id }}" />
                                 <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>
-                            </div>
-<input id="fileupload_{{ claim.id }}" type="file" name="files[]" data-url="{% url "upload-picture" %}" multiple>
+<input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}">
 <div id="progress_{{ claim.id }}">
     <div class="bar" style="width: 0%;"></div>
 </div>
 
+p: {{ form.picture }}
 <script>
 $(function () {
     $('#fileupload_' + {{ claim.id }}).fileupload({
@@ -99,13 +101,14 @@ $(function () {
     });
 });
 </script>
+                            </div>
                         {% endif %}
-                    </div>
-                    <input type="hidden" name="uploadop" value="claim" />
-                    <input type="hidden" name="itemid" value="{{ claim.id }}" />
-                    {% csrf_token %}
-
-                </form>
+                        <input type="hidden" name="uploadop" value="claim" />
+                        <input type="hidden" name="claim" value="{{ claim.id }}" />
+                        {% csrf_token %}
+                    </form>
+{% endcomment %}
+                </div>
             {% endfor %}
 
             {% if user.is_authenticated and offer.artist != user and not my_claims_for_offer.exists %}

@@ -578,12 +578,20 @@ class TradingClaim(models.Model):
     def extension(self):
         return self.filename.split('.')[-1].lower()
 
+    @property
+    def thumbnail(self):
+        path = ('/').join(self.picture.path.split('/')[:-1])
+        return '{0}/{1}.s.jpg'.format(path, self.id)
+
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(TradingClaim, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
             create_thumbnails.apply_async(('TradingClaim', self.id,), countdown=20)
+
+    def get_absolute_url(self):
+        return reverse('upload-claim', kwargs={'claim_id': self.id})
 
     class Meta:
         ordering = ['date_posted']
