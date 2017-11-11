@@ -18,10 +18,14 @@ from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks
 
+from .response import JSONResponse, response_mimetype
+from .serialize import serialize
+
 from datetime import timedelta
 import uuid
 import json
 import random
+import mimetypes
 
 import logging
 logger = logging.getLogger(__name__)
@@ -844,5 +848,15 @@ class UploadPictureView(APIView):
     def post(self, request):
         logger.info(request.POST)
         logger.info(request.FILES)
-        response = {'success': True}
+#        response = {'success': True}
+
+        response =  {
+            'url': 'blah', # obj.url,
+            'name': 'foo', #order_name(obj.name),
+            'type': mimetypes.guess_type(obj.path)[0] or 'image/png',
+            'thumbnailUrl': obj.url,
+            'size': obj.size,
+            'deleteUrl': reverse('upload-delete', args=[instance.pk]),
+            'deleteType': 'DELETE',
+        }
         return Response(response)

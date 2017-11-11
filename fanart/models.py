@@ -14,6 +14,7 @@ import uuid
 import datetime
 
 from fanart.utils import dictfetchall
+from fanart.tasks import create_thumbnails
 
 import logging
 logger = logging.getLogger(__name__)
@@ -23,6 +24,12 @@ THREE = 90
 
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
+
+def get_claims_path(instance, filename):
+    return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
+
+def get_claims_thumb_path(instance, filename):
+    return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
 
 def get_image_thumb_small_path(instance, filename):
     return '{0}/thumb_small/{1}'.format(instance.id, filename)
@@ -550,13 +557,33 @@ class TradingClaim(models.Model):
     reference_url = models.CharField(max_length=255, blank=True)
     date_fulfilled = models.DateTimeField(null=True, blank=True)
     filename = models.CharField(max_length=100, blank=True)
-    basename = models.CharField(max_length=100, blank=True)
-    extension = models.CharField(max_length=5, blank=True)
+
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_claims_path, null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+
+#    basename = models.CharField(max_length=100, blank=True)
+#    extension = models.CharField(max_length=5, blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
 
     @property
     def is_ready(self):
         return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and not self.filename)
+
+    @property
+    def basename(self):
+        return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def extension(self):
+        return self.filename.split('.')[-1].lower()
+
+    def save(self, update_thumbs=True, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(TradingClaim, self).save(*args, **kwargs)
+        logger.info(self.picture)
+        if update_thumbs:
+            create_thumbnails.apply_async(('TradingClaim', self.id,), countdown=20)
 
     class Meta:
         ordering = ['date_posted']

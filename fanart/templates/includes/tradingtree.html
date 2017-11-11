@@ -1,5 +1,12 @@
 {% load bbcode_tags %}
 
+<style type="text/css">
+.bar {
+    height: 18px;
+    background: green;
+}
+</style>
+
 <div class="offer editoffer">
     {#<form name="offerform_{{ offer.id }}" method="POST">#}
     <table>
@@ -68,11 +75,36 @@
                                 <input type="file" name="uploadfile" id="claim_upload_{{ claim.id }}" />
                                 <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>
                             </div>
+<input id="fileupload_{{ claim.id }}" type="file" name="files[]" data-url="{% url "upload-picture" %}" multiple>
+<div id="progress_{{ claim.id }}">
+    <div class="bar" style="width: 0%;"></div>
+</div>
+
+<script>
+$(function () {
+    $('#fileupload_' + {{ claim.id }}).fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo(document.body);
+            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress_' + {{ claim.id }} + ' .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+    });
+});
+</script>
                         {% endif %}
                     </div>
                     <input type="hidden" name="uploadop" value="claim" />
                     <input type="hidden" name="itemid" value="{{ claim.id }}" />
                     {% csrf_token %}
+
                 </form>
             {% endfor %}
 
