@@ -893,6 +893,20 @@ class EditOfferView(UpdateView):
         return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
 
 
+class OfferStatusView(APIView):
+
+    def get(self, request, offer_id=None):
+        response = {}
+        offer = get_object_or_404(models.TradingOffer, pk=offer_id)
+        for claim in offer.tradingclaim_set.all():
+            if claim.picture:
+                response[claim.id] = {
+                    'thumbnail_url': claim.thumbnail_url,
+                    'thumbnail_done': os.path.exists(claim.thumbnail)
+                }
+        return Response(response)
+
+
 class BakUploadClaimView(APIView):
 
     def post(self, request):

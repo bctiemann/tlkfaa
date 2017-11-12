@@ -61,6 +61,7 @@ urlpatterns = [
 
     url(r'^offer/(?P<offer_id>[0-9]+)/$', fanart_views.OfferView.as_view(), name='offer'),
     url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', fanart_views.EditOfferView.as_view(), name='edit-offer'),
+    url(r'^offer/(?P<offer_id>[0-9]+)/status/$', fanart_views.OfferStatusView.as_view(), name='offer-status'),
     url(r'^claim/post/$', fanart_views.PostClaimView.as_view(), name='post-claim'),
     url(r'^claim/(?P<claim_id>[0-9]+)/upload/$', fanart_views.UploadClaimView.as_view(), name='upload-claim'),
     url(r'^claim/(?P<claim_id>[0-9]+)/upload/remove/$', fanart_views.RemoveUploadClaimView.as_view(), name='remove-upload-claim'),

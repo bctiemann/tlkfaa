@@ -12,6 +12,7 @@ from django.utils import timezone
 
 import uuid
 import datetime
+import os
 
 from fanart.utils import dictfetchall
 from fanart.tasks import create_thumbnails
@@ -580,8 +581,16 @@ class TradingClaim(models.Model):
 
     @property
     def thumbnail(self):
+        if not self.picture:
+            return None
         path = ('/').join(self.picture.path.split('/')[:-1])
         return '{0}/{1}.s.jpg'.format(path, self.id)
+
+    @property
+    def thumbnail_url(self):
+        if os.path.exists(self.thumbnail):
+            return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))

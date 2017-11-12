@@ -11,78 +11,79 @@
 
 {% block content %}
 
-<c:choose>
-<c:when test="${param.fnc == 'postnew'}">
-
-</c:when>
-<c:when test="${param.fnc == 'remove'}">
-
-</c:when>
-</c:choose>
-
 <h1>Trading Tree</h1>
 
 <div class="featurebox tradingtree">
 
 <div class="selector">
-<a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree" offer_type="icon" %}">icons</a>
-<a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a>
+    <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree" offer_type="icon" %}">icons</a>
+    <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a>
 </div>
 
 {% if offer %}
-<c:choose>
-<c:when test="${offerid > 0}">
 
-        {% include "includes/tradingtree.html" %}
-	<jsp:include page="/ajax_tradingtree.jsp?offerid=${offerid}" />
+<script type="text/javascript">
+var refreshThumbsInterval = null;
 
-</c:when>
-<c:otherwise>
+var checkThumbs = function() {
+    var url = '/offer/{{ offer.id }}/status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (claim_id in data) {
+            $('#claimthumb_' + claim_id + ' img').attr('src', data[claim_id].thumbnail_url);
+            if (!data[claim_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+
+    {% include "includes/tradingtree.html" %}
+
 {% else %}
 
-        {% if show_for_you %}
-		<div class="newforme">
-		<h3>New for You</h3>
-                {% include "includes/tradingtree_foryou.html" %}
-		</div>
-        {% endif %}
+    {% if show_for_you %}
+        <div class="newforme">
+            <h3>New for You</h3>
+            {% include "includes/tradingtree_foryou.html" %}
+        </div>
+    {% endif %}
 
 
-	<div id="offerslayout">
+    <div id="offerslayout">
 
         {% for offer in offers %}
 
-		<div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
-		<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id_orig }}.s.jpg" width="120" height="{{ offer.thumb_height }}" /></a><br />
+            <div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
+                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id_orig }}.s.jpg" width="120" height="{{ offer.thumb_height }}" /></a><br />
                 {% if offer.artist %}
-		    <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
+                    <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
                 {% endif %}
 		{{ offer.title }}<br />
                 {{ offer.date_posted|date }}<br />
                 {% if offer.type == "icon" %}
-			{{ offer.tradingclaim_set.count }} request{{ offer.tradingclaim_set.count|pluralize }}, {{ offer.open_claims.count }} open
+                    {{ offer.tradingclaim_set.count }} request{{ offer.tradingclaim_set.count|pluralize }}, {{ offer.open_claims.count }} open
                 {% elif offer.type == "adoptable" %}
-                        {% if not offer.completed_claims.exists %}
-                            {{ offer.tradingclaim_set.count }} applying
-                        {% else %}
-				Adopted.
-                        {% endif %}
+                    {% if not offer.completed_claims.exists %}
+                        {{ offer.tradingclaim_set.count }} applying
+                    {% else %}
+                        Adopted.
+                    {% endif %}
                 {% endif %}
-		</div>
+            </div>
 
         {% endfor %}
 
-	<br clear="left" />
+        <br clear="left" />
 
-	</div>
+    </div>
 
-</c:otherwise>
-</c:choose>
 {% endif %}
 
 </div>
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}
