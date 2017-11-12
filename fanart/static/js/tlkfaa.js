@@ -1436,14 +1436,15 @@ function toggleComments(pictureid) {
   }
 }
 
-function toggleCCPics(pictureid) {
-  var status = document.getElementById('cc_'+pictureid).style.display;
+function toggleCCPics(ccid) {
+  var status = document.getElementById('cc_'+ccid).style.display;
   if (status == "block") {
-    $('#cc_'+pictureid).slideUp('fast');
+    $('#cc_'+ccid).slideUp('fast');
   } else {
-    var url = "/ajax_colored.jsp?pictureid="+pictureid+"&showcclink=1";
-    $('#cc_'+pictureid).load(url,function() {
-      $('#cc_'+pictureid).slideDown('fast');
+//    var url = "/ajax_colored.jsp?pictureid="+pictureid+"&showcclink=1";
+    var url = '/coloring/' + ccid + '/';
+    $('#cc_'+ccid).load(url,function() {
+      $('#cc_'+ccid).slideDown('fast');
     });
   }
 }

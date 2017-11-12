@@ -3,6 +3,7 @@
 
 
 <div class="picture {% view_picture picture user %} {% if not picture.is_public %}privatepicture{% endif %}">
+{% if picture.date_deleted == None %}
 <table>
 <tr>
 <td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
@@ -16,14 +17,12 @@
 
 <div class="picnumber">{% pic_number pic_number pictures.number pictures_paginator.per_page %}</div>
 <div class="picdate">{{ picture.date_uploaded }}</div>
-<c:if test="${artistname != null}"><div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div></c:if>
-<c:if test="${folder != ''}">
+<div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
     {% if picture.folder %}
         <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
     {% else %}
         <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
     {% endif %}
-</c:if>
 
 {% if contest %}
 <c:if test="${contestvotes > 0}">
@@ -36,12 +35,10 @@
 </div>
 
 {% if contest %}
-<c:if test="${contest > 0}">
 <div class="picvote">
 <c:if test="${contestvote == true}"><input type="radio" <c:if test="${voted == pictureid}">checked</c:if> onClick="votePicture(${contest},${pictureid})" /> Vote for this picture</c:if>
 <c:if test="${contestremove == 1}"><button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button></c:if>
 </div>
-</c:if>
 {% endif %}
 
 <ul class="characters group">
@@ -56,9 +53,7 @@
 
 <div class="tags">
 {% for tag in picture.tags.all %}
-<c:forEach var="tag" items="${qryTags.rows}">
 	<a class="tag" href="/Artwork/?list=tag&term={{ tag }}">{{ tag }}</a>
-</c:forEach>
 {% endfor %}
 </div>
 
@@ -83,42 +78,25 @@
 </td>
 </tr>   
 </table>
-<div class="inlinecomments" id="comments_{{ picture.id }}"></div>
-
-{% if picture.coloringbase_set.count %}
-<c:if test="${cc_base > 0}">
-	<sql:query var="qryCCPics">
-	SELECT * FROM coloring_base
-	WHERE pictureid=?
-	AND visible=true
-	<sql:param value="${pictureid}" />
-	</sql:query>
-        {% for coloring_base in picture.coloringbase_set.all %}
-	<c:forEach var="ccpic" items="${qryCCPics.rows}">
-		<div class="cclink">
-                {% if forloop.counter == 1 %}
-		<c:choose>
-		<c:when test="${showcolored == 1}">
-		${ccpic.numcolored} colored versions
-		</c:when>
-                {% else %}
-		<c:otherwise>
-		<a href="javascript:nop()" onClick="toggleCCPics(${pictureid})">${ccpic.numcolored} colored versions</a>
-		</c:otherwise>
-		</c:choose>
-                {% endif %}
-		</div>
-		<div id="cc_{{ coloring_base.id }}" class="cclist{% if show_colored_pictures %} expanded{% endif %}">
-                {% if show_colored_pictures %}
-		<c:if test="${showcolored == 1}">
-                        {% include "includes/colored_pictures.html" %}
-			<jsp:include page="/ajax_colored.jsp?pictureid=${pictureid}" />
-		</c:if>
-                {% endif %}
-		</div>
-	</c:forEach>
-        {% endfor %}
-</c:if>
 {% endif %}
+
+    <div class="inlinecomments" id="comments_{{ picture.id }}"></div>
+
+    {% if picture.coloringbase_set.count %}
+        {% for coloring_base in picture.coloringbase_set.all %}
+            <div class="cclink">
+                {% if show_colored_pictures %}
+                    {{ coloring_base.coloringpicture_set.count }} colored version{{ coloring_base.coloringpicture_set.count|pluralize }}
+                {% else %}
+                    <a href="javascript:nop()" onClick="toggleCCPics({{ coloring_base.id }})">{{ coloring_base.coloringpicture_set.count }} colored version{{ coloring_base.coloringpicture_set.count|pluralize }}</a>
+                {% endif %}
+            </div>
+            <div id="cc_{{ coloring_base.id }}" class="cclist{% if show_colored_pictures %} expanded{% endif %}">
+                {% if show_colored_pictures %}
+                    {% include "includes/colored_pictures.html" %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
 
 </div>

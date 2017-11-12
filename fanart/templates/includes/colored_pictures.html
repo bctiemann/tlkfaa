@@ -25,6 +25,6 @@
     <div class="bar" style="width: 0%;"></div>
 </div>
 
-{% if show_cc_link %}
+{% if not hide_cc_link %}
     Visit the <a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">Coloring Cave</a> to add your own colored version.
 {% endif %}

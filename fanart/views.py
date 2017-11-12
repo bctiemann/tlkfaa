@@ -612,9 +612,9 @@ class PictureView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PictureView, self).get_context_data(**kwargs)
-        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True)
         context['picture'] = picture
-        context['picture_is_private'] = not picture.is_public and (not user.is_authenticated or picture.artist != user)
+        context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         context['hash'] = uuid.uuid4()
         if self.request.user.is_authenticated():
