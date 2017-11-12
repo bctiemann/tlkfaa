@@ -1082,16 +1082,20 @@ function movePMs(fnc,box) {
   }
 }
 
-function removeCCPic(ccpicid) {
+function removeCCPic(ccpicid, ccid) {
   $('#dialog_confirm_text').html("Are you sure you want to remove this colored picture from the Coloring Cave?");
   $('#dialog_confirm').dialog({
     resizable: false,
     modal: true,
     buttons: {
       "Remove": function() {
-        var url = "/ajax_editccpic.jsp?op=remove&ccpicid=" + ccpicid;
-        $('#genstatus').load(url,function() {
-          window.location.reload();
+        $(this).dialog('close');
+//        var url = "/ajax_editccpic.jsp?op=remove&ccpicid=" + ccpicid;
+        var url = '/coloring/' + ccpicid + '/remove/';
+        $.post(url, {}, function(data) {
+//        $('#genstatus').load(url,function() {
+          $('#cc_' + ccid).html(data);
+//          window.location.reload();
         });
       },
       Cancel: function() {

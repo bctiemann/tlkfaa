@@ -72,6 +72,7 @@ urlpatterns = [
     url(r'^coloring/(?P<coloring_base_id>[0-9]+)/$', fanart_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
     url(r'^coloring/(?P<coloring_base_id>[0-9]+)/upload/$', fanart_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),
     url(r'^coloring/(?P<coloring_base_id>[0-9]+)/status/$', fanart_views.ColoringPictureStatusView.as_view(), name='coloring-picture-status'),
+    url(r'^coloring/(?P<coloring_picture_id>[0-9]+)/remove/$', fanart_views.RemoveColoringPictureView.as_view(), name='remove-coloring-picture'),
 
 #    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 

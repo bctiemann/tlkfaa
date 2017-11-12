@@ -8,7 +8,7 @@
                 <td class="thumb"><a href="{{ MEDIA_URL }}Artwork/coloring/{{ colored_picture.id }}.{{ colored_picture.extension }}" rel="shadowbox" class="shadowbox"><img class="thumb claimthumb" id="claimthumb_{{ colored_picture.id }}" src="{{ colored_picture.thumbnail_url }}" /></a></td>
                 <td class="fullwidth">
                     {% if colored_picture.base.artist == user or colored_picture.artist == user %}
-                        <div class="removecc piclink"><a href="javascript:nop()" onClick="removeCCPic({{ colored_picture.id }})">remove</a></div>
+                        <div class="removecc piclink"><a href="javascript:nop()" onClick="removeCCPic({{ colored_picture.id }}, {{ colored_picture.base.id }})">remove</a></div>
                     {% endif %}
                     <div class="picdate">{{ colored_picture.date_posted|date }}</div>
                     <a href="{% url "artist" dir_name=colored_picture.artist.dir_name %}">{{ colored_picture.artist.username }}</a>

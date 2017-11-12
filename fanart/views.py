@@ -1076,3 +1076,24 @@ class ColoringPictureStatusView(APIView):
         return Response(response)
 
 
+class RemoveColoringPictureView(DeleteView):
+    model = models.ColoringPicture
+    form_class = forms.UploadColoringPictureForm
+
+    def get_object(self):
+        return get_object_or_404(models.ColoringPicture, (Q(artist=self.request.user) | Q(base__creator=self.request.user)), pk=self.kwargs['coloring_picture_id'])
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        logger.info(self.object.picture.name)
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
+        except OSError:
+            pass
+        return super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('coloring-pictures', kwargs={'coloring_base_id': self.object.base.id})
+
+
