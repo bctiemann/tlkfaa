@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load static %}
 
 {% block activetab_coloringcave %}active{% endblock %}
 
@@ -70,10 +71,11 @@ Allows artists to recolor others' base line-art and have it grouped both into th
 
 <div class="selector">
 Sort by:
-<a class="<c:if test="${sortby == 'popularity'}">selected</c:if>" href="/ColoringCave.jsp?sortby=popularity">popularity</a>
-<a class="<c:if test="${sortby == 'date'}">selected</c:if>" href="/ColoringCave.jsp?sortby=date">date posted</a>
+<a class="{% if sort_by == "popularity" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=popularity">popularity</a>
+<a class="{% if sort_by == "date" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=date">date posted</a>
 </div>
 
+{% if coloring_picture %}
 <c:choose>
 <c:when test="${ccpid > 0}">
 	<sql:query var="qryCCPic">
@@ -96,6 +98,7 @@ Sort by:
 	<p>The specified coloring picture ID is invalid.</p>
 	</div>
 
+{% elif coloring_base %}
 </c:when>
 <c:when test="${ccid > 0}">
 
@@ -109,34 +112,11 @@ Sort by:
 	</sql:query>
 	<c:forEach var="basepic" items="${qryCCBase.rows}">
 
-		<c:set var="title" value="${basepic.title}" />
-		<tags:printPicture
-			picnumber=""
-			pictureid="${basepic.pictureid}"
-			basename="${basepic.basename}"
-			extension="${basepic.extension}"
-			type="${basepic.type}"
-			title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-			artistname="${basepic.artistname}"
-			dirname="${basepic.dirname}"
-			width="${basepic.width}"
-			height="${basepic.height}"
-			thumbheight="${basepic.thumbheight}"
-			allowcomments="${basepic.allowcomments_p && basepic.allowcomments}"
-			numcomments="${basepic.numcomments}"
-			numpicfaves="${basepic.numpicfaves}"
-			folder="${basepic.folderid}"
-			cc_base="${basepic.coloring_baseid}"
-			showcolored="1"
-			>
-			<jsp:attribute name="uploaded">
-				<fmt:formatDate value="${basepic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-			</jsp:attribute>  
-			<jsp:attribute name="filesize">
-				<fmt:formatNumber value="${basepic.filesize / 1024}" type="number" pattern="###" />
-			</jsp:attribute>
-		</tags:printPicture>
+                {% with coloring_base.picture as picture %}
+                    {% include "includes/picture.html" %}
+                {% endwith %}
 
+                {% if coloring_base.is_active %}
 		<c:choose>
 		<c:when test="${basepic.active == true}">
 			<form method="POST" id="ccform_${basepic.pictureid}">
@@ -159,10 +139,12 @@ Sort by:
 			<input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
 			</form>
 		</c:when>
+                {% else %}
 		<c:otherwise>
 			<p>New colored versions cannot be posted for this line-art.</p>
 		</c:otherwise>
 		</c:choose>
+                {% endif %}
 
 	</c:forEach>
 
@@ -179,6 +161,7 @@ Sort by:
 		</c:forEach>
 	</c:if>
 
+{% else %}
 </c:when>
 <c:otherwise>
 
@@ -207,37 +190,28 @@ Sort by:
 
 	<div id="offerslayout">
 
-	<c:if test="${qryCC.rowCount == 0}">
+       {% if coloring_bases.count == 0 %}
 		<div class="noentries">
 		No coloring pictures.
 		</div>
-	</c:if>
+        {% endif %}
 
-	<c:forEach var="ccbase" items="${qryCC.rows}">
+        {% for coloring_base in coloring_bases %}
 
-		<sql:query var="qryCCBasePic">
-		SELECT * FROM pictures
-		WHERE pictures.pictureid=?
-		AND deleted IS NULL
-		<sql:param value="${ccbase.pictureid}" />
-		</sql:query>
-
-		<c:set var="artistname" value="${ccbase.artistname}" />
 		<div class="offertile cctile">
-		<a href="/ColoringCave.jsp?ccid=${ccbase.coloring_baseid}">
-		<c:forEach var="ccbasepic" items="${qryCCBasePic.rows}">
-			<img class="" src="/Artwork/Artists/${ccbase.dirname}/${fanart:encodeURI(ccbasepic.basename)}.s.jpg" width="60" height="${ccbasepic.thumbheight}" />
-		</c:forEach>
-		<c:if test="${qryCCBasePic.rowCount == 0}">
-			<img src="/images/LineArtRemoved.gif" width="60" height="60" class="placeholdericon" />
-		</c:if>
+		<a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">
+                {% if coloring_base.picture.date_deleted == None %}
+			<img class="" src="{{ MEDIA_URL }}Artwork/Artists/{{ coloring_base.picture.artist.dir_name }}/{{ coloring_base.picture.basename }}.s.jpg" width="60" height="{{ coloring_base.picture.thumb_height }}${ccbasepic.thumbheight}" />
+                {% else %}
+			<img src="{% static "images/LineArtRemoved.gif" %}" width="60" height="60" class="placeholdericon" />
+                {% endif %}
 		</a>
-		<a href="/Artists/${ccbase.dirname}/"><%= truncateString((String)pageContext.getAttribute("artistname"),10) %></a><br />
-		<fmt:formatDate value="${ccbase.posted}" type="date" pattern="M/d/yyyy" /><br />
-		${ccbase.numcolored} colored
+		<a href="{% url "artist" dir_name=coloring_base.picture.artist.dir_name %}">{{ coloring_base.picture.artist.username|truncatechars:10 }}</a><br />
+		{{ coloring_base.date_posted|date:"n/j/Y" }}<br />
+		{{ coloring_base.num_colored }} colored
 		</div>
 
-	</c:forEach>
+        {% endfor %}
 
 	<br clear="left" />
 
@@ -245,6 +219,7 @@ Sort by:
 
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 </div>
 

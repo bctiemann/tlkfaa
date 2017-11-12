@@ -315,6 +315,40 @@ class TradingTreeView(UserPaneView):
 class ColoringCaveView(UserPaneView):
     template_name = 'fanart/coloringcave.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ColoringCaveView, self).get_context_data(**kwargs)
+
+        sort_by = self.request.GET.get('sort_by', None)
+        if not sort_by in ['popularity', 'date']:
+            sort_by = 'popularity'
+
+        coloring_base_id = kwargs.get('coloring_base_id', None)
+        if coloring_base_id:
+            context['coloring_base'] = get_object_or_404(models.ColoringBase, pk=coloring_base_id)
+        else:
+            coloring_bases = models.ColoringBase.objects.filter(is_visible=True)
+            if sort_by == 'popularity':
+                coloring_bases = coloring_bases.order_by('-num_colored')
+            elif sort_by == 'date':
+                coloring_bases = coloring_bases.order_by('-date_posted')
+
+            context['coloring_bases'] = coloring_bases[0:100]
+        context['sort_by'] = sort_by
+
+        return context
+
+
+class ColoringCavePictureView(UserPaneView):
+    template_name = 'fanart/coloringcave.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ColoringCavePictureView, self).get_context_data(**kwargs)
+
+        context['coloring_bases'] = coloring_bases[0:100]
+        context['sort_by'] = sort_by
+
+        return context
+
 
 class SpecialFeaturesView(UserPaneView):
     template_name = 'fanart/special.html'
