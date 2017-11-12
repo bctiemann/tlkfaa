@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidd
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, FormMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -830,7 +830,7 @@ class PostClaimView(CreateView):
 class UploadClaimView(UpdateView):
     model = models.TradingClaim
     form_class = forms.UploadClaimForm
-    template_name = 'includes/icon_claim.html'
+    template_name = 'includes/claim.html'
 
     def get_object(self):
         return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
@@ -854,7 +854,7 @@ class UploadClaimView(UpdateView):
 class RemoveUploadClaimView(UpdateView):
     model = models.TradingClaim
     form_class = forms.UploadClaimForm
-    template_name = 'includes/icon_claim.html'
+    template_name = 'includes/claim.html'
 
     def get_object(self):
         return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
@@ -939,12 +939,23 @@ class ChooseAdopterView(UpdateView):
         return super(ChooseAdopterView, self).form_valid(form)
 
 
+class RemoveClaimView(DeleteView):
+    model = models.TradingClaim
+    form_class = forms.AcceptClaimForm
+
+    def get_object(self):
+        return get_object_or_404(models.TradingClaim, (Q(user=self.request.user) | Q(offer__artist=self.request.user)), pk=self.kwargs['claim_id'])
+
+    def get_success_url(self):
+        return reverse('offer', kwargs={'offer_id': self.object.offer.id})
+
+
 class OfferView(DetailView):
     models = models.TradingOffer
     template_name = 'includes/offer.html'
 
     def get_object(self):
-        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
+        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'])
 
 
 class EditOfferView(UpdateView):

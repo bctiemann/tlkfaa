@@ -423,8 +423,13 @@ function removeClaim(claimid) {
     buttons: {
       "Remove": function() {
         $(this).dialog('close');
-        var url = "/ajax_edittradingtree.jsp?fnc=remove&claimid="+claimid;
-        $('#claim_'+claimid).load(url);
+//        var url = "/ajax_edittradingtree.jsp?fnc=remove&claimid="+claimid;
+        var url = '/claim/' + claimid + '/remove/';
+        $.post(url, {}, function(data) {
+console.log(data);
+          window.location.reload();
+//          $('#claim_'+claimid).html(data);
+        });
       },
       Cancel: function() {
         $(this).dialog('close');

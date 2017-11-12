@@ -1,5 +1,7 @@
 {% load bbcode_tags %}
 
+{% if claim.offer.type == "icon" %}
+
                     <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
                         <div class="claimthumb" id="claimthumb_{{ claim.id }}">
                             {% if claim.filename %}
@@ -68,3 +70,29 @@ $(function () {
                         <input type="hidden" name="claim" value="{{ claim.id }}" />
                         {% csrf_token %}
                     </form>
+
+{% elif claim.offer.type == "adoptable" %}
+
+        {% if offer.artist == user %}
+            {% if claim.date_fulfilled %}
+                <button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'unchoose')">Unchoose</button>
+            {% elif not claim.fulfilled and not offer.completed_claims.exists %}
+                <button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'choose')">Choose</button>
+            {% endif %}
+        {% endif %}
+        <div class="claimuser">
+            {% if claim.user.dir_name %}
+                <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
+            {% else %}
+                {{ claim.user.username }}
+            {% endif %}
+            - {{ claim.date_posted|date }}</div>
+            {% if claim.user == user or offer.artist == user %}
+                <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
+            {% endif %}
+            {% if claim.date_fulfilled %}
+                Winner of this adoptable.
+            {% endif %}
+        <div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
+
+{% endif %}

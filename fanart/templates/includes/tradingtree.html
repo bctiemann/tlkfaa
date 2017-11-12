@@ -40,74 +40,7 @@
 
             {% for claim in offer.tradingclaim_set.all %}
                 <div class="claim" id="claim_{{ claim.id }}">
-                    {% include "includes/icon_claim.html" %}
-{% comment %}
-                    <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
-                        <div class="claimthumb" id="claimthumb_{{ claim.id }}">
-                            {% if claim.filename %}
-                                <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.s.jpg" /></a>
-                                {% if offer.artist == user %}
-                                    <a href="javascript:nop()" onClick="removeClaimPic({{ claim.id }})">remove</a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    <div class="claimuser">
-                        {% if claim.user.dir_name %}
-                            <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
-                        {% else %}
-                            {{ claim.user.username }}
-                        {% endif %}
-                        - {{ claim.date_posted|date }}</div>
-                        {% if claim.user == user or offer.artist == user %}
-                            <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
-                        {% endif %}
-                        <div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
-                        {% if claim.reference_url %}
-                            <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
-                        {% endif %}
-                        {% if claim.filename %}
-                            {% if claim.date_fulfilled %}
-                                Received {{ claim.date_fulfilled|date }}.
-                            {% else %}
-                                Picture posted {{ claim.date_uploaded|date }}; not yet received.
-                            {% endif %}
-                        {% endif %}
-                        {% if offer.artist == user %}
-                            <div id="claimupload_{{ claim.id }}" {% if claim.filename %}style="display: none"{% endif %}>
-                                <input type="file" name="uploadfile" id="claim_upload_{{ claim.id }}" />
-                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>
-<input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}">
-<div id="progress_{{ claim.id }}">
-    <div class="bar" style="width: 0%;"></div>
-</div>
-
-p: {{ form.picture }}
-<script>
-$(function () {
-    $('#fileupload_' + {{ claim.id }}).fileupload({
-        dataType: 'json',
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                $('<p/>').text(file.name).appendTo(document.body);
-            });
-        },
-        progressall: function (e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $('#progress_' + {{ claim.id }} + ' .bar').css(
-                'width',
-                progress + '%'
-            );
-        },
-    });
-});
-</script>
-                            </div>
-                        {% endif %}
-                        <input type="hidden" name="uploadop" value="claim" />
-                        <input type="hidden" name="claim" value="{{ claim.id }}" />
-                        {% csrf_token %}
-                    </form>
-{% endcomment %}
+                    {% include "includes/claim.html" %}
                 </div>
             {% endfor %}
 
@@ -142,7 +75,38 @@ $(function () {
 
         <div id="adoptableclaims_{{ offer.id }}">
 
-            {% include "includes/adoptable.html" %}
+            {% for claim in offer.tradingclaim_set.all %}
+
+                <div class="claim" id="claim_{{ claim.id }}">
+                    {% include "includes/claim.html" %}
+                </div>
+
+            {% endfor %}
+
+            {% if user.is_authenticated and offer.artist != user and not offer.completed_claims.exists %}
+                {% if not my_claims_for_offer.exists %}
+
+                    <div class="claim">
+                        <form name="claimform_new_{{ offer.id }}" method="POST">
+                            <table class="formtable">
+                                <tr>
+                                    <td class="label">Message </td>
+                                    <td class="data"><textarea name="comment"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="buttons">
+                                        <button type="button" onClick="submitClaim({{ offer.id }},this.form)">Adopt Character</button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="hidden" name="offertype" value="{{ offer.type }}" />
+                        </form>
+                    </div>
+
+                {% endif %}
+            {% endif %}
+
+{#            {% include "includes/adoptable.html" %}#}
 
         </div>
 

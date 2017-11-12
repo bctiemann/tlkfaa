@@ -67,6 +67,7 @@ urlpatterns = [
     url(r'^claim/(?P<claim_id>[0-9]+)/upload/remove/$', fanart_views.RemoveUploadClaimView.as_view(), name='remove-upload-claim'),
     url(r'^claim/(?P<claim_id>[0-9]+)/accept/$', fanart_views.AcceptClaimView.as_view(), name='accept-claim'),
     url(r'^claim/(?P<claim_id>[0-9]+)/choose/$', fanart_views.ChooseAdopterView.as_view(), name='choose-adopter'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/remove/$', fanart_views.RemoveClaimView.as_view(), name='remove-claim'),
 
 #    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 
