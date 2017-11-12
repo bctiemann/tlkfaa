@@ -893,6 +893,9 @@ class AcceptClaimView(UpdateView):
         context['claim'] = self.object
         return context
 
+    def get_success_url(self):
+        return reverse('accept-claim', kwargs={'claim_id': self.object.id})
+
 
 class OfferView(DetailView):
     models = models.TradingOffer

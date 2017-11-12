@@ -50,7 +50,9 @@ var checkThumbs = function() {
         <div class="newforme">
             <h3>New for You</h3>
             {% for claim in claims_for_you %}
-                {% include "includes/tradingtree_foryou.html" %}
+                <div class="offer" id="claim_{{ claim.id }}">
+                    {% include "includes/tradingtree_foryou.html" %}
+                </div>
             {% endfor %}
         </div>
     {% endif %}
