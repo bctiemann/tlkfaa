@@ -139,13 +139,11 @@ var checkThumbs = function() {
                 {% if coloring_base.is_active %}
 		<c:choose>
 		<c:when test="${basepic.active == true}">
-			<form method="POST" id="ccform_${basepic.pictureid}">
+			<form method="POST" id="ccform_{{ coloring_base.id }}">
 			<table class="formtable">
 			<tr>
 			<td class="label">Select file</td>
-			<td class="data"><input type="file" name="uploadfile" id="uploadfile" />
-<input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}">
-</td>
+			<td class="data"><input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}"></td>
 			</tr>
 			<tr>
 			<td class="label">Comment</td>
@@ -153,7 +151,7 @@ var checkThumbs = function() {
 			</tr>
 			<tr>
 			<td colspan="2" class="buttons">
-			<button type="button" onClick="uploadPicture('ccform_${basepic.pictureid}','uploadfile','cc_${basepic.pictureid}',null,false)">Upload Colored Picture</button>
+                        <button type="button" id="up_btn" class="start">Upload Colored Picture</button>
 			</td>
 			</tr>
 			</table>
@@ -161,14 +159,10 @@ var checkThumbs = function() {
 			<input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
                         {% csrf_token %}
 
-<button type="submit">Upload</button>
-
-<div id="progress">
-    <div class="bar" style="width: 0%;"></div>
-</div>
 
 <script>
 $(function () {
+//    $('#ccform_{{ coloring_base.id }}').fileupload({
     $('#fileupload').fileupload({
         dataType: 'json',
         dropZone: null,
@@ -187,6 +181,11 @@ $(function () {
                 'width',
                 progress + '%'
             );
+        },
+        add: function (e, data) {            
+            $("#up_btn").off('click').on('click', function () {
+                data.submit();
+            });
         },
     });
 });

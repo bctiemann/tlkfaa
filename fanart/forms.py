@@ -133,6 +133,6 @@ class UploadColoringPictureForm(forms.ModelForm):
 
     class Meta:
         model = models.ColoringPicture
-        fields = []
+        fields = ['comment']
 
 
