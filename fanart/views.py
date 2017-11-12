@@ -975,10 +975,20 @@ class ChooseAdopterView(UpdateView):
 
 class RemoveClaimView(DeleteView):
     model = models.TradingClaim
-    form_class = forms.AcceptClaimForm
 
     def get_object(self):
         return get_object_or_404(models.TradingClaim, (Q(user=self.request.user) | Q(offer__artist=self.request.user)), pk=self.kwargs['claim_id'])
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        logger.info(self.object.picture.name)
+        if self.object.offer.type == 'icon':
+            try:
+                os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
+                os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
+            except OSError:
+                pass
+            return super(RemoveClaimView, self).delete(self, request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('offer', kwargs={'offer_id': self.object.offer.id})
@@ -1078,7 +1088,6 @@ class ColoringPictureStatusView(APIView):
 
 class RemoveColoringPictureView(DeleteView):
     model = models.ColoringPicture
-    form_class = forms.UploadColoringPictureForm
 
     def get_object(self):
         return get_object_or_404(models.ColoringPicture, (Q(artist=self.request.user) | Q(base__creator=self.request.user)), pk=self.kwargs['coloring_picture_id'])
