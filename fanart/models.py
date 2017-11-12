@@ -531,8 +531,9 @@ class ColoringPicture(models.Model):
 
     @property
     def thumbnail_url(self):
+        logger.info(self.thumbnail)
         if os.path.exists(self.thumbnail):
-            return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property

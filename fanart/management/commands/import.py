@@ -20,7 +20,7 @@ class Command(BaseCommand):
     do_comments = False
     do_shouts = False
     do_coloringbase = False
-    do_coloringpics = False
+    do_coloringpics = True
     do_characters = False
     do_favorites = False
     do_offers = False
@@ -367,7 +367,8 @@ class Command(BaseCommand):
                         base = base,
                         date_posted = cp['posted'],
                         comment = cp['comment'],
-                        picture = cp['filename'],
+                        filename = cp['filename'] if cp['filename'] else '',
+                        picture = 'Artwork/coloring/{0}.{1}'.format(cp['coloring_picid'], cp['extension']),
 #                        extension = cp['extension'],
                         width = cp['width'],
                         height = cp['height'],
