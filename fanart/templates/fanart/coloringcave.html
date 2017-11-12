@@ -16,13 +16,13 @@
 <div class="featurebox">
 
 <div class="selector">
-Sort by:
-<a class="{% if sort_by == "popularity" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=popularity">popularity</a>
-<a class="{% if sort_by == "date" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=date">date posted</a>
+    Sort by:
+    <a class="{% if sort_by == "popularity" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=popularity">popularity</a>
+    <a class="{% if sort_by == "date" %}selected{% endif %}" href="{% url "coloring-cave" %}?sort_by=date">date posted</a>
 </div>
 
 {% if coloring_base %}
-   {% if coloring_base.picture.date_deleted == None %}
+    {% if coloring_base.picture.date_deleted == None %}
 
 <script type="text/javascript">
 var refreshThumbsInterval = null;
@@ -44,30 +44,30 @@ var checkThumbs = function() {
 };
 </script>
 
-                {% with picture=coloring_base.picture show_colored_pictures=True hide_cc_link=True %}
-                    {% include "includes/picture.html" %}
-                {% endwith %}
+        {% with picture=coloring_base.picture show_colored_pictures=True hide_cc_link=True %}
+            {% include "includes/picture.html" %}
+        {% endwith %}
 
-                {% if coloring_base.is_active %}
-			<form method="POST" id="ccform_{{ coloring_base.id }}">
-			<table class="formtable">
-			<tr>
-			<td class="label">Select file</td>
-			<td class="data"><input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}"></td>
-			</tr>
-			<tr>
-			<td class="label">Comment</td>
-			<td class="data"><textarea name="comment" id="comment"></textarea></td>
-			</tr>
-			<tr>
-			<td colspan="2" class="buttons">
-                        <button type="button" id="up_btn" class="start">Upload Colored Picture</button>
-			</td>
-			</tr>
-			</table>
-			<input type="hidden" name="uploadop" value="ccpic" />
-			<input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
-                        {% csrf_token %}
+        {% if coloring_base.is_active %}
+            <form method="POST" id="ccform_{{ coloring_base.id }}">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Select file</td>
+                        <td class="data"><input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}"></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Comment</td>
+                        <td class="data"><textarea name="comment" id="comment"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            <button type="button" id="up_btn" class="start">Upload Colored Picture</button>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="uploadop" value="ccpic" />
+                <input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
+                {% csrf_token %}
 
 <script>
 $(function () {
@@ -100,92 +100,52 @@ $(function () {
 });
 </script>
 
-			</form>
-                {% else %}
-			<p>New colored versions cannot be posted for this line-art.</p>
-                {% endif %}
-
+            </form>
         {% else %}
-	<c:if test="${qryCCBase.rowCount == 0}">
-		<sql:query var="qryCCBaseRemoved">
-		SELECT * FROM coloring_base
-		WHERE coloring_baseid=?
-		<sql:param value="${ccid}" />
-		</sql:query>
-		<c:forEach var="ccbaseremoved" items="${qryCCBaseRemoved.rows}">
-			<div class="picture">
-			<jsp:include page="/ajax_colored.jsp?pictureid=${ccbaseremoved.pictureid}" />
-			</div>
-		</c:forEach>
-                {% with picture=coloring_base.picture show_colored_pictures=True hide_cc_link=True %}
-                    {% include "includes/picture.html" %}
-                {% endwith %}
-	</c:if>
+            <p>New colored versions cannot be posted for this line-art.</p>
         {% endif %}
 
+    {% else %}
+
+        {% with picture=coloring_base.picture show_colored_pictures=True hide_cc_link=True %}
+            {% include "includes/picture.html" %}
+        {% endwith %}
+
+    {% endif %}
+
 {% else %}
-</c:when>
-<c:otherwise>
 
-<%--
-	<sql:query var="qryCC">
-	SELECT * FROM coloring_base,pictures,artists
-	WHERE coloring_base.pictureid=pictures.pictureid
-	AND coloring_base.artistid=artists.artistid
-	AND coloring_base.visible=true
-	AND coloring_base.posted > DATE_SUB(NOW(),INTERVAL 3 MONTH)
-	${artistclause}
-	${orderclause}
-	LIMIT 100
-	</sql:query>
---%>
+    <div id="offerslayout">
 
-	<sql:query var="qryCC">
-	SELECT * FROM coloring_base,artists
-	WHERE coloring_base.visible=true
-	AND coloring_base.artistid=artists.artistid
-<%--	AND coloring_base.posted > DATE_SUB(NOW(),INTERVAL 3 MONTH)--%>
-	${artistclause}
-	${orderclause}
-	LIMIT 100
-	</sql:query>
-
-	<div id="offerslayout">
-
-       {% if coloring_bases.count == 0 %}
-		<div class="noentries">
-		No coloring pictures.
-		</div>
+        {% if coloring_bases.count == 0 %}
+            <div class="noentries">
+                No coloring pictures.
+            </div>
         {% endif %}
 
         {% for coloring_base in coloring_bases %}
 
-		<div class="offertile cctile">
-		<a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">
-                {% if coloring_base.picture.date_deleted == None %}
-			<img class="" src="{{ MEDIA_URL }}Artwork/Artists/{{ coloring_base.picture.artist.dir_name }}/{{ coloring_base.picture.basename }}.s.jpg" width="60" height="{{ coloring_base.picture.thumb_height }}${ccbasepic.thumbheight}" />
-                {% else %}
-			<img src="{% static "images/LineArtRemoved.gif" %}" width="60" height="60" class="placeholdericon" />
-                {% endif %}
-		</a>
-		<a href="{% url "artist" dir_name=coloring_base.picture.artist.dir_name %}">{{ coloring_base.picture.artist.username|truncatechars:13 }}</a><br />
-		{{ coloring_base.date_posted|date:"n/j/Y" }}<br />
-		{{ coloring_base.num_colored }} colored
-		</div>
+            <div class="offertile cctile">
+                <a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">
+                    {% if coloring_base.picture.date_deleted == None %}
+                        <img class="" src="{{ MEDIA_URL }}Artwork/Artists/{{ coloring_base.picture.artist.dir_name }}/{{ coloring_base.picture.basename }}.s.jpg" width="60" height="{{ coloring_base.picture.thumb_height }}${ccbasepic.thumbheight}" />
+                    {% else %}
+                        <img src="{% static "images/LineArtRemoved.gif" %}" width="60" height="60" class="placeholdericon" />
+                    {% endif %}
+                </a>
+                <a href="{% url "artist" dir_name=coloring_base.picture.artist.dir_name %}">{{ coloring_base.picture.artist.username|truncatechars:13 }}</a><br />
+                {{ coloring_base.date_posted|date:"n/j/Y" }}<br />
+                {{ coloring_base.num_colored }} colored
+            </div>
 
         {% endfor %}
 
-	<br clear="left" />
+        <br clear="left" />
 
-	</div>
+    </div>
 
-</c:otherwise>
-</c:choose>
 {% endif %}
 
 </div>
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}
