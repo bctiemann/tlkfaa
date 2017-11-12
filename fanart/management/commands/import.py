@@ -368,10 +368,10 @@ class Command(BaseCommand):
                         date_posted = cp['posted'],
                         comment = cp['comment'],
                         picture = cp['filename'],
-                        extension = cp['extension'],
+#                        extension = cp['extension'],
                         width = cp['width'],
                         height = cp['height'],
-                        thumb_height = cp['thumbheight'],
+#                        thumb_height = cp['thumbheight'],
                     )
                 except fanart_models.User.DoesNotExist:
                     print 'Artist not found'

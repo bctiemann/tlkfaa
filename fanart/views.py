@@ -1015,20 +1015,64 @@ class OfferStatusView(APIView):
         return Response(response)
 
 
-class BakUploadClaimView(APIView):
+class ColoringPicturesView(DetailView):
+    models = models.ColoringBase
+    template_name = 'includes/colored_pictures.html'
 
-    def post(self, request):
-        logger.info(request.POST)
-        logger.info(request.FILES)
-#        response = {'success': True}
+    def get_object(self):
+        return get_object_or_404(models.ColoringBase, pk=self.kwargs['coloring_base_id'])
 
-        response =  {
-            'url': 'blah', # obj.url,
-            'name': 'foo', #order_name(obj.name),
-            'type': 'sdasdasd', #mimetypes.guess_type(obj.path)[0] or 'image/png',
-            'thumbnailUrl': obj.url,
-            'size': obj.size,
-            'deleteUrl': reverse('upload-delete', args=[instance.pk]),
-            'deleteType': 'DELETE',
-        }
+    def get_context_data(self, *args, **kwargs):
+        context = super(ColoringPicturesView, self).get_context_data(*args, **kwargs)
+        context['coloring_base'] = self.object
+        return context
+
+
+class UploadColoringPictureView(CreateView):
+    model = models.ColoringPicture
+    form_class = forms.UploadColoringPictureForm
+    template_name = 'includes/colored_pictures.html'
+
+#    def get_object(self):
+#        return get_object_or_404(models.ColoringPic, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        coloring_base = get_object_or_404(models.ColoringBase, pk=self.kwargs['coloring_base_id'])
+
+        coloring_picture = form.save(commit=False)
+        coloring_picture.artist = self.request.user
+        coloring_picture.base = coloring_base
+        coloring_picture.save()
+
+        coloring_picture.picture = self.request.FILES['picture']
+        coloring_picture.filename = self.request.FILES['picture'].name
+        coloring_picture.save()
+
+#        self.object.filename = self.request.FILES['picture'].name
+#        self.object.date_uploaded = timezone.now()
+        super(UploadColoringPictureView, self).form_valid(form)
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UploadColoringPictureView, self).get_context_data(*args, **kwargs)
+        context['coloring_base'] = self.object
+        return context
+
+
+class ColoringPictureStatusView(APIView):
+
+    def get(self, request, coloring_base_id=None):
+        response = {}
+        offer = get_object_or_404(models.ColoringBase, pk=coloring_base_id)
+        for coloring_picture in offer.coloringpicture_set.all():
+            if coloring_picture.picture and coloring_picture.filename:
+                response[coloring_picture.id] = {
+                    'thumbnail_url': coloring_picture.thumbnail_url,
+                    'thumbnail_done': os.path.exists(coloring_picture.thumbnail)
+                }
         return Response(response)
+
+

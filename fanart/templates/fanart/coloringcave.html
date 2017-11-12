@@ -102,6 +102,26 @@ Sort by:
 </c:when>
 <c:when test="${ccid > 0}">
 
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+
+var checkThumbs = function() {
+    var url = '/coloring/{{ coloring_base.id }}/status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (coloring_picture_id in data) {
+            $('img#claimthumb_' + coloring_picture_id).attr('src', data[coloring_picture_id].thumbnail_url);
+            if (!data[coloring_picture_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+
 	<sql:query var="qryCCBase">
 	SELECT coloring_base.*,pictures.*,artistname,dirname,allowcomments FROM coloring_base,pictures,artists
 	WHERE coloring_baseid=?
@@ -112,7 +132,7 @@ Sort by:
 	</sql:query>
 	<c:forEach var="basepic" items="${qryCCBase.rows}">
 
-                {% with coloring_base.picture as picture %}
+                {% with picture=coloring_base.picture show_colored_pictures=True %}
                     {% include "includes/picture.html" %}
                 {% endwith %}
 
@@ -123,7 +143,9 @@ Sort by:
 			<table class="formtable">
 			<tr>
 			<td class="label">Select file</td>
-			<td class="data"><input type="file" name="uploadfile" id="uploadfile" /></td>
+			<td class="data"><input type="file" name="uploadfile" id="uploadfile" />
+<input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}">
+</td>
 			</tr>
 			<tr>
 			<td class="label">Comment</td>
@@ -137,6 +159,39 @@ Sort by:
 			</table>
 			<input type="hidden" name="uploadop" value="ccpic" />
 			<input type="hidden" name="itemid" value="${basepic.coloring_baseid}" />
+                        {% csrf_token %}
+
+<button type="submit">Upload</button>
+
+<div id="progress">
+    <div class="bar" style="width: 0%;"></div>
+</div>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        dropZone: null,
+//        autoUpload: false,
+        done: function (e, data) {
+            var url = '/coloring/{{ coloring_base.id }}/';
+            $('#cc_{{ coloring_base.id }}').load(url, function() {});
+            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+//            $.each(data.result.files, function (index, file) {
+//                $('<p/>').text(file.name).appendTo(document.body);
+//            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+    });
+});
+</script>
+
 			</form>
 		</c:when>
                 {% else %}
@@ -206,7 +261,7 @@ Sort by:
 			<img src="{% static "images/LineArtRemoved.gif" %}" width="60" height="60" class="placeholdericon" />
                 {% endif %}
 		</a>
-		<a href="{% url "artist" dir_name=coloring_base.picture.artist.dir_name %}">{{ coloring_base.picture.artist.username|truncatechars:10 }}</a><br />
+		<a href="{% url "artist" dir_name=coloring_base.picture.artist.dir_name %}">{{ coloring_base.picture.artist.username|truncatechars:13 }}</a><br />
 		{{ coloring_base.date_posted|date:"n/j/Y" }}<br />
 		{{ coloring_base.num_colored }} colored
 		</div>

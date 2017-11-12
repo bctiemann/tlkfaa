@@ -32,6 +32,12 @@ def get_claims_path(instance, filename):
 def get_claims_thumb_path(instance, filename):
     return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
 
+def get_coloring_path(instance, filename):
+    return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
+
+def get_coloring_thumb_path(instance, filename):
+    return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
+
 def get_image_thumb_small_path(instance, filename):
     return '{0}/thumb_small/{1}'.format(instance.id, filename)
 
@@ -499,13 +505,35 @@ class ColoringPicture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True, blank=True)
     base = models.ForeignKey('ColoringBase', null=True, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
-    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_media_path, null=True, blank=True)
-    extension = models.CharField(max_length=5, blank=True)
-    width = models.IntegerField(blank=True)
-    height = models.IntegerField(blank=True)
-    thumb_height = models.IntegerField(blank=True)
+    filename = models.CharField(max_length=100, blank=True)
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_coloring_path, null=True, blank=True)
+#    extension = models.CharField(max_length=5, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+#    thumb_height = models.IntegerField(blank=True)
+
+    @property
+    def basename(self):
+        return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def extension(self):
+        return self.filename.split('.')[-1].lower()
+
+    @property
+    def thumbnail(self):
+        if not self.picture:
+            return None
+        path = ('/').join(self.picture.path.split('/')[:-1])
+        return '{0}/{1}.s.jpg'.format(path, self.id)
+
+    @property
+    def thumbnail_url(self):
+        if os.path.exists(self.thumbnail):
+            return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_width(self):
@@ -514,6 +542,25 @@ class ColoringPicture(models.Model):
     @property
     def preview_height(self):
         return int(self.height * settings.PREVIEW_WIDTH / self.width)
+
+
+    @property
+    def thumb_width(self):
+        return settings.THUMB_WIDTH
+
+    @property
+    def thumb_height(self):
+        return int(self.height * settings.THUMB_WIDTH / self.width)
+
+    def get_absolute_url(self):
+        return reverse('coloring-pictures', kwargs={'coloring_base_id': self.base.id})
+
+    def save(self, update_thumbs=True, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(ColoringPicture, self).save(*args, **kwargs)
+        logger.info(self.picture)
+        if update_thumbs:
+            create_thumbnails.apply_async(('ColoringPicture', self.id,), countdown=20)
 
 
 class TradingOffer(models.Model):
@@ -558,13 +605,9 @@ class TradingClaim(models.Model):
     reference_url = models.CharField(max_length=255, blank=True)
     date_fulfilled = models.DateTimeField(null=True, blank=True)
     filename = models.CharField(max_length=100, blank=True)
-
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_claims_path, null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-
-#    basename = models.CharField(max_length=100, blank=True)
-#    extension = models.CharField(max_length=5, blank=True)
     date_uploaded = models.DateTimeField(null=True, blank=True)
 
     @property

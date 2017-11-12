@@ -93,23 +93,31 @@
 	AND visible=true
 	<sql:param value="${pictureid}" />
 	</sql:query>
+        {% for coloring_base in picture.coloringbase_set.all %}
 	<c:forEach var="ccpic" items="${qryCCPics.rows}">
 		<div class="cclink">
+                {% if forloop.counter == 1 %}
 		<c:choose>
 		<c:when test="${showcolored == 1}">
 		${ccpic.numcolored} colored versions
 		</c:when>
+                {% else %}
 		<c:otherwise>
 		<a href="javascript:nop()" onClick="toggleCCPics(${pictureid})">${ccpic.numcolored} colored versions</a>
 		</c:otherwise>
 		</c:choose>
+                {% endif %}
 		</div>
-		<div id="cc_${pictureid}" class="cclist<c:if test="${showcolored == 1}"> expanded</c:if>">
+		<div id="cc_{{ coloring_base.id }}" class="cclist{% if show_colored_pictures %} expanded{% endif %}">
+                {% if show_colored_pictures %}
 		<c:if test="${showcolored == 1}">
+                        {% include "includes/colored_pictures.html" %}
 			<jsp:include page="/ajax_colored.jsp?pictureid=${pictureid}" />
 		</c:if>
+                {% endif %}
 		</div>
 	</c:forEach>
+        {% endfor %}
 </c:if>
 {% endif %}
 

@@ -1,0 +1,26 @@
+{% load bbcode_tags %}
+
+{% for colored_picture in coloring_base.coloringpicture_set.all %}
+    <a name="{{ coloring_picture.id }}"></a>
+    <div class="ccpic">
+        <table>
+            <tr>
+                <td class="thumb"><a href="{{ MEDIA_URL }}Artwork/coloring/{{ colored_picture.id }}.{{ colored_picture.extension }}" rel="shadowbox" class="shadowbox"><img class="thumb claimthumb" id="claimthumb_{{ colored_picture.id }}" src="{{ MEDIA_URL }}Artwork/coloring/{{ colored_picture.id }}.s.jpg" /></a></td>
+                <td class="fullwidth">
+                    {% if colored_picture.base.artist == user or colored_picture.artist == user %}
+                        <div class="removecc piclink"><a href="javascript:nop()" onClick="removeCCPic({{ coloring_picture.id }})">remove</a></div>
+                    {% endif %}
+                    <div class="picdate">{{ colored_picture.date_posted|date }}</div>
+                    <a href="{% url "artist" dir_name=colored_picture.artist.dir_name %}">{{ colored_picture.artist.username }}</a>
+                    <div class="pictitle">
+                        {{ colored_picture.comment|bbcode|safe }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endfor %}
+
+{% if show_cc_link %}
+    Visit the <a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">Coloring Cave</a> to add your own colored version.
+{% endif %}
