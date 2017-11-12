@@ -1,9 +1,5 @@
 {% load bbcode_tags %}
 
-{% if user.is_authenticated %}
-
-        {% for claim in claims_for_you %}
-
 		<div class="offer" id="claim_{{ claim.id }}">
 		<table>   
 		<tr>
@@ -11,7 +7,7 @@
                 {% if claim.offer.artist %}
                     <div class="offerartist"><a href="{% url "artist" dir_name=claim.offer.artist.dir_name %}">{{ claim.offer.artist.username }}</a></div>
                 {% endif %}
-		<div class="offertitle"><a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}">{{ claim.offer.title }}</a></div>
+		<div class="offertitle"><a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}">{{ claim.offer.title }}</a></div>
 		{{ claim.comment|bbcode|safe }}
 		<div class="offerinfo">
                         {% if claim.is_ready %}
@@ -34,7 +30,7 @@
                     {% if not claim.filename %}
 				<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id }}.s.jpg" /></a>
                     {% else %}
-				<a href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.{{ claim.extension }}" rel="shadowbox"><img class="thumb" src="{{ MEDIA_URL }}Artwork/claims/{{ claim.id_orig }}.s.jpg" /></a>
+				<a href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox"><img class="thumb" src="{{ MEDIA_URL }}{{ claim.picture }}" /></a>
                     {% endif %}
                 {% elif offer_type == "adoptable" %}
 			<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id_orig }}.s.jpg" /></a>
@@ -43,7 +39,3 @@
 		</tr>
 		</table>
 		</div>
-
-        {% endfor %}
-
-{% endif %}

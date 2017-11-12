@@ -407,8 +407,11 @@ function removeBanner() {
 }
 
 function acceptClaim(claimid) {
-  var url = "/ajax_edittradingtree.jsp?fnc=accept&claimid="+claimid;
-  $('#claim_'+claimid).load(url);
+//  var url = "/ajax_edittradingtree.jsp?fnc=accept&claimid="+claimid;
+  var url = '/claim/' + claimid + '/accept/';
+  $.post(url, function(data) {
+    $('#claim_'+claimid).html(data);
+  });
 }
 
 function removeClaim(claimid) {

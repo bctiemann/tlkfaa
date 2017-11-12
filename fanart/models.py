@@ -191,7 +191,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def icon_claims_ready(self):
-        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True, date_fulfilled__isnull=True).exclude(filename='').order_by('-date_posted')
 
     @property
     def adoptable_claims_ready(self):
@@ -569,7 +569,7 @@ class TradingClaim(models.Model):
 
     @property
     def is_ready(self):
-        return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and not self.filename)
+        return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and self.filename)
 
     @property
     def basename(self):

@@ -49,7 +49,9 @@ var checkThumbs = function() {
     {% if show_for_you %}
         <div class="newforme">
             <h3>New for You</h3>
-            {% include "includes/tradingtree_foryou.html" %}
+            {% for claim in claims_for_you %}
+                {% include "includes/tradingtree_foryou.html" %}
+            {% endfor %}
         </div>
     {% endif %}
 

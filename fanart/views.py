@@ -840,6 +840,7 @@ class UploadClaimView(UpdateView):
 
         self.object.picture = self.request.FILES['picture']
         self.object.filename = self.request.FILES['picture'].name
+        self.object.date_uploaded = timezone.now()
         super(UploadClaimView, self).form_valid(form)
 
         return JsonResponse(response)
@@ -859,8 +860,8 @@ class RemoveUploadClaimView(UpdateView):
         return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
 
     def form_valid(self, form):
-
         self.object.filename = ''
+        self.object.date_fulfilled = None
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
@@ -869,9 +870,26 @@ class RemoveUploadClaimView(UpdateView):
         self.object.picture = None
         return super(RemoveUploadClaimView, self).form_valid(form)
 
-
     def get_context_data(self, *args, **kwargs):
         context = super(RemoveUploadClaimView, self).get_context_data(*args, **kwargs)
+        context['claim'] = self.object
+        return context
+
+
+class AcceptClaimView(UpdateView):
+    model = models.TradingClaim
+    form_class = forms.AcceptClaimForm
+    template_name = 'includes/tradingtree_foryou.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+
+    def form_valid(self, form):
+        self.object.date_fulfilled = timezone.now()
+        return super(AcceptClaimView, self).form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(AcceptClaimView, self).get_context_data(*args, **kwargs)
         context['claim'] = self.object
         return context
 
