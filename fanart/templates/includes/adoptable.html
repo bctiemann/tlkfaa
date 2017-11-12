@@ -1,177 +1,52 @@
 {% load bbcode_tags %}
-<%--
-ajax_editadoptable.jsp
-AJAX helper for managing adoptables, both in the Trading Tree and in inc_tradingtree.jsp.
-Allows the donor artist to choose/unchoose adopters, and allows users to apply for an adoptable.
---%>
 
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+{% for claim in offer.tradingclaim_set.all %}
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+    <div class="claim" id="claim_${adoptableclaim.claimid}">
+        {% if offer.artist == user %}
+            {% if claim.date_fulfilled %}
+                <button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'unchoose')">Unchoose</button>
+            {% elif not claim.fulfilled and not offer.completed_claims.exists %}
+                <button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'choose')">Choose</button>
+            {% endif %}
+        {% endif %}
+        <div class="claimuser">
+            {% if claim.user.dir_name %}
+                <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
+            {% else %}
+                {{ claim.user.username }}
+            {% endif %}
+            - {{ claim.date_posted|date }}</div>
+            {% if claim.user == user or offer.artist == user %}
+                <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
+            {% endif %}
+            {% if claim.date_fulfilled %}
+                Winner of this adoptable.
+            {% endif %}
+        <div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
+    </div>
 
-<sql:setDataSource dataSource="jdbc/Fanart" />
+{% endfor %}
 
-<c:catch var="catchException">
-<fmt:parseNumber var="claimid" value="${param.claimid}" integerOnly="true" />
-<fmt:parseNumber var="offerid" value="${param.offerid}" integerOnly="true" />
-</c:catch>
+{% if user.is_authenticated and offer.artist != user and not offer.completed_claims.exists %}
+    {% if not my_claims_for_offer.exists %}
 
-<c:if test="${loggedin == 1 && claimid > 0}">
+        <div class="claim">
+            <form name="claimform_new_{{ offer.id }}" method="POST">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Message </td>
+                        <td class="data"><textarea name="comment"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            <button type="button" onClick="submitClaim({{ offer.id }},this.form)">Adopt Character</button>
+                        </td>
+                    </tr>   
+                </table>
+                <input type="hidden" name="offertype" value="{{ offer.type }}" />
+            </form>
+        </div>
 
-	<sql:query var="qryClaim">
-	SELECT claims.* FROM claims,offers
-	WHERE claimid=?
-	AND claims.offerid=offers.offerid
-	AND offers.artistid=?
-	<sql:param value="${claimid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
-	<c:if test="${qryClaim.rowCount > 0}">
-
-	<c:choose>
-	<c:when test="${param.op == 'choose'}">
-
-		<sql:update var="updAdoptable">
-		UPDATE claims SET fulfilled=NOW()
-		WHERE claimid=?
-		<sql:param value="${claimid}" />
-		</sql:update>
-
-		<c:forEach var="claim" items="${qryClaim.rows}">
-			<sql:update var="updAdoptableOffer">
-			UPDATE offers SET adoptedby=?
-			WHERE offerid=?
-			<sql:param value="${claim.userid}" />
-			<sql:param value="${claim.offerid}" />
-			</sql:update>
-		</c:forEach>
-
-	</c:when>
-	<c:when test="${param.op == 'unchoose'}">
-
-		<sql:update var="updAdoptable">
-		UPDATE claims SET fulfilled=NULL
-		WHERE claimid=?
-		<sql:param value="${claimid}" />
-		</sql:update>
-
-		<c:forEach var="claim" items="${qryClaim.rows}">
-			<sql:update var="updAdoptableOffer">
-			UPDATE offers SET adoptedby=NULL
-			WHERE offerid=?
-			<sql:param value="${claim.offerid}" />
-			</sql:update>
-		</c:forEach>
-
-	</c:when>
-	</c:choose>
-
-	</c:if>
-
-</c:if>
-
-<c:if test="${offerid > 0}">
-
-	<c:if test="${loggedin == 1 && param.op == 'addclaim'}">
-
-		<sql:update var="updAdoptable">
-		INSERT INTO claims (offerid,userid,posted,comment)
-		VALUES (?,?,NOW(),?)
-		<sql:param value="${offerid}" />
-		<sql:param value="${user.userid}" />
-		<sql:param value="${param.comment}" />
-		</sql:update>
-
-	</c:if>
-
-	<sql:query var="qryOffer">
-	SELECT * FROM offers
-	WHERE offerid=?
-	<sql:param value="${offerid}" />
-	</sql:query>
-	<c:forEach var="offer" items="${qryOffer.rows}">
-
-		<sql:query var="qryClaims">
-		SELECT claims.*,username,users.email,dirname
-		FROM claims,users LEFT JOIN artists
-		ON artists.userid=users.userid
-		WHERE users.userid=claims.userid
-		AND offerid=?
-		ORDER BY posted
-		<sql:param value="${offerid}" />
-		</sql:query>
-
-		<sql:query var="qryAdopted">
-		SELECT * FROM claims
-		WHERE offerid=?
-		AND fulfilled IS NOT NULL
-		<sql:param value="${offerid}" />
-		</sql:query>
-
-                {% for claim in offer.tradingclaim_set.all %}
-		<c:forEach var="adoptableclaim" items="${qryClaims.rows}">
-
-			<c:set var="claimcomment" value="${adoptableclaim.comment}" />
-			<div class="claim" id="claim_${adoptableclaim.claimid}">
-			<c:if test="${loggedin == 1 && offer.artistid == artist.artistid}">
-                                {% if claim.date_fulfilled %}
-					<button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'unchoose')">Unchoose</button>
-                                {% elif not claim.fulfilled and not offer.completed_claims.exists %}
-					<button type="button" onClick="chooseAdoptable({{ offer.id }},{{ claim.id }},'choose')">Choose</button>
-                                {% endif %}
-			</c:if>
-			<div class="claimuser">
-                        {% if claim.user.dir_name %}
-                            <a href="{% url "artist" dir_name=claim.user.dir_name %}">{{ claim.user.username }}</a>
-                        {% else %}
-                            {{ claim.user.username }}
-                        {% endif %}
-                        - {{ claim.date_posted|date }}</div>
-                        {% if claim.user == user or offer.artist == user %}
-                            <div class="claimaction"><a href="javascript:nop()" onClick="removeClaim({{ claim.id }})">remove</a></div>
-                        {% endif %}
-                        {% if claim.date_fulfilled %}
-				Winner of this adoptable.
-                        {% endif %}
-			<div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
-			</div>
-
-		</c:forEach>
-                {% endfor %}
-
-                {% if user.is_authenticated and offer.artist != user and not offer.completed_claims.exists %}
-		<c:if test="${loggedin == 1 && offer.artistid != artist.artistid && qryAdopted.rowCount == 0}">
-
-                        {% if not my_claims_for_offer.exists %}
-			<c:if test="${qryOffer.rowCount == 0}">
-
-				<div class="claim">
-				<form name="claimform_new_{{ offer.id }}" method="POST">
-				<table class="formtable">
-				<tr>
-				<td class="label">Message </td>
-				<td class="data"><textarea name="comment"></textarea></td>
-				</tr>
-				<tr>
-				<td colspan="2" class="buttons">
-				<button type="button" onClick="submitClaim({{ offer.id }},this.form)">Adopt Character</button>
-				</td>
-				</tr>   
-				</table>
-				<input type="hidden" name="offertype" value="{{ offer.type }}" />
-				</form>
-				</div>
-
-			</c:if>
-                        {% endif %}
-		</c:if>
-                {% endif %}
-
-	</c:forEach>
-
-</c:if>
+    {% endif %}
+{% endif %}

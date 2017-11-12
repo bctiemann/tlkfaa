@@ -882,10 +882,36 @@ class AcceptClaimView(UpdateView):
     template_name = 'includes/tradingtree_foryou.html'
 
     def get_object(self):
-        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], user=self.request.user)
 
     def form_valid(self, form):
-        self.object.date_fulfilled = timezone.now()
+        if self.object.offer.type == 'icon':
+            self.object.date_fulfilled = timezone.now()
+        elif self.object.offer.type == 'adoptable':
+
+            if self.object.offer.character.profile_picture:
+                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
+            elif self.object.offer.character.profile_coloring_picture:
+                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/ColoringCave/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_coloring_picture.id)
+
+            self.object.offer.character.owner = self.request.user
+            self.object.offer.character.profile_picture = None
+            self.object.offer.character.profile_coloring_picture = None
+            self.object.offer.character.date_adopted = timezone.now()
+            self.object.offer.character.adopted_from = self.object.offer.artist
+            self.object.offer.character.description += comment_append
+            self.object.offer.character.save()
+
+            self.object.offer.is_active = False
+            self.object.offer.is_visible = False
+            self.object.offer.adopted_by = self.request.user
+            self.object.offer.save()
+
+            self.object.offer.artist.num_characters = self.object.offer.artist.character_set.count()
+            self.request.user.num_characters = self.request.user.character_set.count()
+
+#                                Accepting this adoptable into your Characters section...
+
         return super(AcceptClaimView, self).form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
@@ -895,6 +921,22 @@ class AcceptClaimView(UpdateView):
 
     def get_success_url(self):
         return reverse('accept-claim', kwargs={'claim_id': self.object.id})
+
+
+class ChooseAdopterView(UpdateView):
+    model = models.TradingClaim
+    form_class = forms.AcceptClaimForm
+
+    def get_object(self):
+        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
+
+    def form_valid(self, form):
+        logger.info(self.object.date_fulfilled)
+        if self.object.date_fulfilled:
+            self.object.date_fulfilled = None
+        else:
+            self.object.date_fulfilled = timezone.now()
+        return super(ChooseAdopterView, self).form_valid(form)
 
 
 class OfferView(DetailView):

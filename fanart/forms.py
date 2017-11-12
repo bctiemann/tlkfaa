@@ -126,4 +126,6 @@ class AcceptClaimForm(forms.ModelForm):
 
     class Meta:
         model = models.TradingClaim
-        fields = ['date_fulfilled']
+        fields = []
+
+

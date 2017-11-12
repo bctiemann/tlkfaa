@@ -772,8 +772,12 @@ function selectOfferType(sel) {
 }
 
 function chooseAdoptable(offerid,claimid,op) {
-  var url = "/ajax_editadoptable.jsp?op="+op+"&offerid="+offerid+"&claimid="+claimid;
-  $('#adoptableclaims_'+offerid).load(url);
+//  var url = "/ajax_editadoptable.jsp?op="+op+"&offerid="+offerid+"&claimid="+claimid;
+  var url = '/claim/' + claimid + '/choose/';
+  $.post(url, function(data) {
+//  $('#adoptableclaims_'+offerid).load(url);
+    window.location.reload();
+  });
 }
 
 function submitClaim(offerid,claimform) {
@@ -793,13 +797,15 @@ function submitClaim(offerid,claimform) {
     }, 'json');
   } else if (offertype == 'adoptable') {
     var comment = claimform.comment.value;
-    $.post("/ajax_editadoptable.jsp",{
+//    $.post("/ajax_editadoptable.jsp",{
+    $.post('/claim/post/',{
         op: "addclaim",
-        offerid: offerid,
+        offer: offerid,
         comment: comment
       },function(data) {
-      $('#adoptableclaims_'+offerid).html(data);
+//      $('#adoptableclaims_'+offerid).html(data);
 //      $('#genstatus').html(data);
+      window.location.reload();
     });
   }
 }
