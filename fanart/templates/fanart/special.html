@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load bbcode_tags %}
 
 {% block activetab_special %}active{% endblock %}
 
@@ -34,10 +35,12 @@ Main navigation page for Special Features (e.g. the site-wide contest and the tr
 <fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
 </c:catch>
 
-<div class="featurebox">
+{% if special %}
 
 <c:choose>
 <c:when test="${featureid > 0}">
+
+<div class="featurebox">
 
 	<sql:query var="qrySpecials" >
 	SELECT * FROM specials
@@ -49,7 +52,7 @@ Main navigation page for Special Features (e.g. the site-wide contest and the tr
 
 	<c:forEach var="special" items="${qrySpecials.rows}">
 
-		<h2>${special.title}</h2>
+		<h2>{{ special.title }}</h2>
 		<div class="pageinfo">
 		<p>${special.description}</p>
 		</div>
@@ -130,137 +133,80 @@ Main navigation page for Special Features (e.g. the site-wide contest and the tr
 
 	</c:forEach>
 
-</c:when>
-<c:otherwise>
+    </div>
 
-	<sql:query var="qryContest">
-	SELECT * FROM contests
-	WHERE type='global'
-	AND startdate<NOW()
-	AND active=true
-	ORDER BY created DESC
-	LIMIT 1
-	</sql:query>
+{% else %}
 
-	<c:forEach var="contest" items="${qryContest.rows}">
+    <div class="featurebox">
 
-		<a class="archive-link" href="/Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
-		<h2>Current Art Contest</h2>
 
-		<div class="contest">
+        <a class="archive-link" href="/Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
+        <h2>Current Art Contest</h2>
 
-		<h3><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></h3>
+        <div class="contest">
 
-		<div class="contestdetails">
+            <h3><a href="/Contests.jsp?contestid=${contest.contestid}">{{ contest.title }}</a></h3>
 
-		<c:set var="contesttheme" value="${contest.description}" />
-		<div class="contesttheme">
-		<%= formatText((String)pageContext.getAttribute("contesttheme")) %>
-		</div>
+            <div class="contestdetails">
 
-		<c:set var="contestrules" value="${contest.rules}" />
-		<div class="contestrules">
-		<%= formatText((String)pageContext.getAttribute("contestrules")) %>
-		</div>
+                <div class="contesttheme">
+                    {{ contest.description|bbcode|safe }}
+                </div>
 
-		<br clear="all" />
-		</div>
-		</div>
+                <div class="contestrules">
+                    {{ contest.rules|bbcode|safe }}
+                </div>
 
-		<c:set var="now" value="<%=new java.util.Date()%>" />
-		<c:choose>
-		<c:when test="${now < contest.deadline}">
-			Some random entries:
-			<sql:query var="qryEntries">
-			SELECT * FROM pictures,contestpics,artists
-			WHERE contestpics.pictureid=pictures.pictureid
-			AND pictures.artistid=artists.artistid
-			AND contestid=?
-			ORDER BY RAND()
-			LIMIT 20
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-		</c:when>
-		<c:otherwise>
-			Winning entries:
-			<sql:query var="qryEntries">
-			SELECT pictures.*,artistname,dirname,count(*) AS num FROM pictures,contestpics,contestvotes,artists
-			WHERE contestpics.pictureid=pictures.pictureid
-			AND contestvotes.pictureid=pictures.pictureid
-			AND contestpics.contestid=contestvotes.contestid
-			AND pictures.artistid=artists.artistid
-			AND contestvotes.contestid=?
-			GROUP BY contestvotes.pictureid,contestvotes.contestid
-			ORDER BY num DESC,entered
-			LIMIT 20
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-		</c:otherwise>
-		</c:choose>
+                <br clear="all" />
+            </div>
+        </div>
 
-		<div class="masonry1">
-		<c:forEach var="contestpic" items="${qryEntries.rows}">
-			<div class="offertile picturetile">
-			<a id="picturetile_${contestpic.pictureid}" class="previewPopupTrigger" type="picture" itemid="${contestpic.pictureid}" popupheight="50" href="/Artists/${contestpic.dirname}/${contestpic.filename}?${contestpic.pictureid}" rel="shadowbox[contest]"><img src="/Artwork/Artists/${contestpic.dirname}/${fanart:encodeURI(contestpic.basename)}.s.jpg" width="60" height="${contestpic.thumbheight}" /></a>
-			</div>
-		</c:forEach>
-		</div>
+        {% if contest.is_ended %}
+            Winning entries:
+        {% else %}
+            Some random entries:
+        {% endif %}
 
-	</c:forEach>
+        <div class="masonry">
+            {% for entry in contest_entries %}
+                <div class="offertile picturetile">
+                    <a id="picturetile_{{ entry.picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ entry.picture.id }}" popupheight="50" href="{{ entry.picture.url }}"" rel="shadowbox[contest]"><img src="{{ entry.picture.thumbnail_url }}" width="60" height="{{ entry.picture.thumb_height }}" /></a>
+                </div>
+            {% endfor %}
+        </div>
 
-	</div>
+    </div>
 
-	<sql:query var="qrySpecials" >
-	SELECT * FROM specials
-	WHERE visible=true
-	ORDER BY specialid
-	</sql:query>
+    {% for special in specials %}
 
-	<c:forEach var="special" items="${qrySpecials.rows}">
+        <div class="featurebox">
 
-		<div class="featurebox">
-			<h2><a href="/Special/?featureid=${special.specialid}">${special.title}</a></h2>
-			<div class="pageinfo">
-			<p>${special.description}</p>
-			</div>
+            <h2><a href="/Special/?featureid=${special.specialid}">{{ special.title }}</a></h2>
 
-			<c:set var="queryclause" value="+" />
-			<c:forEach var="word" items="${fn:split(special.keyword, ',')}">
-				<c:set var="queryclause" value="${queryclause} OR MATCH (keywords) AGAINST ('${word}')" />
-			</c:forEach>
-			<c:set var="queryclause" value="${fn:replace(queryclause,'+ OR','')}" />
+            <div class="pageinfo">
+                <p>{{ special.description|bbcode|safe }}</p>
+            </div>
 
-			<sql:query var="qrySpecialPics">
-			SELECT pictures.*,artistname,dirname FROM pictures,artists
-			WHERE (${queryclause}) 
-			AND pictures.artistid=artists.artistid
-			ORDER BY RAND()
-			LIMIT 20
-			</sql:query>
+            <div class="masonry">
+                {% for picture in special.pictures %}
+                    <div class="offertile picturetile">
+                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picure.url }}" rel="shadowbox[special_{{ special.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="${picture.thumbheight}" /></a>
 
-			<div class="masonry1">
-			<c:forEach var="picture" items="${qrySpecialPics.rows}">
-			<div class="offertile picturetile">
-			<a id="picturetile_${picture.pictureid}" class="previewPopupTrigger" type="picture" itemid="${picture.pictureid}" href="/Artists/${picture.dirname}/${picture.filename}?${picture.pictureid}" rel="shadowbox[special_${special.specialid}]"><img src="/Artwork/Artists/${picture.dirname}/${fanart:encodeURI(picture.basename)}.s.jpg" width="60" height="${picture.thumbheight}" /></a>
-<%--
+{% comment %}
 			<script type="text/javascript">
 			  $('a#picturetile_${picture.pictureid}').wTooltip({
 			    ajax: "/ajax_tooltip_picture.jsp?pictureid=${picture.pictureid}"
 			  });
 			</script>
---%>
-			</div>
-			</c:forEach>
-			</div>
+{% endcomment %}
+                    </div>
+                {% endfor %}
+            </div>
 
-		</div>
+        </div>
 
-	</c:forEach>
+    {% endfor %}
 
-</c:otherwise>
-</c:choose>
-
-<jsp:include page="../inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="../inc_root/inc_footer.jsp" />
+{% endif %}
 
 {% endblock %}

@@ -6,7 +6,7 @@
 {% if picture.date_deleted == None %}
 <table>
 <tr>
-<td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.basename }}.p.jpg" /></a></td>
+<td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ picture.preview_url }}" /></a></td>
 <td class="fullwidth picturedetails">
 
 {% if user.is_authenticated %}
@@ -44,7 +44,7 @@
 <ul class="characters group">
 {% for pc in picture.picturecharacter_set.all %}
     <li>
-        <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+        <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
         <p class="charactername"><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></p>
         <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
     </li>

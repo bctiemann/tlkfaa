@@ -21,7 +21,7 @@
                         {% if comment.obj.user.profile_pic_id and not comment.obj.is_deleted %}
 			<c:if test="${comment.profilepic > 0 && comment.deleted == false}">
                                 {% if comment.obj.user.is_active %}
-					<a href="/Artists/${comment.dirname}/"><img src="{{ MEDIA_URL }}profiles/{{ comment.obj.user.profile_pic_id }}.s.{{ comment.obj.user.profile_pic_ext }}" /></a>
+					<a href="/Artists/${comment.dirname}/"><img src="{{ comment.obj.user.profile_pic_thumbnail_url }}" /></a>
                                 {% else %}
 					<img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" />
                                 {% endif %}

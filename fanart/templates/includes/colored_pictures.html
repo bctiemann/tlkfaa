@@ -5,7 +5,7 @@
     <div class="ccpic">
         <table>
             <tr>
-                <td class="thumb"><a href="{{ MEDIA_URL }}Artwork/coloring/{{ colored_picture.id }}.{{ colored_picture.extension }}" rel="shadowbox" class="shadowbox"><img class="thumb claimthumb" id="claimthumb_{{ colored_picture.id }}" src="{{ colored_picture.thumbnail_url }}" /></a></td>
+                <td class="thumb"><a href="{{ colored_picture.url }}" rel="shadowbox" class="shadowbox"><img class="thumb claimthumb" id="claimthumb_{{ colored_picture.id }}" src="{{ colored_picture.thumbnail_url }}" /></a></td>
                 <td class="fullwidth">
                     {% if colored_picture.base.artist == user or colored_picture.artist == user %}
                         <div class="removecc piclink"><a href="javascript:nop()" onClick="removeCCPic({{ colored_picture.id }}, {{ colored_picture.base.id }})">remove</a></div>

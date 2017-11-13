@@ -18,9 +18,9 @@
 			<div class="commentprofilepic">
                         {% if shout.user.profile_pic_id and not shout.is_deleted %}
                                 {% if shout.user.is_artist and shout.user.dir_name %}
-                                        <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profile_pic_ext }}" /></a>
+                                        <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
                                 {% else %}
-                                        <img src="{{ MEDIA_URL }}profiles/{{ shout.user.profile_pic_id }}.s.{{ shout.user.profilepic_ext }}" />
+                                        <img src="{{ shout.user.profile_pic_thumbnail_url }}" />
                                 {% endif %}
                         {% endif %}
 			</div>

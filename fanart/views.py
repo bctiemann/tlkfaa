@@ -353,6 +353,24 @@ class ColoringCavePictureView(UserPaneView):
 class SpecialFeaturesView(UserPaneView):
     template_name = 'fanart/special.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(SpecialFeaturesView, self).get_context_data(**kwargs)
+
+        special_id = kwargs.get('special_id', None)
+        logger.info(special_id)
+        if special_id:
+            context['special'] = get_object_or_404(models.SpecialFeature, pk=special_id)
+        else:
+            context['contest'] = models.Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
+            if context['contest'].is_ended:
+                context['contest_entries'] = context['contest'].winning_entries
+            else:
+                context['contest_entries'] = context['contest'].random_entries
+
+            context['specials'] = models.SpecialFeature.objects.filter(is_visible=True).order_by('id')
+
+        return context
+
 
 class UserBoxSetView(APIView):
 

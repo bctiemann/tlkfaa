@@ -5,7 +5,7 @@
                     <form name="claimform_{{ claim.id }}" id="claimform_{{ claim.id }}" method="POST">
                         <div class="claimthumb" id="claimthumb_{{ claim.id }}">
                             {% if claim.filename %}
-                                <a id="claimpic_link" href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ claim.thumbnail_url }}" /></a>
+                                <a id="claimpic_link" href="{{ claim.url }}" rel="shadowbox[Claims]" class="shadowbox"><img class="thumb claimthumb" src="{{ claim.thumbnail_url }}" /></a>
                                 {% if claim.offer.artist == user %}
                                     <a href="javascript:nop()" onClick="removeClaimPic({{ claim.id }})">remove</a>
                                 {% endif %}

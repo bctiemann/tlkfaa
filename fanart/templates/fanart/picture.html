@@ -34,7 +34,7 @@ The specified picture is private.
 
 <div class="picture standalone">
 
-<p><a href="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.filename }}">{{ picture.filename }}</a></p>
+<p><a href="{{ picture.url }}">{{ picture.filename }}</a></p>
 
 {% if picture.mime_type == 'application/x-shockwave-flash' %}
 	<object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
@@ -51,7 +51,7 @@ The specified picture is private.
 		</p>
 	</video>
 {% else %}
-	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.filename }}" /></a>
+	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ picture.url }}" /></a>
 {% endif %}
 
 <div class="pictureheading">
@@ -120,7 +120,7 @@ The specified picture is private.
 {% endif %}
 {% for pc in picture.picturecharacter_set.all %}
     <li>
-        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumb_url }}" /></a>
+        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
         <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
         <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
     </li>

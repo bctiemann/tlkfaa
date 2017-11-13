@@ -6,11 +6,11 @@
         <tr>
             <td class="thumb">
                 {% if offer.type == "icon" %}
-                    <a href="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.{{ offer.extension }}" rel="shadowbox">
+                    <a href="{{ offer.url }}" rel="shadowbox">
                 {% elif offer.type == "adoptable" %}
                     <a href="{% url "character" character_id=offer.character.id %}">
                 {% endif %}
-                <img class="thumb offerthumb" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id }}.s.jpg" /></a>
+                <img class="thumb offerthumb" src="{{ offer.thumbnail_url }}" /></a>
             </td>
 
             <td class="fullwidth">

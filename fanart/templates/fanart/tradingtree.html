@@ -63,7 +63,7 @@ var checkThumbs = function() {
         {% for offer in offers %}
 
             <div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
-                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ MEDIA_URL }}Artwork/offers/{{ offer.id_orig }}.s.jpg" width="120" height="{{ offer.thumb_height }}" /></a><br />
+                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="120" height="{{ offer.thumb_height }}" /></a><br />
                 {% if offer.artist %}
                     <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
                 {% endif %}

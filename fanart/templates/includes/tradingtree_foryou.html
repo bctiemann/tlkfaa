@@ -27,12 +27,12 @@
         <td class="thumb">
             {% if claim.offer.type == "icon" %}
                 {% if not claim.filename %}
-                    <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id }}.s.jpg" /></a>
+                    <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ claim.offer.thumbnail_url }}" /></a>
                 {% else %}
-                    <a href="{{ MEDIA_URL }}Artwork/claims/{{ claim.id }}.{{ claim.extension }}" rel="shadowbox"><img class="thumb" src="{{ MEDIA_URL }}{{ claim.picture }}" /></a>
+                    <a href="{{ claim.url }}" rel="shadowbox"><img class="thumb" src="{{ claim.url }}" /></a>
                 {% endif %}
             {% elif claim.offer.type == "adoptable" %}
-                    <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ MEDIA_URL }}Artwork/offers/{{ claim.offer.id_orig }}.s.jpg" /></a>
+                    <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ claim.offer.thumbnail_url }}" /></a>
             {% endif %}
         </td>
     </tr>

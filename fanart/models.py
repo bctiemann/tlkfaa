@@ -204,6 +204,18 @@ ORDER BY fanart_user.sort_name
         return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
 
     @property
+    def banner_url(self):
+        return '{0}Artwork/banners/{1}.{2}'.format(settings.MEDIA_URL, self.banner_id, self.banner_ext)
+
+    @property
+    def profile_pic_url(self):
+        return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+
+    @property
+    def profile_pic_thumbnail_url(self):
+        return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+
+    @property
     def birthdate_age(self):
         if not self.birth_date:
             return None
@@ -256,6 +268,18 @@ class Picture(models.Model):
     @property
     def basename(self):
         return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def thumbnail_url(self):
+        return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
+
+    @property
+    def preview_url(self):
+        return '{0}Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
+
+    @property
+    def url(self):
+        return '{0}Artwork/Artists/{1}/{2}'.format(settings.MEDIA_URL, self.artist.dir_name, self.filename)
 
     @property
     def preview_extension(self):
@@ -410,7 +434,7 @@ class Character(models.Model):
         return self.picturecharacter_set.order_by('-date_tagged').first()
 
     @property
-    def thumb_url(self):
+    def thumbmail_url(self):
         if not self.owner:
             return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
@@ -500,6 +524,9 @@ class ColoringBase(models.Model):
     is_visible = models.BooleanField(default=True)
     num_colored = models.IntegerField(null=True, blank=True)
 
+    @property
+    def thumbnail_url(self):
+        return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.picture.artist.dir_name, self.picture.basename)
 
 class ColoringPicture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
@@ -534,6 +561,10 @@ class ColoringPicture(models.Model):
         if os.path.exists(self.thumbnail):
             return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def url(self):
+        return '{0}Artwork/coloring/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
 
     @property
     def preview_width(self):
@@ -592,6 +623,14 @@ class TradingOffer(models.Model):
     def completed_claims(self):
         return self.tradingclaim_set.filter(date_fulfilled__isnull=False)
 
+    @property
+    def url(self):
+        return '{0}Artwork/offers/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
+
+    @property
+    def thumbnail_url(self):
+        return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+
     def get_absolute_url(self):
         return reverse('offer', kwargs={'offer_id': self.id})
 
@@ -634,6 +673,10 @@ class TradingClaim(models.Model):
         if os.path.exists(self.thumbnail):
             return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def url(self):
+        return '{0}Artwork/claims/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
 
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
@@ -778,6 +821,14 @@ class Contest(models.Model):
         logger.info(self.date_end - timezone.now())
         return (self.date_end - timezone.now()).days
 
+    @property
+    def random_entries(self):
+        return self.contestentry_set.order_by('?')[0:20]
+
+    @property
+    def winning_entries(self):
+        return self.contestentry_set.annotate(num_vote=Count('contestvote')).order_by('-num_vote', 'date_entered')[0:20]
+
     def __unicode__(self):
         return self.title
 
@@ -821,6 +872,13 @@ class SpecialFeature(models.Model):
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
     is_visible = models.BooleanField(default=True)
+
+    @property
+    def pictures(self):
+        return Picture.objects.filter(keywords__icontains=self.keyword).order_by('?')[0:20]
+
+    def __unicode__(self):
+        return '{0} - {1}'.format(self.id, self.title)
 
 
 class Vote(models.Model):

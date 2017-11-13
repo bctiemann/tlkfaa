@@ -4,9 +4,9 @@
     <a href="{% url "artist" dir_name=artist.dir_name %}">
     <div class="artist-thumb">
         {% with artist.get_example_pic as example_pic %}
-        <img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ example_pic.basename }}.p.jpg" />
+        <img src="{{ example_pic.preview_url }}" />
         <div class="artist-thumb-reflect">
-            <img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ example_pic.basename }}.p.jpg" />
+            <img src="{{ example_pic.preview_url }}" />
             <div class="artist-thumb-reflect-overlay"></div>
         </div>
         {% endwith %}

@@ -68,7 +68,7 @@
             {% endif %}
 
             <div class="offertile picturetile">
-                <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+                <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
                 {{ picture.date_uploaded|date }}
             </div>
 

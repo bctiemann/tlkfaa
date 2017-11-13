@@ -128,7 +128,7 @@ $(function () {
             <div class="offertile cctile">
                 <a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">
                     {% if coloring_base.picture.date_deleted == None %}
-                        <img class="" src="{{ MEDIA_URL }}Artwork/Artists/{{ coloring_base.picture.artist.dir_name }}/{{ coloring_base.picture.basename }}.s.jpg" width="60" height="{{ coloring_base.picture.thumb_height }}${ccbasepic.thumbheight}" />
+                        <img class="" src="{{ coloring_base.thumbnail_url }}" width="60" height="{{ coloring_base.picture.thumb_height }}${ccbasepic.thumbheight}" />
                     {% else %}
                         <img src="{% static "images/LineArtRemoved.gif" %}" width="60" height="60" class="placeholdericon" />
                     {% endif %}

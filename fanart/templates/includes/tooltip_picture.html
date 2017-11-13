@@ -10,7 +10,7 @@
             {% if picture.preview_extension == 'p.jpg' %}
                 <div class="video-preview {{ picture.extension }}"></div>
             {% endif %}
-            <a href="{% url "picture" picture_id=picture.id %}"><img class="tooltippreview" src="{{ MEDIA_URL }}Artwork/Artists/{{ picture.artist.dir_name }}/{{ picture.basename }}.{{ picture.preview_extension }}" width="{{ picture.preview_width }}" height="{{ picture.preview_height }}" /></a>
+            <a href="{% url "picture" picture_id=picture.id %}"><img class="tooltippreview" src="{{ picture.preview_url }}" width="{{ picture.preview_width }}" height="{{ picture.preview_height }}" /></a>
             </td>
             <td class="picturedetails">
                 <div class="picturedetails">

@@ -61,17 +61,11 @@ The specified artist's gallery is not publicly visible.
 {% block banner %}
 <div class="bannerwrap">
 {% if artist.banner_id %}
-<c:choose>
-<c:when test="${thisartist.banner > 0}">
-	<img class="banner" src="{{ MEDIA_URL }}Artwork/banners/{{ artist.banner_id }}.{{ artist.banner_ext }}" />
-</c:when>
+    <img class="banner" src="{{ artist.banner_url }}" />
 {% else %}
-<c:otherwise>
-	<c:if test="${thisartist.bannertext != null && thisartist.bannertext != ''}">
-		<div id="bannertexttoptab"></div>
-	</c:if>
-</c:otherwise>
-</c:choose>
+    {% if artist.banner_text %}
+        <div id="bannertexttoptab"></div>
+    {% endif %}
 {% endif %}
 
 {% if artist.banner_text %}
@@ -103,7 +97,7 @@ The specified artist's gallery is not publicly visible.
 
                 {% for picture in last_nine_uploads %}
 			<div class="offertile picturetile">
-			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
                         {{ picture.date_uploaded|date }}
 			</div>
                 {% endfor %}
@@ -119,7 +113,7 @@ The specified artist's gallery is not publicly visible.
 
                 {% for picture in nine_most_popular_pictures %}
 			<div class="offertile picturetile">
-			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ MEDIA_URL }}Artwork/Artists/{{ artist.dir_name }}/{{ picture.basename }}.s.jpg" width="60" height="{{ picture.thumb_height }}" /></a>
+			<a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{% url "picture" picture_id=picture.id %}"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
 			{{ picture.num_faves }} fave{{ picture.num_faves|pluralize }}
 			</div>
                 {% endfor %}
@@ -137,7 +131,7 @@ The specified artist's gallery is not publicly visible.
 
                 {% for coloring_picture in last_nine_coloring_pictures %}
 			<div class="offertile picturetile">
-			<a id="picturetile_{{ coloring_picture.id }}" class="previewPopupTrigger" type="coloring_picture" itemid="{{ coloring_picture.id }}" href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img src="{{ MEDIA_URL }}Artwork/coloring/{{ coloring_picture.id_orig }}.s.jpg" width="60" height="{{ coloring_picture.thumb_height }}" /></a>
+			<a id="picturetile_{{ coloring_picture.id }}" class="previewPopupTrigger" type="coloring_picture" itemid="{{ coloring_picture.id }}" href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img src="{{ coloring_picture.thumbnail_url }}" width="60" height="{{ coloring_picture.thumb_height }}" /></a>
                         {{ coloring_picture.date_posted }}
 			</div>
                 {% endfor %}
@@ -263,7 +257,7 @@ The specified artist's gallery is not publicly visible.
 		<table class="artist_profile"><tr><td>
 
                 {% if artist.profile_pic_id %}
-		<img class="profilepic" src="{{ MEDIA_URL }}profiles/{{ artist.profile_pic_id }}.{{ artist.profile_pic_ext }}" />
+		<img class="profilepic" src="{{ artist.profile_pic_url }}" />
                 {% endif %}
 
 		<div class="artistdesc">

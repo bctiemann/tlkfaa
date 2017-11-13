@@ -33,7 +33,7 @@
             <tr>
                 <td class="thumb">
                     <a href="{% url "character" character_id=character.id %}">
-                        <img class="thumb characterpic" src="{{ MEDIA_URL }}/canon_characters/{{ character.id_orig }}.p.jpg" />
+                        <img class="thumb characterpic" src="{{ character.preview_url }}" />
                     </a>
                 </td>
                 <td class="fullwidth">
