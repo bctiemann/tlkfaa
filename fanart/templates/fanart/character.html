@@ -77,129 +77,61 @@ Main navigation page for viewing characters.
 
 	<div class="picture standalone">
 
-	<c:choose>
-	<%-- Canon --%>
         {% if character.is_canon %}
-	<c:when test="${character.artistid == null}">
-
-	        <c:set var="characterid" value="${character.characterid}" />
-                <c:set var="basepath" value="${basepath}" />
-		<%
-		  List<String> extList = new ArrayList<String>();
-                  extList.add("gif");
-                  extList.add("jpg");
-                  extList.add("png");
-                  for (int i = 0; i < extList.size(); i++) {
-                    File pic = new File(pageContext.getAttribute("basepath") + "/images/canon_characters/" + pageContext.getAttribute("characterid").toString() + "." + extList.get(i));
-                    if (pic.exists()) {
-                      pageContext.setAttribute("ext",extList.get(i));
-                    }
-                  }
-		%>
-		<img class="fullsize preview" id="thepicture" src="{{ character.picture_url }}" asrc="/images/canon_characters/${character.characterid}.${ext}" />
-
-        </c:when>
+		<img class="fullsize preview" id="thepicture" src="{{ character.picture_url }}" />
         {% elif character.profile_picture %}
-	<%-- Fan, with profile pic from gallery --%>
-	<c:when test="${character.profilepic > 0}">
-
-		<sql:query var="qryPicture">
-		SELECT * FROM pictures
-		WHERE pictureid=?
-		<sql:param value="${character.profilepic}" />
-		</sql:query>
-		<c:forEach var="picture" items="${qryPicture.rows}">
-			<a href="javascript:nop()" onClick="togglePicture({{ character.profile_picture.id }})" title="{{ character.profile_picture.filename }} by {{ character.profile_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_picture.url }}" /></a>
-		</c:forEach>
-
-	</c:when>
+		<a href="javascript:nop()" onClick="togglePicture({{ character.profile_picture.id }})" title="{{ character.profile_picture.filename }} by {{ character.profile_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_picture.url }}" /></a>
         {% elif character.profile_coloring_picture %}
-	<%-- Fan, with profile pic from Coloring Cave --%>
-	<c:when test="${character.profilepic_c > 0}">
-
-		<sql:query var="qryCCPic">
-		SELECT * FROM coloring_base,coloring_pics,artists
-		WHERE coloring_pics.basepic=coloring_base.coloring_baseid
-		AND coloring_base.artistid=artists.artistid
-		AND coloring_pics.coloring_picid=?
-		<sql:param value="${character.profilepic_c}" />
-		</sql:query>
-		<c:forEach var="picture" items="${qryCCPic.rows}">
-			<a href="javascript:nop()" onClick="togglePicture()" title="{{ character.profile_coloring_picture.filename }} by {{ character.profile_coloring_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_coloring_picture.url }}" /></a>
-			<div class="directcaption">Colored line-art; <a href="{% url "picture" picture_id=character.profile_coloring_picture.base.picture_id %}">see original by {{ character.profile_coloring_picture.base.picture.artist.username }}</a></div>
-		</c:forEach>
-
-	</c:when>
-	</c:choose>
+		<a href="javascript:nop()" onClick="togglePicture()" title="{{ character.profile_coloring_picture.filename }} by {{ character.profile_coloring_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_coloring_picture.url }}" /></a>
+		<div class="directcaption">Colored line-art; <a href="{% url "picture" picture_id=character.profile_coloring_picture.base.picture_id %}">see original by {{ character.profile_coloring_picture.base.picture.artist.username }}</a></div>
         {% endif %}
 
 	<div class="pictureheading">
 
 	<div class="picturestats">
 	<ul>
-	<li>
-	<c:choose>
-	<c:when test="${character.sex == 1}">Male</c:when>
-	<c:when test="${character.sex == 2}">Female</c:when>
-	</c:choose>
-	{{ character.species }}</li>
+	<li>{{ character.gender|capfirst }} {{ character.species }}</li>
 	<li>{{ character.date_created|date }}</li>
 	{% if character.story_title %}
 	<li>
         {% if character.story_url %}
 	<c:choose>
 	<c:when test="${character.storyurl != ''}">
-		Source: <a target="_blank" href="${character.storyurl}">${character.storyname}</a>
+		Source: <a target="_blank" href="{{ character.story_url }}">{{ character.story_title }}</a>
 	</c:when>
         {% else %}
 	<c:otherwise>
-		Source: ${character.storyname}
+		Source: {{ character.story_title }}
 	</c:otherwise>
 	</c:choose>
         {% endif %}
         {% endif %}
 	</li>
 	</c:if>
-	<c:choose>
-	<c:when test="${character.artistid == null}">
-		<li><a href="/Characters/?mode=canon">All Canon Characters</a></li>
-	</c:when>
-	<c:otherwise>
-		<li><a href="/Characters/?mode=fan&list=artist&term=${character.artistid}">All Characters owned by ${character.artistname}</a></li>
-	</c:otherwise>
-	</c:choose>
+        {% if character.is_canon %}
+		<li><a href="{% url "characters" mode="canon" %}">All Canon Characters</a></li>
+        {% else %}
+		<li><a href="{% url "characters" mode="fan" %}?list=artist&term={{ character.owner.id }}">All Characters owned by {{ character.owner.username }}</a></li>
+        {% endif %}
 	</ul>
 	</div>
 
-	<c:choose>
-	<c:when test="${character.artistid == null}">
+        {% if character.is_canon %}
 		Canon
-	</c:when>
-	<c:otherwise>
-		<div class="owner">Owner: <a href="/Artists/${character.dirname}/">${character.artistname}</a></div>
-		<c:if test="${character.artistid != character.creator}">
-			<sql:query var="qryCreator">
-			SELECT * FROM artists
-			WHERE artistid=?
-			AND active=true
-			AND enabled=true
-			AND numpictures>0
-			<sql:param value="${character.creator}" />
-			</sql:query>
-			<c:forEach var="creator" items="${qryCreator.rows}">
-				<div class="creator">Created by <a href="/Artists/${creator.dirname}/">${creator.artistname}</a></div>
-			</c:forEach>
-		</c:if>
-	</c:otherwise>
-	</c:choose>
+        {% else %}
+		<div class="owner">Owner: <a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a></div>
+                {% if character.owner != character.creator %}
+				<div class="creator">Created by <a href="{% url "artist" dir_name=character.creator.dir_name %}">{{ character.creator.username }}</a></div>
+                {% endif %}
+        {% endif %}
 
 	</div>
 
 	<div class="picturecaption">
-	<h3>${character.charactername}</h3>
+	<h3>{{ character.name }}</h3>
 	<c:set var="chardesc" value="${character.description}" />
 	<div class="characterdescr">
-	<%= formatText((String)pageContext.getAttribute("chardesc")) %>
+        {{ character.description|bbcode|safe }}
 	</div>
 	</div>
 
@@ -207,79 +139,29 @@ Main navigation page for viewing characters.
 
 	<div class="othercharacters">
 
-	<c:set var="otherchars" value="" />
-	<c:set var="numotherchars" value="0" />
-	<c:set var="filtertablesclause" value="" />
-	<c:set var="filterpictureidclause" value="" />
-	<c:set var="filtercharacteridclause" value="" />
-	<c:if test="${param.othercharacters != null}">
-		<c:forEach var="addchar" items="${fn:split(param.othercharacters, ',')}">
-			<c:set var="c" value="0" />
-			<c:catch var="catchException">
-			<fmt:parseNumber var="c" value="${addchar}" integerOnly="true" />
-			</c:catch>
-			<c:if test="${c > 0 && numotherchars < 3}">
-				<c:set var="numotherchars" value="${numotherchars+1}" />
-				<c:if test="${otherchars != ''}">
-					<c:set var="otherchars" value="${otherchars}," />
-				</c:if>
+                {% for other_character in other_characters %}
 				<c:set var="otherchars" value="${otherchars}${c}" />
 				<c:set var="filtertablesclause" value="${filtertablesclause},picturecharacters as picturecharacters${c}" />
 				<c:set var="filterpictureidclause" value="${filterpictureidclause} AND picturecharacters.pictureid=picturecharacters${c}.pictureid" />
 				<c:set var="filtercharacteridclause" value="${filtercharacteridclause} AND picturecharacters${c}.characterid=${c}" />
 
-				<sql:query var="qryOtherCharacter">
-				SELECT characters.*,artistname,dirname,basename,extension
-				FROM characters
-				LEFT JOIN artists ON characters.artistid=artists.artistid
-				LEFT JOIN pictures ON characters.profilepic=pictureid
-				WHERE characterid=?
-				AND characters.deleted IS NULL
-				<sql:param value="${c}" />
-				</sql:query>
-
-				<c:forEach var="ocharacter" items="${qryOtherCharacter.rows}">
 					<div class="offertile picturetile">
-					<a href="/Characters/?characterid=${ocharacter.characterid}"><img class="characterpic" src="
-					<c:choose>
-					<c:when test="${ocharacter.artistid == null}">
-						/images/canon_characters/${ocharacter.characterid}.s.jpg
-					</c:when>
-					<c:when test="${ocharacter.profilepic > 0}">
-						/Artwork/Artists/${ocharacter.dirname}/${fanart:encodeURI(ocharacter.basename)}.s.jpg
-					</c:when>
-					<c:when test="${ocharacter.profilepic_c > 0}">
-						/Artwork/coloring/${ocharacter.profilepic_c}.s.jpg
-					</c:when>
-					<c:otherwise>
-						/images/blank_characterthumb.jpg
-					</c:otherwise>
-					</c:choose>" />
-					</a>
-					<a href="/Characters/?characterid=${ocharacter.characterid}">${ocharacter.charactername}</a><br />
-					<c:choose><c:when test="${ocharacter.artistid == null}">(Canon)</c:when><c:otherwise><a href="/Artists/${ocharacter.dirname}/">${ocharacter.artistname}</a></c:otherwise></c:choose>
-					<a href="javascript:nop()" onClick="filterCharacter(${c},'remove')">remove</a>
+					<a href="{% url "character" character_id=other_character.id %}"><img class="characterpic" src="{{ other_character.thumbnail_url }}" /></a>
+					<a href="{% url "character" character_id=other_character.id %}">{{ other_character.name }}</a><br />
+                                        {% if other_character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=other_character.owner.dir_name %}">{{ other_character.owner.username }}</a>{% endif %}
+					<a href="javascript:nop()" onClick="filterCharacter({{ other_character.id }},'remove')">remove</a>
 					</div>
-				</c:forEach>
-
-			</c:if>
-		</c:forEach>
+                {% endfor %}
 	</c:if>
 	<c:set var="filtercharsclause" value="${filtercharsclause})" />
 	<script type="text/javascript">
-	var characterid = ${characterid};
-	var otherchars = "${otherchars}";
+	var characterid = {{ character.id }};
+	var otherchars = "{{ other_characters_param }}";
 	</script>
 
 	</div>
 
-	<c:if test="${numotherchars < 3}">
-
-		<sql:query var="qryCharacterCanon">
-		SELECT * FROM characters
-		WHERE artistid IS NULL
-		ORDER BY charactername
-		</sql:query>
+        {% if other_characters|length < 3 %}
 
 		With another character:
 		<div class="tagcharacters">
@@ -288,9 +170,9 @@ Main navigation page for viewing characters.
 		<td class="label">Canon</td>
 		<td class="data"><select name="canoncharacter" id="canoncharacter_add" onChange="filterCharacter(this.options[this.selectedIndex].value,'add')">
 		<option value="0">(Select)</option>
-		<c:forEach var="character" items="${qryCharacterCanon.rows}">
-		<option value="${character.characterid}">${character.charactername}</option>
-		</c:forEach>
+                {% for canon_character in canon_characters %}
+		<option value="{{ canon_character.id }}">{{ canon_character.name }}</option>
+                {% endfor %}
 		</select>
 		</td>
 		</tr>
@@ -301,70 +183,26 @@ Main navigation page for viewing characters.
 		</table>
 		</div>
 
-	</c:if>
+        {% endif %}
 
 
 	<br clear="right" />
 	<div id="offerslayout">
 
-	<sql:query var="qryCharPics">
-	SELECT pictures.*,artists.artistname,artists.dirname FROM pictures,artists,picturecharacters
-	${filtertablesclause}
-	WHERE pictures.pictureid=picturecharacters.pictureid
-	${filterpictureidclause}
-	AND picturecharacters.characterid=?
-	AND pictures.artistid=artists.artistid
-	${filtercharacteridclause}
-	ORDER BY picturecharacters.tagged_on DESC
-	LIMIT ${querycount}
-	<sql:param value="${characterid}" />
-	</sql:query>
+        {% for character_picture in character_pictures|slice:"0:50" %}
 
-<%--
-	<sql:query var="qryCharPics">
-	SELECT pictures.*,artists.artistname,artists.dirname FROM pictures,picturecharacters,artists
-	WHERE picturecharacters.pictureid=pictures.pictureid
-	AND pictures.artistid=artists.artistid
-	AND picturecharacters.characterid=?
-	<sql:param value="${character.characterid}" />
-	</sql:query>
---%>
-
-	<c:forEach var="charpic" items="${qryCharPics.rows}">
-
-		<c:set var="thiscount" value="${thiscount+1}" />
-		<c:choose>
-		<c:when test="${thiscount <= count}">
-<%--
-		<sql:query var="qryCharPicDetails">
-		SELECT * FROM pictures,artists
-		WHERE pictures.artistid=artists.artistid
-		AND pictures.pictureid=?
-		<sql:param value="${charpic.pictureid}" />
-		</sql:query>
---%>
-<%--		<c:forEach var="charpicdetails" items="${qryCharPicDetails.rows}">--%>
 			<div class="offertile picturetile">
-			<a id="picturetile_${charpic.pictureid}" class="previewPopupTrigger" type="picture" itemid="${charpic.pictureid}" href="/Picture.jsp?pictureid=${charpic.pictureid}"><img class="" src="/Artwork/Artists/${charpic.dirname}/${fanart:encodeURI(charpic.basename)}.s.jpg" width="60" height="${charpic.thumbheight}" /></a>
-			<a href="/Artists/${charpic.dirname}/">${charpic.artistname}</a>
+			<a id="picturetile_{{ character_picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ character_picture.id }}" href="{% url "picture" picture_id=character_picture.id %}"><img class="" src="{{ character_picture.thumbnail_url }}" width="60" height="{{ character_picture.thumb_height }}" /></a>
+			<a href="{% url "artist" dir_name=character_picture.artist.dir_name %}">{{ character_picture.artist.username }}</a>
 			</div>
-<%--		</c:forEach>--%>
 
-		</c:when>
-		<c:otherwise>
-
-			<c:set var="showmorebutton" value="1" />
-
-		</c:otherwise>
-		</c:choose>
-
-	</c:forEach>
+        {% endfor %}
 
 	</div>
 
-	<c:if test="${showmorebutton == 1}">
-		<a class="button" href="/Artwork/?list=character&start=${count}&&term=${characterid}<c:if test="${otherchars != ''}">,${otherchars}</c:if>">More</a>
-	</c:if>
+        {% if character_pictures.count > 50 %}
+		<a class="button" href="{% url "artwork" list="character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
+        {% endif %}
 
 	</div>
 

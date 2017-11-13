@@ -165,7 +165,7 @@ class ArtworkView(UserPaneView):
 #            mode = 'canon'
 
         list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
-        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag']:
+        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character']:
             list = default_artwork_view
 
         start = int(self.request.GET.get('start', 0))
@@ -190,7 +190,7 @@ class ArtworkView(UserPaneView):
         elif list == 'random':
             random_ids = random.sample(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max']), 100)
             artwork = artwork.filter(pk__in=random_ids)
-        elif list in ['search', 'tag']:
+        elif list in ['search', 'tag', 'character']:
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
@@ -207,6 +207,11 @@ class ArtworkView(UserPaneView):
                         artwork = tag.picture_set.all().order_by('-num_faves')
                     else:
                         artwork = artwork.filter(id__isnull=True)
+                elif list == 'character':
+                    character_pictures = models.Picture.objects.all()
+                    for character_id in term.split(','):
+                        character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
+                        artwork = character_pictures.order_by('-picturecharacter__date_tagged')
             else:
                 artwork = artwork.filter(id__isnull=True)
 
@@ -689,6 +694,20 @@ class CharacterView(TemplateView):
         context = super(CharacterView, self).get_context_data(**kwargs)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
+        other_characters = self.request.GET.get('othercharacters', None)
+        character_list = [str(context['character'].id)]
+        if other_characters:
+            context['other_characters'] = models.Character.objects.filter(id__in=other_characters.split(','))
+            other_character_ids = [str(c.id) for c in context['other_characters']]
+            context['other_characters_param'] = ','.join(other_character_ids)
+            character_list += other_character_ids
+        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
+        logger.info(character_list)
+
+        character_pictures = models.Picture.objects.all()
+        for character_id in character_list:
+            character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
+        context['character_pictures'] = character_pictures.order_by('-picturecharacter__date_tagged')
 
         return context
 

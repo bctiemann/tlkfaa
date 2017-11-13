@@ -436,7 +436,10 @@ class Character(models.Model):
     @property
     def picture_url(self):
         if self.is_canon:
-            return '{0}canon_characters/{1}.gif'.format(settings.MEDIA_URL, self.id_orig)
+            for ext in ['gif', 'jpg', 'png']:
+                if os.path.exists('{0}/images/canon_characters/{1}.{2}'.format(settings.MEDIA_ROOT, self.id, ext)):
+                    return '{0}canon_characters/{1}.{2}'.format(settings.MEDIA_URL, self.id, ext)
+            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
         elif self.profile_picture:
             return self.profile_picture.url
         elif self.profile_coloring_picture:
