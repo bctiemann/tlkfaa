@@ -863,6 +863,7 @@ class ContestEntry(models.Model):
 
     class Meta:
         verbose_name_plural = 'contest entries'
+        ordering = ['-date_entered']
 
 
 class ContestVote(models.Model):

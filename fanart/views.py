@@ -363,7 +363,7 @@ class SpecialFeaturesView(UserPaneView):
         context = super(SpecialFeaturesView, self).get_context_data(**kwargs)
 
         special_id = kwargs.get('special_id', None)
-        logger.info(special_id)
+
         if special_id:
             context['special'] = get_object_or_404(models.SpecialFeature, pk=special_id)
 
@@ -392,6 +392,40 @@ class SpecialFeaturesView(UserPaneView):
                 context['contest_entries'] = context['contest'].random_entries
 
             context['specials'] = models.SpecialFeature.objects.filter(is_visible=True).order_by('id')
+
+        return context
+
+
+class ContestsView(UserPaneView):
+    template_name = 'fanart/contests.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContestsView, self).get_context_data(**kwargs)
+
+        contest_id = kwargs.get('contest_id', None)
+        if contest_id:
+            context['contest'] = get_object_or_404(models.Contest, pk=contest_id)
+        else:
+            contest_type = kwargs.get('contest_type', None)
+            if not contest_type:
+                contest_type = 'global'
+
+            sort_by = self.request.GET.get('sort_by', None)
+            if not sort_by in ['artist', 'start_date', 'deadline']:
+                sort_by = 'start_date'
+            personal_account_deadline_cutoff_date = timezone.now() - timedelta(days=2)
+            contests = models.Contest.objects.filter(type=contest_type, is_active=True)
+            if contest_type == 'personal':
+                contests = contests.filter(date_end__gte=personal_account_deadline_cutoff_date)
+
+            if sort_by == 'artist':
+                contests = contests.order_by('creator__username')
+            if sort_by == 'start_date':
+                contests = contests.order_by('date_start')
+            if sort_by == 'deadline':
+                contests = contests.order_by('-date_end')
+
+            context['contests'] = contests
 
         return context
 
