@@ -11,203 +11,122 @@
 
 {% block content %}
 
-<%--
-Characters/index.jsp
-Main navigation page for viewing characters.
---%>
+<h1>{{ character.name }}</h1>
 
-<jsp:include page="/inc_root/inc_header.jsp" />
-<%@ include file="../inc_root/inc_functions.jsp" %>
+<div class="featurebox">
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="characterid" value="${param.characterid}" integerOnly="true" />
-<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
-</c:catch>
-
-<c:set var="count" value="50" />
-<c:set var="querycount" value="${count + 1}" />
-
-<c:set var="mode" value="canon" />
-<c:if test="${param.mode == 'fan'}">
-<c:set var="mode" value="fan" />
-</c:if>
-<c:if test="${param.mode == 'mosttagged'}">
-<c:set var="mode" value="mosttagged" />
-</c:if>
-<c:if test="${param.mode == 'recentlytagged'}">
-<c:set var="mode" value="recentlytagged" />
-</c:if>
-<c:if test="${page == null}">
-<c:set var="page" value="1" />
-</c:if>
-
-<%--
-<c:if test="${param.page > 0}">
-<c:set var="page" value="${param.page}" />
-</c:if>
---%>
-
-<c:choose>
-<c:when test="${characterid > 0}">
-
-	<sql:query var="qryCharacter">
-	SELECT characters.*,artists.artistname,artists.dirname FROM characters
-	LEFT JOIN artists
-	ON characters.artistid=artists.artistid
-	WHERE characterid=?
-	AND deleted IS NULL
-	<sql:param value="${characterid}" />
-	</sql:query>
-
-<c:forEach var="character" items="${qryCharacter.rows}">
-
-	<h1>{{ character.name }}</h1>
-
-	<div class="featurebox">
-
-	<div class="picture standalone">
+    <div class="picture standalone">
 
         {% if character.is_canon %}
-		<img class="fullsize preview" id="thepicture" src="{{ character.picture_url }}" />
+            <img class="fullsize preview" id="thepicture" src="{{ character.picture_url }}" />
         {% elif character.profile_picture %}
-		<a href="javascript:nop()" onClick="togglePicture({{ character.profile_picture.id }})" title="{{ character.profile_picture.filename }} by {{ character.profile_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_picture.url }}" /></a>
+            <a href="javascript:nop()" onClick="togglePicture({{ character.profile_picture.id }})" title="{{ character.profile_picture.filename }} by {{ character.profile_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_picture.url }}" /></a>
         {% elif character.profile_coloring_picture %}
-		<a href="javascript:nop()" onClick="togglePicture()" title="{{ character.profile_coloring_picture.filename }} by {{ character.profile_coloring_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_coloring_picture.url }}" /></a>
-		<div class="directcaption">Colored line-art; <a href="{% url "picture" picture_id=character.profile_coloring_picture.base.picture_id %}">see original by {{ character.profile_coloring_picture.base.picture.artist.username }}</a></div>
+            <a href="javascript:nop()" onClick="togglePicture()" title="{{ character.profile_coloring_picture.filename }} by {{ character.profile_coloring_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_coloring_picture.url }}" /></a>
+            <div class="directcaption">Colored line-art; <a href="{% url "picture" picture_id=character.profile_coloring_picture.base.picture_id %}">see original by {{ character.profile_coloring_picture.base.picture.artist.username }}</a></div>
         {% endif %}
 
-	<div class="pictureheading">
+        <div class="pictureheading">
 
-	<div class="picturestats">
-	<ul>
-	<li>{{ character.gender|capfirst }} {{ character.species }}</li>
-	<li>{{ character.date_created|date }}</li>
-	{% if character.story_title %}
-	<li>
-        {% if character.story_url %}
-	<c:choose>
-	<c:when test="${character.storyurl != ''}">
-		Source: <a target="_blank" href="{{ character.story_url }}">{{ character.story_title }}</a>
-	</c:when>
-        {% else %}
-	<c:otherwise>
-		Source: {{ character.story_title }}
-	</c:otherwise>
-	</c:choose>
-        {% endif %}
-        {% endif %}
-	</li>
-	</c:if>
-        {% if character.is_canon %}
-		<li><a href="{% url "characters" mode="canon" %}">All Canon Characters</a></li>
-        {% else %}
-		<li><a href="{% url "characters" mode="fan" %}?list=artist&term={{ character.owner.id }}">All Characters owned by {{ character.owner.username }}</a></li>
-        {% endif %}
-	</ul>
-	</div>
+            <div class="picturestats">
+                <ul>
+                    <li>{{ character.gender|capfirst }} {{ character.species }}</li>
+                    <li>{{ character.date_created|date }}</li>
+                    {% if character.story_title %}
+                        <li>
+                            {% if character.story_url %}
+                                Source: <a target="_blank" href="{{ character.story_url }}">{{ character.story_title }}</a>
+                            {% else %}
+                                Source: {{ character.story_title }}
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% if character.is_canon %}
+                    <li><a href="{% url "characters" mode="canon" %}">All Canon Characters</a></li>
+                {% else %}
+                    <li><a href="{% url "characters" mode="fan" %}?list=artist&term={{ character.owner.id }}">All Characters owned by {{ character.owner.username }}</a></li>
+               {% endif %}
+            </ul>
+        </div>
 
         {% if character.is_canon %}
-		Canon
+            Canon
         {% else %}
-		<div class="owner">Owner: <a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a></div>
-                {% if character.owner != character.creator %}
-				<div class="creator">Created by <a href="{% url "artist" dir_name=character.creator.dir_name %}">{{ character.creator.username }}</a></div>
-                {% endif %}
+            <div class="owner">Owner: <a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a></div>
+            {% if character.owner != character.creator %}
+                <div class="creator">Created by <a href="{% url "artist" dir_name=character.creator.dir_name %}">{{ character.creator.username }}</a></div>
+            {% endif %}
         {% endif %}
 
+    </div>
+
+    <div class="picturecaption">
+        <h3>{{ character.name }}</h3>
+        <div class="characterdescr">
+            {{ character.description|bbcode|safe }}
 	</div>
+    </div>
 
-	<div class="picturecaption">
-	<h3>{{ character.name }}</h3>
-	<c:set var="chardesc" value="${character.description}" />
-	<div class="characterdescr">
-        {{ character.description|bbcode|safe }}
-	</div>
-	</div>
+    <br clear="right" />
 
-	<br clear="right" />
-
-	<div class="othercharacters">
-
-                {% for other_character in other_characters %}
-				<c:set var="otherchars" value="${otherchars}${c}" />
-				<c:set var="filtertablesclause" value="${filtertablesclause},picturecharacters as picturecharacters${c}" />
-				<c:set var="filterpictureidclause" value="${filterpictureidclause} AND picturecharacters.pictureid=picturecharacters${c}.pictureid" />
-				<c:set var="filtercharacteridclause" value="${filtercharacteridclause} AND picturecharacters${c}.characterid=${c}" />
-
-					<div class="offertile picturetile">
-					<a href="{% url "character" character_id=other_character.id %}"><img class="characterpic" src="{{ other_character.thumbnail_url }}" /></a>
-					<a href="{% url "character" character_id=other_character.id %}">{{ other_character.name }}</a><br />
-                                        {% if other_character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=other_character.owner.dir_name %}">{{ other_character.owner.username }}</a>{% endif %}
-					<a href="javascript:nop()" onClick="filterCharacter({{ other_character.id }},'remove')">remove</a>
-					</div>
-                {% endfor %}
-	</c:if>
-	<c:set var="filtercharsclause" value="${filtercharsclause})" />
+    <div class="othercharacters">
+        {% for other_character in other_characters %}
+            <div class="offertile picturetile">
+                <a href="{% url "character" character_id=other_character.id %}"><img class="characterpic" src="{{ other_character.thumbnail_url }}" /></a>
+                <a href="{% url "character" character_id=other_character.id %}">{{ other_character.name }}</a><br />
+                {% if other_character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=other_character.owner.dir_name %}">{{ other_character.owner.username }}</a>{% endif %}
+                    <a href="javascript:nop()" onClick="filterCharacter({{ other_character.id }},'remove')">remove</a>
+            </div>
+        {% endfor %}
 	<script type="text/javascript">
 	var characterid = {{ character.id }};
 	var otherchars = "{{ other_characters_param }}";
 	</script>
 
-	</div>
+    </div>
 
-        {% if other_characters|length < 3 %}
+    {% if other_characters|length < 3 %}
 
-		With another character:
-		<div class="tagcharacters">
-		<table class="formtable tagcharacters">
-		<tr>
-		<td class="label">Canon</td>
-		<td class="data"><select name="canoncharacter" id="canoncharacter_add" onChange="filterCharacter(this.options[this.selectedIndex].value,'add')">
-		<option value="0">(Select)</option>
-                {% for canon_character in canon_characters %}
-		<option value="{{ canon_character.id }}">{{ canon_character.name }}</option>
-                {% endfor %}
-		</select>
-		</td>
-		</tr>
-		<tr>
-		<td class="label">Other</td>
-		<td class="data"><input name="character" id="character_pick_add" onBlur="this.value=''" /></td>
-		</tr>
-		</table>
-		</div>
+        With another character:
+        <div class="tagcharacters">
+            <table class="formtable tagcharacters">
+                <tr>
+                    <td class="label">Canon</td>
+                    <td class="data">
+                        <select name="canoncharacter" id="canoncharacter_add" onChange="filterCharacter(this.options[this.selectedIndex].value,'add')">
+                            <option value="0">(Select)</option>
+                            {% for canon_character in canon_characters %}
+                                <option value="{{ canon_character.id }}">{{ canon_character.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Other</td>
+                    <td class="data"><input name="character" id="character_pick_add" onBlur="this.value=''" /></td>
+                </tr>
+            </table>
+        </div>
 
-        {% endif %}
+    {% endif %}
 
 
-	<br clear="right" />
-	<div id="offerslayout">
+    <br clear="right" />
+    <div id="offerslayout">
 
         {% for character_picture in character_pictures|slice:"0:50" %}
-
-			<div class="offertile picturetile">
-			<a id="picturetile_{{ character_picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ character_picture.id }}" href="{% url "picture" picture_id=character_picture.id %}"><img class="" src="{{ character_picture.thumbnail_url }}" width="60" height="{{ character_picture.thumb_height }}" /></a>
-			<a href="{% url "artist" dir_name=character_picture.artist.dir_name %}">{{ character_picture.artist.username }}</a>
-			</div>
-
+            <div class="offertile picturetile">
+                <a id="picturetile_{{ character_picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ character_picture.id }}" href="{% url "picture" picture_id=character_picture.id %}"><img class="" src="{{ character_picture.thumbnail_url }}" width="60" height="{{ character_picture.thumb_height }}" /></a>
+                <a href="{% url "artist" dir_name=character_picture.artist.dir_name %}">{{ character_picture.artist.username }}</a>
+            </div>
         {% endfor %}
 
-	</div>
+    </div>
 
-        {% if character_pictures.count > 50 %}
-		<a class="button" href="{% url "artwork" list="character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
-        {% endif %}
+    {% if character_pictures.count > 50 %}
+        <a class="button" href="{% url "artwork" list="character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
+    {% endif %}
 
-	</div>
-
-	</div>
-
-</c:forEach>
+</div>
 
 {% endblock %}
