@@ -875,7 +875,7 @@ class SpecialFeature(models.Model):
 
     @property
     def pictures(self):
-        return Picture.objects.filter(keywords__icontains=self.keyword).order_by('?')[0:20]
+        return Picture.objects.filter(keywords__icontains=self.keyword).order_by('?')
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.id, self.title)

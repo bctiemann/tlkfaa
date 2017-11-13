@@ -20,7 +20,7 @@ class Command(BaseCommand):
     do_comments = False
     do_shouts = False
     do_coloringbase = False
-    do_coloringpics = True
+    do_coloringpics = False
     do_characters = False
     do_favorites = False
     do_offers = False
@@ -42,7 +42,7 @@ class Command(BaseCommand):
     do_contestpics = False
     do_contestvotes = False
     do_pms = False
-    do_specials = False
+    do_specials = True
     do_votes = False
 
     GENDERS = {
@@ -834,7 +834,7 @@ class Command(BaseCommand):
                 f = fanart_models.SpecialFeature.objects.create(
                     keyword = a['keyword'],
                     title = a['title'],
-                    description = a['title'],
+                    description = a['description'],
                     is_visible = a['visible'],
                 )
 

@@ -360,6 +360,24 @@ class SpecialFeaturesView(UserPaneView):
         logger.info(special_id)
         if special_id:
             context['special'] = get_object_or_404(models.SpecialFeature, pk=special_id)
+
+            pictures = context['special'].pictures.filter(date_deleted__isnull=True).order_by('date_uploaded')
+
+            context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
+            try:
+                page = int(self.request.GET.get('page', 1))
+            except ValueError:
+                page = 1
+            reversed_page = context['pictures_paginator'].num_pages - page + 1
+
+            try:
+                context['pictures'] = context['pictures_paginator'].page(reversed_page)
+            except EmptyPage:
+                context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
+            context['page_number'] = context['pictures_paginator'].num_pages - context['pictures'].number + 1
+
+            context['pages_link'] = utils.PagesLink(len(pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
+
         else:
             context['contest'] = models.Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
             if context['contest'].is_ended:
