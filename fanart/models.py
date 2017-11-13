@@ -434,13 +434,13 @@ class Character(models.Model):
         return self.picturecharacter_set.order_by('-date_tagged').first()
 
     @property
-    def thumbmail_url(self):
+    def thumbnail_url(self):
         if not self.owner:
             return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
-            return '{0}/Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.profile_picture.artist.dir_name, self.profile_picture.basename)
+            return self.profile_picture.thumbnail_url
         elif self.profile_coloring_picture:
-            return '{0}/Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_UTL, self.profile_coloring_picture.id)
+            return self.profile_coloring_picture.thumbnail_url
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
@@ -449,9 +449,9 @@ class Character(models.Model):
         if not self.owner:
             return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
-            return '{0}/Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.profile_picture.artist.dir_name, self.profile_picture.basename)
+            return self.profile_picture.preview_url
         elif self.profile_coloring_picture:
-            return '{0}/Artwork/coloring/{1}.p.jpg'.format(settings.MEDIA_UTL, self.profile_coloring_picture.id)
+            return self.profile_coloring_picture.preview_url
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
