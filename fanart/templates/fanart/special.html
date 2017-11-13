@@ -17,7 +17,7 @@
 
         <h2>{{ special.title }}</h2>
         <div class="pageinfo">
-            <p>{{ special.description|bbcode|safe }}</p>
+            <p>{{ special.description|safe }}</p>
         </div>
 
         {{ pages_link.pages_nav|safe }}
@@ -79,7 +79,7 @@
             <h2><a href="{% url "special" special_id=special.id %}">{{ special.title }}</a></h2>
 
             <div class="pageinfo">
-                <p>{{ special.description|bbcode|safe }}</p>
+                <p>{{ special.description|safe }}</p>
             </div>
 
             <div class="masonry">

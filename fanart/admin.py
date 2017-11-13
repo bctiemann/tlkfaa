@@ -174,3 +174,8 @@ class BulletinAdmin(admin.ModelAdmin):
     readonly_fields = ('user',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.Bulletin, BulletinAdmin)
+
+
+class SpecialFeatureAdmin(admin.ModelAdmin):
+    list_display = ('title', 'tag', 'is_visible',)
+admin.site.register(fanart_models.SpecialFeature, SpecialFeatureAdmin)

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models, connection
-from django.db.models import Count, Avg
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
@@ -719,6 +719,9 @@ class Tag(models.Model):
     def __unicode__(self):
         return self.tag
 
+    class Meta:
+        ordering = ['tag']
+
 
 class GiftPicture(models.Model):
     artist = models.ForeignKey('User', null=True, blank=True)
@@ -880,13 +883,15 @@ class PrivateMessage(models.Model):
 
 class SpecialFeature(models.Model):
     keyword = models.CharField(max_length=32, blank=True)
+    tag = models.ForeignKey('Tag', null=True, blank=True)
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
     is_visible = models.BooleanField(default=True)
 
     @property
     def pictures(self):
-        return Picture.objects.filter(keywords__icontains=self.keyword).order_by('?')
+        return Picture.objects.filter(id__in=Subquery(self.tag.picture_set.values_list('id', flat=True))).order_by('?')
+#        return Picture.objects.filter(keywords__search=self.keyword).order_by('?')
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.id, self.title)
