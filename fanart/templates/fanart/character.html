@@ -79,7 +79,7 @@ Main navigation page for viewing characters.
 
 	<c:choose>
 	<%-- Canon --%>
-        {% if character.creator == None %}
+        {% if character.is_canon %}
 	<c:when test="${character.artistid == null}">
 
 	        <c:set var="characterid" value="${character.characterid}" />
@@ -96,7 +96,7 @@ Main navigation page for viewing characters.
                     }
                   }
 		%>
-		<img class="fullsize preview" id="thepicture" src="/images/canon_characters/${character.characterid}.${ext}" />
+		<img class="fullsize preview" id="thepicture" src="{{ character.picture_url }}" asrc="/images/canon_characters/${character.characterid}.${ext}" />
 
         </c:when>
         {% elif character.profile_picture %}
@@ -109,11 +109,11 @@ Main navigation page for viewing characters.
 		<sql:param value="${character.profilepic}" />
 		</sql:query>
 		<c:forEach var="picture" items="${qryPicture.rows}">
-			<a href="javascript:nop()" onClick="togglePicture(${picture.pictureid})" title="${picture.filename} by ${character.artistname}"><img class="fullsize preview" id="thepicture" src="/Artwork/Artists/${character.dirname}/${picture.filename}" /></a>
+			<a href="javascript:nop()" onClick="togglePicture({{ character.profile_picture.id }})" title="{{ character.profile_picture.filename }} by {{ character.profile_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_picture.url }}" /></a>
 		</c:forEach>
 
 	</c:when>
-        {% elif character.coloring_profile_picture %}
+        {% elif character.profile_coloring_picture %}
 	<%-- Fan, with profile pic from Coloring Cave --%>
 	<c:when test="${character.profilepic_c > 0}">
 
@@ -125,22 +125,8 @@ Main navigation page for viewing characters.
 		<sql:param value="${character.profilepic_c}" />
 		</sql:query>
 		<c:forEach var="picture" items="${qryCCPic.rows}">
-			<a href="javascript:nop()" onClick="togglePicture()" title="${picture.filename} by ${character.artistname}"><img class="fullsize preview" id="thepicture" src="/Artwork/coloring/${picture.coloring_picid}.${picture.extension}" /></a>
-			<c:if test="${character.artistid > 0}">
-				<sql:query var="qryPicOrig">
-				SELECT * FROM pictures
-				WHERE pictureid=?
-				<sql:param value="${picture.pictureid}" />
-				</sql:query>
-				<c:choose>
-				<c:when test="${qryPicOrig.rowCount > 0}">
-					<div class="directcaption">Colored line-art; <a href="/Picture.jsp?pictureid=${picture.pictureid}">see original by ${picture.artistname}</a></div>
-				</c:when>
-				<c:otherwise>
-					<div class="directcaption">Colored line-art; original by <a href="/Artists/${picture.dirname}/">${picture.artistname}</a> no longer available</div>
-				</c:otherwise>
-				</c:choose>
-			</c:if>
+			<a href="javascript:nop()" onClick="togglePicture()" title="{{ character.profile_coloring_picture.filename }} by {{ character.profile_coloring_picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ character.profile_coloring_picture.url }}" /></a>
+			<div class="directcaption">Colored line-art; <a href="{% url "picture" picture_id=character.profile_coloring_picture.base.picture_id %}">see original by {{ character.profile_coloring_picture.base.picture.artist.username }}</a></div>
 		</c:forEach>
 
 	</c:when>

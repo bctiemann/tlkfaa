@@ -434,8 +434,19 @@ class Character(models.Model):
         return self.picturecharacter_set.order_by('-date_tagged').first()
 
     @property
+    def picture_url(self):
+        if self.is_canon:
+            return '{0}canon_characters/{1}.gif'.format(settings.MEDIA_URL, self.id_orig)
+        elif self.profile_picture:
+            return self.profile_picture.url
+        elif self.profile_coloring_picture:
+            return self.profile_coloring_picture.url
+        else:
+            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+
+    @property
     def thumbnail_url(self):
-        if not self.owner:
+        if self.is_canon:
             return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
             return self.profile_picture.thumbnail_url
@@ -446,7 +457,7 @@ class Character(models.Model):
 
     @property
     def preview_url(self):
-        if not self.owner:
+        if self.is_canon:
             return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
         elif self.profile_picture:
             return self.profile_picture.preview_url
@@ -536,10 +547,8 @@ class ColoringPicture(models.Model):
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_coloring_path, null=True, blank=True)
-#    extension = models.CharField(max_length=5, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-#    thumb_height = models.IntegerField(blank=True)
 
     @property
     def basename(self):
@@ -547,7 +556,9 @@ class ColoringPicture(models.Model):
 
     @property
     def extension(self):
-        return self.filename.split('.')[-1].lower()
+        if self.filename:
+            return self.filename.split('.')[-1].lower()
+        return self.picture.name.split('.')[-1].lower()
 
     @property
     def thumbnail(self):
