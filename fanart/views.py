@@ -66,6 +66,7 @@ class UserPaneView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(UserPaneView, self).get_context_data(**kwargs)
         context['sketcher_users'] = range(12)
+        context['community_art_data'] = self.get_community_art_data()
 
         return context
 
