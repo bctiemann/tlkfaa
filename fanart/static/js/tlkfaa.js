@@ -1358,7 +1358,7 @@ function filterCharacter(newcharacterid,fnc) {
     }
     newchars += newcharacterid;
   }
-  var url="/Characters/?characterid="+characterid+"&othercharacters="+newchars;
+  var url='/character/' + characterid + '/?othercharacters=' + newchars;
   window.location=url;
 }
 
