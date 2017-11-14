@@ -444,7 +444,7 @@ Sort by:
 	</div>
 	</c:if>
 
-        {% for contest in contests %}
+        {% for contest in contests|slice:"0:20" %}
 	<c:forEach var="contest" items="${qryContests.rows}">
 
 		<sql:query var="qryContestPics">
