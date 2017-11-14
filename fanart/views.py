@@ -421,11 +421,22 @@ class ContestsView(UserPaneView):
             if sort_by == 'artist':
                 contests = contests.order_by('creator__username')
             if sort_by == 'start_date':
-                contests = contests.order_by('date_start')
+                contests = contests.order_by('-date_start')
             if sort_by == 'deadline':
                 contests = contests.order_by('-date_end')
 
             context['contests'] = contests
+
+        return context
+
+
+class FavoritePicturesView(UserPaneView):
+    template_name = 'fanart/favorite_pictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FavoritePicturesView, self).get_context_data(**kwargs)
+
+        context['favorite_pictures'] = self.request.user.favorite_pictures
 
         return context
 

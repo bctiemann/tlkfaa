@@ -92,7 +92,7 @@ Favorite Pictures</h1>
 
 </div>
 <div class="userboxfooter">
-<a href="/FavoritePictures.jsp">View All {{ user.favorite_pictures.count }}</a>
+<a href="{% url "favorite-pictures" %}">View All {{ user.favorite_pictures.count }}</a>
 </div>
 </div>
 
