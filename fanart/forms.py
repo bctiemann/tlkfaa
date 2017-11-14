@@ -136,3 +136,9 @@ class UploadColoringPictureForm(forms.ModelForm):
         fields = ['comment']
 
 
+
+class ContestEntryForm(forms.ModelForm):
+
+    class Meta:
+        model = models.ContestEntry
+        fields = ['contest']

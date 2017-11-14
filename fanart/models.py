@@ -839,12 +839,11 @@ class Contest(models.Model):
         return (self.date_end - timezone.now()).days
 
     @property
-    def random_entries(self):
-        return self.contestentry_set.order_by('?')[0:20]
-
-    @property
     def winning_entries(self):
-        return self.contestentry_set.annotate(num_vote=Count('contestvote')).order_by('-num_vote', 'date_entered')[0:20]
+        entries = self.contestentry_set.all().order_by('?')
+        if self.is_ended:
+            entries = entries.annotate(num_vote=Count('contestvote')).order_by('-num_vote', 'date_entered')
+        return entries[0:20]
 
     def __unicode__(self):
         return self.title

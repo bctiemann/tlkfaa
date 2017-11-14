@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/(?:(?P<special_id>[0-9]+)/)?$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
-    url(r'^Contests/(?:(?P<contest_id>[0-9]+)/)?(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
+    url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
 
     url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)$', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
@@ -42,6 +42,7 @@ urlpatterns = [
 
     url(r'^picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
+    url(r'^contest/(?P<contest_id>[0-9]+)/$', fanart_views.ContestView.as_view(), name='contest'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),

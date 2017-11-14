@@ -63,449 +63,52 @@ Lists contests created by artists, as well as detailed contest views showing all
 
 <div class="selector">
 Sort by:
-<a class="<c:if test="${sortby == 'artist'}">selected</c:if>" href="/Contests.jsp?sortby=artistname">artist</a>
-<a class="<c:if test="${sortby == 'startdate'}">selected</c:if>" href="/Contests.jsp?sortby=startdate">newest</a>
-<a class="<c:if test="${sortby == 'deadline'}">selected</c:if>" href="/Contests.jsp?sortby=deadline">deadline</a>
+<a class="{% if sort_by == "artist" %}selected{% endif %}" href="{% url "contests" %}?sort_by=artist">artist</a>
+<a class="{% if sort_by == "startdate" %}selected{% endif %}" href="{% url "contests" %}?sort_by=startdate">newest</a>
+<a class="{% if sort_by == "deadline" %}selected{% endif %}" href="{% url "contests" %}?sort_by=deadline">deadline</a>
 </div>
 
-{% if contest %}
-<c:choose>
-<c:when test="${contestid > 0}">
 
-	<sql:query var="qryContest">
-	SELECT *,DATEDIFF(deadline,NOW()) AS days_left FROM contests,artists
-	WHERE contests.artistid=artists.artistid
-	AND contestid=?
-	<sql:param value="${contestid}" />
-	</sql:query>
+    <div>
 
-	<c:forEach var="contest" items="${qryContest.rows}">
-
-		<c:if test="${pictureid > 0  && loggedin == 1}">
-			<c:choose>
-			<c:when test="${param.fnc == 'vote'}">
-
-				<sql:update var="updOldVotes">
-				DELETE FROM contestvotes
-				WHERE contestid=?
-				AND userid=?
-				<sql:param value="${contestid}" />
-				<sql:param value="${user.userid}" />
-				</sql:update>
-
-				<sql:query var="qryContestPic">
-				SELECT * FROM contestpics
-				WHERE contestid=?
-				AND pictureid=?
-				<sql:param value="${contestid}" />
-				<sql:param value="${pictureid}" />	
-				</sql:query>
-
-				<c:forEach var="contestPic" items="${qryContestPic.rows}">
-					<sql:update var="updVote">
-					INSERT INTO contestvotes
-					(contestid,contestpicid,userid,pictureid,voted)
-					VALUES (?,?,?,?,NOW())
-					<sql:param value="${contestid}" />
-					<sql:param value="${contestPic.contestpicid}" />
-					<sql:param value="${user.userid}" />	
-					<sql:param value="${pictureid}" />	
-					</sql:update>
-				</c:forEach>
-
-			</c:when>
-			<c:when test="${param.fnc == 'enterpicture'}">
-
-				<sql:query var="qryContestPic">
-				SELECT * FROM contestpics
-				WHERE contestid=?
-				AND pictureid=?
-				<sql:param value="${contestid}" />
-				<sql:param value="${pictureid}" />	
-				</sql:query>
-
-				<c:if test="${qryContestPic.rowCount == 0}">
-					<sql:update var="updContestPic">
-					INSERT INTO contestpics (contestid,pictureid,entered)
-					VALUES (?,?,NOW())
-					<sql:param value="${contestid}" />
-					<sql:param value="${pictureid}" />	
-					</sql:update>
-				</c:if>
-
-			</c:when>
-			<c:when test="${param.fnc == 'removepicture'}">
-
-				<sql:query var="qryContestPic">
-				SELECT * FROM pictures
-				WHERE pictureid=?
-				AND artistid=?
-				AND deleted IS NULL
-				<sql:param value="${pictureid}" />	
-				<sql:param value="${artist.artistid}" />
-				</sql:query>
-
-				<c:if test="${qryContestPic.rowCount > 0 || contest.artistid == artist.artistid}">
-					<sql:update var="updContestPic">
-					DELETE FROM contestpics
-					WHERE contestid=?
-					AND pictureid=?
-					<sql:param value="${contestid}" />
-					<sql:param value="${pictureid}" />	
-					</sql:update>
-
-					<sql:update var="updContestPicVotes">
-					DELETE FROM contestvotes
-					WHERE contestid=?
-					AND pictureid=?
-					<sql:param value="${contestid}" />
-					<sql:param value="${pictureid}" />	
-					</sql:update>
-				</c:if>
-
-			</c:when>
-			</c:choose>
-
-			<%
-			  String redirectURL = "/Contests.jsp?contestid="+pageContext.getAttribute("contestid");
-			  response.sendRedirect(redirectURL);
-			%>
-		</c:if>
-
-		<c:set var="contestdesc" value="${contest.description}" />
-		<c:set var="contestrules" value="${contest.rules}" />
-
-		<div class="contest">		
-			<c:if test="${contest.type == 'global'}">
-				<a class="archive-link" href="Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
-				<h3>Archive-Wide Art Contest</h3>
-				<p class="global-contest-blurb">
-				Every couple of weeks, the Archive holds an art contest here on this page. The winner of the previous 
-				contest chooses the theme, sets the length of time, and manages the pictures that other artists create 
-				and submit to the contest for judging. Any logged-in user of the Archive can vote on their favorite 
-				picture, and the winner sets up the next contest!
-				</p>
-			</c:if>
-
-			<div class="contest-title"><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></div>
-			<div class="contest-artist">By <a href="/Artists/${contest.dirname}/">${contest.artistname}</a></div>
-			<div class="contest-theme">
-				<h4>Theme:</h4>
-				<%= formatText((String)pageContext.getAttribute("contestdesc")) %>
-			</div>
-
-			<div class="contest-rules">
-				<h4>Rules:</h4>
-				<%= formatText((String)pageContext.getAttribute("contestrules")) %>
-				<table class="infotable">
-					<tr>
-						<td>Multiple entries:</td>
-						<td>
-							<c:choose>
-							<c:when test="${contest.allowmultiple}">
-								allowed
-							</c:when>
-							<c:otherwise>
-								not allowed
-							</c:otherwise>
-							</c:choose>
-						</td>
-					</tr>
-					<tr>
-						<td>Entries are:</td>
-						<td>
-							<c:choose>
-							<c:when test="${contest.anonymous}">
-								anonymous
-							</c:when>
-							<c:otherwise>
-								not anonymous
-							</c:otherwise>
-							</c:choose>
-						</td>
-					</tr>
-					<tr>
-						<td>Deadline:</td>
-						<td>Midnight after <fmt:formatDate value="${contest.deadline}" pattern="E, MM/dd/YYYY" /><br />
-							<c:choose>
-							<c:when test="${contest.deadline < now}">
-								<b>(Contest is over)</b>
-							</c:when>
-							<c:otherwise>
-								<b>(${contest.days_left} day<c:if test="${contest.days_left != 1}">s</c:if> left)</b>
-							</c:otherwise>
-							</c:choose>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<br clear="all" />
-
-		<c:if test="${loggedin == 1 && contest.deadline > now}">
-			<sql:query var="qryVote">
-			SELECT * FROM contestvotes
-			WHERE contestid=?
-			AND userid=?
-			<sql:param value="${contest.contestid}" />
-			<sql:param value="${user.userid}" />
-			</sql:query>
-			<c:set var="showcontest" value="${contest.contestid}" />
-			<c:forEach var="vote" items="${qryVote.rows}">
-				<c:set var="voted" value="${vote.pictureid}" />
-			</c:forEach>
-
-			<form name="contestentryform" id="contestentryform" method="POST" action="Contests.jsp">
-			<table class="formtable">
-			<tr>
-			<td class="label">Picture From Gallery</td>
-			<td class="data" id="picselect">
-			<div id="pickpicture_new">
-			<c:if test="${qryPicture.rowCount > 0}">
-				<img class="thumb" src="/Artists/${artist.dirname}/${fanart:encodeURI(preloadpicture.basename)}.s.jpg" />
-				<input type="hidden" name="pictureid" value="${preloadpicture.pictureid}" /> 
-			</c:if>
-			</div>
-			<a href="pop_pickpicture.jsp?op=contest&folderid=0" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
-			</td>
-			</tr>
-			<tr>
-			<td colspan="2" class="buttons">
-			<button type="button" onClick="postSelectedPic(this.form)">Enter Picture</button>
-			</td>
-			</tr>
-			</table>
-			<input type="hidden" name="op" value="contest" />
-			<input type="hidden" name="contestid" value="${contest.contestid}" />
-			<input type="hidden" name="fnc" value="enterpicture" />
-			<input type="hidden" name="pictureid" value="" />
-			</form>
-        
-			<form name="pickpictureform">
-			<input type="hidden" name="item" value="contestpic" />
-			<input type="hidden" name="itemid" value="new" />
-			<input type="hidden" name="pictureid" value="" />
-			</form>
-
-		</c:if>
-
-		<c:choose>
-		<c:when test="${contest.deadline < now}">
-
-			<sql:query var="qryContestPics">
-			SELECT *,count(*) AS numvotes FROM contestpics
-			INNER JOIN pictures ON pictures.pictureid=contestpics.pictureid
-			INNER JOIN contestvotes ON contestvotes.pictureid=pictures.pictureid
-			INNER JOIN artists ON artists.artistid=pictures.artistid
-			WHERE contestvotes.contestid=?
-			AND picpublic=true
-			GROUP BY contestvotes.pictureid,contestvotes.contestid
-			ORDER BY numvotes DESC
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-
-			<c:set var="contestplace" value="1" />
-			<c:forEach var="contestpic" items="${qryContestPics.rows}">
-				<c:set var="title" value="${contestpic.title}" />
-				<tags:printPicture
-					picnumber=""
-					pictureid="${contestpic.pictureid}"
-					basename="${contestpic.basename}"
-					extension="${contestpic.extension}"
-					type="${contestpic.type}"
-					folder="${contestpic.folderid}"
-					title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-					artistname="${contestpic.artistname}"
-					dirname="${contestpic.dirname}"
-					width="${contestpic.width}"
-					height="${contestpic.height}"
-					thumbheight="${contestpic.thumbheight}"
-					allowcomments="${contestpic.allowcomments_p && contestpic.allowcomments}"
-					numcomments="${contestpic.numcomments}"
-					numpicfaves="${contestpic.numpicfaves}"
-					cc_base="${contestpic.coloring_baseid}"
-					showcolored="1"
-					gallery="contest_${contest.contestid}"
-					contest="${showcontest}"
-					contestform="document.contestform"
-					contestvote="0"
-					contestvotes="${contestpic.numvotes}"
-					contestplace="${contestplace}"
-					voted="${voted}"
-					contestremove="0"
-					>
-					<jsp:attribute name="uploaded">
-						<fmt:formatDate value="${contestpic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-					</jsp:attribute>  
-					<jsp:attribute name="filesize">
-						<fmt:formatNumber value="${contestpic.filesize / 1024}" type="number" pattern="###" />
-					</jsp:attribute>
-				</tags:printPicture>
-				<c:set var="contestplace" value="${contestplace + 1}" />
-			</c:forEach>
-
-		</c:when>
-		<c:otherwise>
-
-			<sql:query var="qryContestPics">
-			SELECT * FROM contestpics,pictures,artists
-			WHERE contestpics.pictureid=pictures.pictureid
-			AND pictures.artistid=artists.artistid
-			AND contestpics.contestid=?
-			AND picpublic=true
-			ORDER BY entered
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-
-			<c:forEach var="contestpic" items="${qryContestPics.rows}">
-
-				<c:set var="title" value="${contestpic.title}" />
-				<c:set var="contestremove" value="0" />
-				<c:if test="${contestpic.artistid == artist.artistid || contest.artistid == artist.artistid}">
-					<c:set var="contestremove" value="1" />
-				</c:if>
-				<tags:printPicture
-					picnumber=""
-					pictureid="${contestpic.pictureid}"
-					basename="${contestpic.basename}"
-					extension="${contestpic.extension}"
-					type="${contestpic.type}"
-					folder="${contestpic.folderid}"
-					title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-					artistname="${contestpic.artistname}"
-					dirname="${contestpic.dirname}"
-					width="${contestpic.width}"
-					height="${contestpic.height}"
-					thumbheight="${contestpic.thumbheight}"
-					allowcomments="${contestpic.allowcomments_p && contestpic.allowcomments}"
-					numcomments="${contestpic.numcomments}"
-					numpicfaves="${contestpic.numpicfaves}"
-					cc_base="${contestpic.coloring_baseid}"
-					showcolored="1"
-					gallery="contest_${contest.contestid}"
-					contest="${showcontest}"
-					contestform="document.contestform"
-					contestvote="${contest.allowvoting}"
-					voted="${voted}"
-					contestremove="${contestremove}"
-					>
-					<jsp:attribute name="uploaded">
-						<fmt:formatDate value="${contestpic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-					</jsp:attribute>  
-					<jsp:attribute name="filesize">
-						<fmt:formatNumber value="${contestpic.filesize / 1024}" type="number" pattern="###" />
-					</jsp:attribute>
-				</tags:printPicture>
-
-			</c:forEach>
-
-			<form name="contestform" method="POST" action="Contests.jsp">
-			<input type="hidden" name="fnc" value="vote" />
-			<input type="hidden" name="contestid" value="${contest.contestid}" />
-			<input type="hidden" name="pictureid" value="" />
-			</form>
-
-		</c:otherwise>
-		</c:choose>
-
-	</c:forEach>
-
-	<c:if test="${qryContest.rowCount == 0}">
-
-	<div class="error">
-	<h3>An error occurred</h3>
-	The specified contest was not found.
-	</div>  
-
-	</c:if>
-
-{% else %}
-</c:when>
-<c:otherwise>
-
-	<c:set var="type" value="${param.type == 'global' || param.type == 'personal' ? param.type : 'personal'}" />
-
-	<sql:query var="qryContests">
-	SELECT *,DATEDIFF(deadline,NOW()) AS days_left,deadline<NOW() AS is_over FROM contests,artists
-	WHERE contests.artistid=artists.artistid
-	AND type=?
-	AND contests.active=true
-	AND (type='global' OR deadline>DATE_SUB(NOW(),INTERVAL 2 DAY))
-	${orderclause}
-	LIMIT 20
-	<sql:param value="${type}" />
-	</sql:query>
-
-	<div>
-
-	<c:if test="${qryContests.rowCount == 0}">
-	<div class="noentries">
-	No contests.
-	</div>
-	</c:if>
+        {% if contests.count == 0 %}
+            <div class="noentries">
+                No contests.
+            </div>
+        {% endif %}
 
         {% for contest in contests|slice:"0:20" %}
-	<c:forEach var="contest" items="${qryContests.rows}">
 
-		<sql:query var="qryContestPics">
-		SELECT pictures.*,contestpics.pictureid,artists.artistname,artists.dirname,count(*) AS votes FROM contestpics
-		LEFT JOIN contestvotes ON contestvotes.pictureid=contestpics.pictureid and contestvotes.contestid=contestpics.contestid
-		INNER JOIN pictures ON contestpics.pictureid=pictures.pictureid
-		INNER JOIN artists ON pictures.artistid=artists.artistid
-		WHERE contestpics.contestid=?
-		GROUP BY contestpics.pictureid
-		<c:if test="${type == 'global' && contest.is_over == 1}">
-			ORDER BY votes DESC
-		</c:if>
-		LIMIT 6
-		<sql:param value="${contest.contestid}" />
-		</sql:query>
-
-		<c:set var="contestdesc" value="${contest.description}" />
-		<div class="contest">
-			<table>
-			<tr>
-			<td class="contestinfo">
-			<div class="contestartist"><a href="{% url "artist" dir_name=contest.creator.dir_name %}">{{ contest.creator.username }}</a></div>
-			<div class="contesttitle"><a href="{% url "contests" contest_id=contest.id %}">{{ contest.title }}</a></div>
-			<div class="contestdeadline">
+            <div class="contest">
+                <table>
+                    <tr>
+                        <td class="contestinfo">
+                            <div class="contestartist"><a href="{% url "artist" dir_name=contest.creator.dir_name %}">{{ contest.creator.username }}</a></div>
+                            <div class="contesttitle"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>
+                            <div class="contestdeadline">
                                 {% if contest.is_ended %}
-				<c:choose>
-				<c:when test="${contest.is_over == 1}">
-					Ended {{ contest.date_end|date }}
-				</c:when>
+                                    Ended {{ contest.date_end|date }}
                                 {% else %}
-				<c:otherwise>
-					Contest ends {{ contest.date_end }} ({{ contest.days_left }} day{{ contest.days_left|pluralize }} left)
-				</c:otherwise>
-				</c:choose>
+                                    Contest ends {{ contest.date_end }} ({{ contest.days_left }} day{{ contest.days_left|pluralize }} left)
                                 {% endif %}
-			</div>
-			<div class="contestdescr">{{ contest.description|bbcode|safe }}</div>
-			</td>
-			<td class="contestentries">
-			<div class="">
-                        {% for contest_entry in contest.contestentry_set.all|slice:"0:6" %}
-				<img src="{{ contest_entry.picture.thumbnail_url }}" width="60" height="{{ contest_entry.picture.thumb_height }}" class="previewPopupTrigger" type="picture" itemid="{{ contest_entry.picture.id }}" />
-                        {% endfor %}
-			</div>
-			</td>
-			</tr>
-			</table>
-		</div>
+                            </div>
+                            <div class="contestdescr">{{ contest.description|bbcode|safe }}</div>
+                        </td>
+                        <td class="contestentries">
+                            <div class="">
+                                {% for contest_entry in contest.winning_entries|slice:"0:6" %}
+                                    <img src="{{ contest_entry.picture.thumbnail_url }}" width="60" height="{{ contest_entry.picture.thumb_height }}" class="previewPopupTrigger" type="picture" itemid="{{ contest_entry.picture.id }}" />
+                                {% endfor %}
+                            </div>
+                        </td>
+                     </tr>
+                </table>
+            </div>
 
-	</c:forEach>
         {% endfor %}
 
-	</div>
-
-</c:otherwise>
-</c:choose>
-{% endif %}
+    </div>
 
 </div>
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}
