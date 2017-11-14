@@ -436,7 +436,25 @@ class FavoritePicturesView(UserPaneView):
     def get_context_data(self, **kwargs):
         context = super(FavoritePicturesView, self).get_context_data(**kwargs)
 
-        context['favorite_pictures'] = self.request.user.favorite_pictures
+        if not self.request.user.is_authenticated():
+            return context
+
+        favorite_pictures = self.request.user.favorite_pictures.order_by('date_added', 'picture__date_uploaded')
+
+        context['favorite_pictures_paginator'] = Paginator(favorite_pictures, settings.PICTURES_PER_PAGE)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        reversed_page = context['favorite_pictures_paginator'].num_pages - page + 1
+
+        try:
+            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(reversed_page)
+        except EmptyPage:
+            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(context['favorite_pictures_paginator'].num_pages)
+        context['page_number'] = context['favorite_pictures_paginator'].num_pages - context['favorite_pictures'].number + 1
+
+        context['pages_link'] = utils.PagesLink(len(favorite_pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 

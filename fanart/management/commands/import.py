@@ -22,7 +22,7 @@ class Command(BaseCommand):
     do_coloringbase = False
     do_coloringpics = False
     do_characters = False
-    do_favorites = False
+    do_favorites = True
     do_offers = False
     do_claims = False
     do_picturecharacters = False
@@ -42,7 +42,7 @@ class Command(BaseCommand):
     do_contestpics = False
     do_contestvotes = False
     do_pms = False
-    do_specials = True
+    do_specials = False
     do_votes = False
 
     GENDERS = {
@@ -452,10 +452,12 @@ class Command(BaseCommand):
                 f = fanart_models.Favorite.objects.create(
                     user = user,
                     artist = artist,
-                    date_added = fave['added'],
+#                    date_added = fave['added'],
                     is_visible = fave['visible'] if fave['visible'] != None else True,
                     last_viewed = fave['lastviewed'],
                 )
+                f.date_added = fave['added']
+                f.save()
 
             c.execute("""SELECT * FROM favepics""")
             for fave in c.fetchall():

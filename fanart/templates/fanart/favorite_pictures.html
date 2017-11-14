@@ -12,129 +12,33 @@
 
 {% block content %}
 
-<%--
-FavoritePictures.jsp
-Lists your favorite pictures.
---%>
-
-<jsp:include page="inc_root/inc_header.jsp" />
-<%@ include file="inc_root/inc_functions.jsp" %>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
-</c:catch>
-
-
-<c:if test="${loggedin == 1}">
-
-<sql:query var="qryFavePicsFull">
-SELECT favepics.artistid,favepics.pictureid,basename,extension,artistname,dirname,width,height,title,type,filesize,numcomments
-FROM favepics,pictures,artists
-WHERE artists.artistid=favepics.artistid
-AND pictures.pictureid=favepics.pictureid
-AND favepics.userid=?
-AND artists.enabled=true
-AND artists.active=true
-AND picpublic=true
-<sql:param value="${user.userid}" />
-</sql:query>
-
-<c:set var="numItems" value="${qryFavePicsFull.rowCount} " />
-<c:choose>
-<c:when test="${page > 0}">
-<c:set var="page" value="${page} " />
-</c:when>
-<c:otherwise>
-<c:set var="page" value="0 " />
-</c:otherwise>
-</c:choose>
-<%
-  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
-  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
-        
-  Hashtable Pages = pagesLink(numItems,100,pageNum,true,"","text",request.getQueryString());
-
-  pageContext.setAttribute("offset",Pages.get("offset"));
-  pageContext.setAttribute("thispage",Pages.get("thispage"));
-  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
-%>
-
-<sql:query var="qryFavePics">
-SELECT * FROM favepics,pictures,artists
-WHERE artists.artistid=favepics.artistid
-AND pictures.pictureid=favepics.pictureid
-AND favepics.userid=?
-AND artists.enabled=true
-AND artists.active=true
-AND picpublic=true
-ORDER BY added DESC
-LIMIT ${offset},${thispage}
-<sql:param value="${user.userid}" />
-</sql:query>
-
-<c:set var="picnumber" value="${pagetotal + 1}" />
-
 <h1>Your Favorite Pictures</h1>
 
 <div class="featurebox">
 
-<%= Pages.get("pages") %>
+    {% if user.is_authenticated %}
 
-{% for favorite_picture in favorite_pictures %}
-<c:forEach var="favepic" items="${qryFavePics.rows}">
+        {{ pages_link.pages_nav|safe }}
 
-<c:set var="picnumber" value="${picnumber-1}" />
-<c:set var="filename" value="${favepic.filename}" />
-<c:set var="title" value="${favepic.title}" />  
-{% with picture=favorite_picture.picture %}
-{% include "includes/picture.html" %}
-{% endwith %}
-<tags:printPicture  
-        picnumber="${picnumber}"
-        pictureid="${favepic.pictureid}"
-        basename="${favepic.basename}"
-        extension="${favepic.extension}"
-	type="${favepic.type}"
-        title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-	artistname="${favepic.artistname}"
-        dirname="${favepic.dirname}"
-        width="${favepic.width}"
-        height="${favepic.height}"
-	thumbheight="${favepic.thumbheight}"
-	allowcomments="${favepic.allowcomments_p && favepic.allowcomments}"
-        numcomments="${favepic.numcomments}"
-	numpicfaves="${favepic.numpicfaves}"
-	gallery="favepics"
-	folder="${favepic.folderid}"
-        >
-        <jsp:attribute name="uploaded">
-                <fmt:formatDate value="${favepic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-        </jsp:attribute>
-        <jsp:attribute name="filesize">
-                <fmt:formatNumber value="${favepic.filesize / 1024}" type="number" pattern="###" />
-        </jsp:attribute>
-</tags:printPicture>
+        {% for favorite_picture in favorite_pictures reversed %}
+            {% with picture=favorite_picture.picture pic_number=forloop.revcounter pictures=favorite_pictures pictures_paginator=favorite_pictures_paginator %}
+                {% include "includes/picture.html" %}
+            {% endwith %}
+        {% endfor %}
 
-</c:forEach>
-{% endfor %}
+        {% if favorite_pictures|length == 0 %}
+            No favorite pictures yet.
+        {% endif %}
 
-<c:if test="${qryFavePics.rowCount == 0}">No favorite pictures yet.</c:if>
+    {% else %}
+
+        <div class="error">
+            <h3>Not logged in</h3>
+            This page is not available unless you are signed in. Please log in at the upper right.
+        </div>
+
+    {% endif %}
 
 </div>
-
-</c:if>
-
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}
