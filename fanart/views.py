@@ -1298,7 +1298,27 @@ class PicturePickerView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(PicturePickerView, self).get_context_data(*args, **kwargs)
 
+        folder_id = self.request.GET.get('folder_id', None)
+        if folder_id:
+            context['selected_folder'] = models.Folder.objects.filter(user=self.request.user, pk=folder_id).first()
+
+        sort_by = self.request.GET.get('sort_by', None)
+        if not sort_by in ['newest', 'oldest', 'popularity', 'comments']:
+            sort_by = 'newest'
+
         context['folders'] = utils.tree_to_list(self.request.user.folder_set.all(), sort_by='name')
-        context['pictures'] = self.request.user.picture_set.filter(date_deleted__isnull=True)
+        pictures = self.request.user.picture_set.filter(date_deleted__isnull=True)
+
+        if sort_by == 'newest':
+            pictures = pictures.order_by('-date_uploaded')
+        elif sort_by == 'oldest':
+            pictures = pictures.order_by('date_uploaded')
+        elif sort_by == 'popularity':
+            pictures = pictures.order_by('-num_faves')
+        elif sort_by == 'comments':
+            pictures = pictures.order_by('-num_comments')
+
+        context['sort_by'] = sort_by
+        context['pictures'] = pictures
 
         return context
