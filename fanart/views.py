@@ -187,7 +187,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
         start = int(self.request.GET.get('start', 0))
         initial = self.request.GET.get('initial', None)
 
-        artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0, date_deleted__isnull=True)
+        artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         one_month_ago = timezone.now() - timedelta(days=ONE_MONTH)
         if list == 'unviewed':
@@ -403,7 +403,7 @@ class SpecialFeaturesView(UserPaneMixin, TemplateView):
         if special_id:
             context['special'] = get_object_or_404(models.SpecialFeature, pk=special_id)
 
-            pictures = context['special'].pictures.filter(date_deleted__isnull=True).order_by('date_uploaded')
+            pictures = context['special'].pictures.order_by('date_uploaded')
 
             context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
             try:
@@ -783,7 +783,7 @@ class PictureView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PictureView, self).get_context_data(**kwargs)
-        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True)
+        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
@@ -854,8 +854,8 @@ class ArtistView(TemplateView):
         context['shouts'] = artist.shouts_received.order_by('-date_posted')[0:10]
         context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
 
-        context['last_nine_uploads'] = artist.picture_set.filter(is_public=True, date_deleted__isnull=True).order_by('-date_uploaded')[0:9]
-        context['nine_most_popular_pictures'] = artist.picture_set.filter(num_faves__gt=0, is_public=True, date_deleted__isnull=True).order_by('-num_faves')[0:9]
+        context['last_nine_uploads'] = artist.picture_set.filter(is_public=True).order_by('-date_uploaded')[0:9]
+        context['nine_most_popular_pictures'] = artist.picture_set.filter(num_faves__gt=0, is_public=True).order_by('-num_faves')[0:9]
         context['last_nine_coloring_pictures'] = artist.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
 
         if self.request.user.is_authenticated():
@@ -883,7 +883,7 @@ class ArtistGalleryView(ArtistView):
         if context['list'] == 'new' and self.request.user.is_authenticated():
             pictures = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(picture__artist=artist, user=self.request.user).order_by('picture__date_uploaded')]
         else:
-            pictures = artist.picture_set.filter(date_deleted__isnull=True)
+            pictures = artist.picture_set.all()
 
         if context['list'] == 'folder':
             pictures = pictures.filter(folder=context['folder']).order_by('date_uploaded')
@@ -1291,3 +1291,14 @@ class RemoveColoringPictureView(DeleteView):
         return reverse('coloring-pictures', kwargs={'coloring_base_id': self.object.base.id})
 
 
+
+class PicturePickerView(TemplateView):
+    template_name = 'includes/pick_picture.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PicturePickerView, self).get_context_data(*args, **kwargs)
+
+        context['folders'] = utils.tree_to_list(self.request.user.folder_set.all(), sort_by='name')
+        context['pictures'] = self.request.user.picture_set.filter(date_deleted__isnull=True)
+
+        return context

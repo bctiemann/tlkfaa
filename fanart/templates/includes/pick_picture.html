@@ -1,0 +1,177 @@
+{% extends "fanart/base_popup.html" %}
+{% load bbcode_tags %}
+{% load util_tags %}
+
+<%--
+pop_pickpicture.jsp
+Popup page for picking a picture from your gallery, e.g. for a character or to offer as an icon.
+--%>
+
+{% block content %}
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<jsp:include page="inc_root/inc_header_pop.jsp" />
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="folderid" value="${param.folderid}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${folderid == null}">
+<c:set var="folderid" value="0" />
+</c:if>
+
+<form>
+Folder:
+<select name="switchfolder" class="foldermenu" onChange="switchParam(this, 'folderid')">
+    {% if target == "character" %}
+    <c:if test="${param.op == 'character'}">
+        <option value="-1" <c:if test="${folderid == -1}">selected</c:if>>(Coloring Cave)</option>
+    </c:if>
+    {% endif %}
+    <option value="0" {% if selected_folder == None %}selected{% endif %}>(Main)</option>
+    {% for folder in folders %}
+        <option value="{{ folder.id }}" {% if selected_folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
+    {% endfor %}
+    <jsp:include page="inc_root/inc_foldertree.jsp?mode=select&folderid=0&selfolderid=${folderid}&artistid=${artist.artistid}" />
+</select>
+
+<c:if test="${folderid != -1}">
+Sort by:
+<select name="sortby" onChange="switchParam(this, 'sortby')">
+    <option <c:if test="${param.sortby == 'newest'}">selected</c:if> value="newest">Newest</option>
+    <option <c:if test="${param.sortby == 'oldest'}">selected</c:if> value="oldest">Oldest</option>
+    <option <c:if test="${param.sortby == 'popularity'}">selected</c:if> value="popularity">Popularity</option>
+    <option <c:if test="${param.sortby == 'comments'}">selected</c:if> value="comments">Comments</option>
+</select>
+</c:if>
+</form>
+
+{% if target == "character" %}
+<c:choose>
+<c:when test="${folderid == -1 && param.op == 'character'}">
+
+	<sql:query var="qryCCPics">
+	SELECT * FROM coloring_base,coloring_pics
+	WHERE coloring_pics.basepic=coloring_base.coloring_baseid
+	AND coloring_pics.artistid=?
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<c:forEach var="ccpic" items="${qryCCPics.rows}">
+	<div class="picture">
+
+	<table>
+	<tr>
+	<td class="thumb"><a href="javascript:nop()" onClick="selectPicture(${ccpic.coloring_picid},'ccpic')"><img class="thumb claimthumb" src="/Artwork/coloring/${ccpic.coloring_picid}.p.jpg" /></a></td>
+	<td class="fullwidth picturedetails">
+	<div class="picturedetails">
+
+	<c:set var="comment" value="${ccpic.comment}" />
+	<div class="picdate">${ccpic.posted}</div>
+	<div class="pictitle">
+	<%= formatText((String)pageContext.getAttribute("comment")) %>
+	</div>
+
+	</div>
+
+	</td>
+	</tr>
+	</table>
+
+	</div>
+	</c:forEach>
+
+{% else %}
+</c:when>
+<c:otherwise>
+
+	<c:choose>
+	<c:when test="${param.sortby == 'newest'}">
+		<c:set var="sortby" value="uploaded" />
+		<c:set var="sortdir" value="DESC" />
+	</c:when>
+	<c:when test="${param.sortby == 'oldest'}">
+		<c:set var="sortby" value="uploaded" />
+		<c:set var="sortdir" value="ASC" />
+	</c:when>
+	<c:when test="${param.sortby == 'comments'}">
+		<c:set var="sortby" value="numcomments" />
+		<c:set var="sortdir" value="DESC" />
+	</c:when>
+	<c:when test="${param.sortby == 'popularity'}">
+		<c:set var="sortby" value="numpicfaves" />
+		<c:set var="sortdir" value="DESC" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="sortby" value="uploaded" />
+		<c:set var="sortdir" value="DESC" />
+	</c:otherwise>
+	</c:choose>
+
+	<c:choose>
+	<c:when test="${folderid > 0}">
+		<sql:query var="qryPictures">
+		SELECT * FROM pictures 
+		WHERE artistid=?
+		AND folderid=?
+		AND deleted IS NULL
+		ORDER BY ${sortby} ${sortdir}
+		<sql:param value="${artist.artistid}" />
+		<sql:param value="${folderid}" />
+		</sql:query>
+	</c:when>
+	<c:otherwise>
+		<sql:query var="qryPictures">
+		SELECT * FROM pictures 
+		WHERE artistid=?
+		AND folderid IS NULL
+		AND deleted IS NULL
+		ORDER BY ${sortby} ${sortdir}
+		<sql:param value="${artist.artistid}" />
+		</sql:query>
+	</c:otherwise>
+	</c:choose>
+
+        {% for picture in pictures %}
+	<c:forEach var="picture" items="${qryPictures.rows}">
+	<div class="picture">
+
+	<table>
+	<tr>   
+	<td class="thumb"><a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'picture')"><img class="thumb" height="{{ picture.thumb_height_x2 }}" src="{{ picture.preview_url }}" /></a></td>
+	<td class="fullwidth picturedetails">
+	<div class="picturedetails">
+
+	<c:set var="title" value="${picture.title}" />
+	<div class="picdate">{{ picture.date_uploaded|date }}</div>
+	<div class="pictitle">
+        {{ picture.title|bbcode|safe }}
+	</div>
+
+	</div>
+
+	</td>
+	</tr>
+	</table>
+
+	</div>
+	</c:forEach>
+        {% endfor %}
+
+</c:otherwise>
+</c:choose>
+{% endif %}
+
+</body>
+</html>
+
+{% endblock %}

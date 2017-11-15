@@ -173,9 +173,10 @@ Sort by:
 		<c:set var="contestdesc" value="{{ contest.description|bbcode|safe }}" />
 		<c:set var="contestrules" value="{{ contest.rules|bbcode|safe }}" />
 
-		<div class="contest">		
+		<div class="contest">
+                        {% if contest.type == "global" %}
 			<c:if test="${contest.type == 'global'}">
-				<a class="archive-link" href="Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
+				<a class="archive-link" href="{% url "contests" contest_type="global" %}?sort_by=deadline">Previous Contests</a>
 				<h3>Archive-Wide Art Contest</h3>
 				<p class="global-contest-blurb">
 				Every couple of weeks, the Archive holds an art contest here on this page. The winner of the previous 
@@ -184,6 +185,7 @@ Sort by:
 				picture, and the winner sets up the next contest!
 				</p>
 			</c:if>
+                        {% endif %}
 
 			<div class="contest-title"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>
 			<div class="contest-artist">By <a href="{% url "artist" dir_name=contest.creator.dir_name %}">{{ contest.creator.username }}</a></div>
@@ -233,7 +235,7 @@ Sort by:
 				<c:set var="voted" value="${vote.pictureid}" />
 			</c:forEach>
 
-			<form name="contestentryform" id="contestentryform" method="POST" action="Contests.jsp">
+			<form name="contestentryform" id="contestentryform" method="POST" action="{% url "contest" contest_id=contest.id %}">
 			<table class="formtable">
 			<tr>
 			<td class="label">Picture From Gallery</td>
@@ -244,7 +246,7 @@ Sort by:
 				<input type="hidden" name="pictureid" value="${preloadpicture.pictureid}" /> 
 			</c:if>
 			</div>
-			<a href="pop_pickpicture.jsp?op=contest&folderid=0" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
+			<a href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
 			</td>
 			</tr>
 			<tr>

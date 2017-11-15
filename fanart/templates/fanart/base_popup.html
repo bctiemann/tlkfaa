@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<title>The Lion King Fan-Art Archive</title>
+	<link title="TLKFAA" rel="stylesheet" href="{% static "css/style.css" %}" />
+	<link title="TLKFAA" rel="stylesheet" href="{% static "css/popup.css" %}" />
+        
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+{% comment %}
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+{% endcomment %}
+
+	<link href="{% static "css/custom-theme/jquery-ui-1.8.9.custom.css" %}" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="{% static "js/jquery-ui-1.8.9.custom.min.js" %}"></script>
+
+	<script type="text/javascript" src="{% static "js/jquery.packed.popmenu.1.0.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/tlkfaa.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/cookies.js" %}"></script>
+
+	<link rel="stylesheet" href="{% static "shadowbox/shadowbox.css" %}" /> 
+	<script type="text/javascript" src="{% static "shadowbox/shadowbox.js" %}"></script>
+</head>
+<body class="popup">
+
+<div class="dialog" id="dialog_confirm" title="Confirmation">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog_confirm_text">Are you sure?</span></p>
+</div>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

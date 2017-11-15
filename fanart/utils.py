@@ -18,25 +18,23 @@ def tree_to_list(items, sort_by=None, parent_field='parent', omit=[], reverse=Fa
     items_keyed_by_id = {}
 
     for item in items:
-        items_flat.append({
-            'obj': item,
-            'children': [],
-            'depth': 0,
-        })
+        setattr(item, 'children', [])
+        setattr(item, 'depth', 0)
+        items_flat.append(item)
 
     for item in items_flat:
-        items_keyed_by_id[item['obj'].id] = item
+        items_keyed_by_id[item.id] = item
 
     for item in items_flat:
-        parent = getattr(item['obj'], parent_field, None)
+        parent = getattr(item, parent_field, None)
         if parent and parent.id in items_keyed_by_id:
             parent = items_keyed_by_id[parent.id]
-            parent['children'].append(item)
+            parent.children.append(item)
         else:
             roots.append(item)
 
     if sort_by:
-        roots = sorted(roots, key=lambda k: getattr(k['obj'], sort_by), reverse=reverse)
+        roots = sorted(roots, key=lambda k: getattr(k, sort_by), reverse=reverse)
 
     while len(roots):
         root = roots[0]
@@ -44,9 +42,9 @@ def tree_to_list(items, sort_by=None, parent_field='parent', omit=[], reverse=Fa
 
         if not omit or not root.obj.id in omit:
             items_sorted.append(root)
-            children = sorted(root['children'], key=lambda k: getattr(k['obj'], sort_by), reverse=True)
+            children = sorted(root.children, key=lambda k: getattr(k, sort_by), reverse=True)
             for child in children:
-                child['depth'] = root['depth'] + 1
+                child.depth = root.depth + 1
                 roots.insert(0, child)
 
     return items_sorted

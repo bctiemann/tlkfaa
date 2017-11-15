@@ -229,6 +229,12 @@ ORDER BY fanart_user.sort_name
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
 
+class PictureManager(models.Manager):
+
+    def get_queryset(self):
+        return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False)
+
+
 class Picture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True)
@@ -265,6 +271,8 @@ class Picture(models.Model):
     characters = models.ManyToManyField('Character', through='PictureCharacter')
     tags = models.ManyToManyField('Tag', blank=True)
 
+    objects = PictureManager()
+
     @property
     def basename(self):
         return '.'.join(self.filename.split('.')[:-1])
@@ -294,6 +302,10 @@ class Picture(models.Model):
     @property
     def preview_height(self):
         return int(self.height * settings.PREVIEW_WIDTH / self.width)
+
+    @property
+    def thumb_height_x2(self):
+        return self.thumb_height * 2
 
     @property
     def adjacent_pictures_in_artist(self):
@@ -596,6 +608,10 @@ class ColoringPicture(models.Model):
     @property
     def thumb_height(self):
         return int(self.height * settings.THUMB_WIDTH / self.width)
+
+    @property
+    def thumb_height_x2(self):
+        return self.thumb_height * 2
 
     def get_absolute_url(self):
         return reverse('coloring-pictures', kwargs={'coloring_base_id': self.base.id})

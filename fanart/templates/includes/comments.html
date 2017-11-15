@@ -3,62 +3,62 @@
 
 {% for comment in comments %}
 
-	<a name="{{ comment.obj.id }}"></a>
-	<div class="comment" id="comment_{{ comment.obj.id }}" style="margin-left: {{ comment.depth|depth_indent }}px;">
+	<a name="{{ comment.id }}"></a>
+	<div class="comment" id="comment_{{ comment.id }}" style="margin-left: {{ comment.depth|depth_indent }}px;">
 	<div class="commentname">
-                {% if not comment.obj.is_deleted %}
-		<div class="commentdate">{{ comment.obj.date_posted|date }}</div>
-                {% if comment.obj.user.is_artist %}
-			<a href="/Artists/${comment.dirname}/">{{ comment.obj.user.username }}</a>
+                {% if not comment.is_deleted %}
+		<div class="commentdate">{{ comment.date_posted|date }}</div>
+                {% if comment.user.is_artist %}
+			<a href="/Artists/${comment.dirname}/">{{ comment.user.username }}</a>
                 {% else %}
-			{{ comment.obj.user.username }}
+			{{ comment.user.username }}
                 {% endif %}
-                {% if comment.obj.user in picture.artist.blocked_commenters %}(blocked){% endif %}
+                {% if comment.user in picture.artist.blocked_commenters %}(blocked){% endif %}
                 {% endif %}
 	</div>
-	<div class="commenttext clearAfter {% if comment.obj.is_deleted %}commentdeleted{% endif %} {% if comment.obj.user == comment.obj.picture.artist %}op{% endif %}" id="commenttext_{{ comment.obj.id }}">
+	<div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %} {% if comment.user == comment.picture.artist %}op{% endif %}" id="commenttext_{{ comment.id }}">
 		<div class="commentprofilepic">
-                        {% if comment.obj.user.profile_pic_id and not comment.obj.is_deleted %}
+                        {% if comment.user.profile_pic_id and not comment.is_deleted %}
 			<c:if test="${comment.profilepic > 0 && comment.deleted == false}">
-                                {% if comment.obj.user.is_active %}
-					<a href="/Artists/${comment.dirname}/"><img src="{{ comment.obj.user.profile_pic_thumbnail_url }}" /></a>
+                                {% if comment.user.is_active %}
+					<a href="/Artists/${comment.dirname}/"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
                                 {% else %}
 					<img src="/profiles/${comment.profilepic}.s.${comment.profilepic_ext}" />
                                 {% endif %}
 			</c:if>
                         {% endif %}
 		</div>
-                {% if comment.obj.is_deleted %}
+                {% if comment.is_deleted %}
 			Comment deleted.
                 {% else %}
 			<c:set var="commenttext" value="${comment.comment}" />
 			<table><tr><td>
 			<div class="comment-text">
-                                {{ comment.obj.comment|bbcode|safe }}
+                                {{ comment.comment|bbcode|safe }}
 			</div>
 			<div class="comment-edited">
-                                {% if comment.obj.date_edited %}
-				Edited {{ comment.obj.date_edited|date }}
+                                {% if comment.date_edited %}
+				Edited {{ comment.date_edited|date }}
                                 {% endif %}
 			</div>
-			<div id="reply_{{ comment.obj.id }}" class="reply">
-				<form name="commentform_{{ comment.obj.id }}" id="commentform_{{ comment.obj.id }}">
-				<textarea name="replytext" id="replytext_{{ comment.obj.id }}"></textarea>
+			<div id="reply_{{ comment.id }}" class="reply">
+				<form name="commentform_{{ comment.id }}" id="commentform_{{ comment.id }}">
+				<textarea name="replytext" id="replytext_{{ comment.id }}"></textarea>
 				</form>
 			</div>
 			</td></tr></table>
                         {% if user.is_authenticated and not current_user_is_blocked %}
 				<div class="commentbuttons">
                                 {% if picture.artist == user %}
-                                        {% if comment.obj.user in picture.artist.blocked_commenters %}
-						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'unblock','comment',{{ comment.obj.picture.id }})">Unblock</button>
+                                        {% if comment.user in picture.artist.blocked_commenters %}
+						<button type="button" class="small" onClick="blockUser({{ comment.user.id }},'unblock','comment',{{ comment.picture.id }})">Unblock</button>
                                         {% else %}
-						<button type="button" class="small" onClick="blockUser({{ comment.obj.user.id }},'block','comment',{{ comment.obj.picture.id }})">Block</button>
+						<button type="button" class="small" onClick="blockUser({{ comment.user.id }},'block','comment',{{ comment.picture.id }})">Block</button>
                                         {% endif %}
                                 {% endif %}
-				<button type="button" class="small" id="replybutton_{{ comment.obj.id }}" onclick="doReply({{ picture.id }},{{ comment.obj.id }})">Reply</button>
-				{% if picture.artist == user or shout.obj.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.obj.id }})">Delete</button>{% endif %}
-				{% if comment.obj.user == user %}<button type="button" class="small" onClick="setupEditComment({{ picture.id }},{{ comment.obj.id }})">Edit</button>{% endif %}
+				<button type="button" class="small" id="replybutton_{{ comment.id }}" onclick="doReply({{ picture.id }},{{ comment.id }})">Reply</button>
+				{% if picture.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.id }})">Delete</button>{% endif %}
+				{% if comment.user == user %}<button type="button" class="small" onClick="setupEditComment({{ picture.id }},{{ comment.id }})">Edit</button>{% endif %}
 				</div>
                         {% endif %}
                 {% endif %}
