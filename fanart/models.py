@@ -882,6 +882,12 @@ class ContestEntry(models.Model):
     def get_absolute_url(self):
         return reverse('contest', kwargs={'contest_id': self.contest.id})
 
+    def save(self, *args, **kwargs):
+        try:
+            return ContestEntry.objects.get(contest=self.contest, picture=self.picture)
+        except ContestEntry.DoesNotExist:
+            return super(ContestEntry, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name_plural = 'contest entries'
         ordering = ['-date_entered']

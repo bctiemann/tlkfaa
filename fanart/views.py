@@ -11,6 +11,7 @@ from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
+from django.forms import ValidationError
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -470,7 +471,7 @@ class ContestsView(UserPaneMixin, TemplateView):
         return context
 
 
-class ContestView(FormMixin, UserPaneMixin, DetailView):
+class ContestView(UserPaneMixin, DetailView):
     model = models.Contest
     form_class = forms.ContestEntryForm
     template_name = 'fanart/contest.html'
@@ -496,15 +497,8 @@ class ContestEntryCreateView(CreateView):
     form_class = forms.ContestEntryForm
     template_name = 'fanart/contest.html'
 
-#    def get_object(self):
-#        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'])
-
     def form_valid(self, form):
-        logger.info(self.request.POST)
-        logger.info(form.cleaned_data)
-
         contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
-        logger.info(contest)
         picture = get_object_or_404(models.Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
 
         contest_entry = form.save(commit=False)
