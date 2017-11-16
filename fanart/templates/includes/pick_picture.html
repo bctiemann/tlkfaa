@@ -61,84 +61,27 @@ Sort by:
 	</c:forEach>
 
 {% else %}
-</c:when>
-<c:otherwise>
 
-	<c:choose>
-	<c:when test="${param.sortby == 'newest'}">
-		<c:set var="sortby" value="uploaded" />
-		<c:set var="sortdir" value="DESC" />
-	</c:when>
-	<c:when test="${param.sortby == 'oldest'}">
-		<c:set var="sortby" value="uploaded" />
-		<c:set var="sortdir" value="ASC" />
-	</c:when>
-	<c:when test="${param.sortby == 'comments'}">
-		<c:set var="sortby" value="numcomments" />
-		<c:set var="sortdir" value="DESC" />
-	</c:when>
-	<c:when test="${param.sortby == 'popularity'}">
-		<c:set var="sortby" value="numpicfaves" />
-		<c:set var="sortdir" value="DESC" />
-	</c:when>
-	<c:otherwise>
-		<c:set var="sortby" value="uploaded" />
-		<c:set var="sortdir" value="DESC" />
-	</c:otherwise>
-	</c:choose>
+    {% for picture in pictures %}
+        <div class="picture">
 
-	<c:choose>
-	<c:when test="${folderid > 0}">
-		<sql:query var="qryPictures">
-		SELECT * FROM pictures 
-		WHERE artistid=?
-		AND folderid=?
-		AND deleted IS NULL
-		ORDER BY ${sortby} ${sortdir}
-		<sql:param value="${artist.artistid}" />
-		<sql:param value="${folderid}" />
-		</sql:query>
-	</c:when>
-	<c:otherwise>
-		<sql:query var="qryPictures">
-		SELECT * FROM pictures 
-		WHERE artistid=?
-		AND folderid IS NULL
-		AND deleted IS NULL
-		ORDER BY ${sortby} ${sortdir}
-		<sql:param value="${artist.artistid}" />
-		</sql:query>
-	</c:otherwise>
-	</c:choose>
+            <table>
+                <tr>   
+                    <td class="thumb"><a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'picture')"><img class="thumb" id="picker_image_{{ picture.id }}" height="{{ picture.thumb_height_x2 }}" src="{{ picture.preview_url }}" /></a></td>
+                    <td class="fullwidth picturedetails">
+                        <div class="picturedetails">
+                            <div class="picdate">{{ picture.date_uploaded|date }}</div>
+                            <div class="pictitle">
+                                {{ picture.title|bbcode|safe }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
 
-        {% for picture in pictures %}
-	<c:forEach var="picture" items="${qryPictures.rows}">
-	<div class="picture">
+        </div>
+    {% endfor %}
 
-	<table>
-	<tr>   
-	<td class="thumb"><a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'picture')"><img class="thumb" height="{{ picture.thumb_height_x2 }}" src="{{ picture.preview_url }}" /></a></td>
-	<td class="fullwidth picturedetails">
-	<div class="picturedetails">
-
-	<c:set var="title" value="${picture.title}" />
-	<div class="picdate">{{ picture.date_uploaded|date }}</div>
-	<div class="pictitle">
-        {{ picture.title|bbcode|safe }}
-	</div>
-
-	</div>
-
-	</td>
-	</tr>
-	</table>
-
-	</div>
-	</c:forEach>
-        {% endfor %}
-
-</c:otherwise>
-</c:choose>
 {% endif %}
 
 {% endblock %}

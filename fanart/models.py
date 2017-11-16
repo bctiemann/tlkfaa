@@ -861,6 +861,9 @@ class Contest(models.Model):
             entries = entries.annotate(num_vote=Count('contestvote')).order_by('-num_vote', 'date_entered')
         return entries[0:20]
 
+    def get_absolute_url(self):
+        return reverse('contest', kwargs={'contest_id': self.id})
+
     def __unicode__(self):
         return self.title
 
@@ -869,12 +872,15 @@ class ContestEntry(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     contest = models.ForeignKey('Contest', null=True, blank=True)
     picture = models.ForeignKey('Picture', null=True, blank=True)
-    date_entered = models.DateTimeField(null=True, blank=True)
+    date_entered = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     date_notified = models.DateTimeField(null=True, blank=True)
 
     @property
     def num_votes(self):
         return self.contestvote_set.count()
+
+    def get_absolute_url(self):
+        return reverse('contest', kwargs={'contest_id': self.contest.id})
 
     class Meta:
         verbose_name_plural = 'contest entries'

@@ -1145,10 +1145,18 @@ function selectPicture(pictureid,picturetype) {
 //  window.parent.document.pickpictureform.picturetype.value = picturetype;
   var pickpictureitem = window.parent.pickpictureform.item.value;
   var pickpictureitemid = window.parent.pickpictureform.itemid.value;
+console.log($('#picker_image_' + pictureid).attr('src'));
   var url = "/ajax_setpicture.jsp?pictureid="+pictureid+"&picturetype="+picturetype+"&item="+pickpictureitem+"&itemid="+pickpictureitemid;
-  $('#pickpicture_'+pickpictureitemid,window.parent.document).load(url,function() {
-    window.parent.Shadowbox.close();
-  });
+
+  $('#pickpicture_'+pickpictureitemid,window.parent.document).empty().append($('<img>', {
+    src: $('#picker_image_' + pictureid).attr('src'),
+    class: 'thumb',
+  })).closest('form').find('input[name=picture]').val(pictureid);
+  window.parent.Shadowbox.close();
+
+//  $('#pickpicture_'+pickpictureitemid,window.parent.document).load(url,function() {
+//    window.parent.Shadowbox.close();
+//  });
 }
 
 function selectCharacter(characterid) {
@@ -1170,9 +1178,10 @@ function setupTagCharacters(pictureid,obj) {
 }
 
 function postSelectedPic(picform) {
-  if (typeof picform.pictureid !== "undefined") {
+  if (typeof picform.picture !== "undefined") {
     picform.submit();
   } else {
+console.log('foo');
     $('#dialog_confirm_text').html('You must select one of your pictures to post into the Coloring Cave.');
     $('#dialog_confirm').dialog({
       title: 'Alert',

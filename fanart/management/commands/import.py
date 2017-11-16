@@ -804,9 +804,11 @@ class Command(BaseCommand):
                     id = a['contestpicid'],
                     contest = contest,
                     picture = picture,
-                    date_entered = a['entered'],
+#                    date_entered = a['entered'],
                     date_notified = a['emailsent'],
                 )
+                f.date_entered = a['entered']
+                f.save()
 
         if self.do_contestvotes:
             c.execute("""SELECT * FROM contestvotes""")

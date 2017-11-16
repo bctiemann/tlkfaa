@@ -141,4 +141,4 @@ class ContestEntryForm(forms.ModelForm):
 
     class Meta:
         model = models.ContestEntry
-        fields = ['contest']
+        fields = []

@@ -235,16 +235,12 @@ Sort by:
 				<c:set var="voted" value="${vote.pictureid}" />
 			</c:forEach>
 
-			<form name="contestentryform" id="contestentryform" method="POST" action="{% url "contest" contest_id=contest.id %}">
+			<form name="contestentryform" id="contestentryform" method="POST" action="{% url "contest-entry-create" contest_id=contest.id %}">
 			<table class="formtable">
 			<tr>
 			<td class="label">Picture From Gallery</td>
 			<td class="data" id="picselect">
 			<div id="pickpicture_new">
-			<c:if test="${qryPicture.rowCount > 0}">
-				<img class="thumb" src="/Artists/${artist.dirname}/${fanart:encodeURI(preloadpicture.basename)}.s.jpg" />
-				<input type="hidden" name="pictureid" value="${preloadpicture.pictureid}" /> 
-			</c:if>
 			</div>
 			<a href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
 			</td>
@@ -256,9 +252,10 @@ Sort by:
 			</tr>
 			</table>
 			<input type="hidden" name="op" value="contest" />
-			<input type="hidden" name="contestid" value="${contest.contestid}" />
+			<input type="hidden" name="contestid" value="{{ contest.id }}" />
 			<input type="hidden" name="fnc" value="enterpicture" />
-			<input type="hidden" name="pictureid" value="" />
+			<input type="hidden" name="picture" value="" />
+                        {% csrf_token %}
 			</form>
         
 			<form name="pickpictureform">

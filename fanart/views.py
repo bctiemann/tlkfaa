@@ -491,6 +491,30 @@ class ContestView(FormMixin, UserPaneMixin, DetailView):
         return context
 
 
+class ContestEntryCreateView(CreateView):
+    model = models.ContestEntry
+    form_class = forms.ContestEntryForm
+    template_name = 'fanart/contest.html'
+
+#    def get_object(self):
+#        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'])
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        logger.info(form.cleaned_data)
+
+        contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
+        logger.info(contest)
+        picture = get_object_or_404(models.Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
+
+        contest_entry = form.save(commit=False)
+        contest_entry.user = self.request.user
+        contest_entry.contest = contest
+        contest_entry.picture = picture
+        contest_entry.save()
+        response = super(ContestEntryCreateView, self).form_valid(form)
+        return response
+
 
 class FavoritePicturesView(UserPaneMixin, TemplateView):
     template_name = 'fanart/favorite_pictures.html'
@@ -1299,8 +1323,7 @@ class PicturePickerView(TemplateView):
         context = super(PicturePickerView, self).get_context_data(*args, **kwargs)
 
         folder_id = self.request.GET.get('folder_id', None)
-        if folder_id:
-            context['selected_folder'] = models.Folder.objects.filter(user=self.request.user, pk=folder_id).first()
+        selected_folder = models.Folder.objects.filter(user=self.request.user, pk=folder_id).first()
 
         sort_by = self.request.GET.get('sort_by', None)
         if not sort_by in ['newest', 'oldest', 'popularity', 'comments']:
@@ -1308,6 +1331,9 @@ class PicturePickerView(TemplateView):
 
         context['folders'] = utils.tree_to_list(self.request.user.folder_set.all(), sort_by='name')
         pictures = self.request.user.picture_set.filter(date_deleted__isnull=True)
+
+        if selected_folder:
+            pictures = pictures.filter(folder=selected_folder)
 
         if sort_by == 'newest':
             pictures = pictures.order_by('-date_uploaded')
@@ -1319,6 +1345,7 @@ class PicturePickerView(TemplateView):
             pictures = pictures.order_by('-num_comments')
 
         context['sort_by'] = sort_by
+        context['selected_folder'] = selected_folder
         context['pictures'] = pictures
 
         return context
