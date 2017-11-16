@@ -273,7 +273,7 @@ Sort by:
                 {% endif %}
 
                 {% for entry in contest.winning_entries %}
-                    {% with picture=entry.picture %}
+                    {% with picture=entry.picture place=forloop.counter %}
                         {% include "includes/picture.html" %}
                     {% endwith %}
                 {% endfor %}

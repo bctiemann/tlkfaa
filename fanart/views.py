@@ -486,6 +486,8 @@ class ContestView(UserPaneMixin, DetailView):
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
+        context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
+
 #        logger.info(context['form'])
         logger.info(self.object)
 

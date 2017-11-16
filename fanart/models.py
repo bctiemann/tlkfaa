@@ -858,7 +858,7 @@ class Contest(models.Model):
     def winning_entries(self):
         entries = self.contestentry_set.all().order_by('?')
         if self.is_ended:
-            entries = entries.annotate(num_vote=Count('contestvote')).order_by('-num_vote', 'date_entered')
+            entries = entries.annotate(votes=Count('contestvote')).order_by('-votes', 'date_entered')
         return entries[0:20]
 
     def get_absolute_url(self):

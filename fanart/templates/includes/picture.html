@@ -24,10 +24,8 @@
         <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
     {% endif %}
 
-{% if contest %}
-<c:if test="${contestvotes > 0}">
-	<p class="contest-place <c:if test="${contestplace == 1}">first-place</c:if>">#${contestplace}: ${contestvotes} vote<c:if test="${contestvotes != 1}">s</c:if></p>
-</c:if>
+{% if contest and contest.is_ended and entry.votes > 0 %}
+	<p class="contest-place {% if place == 1 %}first-place{% endif %}">#{{ place }}: {{ entry.votes }} vote{{ entry.votes|pluralize }}</p>
 {% endif %}
 
 <div class="pictitle">
@@ -36,8 +34,8 @@
 
 {% if contest %}
 <div class="picvote">
-<c:if test="${contestvote == true}"><input type="radio" <c:if test="${voted == pictureid}">checked</c:if> onClick="votePicture(${contest},${pictureid})" /> Vote for this picture</c:if>
-<c:if test="${contestremove == 1}"><button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button></c:if>
+{% if contest.allow_voting %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture(${contest},${pictureid})" /> Vote for this picture{% endif %}
+{% if my_vote.entry == entry or contest.creator == user %}<button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button>{% endif %}
 </div>
 {% endif %}
 
