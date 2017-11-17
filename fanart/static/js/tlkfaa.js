@@ -2311,16 +2311,20 @@ function votePicture(contestid,entryid) {
   document.contestform.submit();
 }
 
-function removeContestPic(selform,pictureid) {
+function removeContestPic(selform,entryid) {
   $('#dialog_confirm_text').html("Are you sure you want to remove this picture from the contest?");
   $('#dialog_confirm').dialog({
     resizable: false,
     modal: true,
     buttons: {
       "Remove": function() {
-        selform.pictureid.value=pictureid;
-        selform.fnc.value='removepicture';
-        selform.submit();
+        var url = '/contest/entry/' + entryid + '/delete/';
+        $.post(url, {}, function(data) {
+          window.location.reload();
+        });
+//        selform.pictureid.value=pictureid;
+//        selform.fnc.value='removepicture';
+//        selform.submit();
       },
       Cancel: function() {
         $(this).dialog('close');

@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
     url(r'^contest/(?P<contest_id>[0-9]+)/$', fanart_views.ContestView.as_view(), name='contest'),
     url(r'^contest/(?P<contest_id>[0-9]+)/entry/create/$', fanart_views.ContestEntryCreateView.as_view(), name='contest-entry-create'),
+    url(r'^contest/entry/(?P<entry_id>[0-9]+)/delete/$', fanart_views.ContestEntryDeleteView.as_view(), name='contest-entry-delete'),
     url(r'^contest/(?P<contest_id>[0-9]+)/vote/$', fanart_views.ContestVoteView.as_view(), name='contest-vote'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),

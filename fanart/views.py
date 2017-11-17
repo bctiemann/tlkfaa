@@ -512,6 +512,20 @@ class ContestEntryCreateView(CreateView):
         return response
 
 
+class ContestEntryDeleteView(DeleteView):
+    model = models.ContestEntry
+
+    def get_object(self):
+        return get_object_or_404(models.ContestEntry, (Q(picture__artist=self.request.user) | Q(contest__creator=self.request.user)), pk=self.kwargs['entry_id'])
+
+    def form_valid(self, form):
+        response = super(ContestEntryDeleteView, self).form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse('contest', kwargs={'contest_id': self.object.contest.id})
+
+
 class ContestVoteView(CreateView):
     model = models.ContestVote
     form_class = forms.ContestVoteForm
