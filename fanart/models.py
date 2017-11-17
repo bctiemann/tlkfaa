@@ -196,12 +196,20 @@ ORDER BY fanart_user.sort_name
             return None
 
     @property
+    def open_gifts_received(self):
+        return self.gifts_received.filter(is_active=False)
+
+    @property
     def icon_claims_ready(self):
         return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True, date_fulfilled__isnull=True).exclude(filename='').order_by('-date_posted')
 
     @property
     def adoptable_claims_ready(self):
         return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
+
+    @property
+    def claims_ready(self):
+        return self.icon_claims_ready.union(self.adoptable_claims_ready)
 
     @property
     def banner_url(self):
@@ -743,7 +751,7 @@ class Tag(models.Model):
 
 
 class GiftPicture(models.Model):
-    artist = models.ForeignKey('User', null=True, blank=True)
+    sender = models.ForeignKey('User', null=True, blank=True)
     recipient = models.ForeignKey('User', null=True, blank=True, related_name='gifts_received')
     picture = models.ForeignKey('Picture', null=True, blank=True)
     filename = models.CharField(max_length=100, blank=True)

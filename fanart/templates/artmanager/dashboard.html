@@ -19,14 +19,17 @@ ArtManager component that serves as the default page, with a summary of account 
 
 <c:if test="${loggedin == 1}">
 
+{% if user.is_artist %}
 <c:choose>
 <c:when test="${artist.active == true}">
 <h2>Artist Dashboard</h2>
 </c:when>
+{% else %}
 <c:otherwise>
 <h2>User Dashboard</h2>
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 <sql:query var="qryPending">
 SELECT pendingid FROM pending
@@ -40,138 +43,129 @@ WHERE artistid=?
 <sql:param value="${artist.artistid}" />
 </sql:query>
 
+{% if user.is_artist %}
 <c:choose>
 <c:when test="${artist.active == true}">
 
 	<table class="formtable">
 	<tr>
 	<td class="label">Artist Name</td>
-	<td class="data">${artist.artistname}</td>
+	<td class="data">{{ user.username }}</td>
 	</tr>
 	<tr>
 	<td class="label">Listed By</td>
-	<td class="data">${artist.sortname}</td>
+	<td class="data">{{ user.sort_name }}</td>
 	</tr>
 	<tr>
 	<td class="label">Listing Icon</td>
 	<td class="data">
+        {% if user.example_pic %}
 	<c:choose>
 	<c:when test="${artist.examplepic > 0}">
-		<sql:query var="qryExamplePic">
-		SELECT * FROM pictures
-		WHERE pictureid=?
-		AND deleted IS NULL
-		<sql:param value="${artist.examplepic}" />
-		</sql:query>
 		<c:forEach var="examplepic" items="${qryExamplePic.rows}">
-		<img class="thumb" src="/Artists/${artist.dirname}/${fanart:encodeURI(examplepic.basename)}.s.jpg" />
+		<img class="thumb" src="{{ user.example_pic.preview_url }}" />
 		</c:forEach>
 	</c:when>
+        {% else %}
 	<c:otherwise>
 		(none)
 	</c:otherwise>
 	</c:choose>
+        {% endif %}
 	</td>
 	</tr>
 	<tr>
 	<td class="label">Profile Picture</td>
 	<td class="data">
+        {% if user.profile_pic_id %}
 	<c:choose>
 	<c:when test="${artist.profilepic > 0}">
-		<a href="/profiles/${artist.profilepic}.${artist.profilepic_ext}" rel="shadowbox"><img class="thumb" src="/profiles/${artist.profilepic}.s.${artist.profilepic_ext}" /></a>
+		<a href="{{ user.profile_pic_url }}" rel="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
 	</c:when>
+        {% else %}
 	<c:otherwise>
 		(none)
 	</c:otherwise>
 	</c:choose>
+        {% endif %}
 	</td>
 	</tr>
 	<tr>
 	<td class="label">Email</td>
-	<td class="data">${artist.email}</td>
+	<td class="data">{{ user.email }}</td>
 	</tr>
 	<tr>
 	<td class="label">Gallery URL</td>
-	<td class="data"><a href="/Artists/${artist.dirname}/">http://fanart.lionking.org/Artists/${artist.dirname}/</a></td>
+	<td class="data"><a href="{% url "artist" dir_name=user.dir_name %}">{{ user.get_absolute_url }}</a></td>
 	</tr>
 	<tr>
 	<td class="label">Pictures in Gallery</td>
-	<td class="data">${artist.numpictures}</td>
+	<td class="data">{{ user.num_pictures }}</td>
 	</tr>
 	<tr>
 	<td class="label">Pictures Pending Approval</td>
-	<td class="data">${qryPending.rowCount}</td>
+	<td class="data">{{ user.pending_set.count }}</td>
 	</tr>
 	<tr>
 	<td class="label">Fans</td>
-	<td class="data">${qryFans.rowCount}</td>
+	<td class="data">{{ user.fans.count }}</td>
 	</tr>
 	</table>
 
+{% else %}
 </c:when>
 <c:otherwise>
 
 	<table class="formtable">
 	<tr>
 	<td class="label">Profile Name</td>
-	<td class="data">${artist.artistname}</td>
+	<td class="data">{{ user.username}</td>
 	</tr>
 	<tr>
 	<td class="label">Email</td>
-	<td class="data">${artist.email}</td>
+	<td class="data">{{ user.email }}</td>
 	</tr>
 	</table>
 
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 <h3 class="sectionheader">Alerts</h3>
 
 <div id="alerts">
 
-<sql:query var="qryRequests">
-SELECT * FROM requests,artists
-WHERE recptid=?
-AND requests.artistid=artists.artistid
-AND requests.active=false
-<sql:param value="${artist.artistid}" />
-</sql:query>
-
+{% for gift in user.open_gifts_received %}
 <c:forEach var="request" items="${qryRequests.rows}">
-<div class="requestalert">Pending ArtWall submission from <a href="/ApproveRequest.jsp?requestid=${request.requestid}&hash=${request.hash}">${request.artistname}</a></div>
+<div class="requestalert">Pending ArtWall submission from <a href="/ApproveRequest.jsp?requestid=${request.requestid}&hash=${request.hash}">{{ gift.sender.username }}</a></div>
 </c:forEach>
+{% endfor %}
 
-<sql:query var="qryClaimsMine">
-SELECT *
-FROM offers,artists,claims
-WHERE offers.artistid=artists.artistid
-AND claims.offerid=offers.offerid
-AND claims.userid=?
-AND visible=true
-AND ((type='icon' AND fulfilled IS NULL AND claims.filename IS NOT NULL)
-OR (type='adoptable' AND fulfilled IS NOT NULL))
-${timelimitclause}
-${artistlimitclause}
-ORDER BY claims.posted
-<sql:param value="${user.userid}" />
-</sql:query>
-
+{% if user.claims_ready.exists %}
 <c:if test="${qryClaimsMine.rowCount > 0}">
 	<div class="newforme">
 	<h3>New for You</h3>
+        {% for claim in user.claims_ready %}
+            {% include "includes/tradingtree_foryou.html" %}
+        {% endfor %}
 	<jsp:include page="/inc_root/inc_ttforyou.jsp?offerype=icon&showall=0" />
 	<jsp:include page="/inc_root/inc_ttforyou.jsp?offertype=adoptable" />
 	</div>
 </c:if>
+{% endif %}
 
 </div>
 
 <h3 class="sectionheader">Unread Private Messages</h3>
 
 <div id="pms">
+{% with showstatus=True %}
+{% include "includes/private_messages.html" %}
+{% endwith %}
 <jsp:include page="ajax_pms.jsp?box=in&viewmode=new&showpages=0&showstatus=0" />
 </div>
 
+{% if user.is_artist %}
 <c:if test="${artist.active == true}">
 <h3 class="sectionheader">Unread Comments</h3>
 
@@ -289,6 +283,7 @@ LIMIT 10
 </c:forEach>
 
 </c:if>
+{% endif %}
 
 
 </c:if>

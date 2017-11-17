@@ -1158,6 +1158,7 @@ class AcceptClaimView(UpdateView):
             self.object.date_fulfilled = timezone.now()
         elif self.object.offer.type == 'adoptable':
 
+            comment_append = ''
             if self.object.offer.character.profile_picture:
                 comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
             elif self.object.offer.character.profile_coloring_picture:

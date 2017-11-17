@@ -628,7 +628,7 @@ class Command(BaseCommand):
                     picture = None
                 f = fanart_models.GiftPicture.objects.create(
                     id = a['requestid'],
-                    artist = artist,
+                    sender = artist,
                     recipient = recipient,
                     picture = picture,
                     filename = a['filename'] if a['filename'] else '',

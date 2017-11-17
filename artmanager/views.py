@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.shortcuts import render
 
 from fanart.models import User
+from fanart.views import UserPaneMixin
 
 
 class BaseRedirectView(RedirectView):
@@ -21,7 +22,19 @@ class BaseRedirectView(RedirectView):
         return reverse('artmanager:dashboard')
 
 
-class DashboardView(TemplateView):
+class ArtManagerPaneView(UserPaneMixin, TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtManagerPaneView, self).get_context_data(**kwargs)
+
+        context['community_art_data'] = self.get_community_art_data()
+        context['contests_data'] = self.get_contests_data()
+        context['sketcher_users'] = range(12)
+
+        return context
+
+
+class DashboardView(ArtManagerPaneView):
     template_name = 'artmanager/dashboard.html'
 
     def get(self, request, *args, **kwargs):
@@ -30,6 +43,15 @@ class DashboardView(TemplateView):
 
     def get_queryset(self):
         return None
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+
+#        context['pms'] = self.request.user.pms_received.filter(date_viewed__isnull=True)
+        context['pms'] = self.request.user.pms_received.all()
+        context['box'] = 'in'
+
+        return context
 
 
 class PrefsView(DetailView):

@@ -129,9 +129,9 @@ admin.site.register(fanart_models.TradingClaim, TradingClaimAdmin)
 
 
 class GiftPictureAdmin(admin.ModelAdmin):
-    list_display = ('artist', 'recipient', 'picture', 'date_accepted',)
+    list_display = ('sender', 'recipient', 'picture', 'date_accepted',)
     list_filter = ()
-    readonly_fields = ('artist', 'recipient', 'picture',)
+    readonly_fields = ('sender', 'recipient', 'picture',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.GiftPicture, GiftPictureAdmin)
 
