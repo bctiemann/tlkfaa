@@ -2,162 +2,144 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-	<title>The Lion King Fan-Art Archive<% if (pageTitle != "") { out.print(" &mdash; "); } %><%= pageTitle %></title>
-	<link title="TLKFAA" rel="stylesheet" href="{% static "css/style.css" %}" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>The Lion King Fan-Art Archive{% block page_title %}{% endblock %}</title>
+    <link title="TLKFAA" rel="stylesheet" href="{% static "css/style.css" %}" />
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
-	<link href="{% static "jquery-ui-1.12.0.custom/jquery-ui.css" %}" rel="stylesheet" type="text/css"/>
-	<script type="text/javascript" src="{% static "jquery-ui-1.12.0.custom/jquery-ui.min.js" %}"></script>
+    <link href="{% static "jquery-ui-1.12.0.custom/jquery-ui.css" %}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="{% static "jquery-ui-1.12.0.custom/jquery-ui.min.js" %}"></script>
 
-	<script type="text/javascript" src="{% static "js/jquery.popmenu.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/ajaxfileupload.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/jquery.tagsinput.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/tooltip.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/tlkfaa.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/cookies.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/md5.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/he.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.popmenu.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/ajaxfileupload.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.tagsinput.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/tooltip.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/tlkfaa.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/cookies.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/md5.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/he.js" %}"></script>
 
-<script src="{% static "js/vendor/jquery.ui.widget.js" %}"></script>
-<script src="{% static "js/jquery.iframe-transport.js" %}"></script>
-<script src="{% static "js/jquery.fileupload.js" %}"></script>
+    <script src="{% static "js/vendor/jquery.ui.widget.js" %}"></script>
+    <script src="{% static "js/jquery.iframe-transport.js" %}"></script>
+    <script src="{% static "js/jquery.fileupload.js" %}"></script>
 
-	<script type="text/javascript" src="{% static "js/xregexp-min.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/xregexp-unicode-base.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/xregexp-min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/xregexp-unicode-base.js" %}"></script>
 
-	<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
-	<link rel="stylesheet" href="{% static "css/tooltip.css" %}" />
-	<link rel="stylesheet" href="{% static "css/jquery.tagsinput.css" %}" />
-	<link rel="stylesheet" href="{% static "css/video-js.css" %}" />
-	<link rel="stylesheet" href="{% static "shadowbox/shadowbox.css" %}" />
-        <style type="text/css">
-        </style>
-	<script type="text/javascript" src="{% static "shadowbox/shadowbox.js" %}"></script>
-	<!--[if lt IE 8]>
-	<link rel="stylesheet" href="{% static "css/ie7fix.css" %}" />
-	<![endif]-->
+    <link rel="stylesheet" href="{% static "css/tooltip.css" %}" />
+    <link rel="stylesheet" href="{% static "css/jquery.tagsinput.css" %}" />
+    <link rel="stylesheet" href="{% static "css/video-js.css" %}" />
+    <link rel="stylesheet" href="{% static "shadowbox/shadowbox.css" %}" />
+    <style type="text/css">
+    </style>
+    <script type="text/javascript" src="{% static "shadowbox/shadowbox.js" %}"></script>
+    <!--[if lt IE 8]>
+        <link rel="stylesheet" href="{% static "css/ie7fix.css" %}" />
+    <![endif]-->
 </head>
 <body>
 
 <div class="wrapper">
 
-<div class="top"><img id="simba" src="{% static "images/AdultSimba.gif" %}" /></div>
+    <div class="top"><img id="simba" src="{% static "images/AdultSimba.gif" %}" /></div>
 
-<div class="header">
-	<div class="logo">
-	<a href="{% url "home" %}"><img src="{% static "images/fanart-header.png" %}" /></a>
-	</div>
-	<div class="logolegend">A <a href="http://www.lionking.org">lionking.org</a> site</div>
-</div>
-<div class="simbabottom"></div>
+    <div class="header">
+        <div class="logo">
+            <a href="{% url "home" %}"><img src="{% static "images/fanart-header.png" %}" /></a>
+        </div>
+        <div class="logolegend">A <a href="http://www.lionking.org">lionking.org</a> site</div>
+    </div>
+    <div class="simbabottom"></div>
 
-<table class="layout">
-<tr>
+    <table class="layout">
+        <tr>
 
-<!--content pane-->
-<td>
+        <!--content pane-->
+            <td>
 
-<ul id="tabs">
-    <li class="tab main {% block activetab_home %}{% endblock %}">
-        <a href="{% url "home" %}"></a>
-    </li>
-    <li class="tab artists {% block activetab_artists %}{% endblock %}">
-        <a href="{% url "artists" %}"></a>
-    </li>
-    <li class="tab artwork {% block activetab_artwork %}{% endblock %}">
-        <a href="{% url "artwork" %}">
-        {% if request.user.unviewedpicture_set.count > 0 %}
-            <div class="newpics-badge">{{ request.user.unviewedpicture_set.count }}</div>
-        {% endif %}
-        </a>
-    </li>
-    <li class="tab characters {% block activetab_characters %}{% endblock %}">
-        <a href="{% url "characters" %}"></a>
-    </li>
-    <li class="tab tradingtree {% block activetab_tradingtree %}{% endblock %}">
-        <a href="{% url "trading-tree" %}"></a>
-    </li>
-    <li class="tab coloringcave {% block activetab_coloringcave %}{% endblock %}">
-        <a href="{% url "coloring-cave" %}"></a>
-    </li>
-    <li class="tab special {% block activetab_special %}{% endblock %}">
-        <a href="{% url "special" %}"></a>
-    </li>
-</ul>
+                <ul id="tabs">
+                    <li class="tab main {% block activetab_home %}{% endblock %}">
+                        <a href="{% url "home" %}"></a>
+                    </li>
+                    <li class="tab artists {% block activetab_artists %}{% endblock %}">
+                        <a href="{% url "artists" %}"></a>
+                    </li>
+                    <li class="tab artwork {% block activetab_artwork %}{% endblock %}">
+                        <a href="{% url "artwork" %}">
+                        {% if request.user.unviewedpicture_set.count > 0 %}
+                            <div class="newpics-badge">{{ request.user.unviewedpicture_set.count }}</div>
+                        {% endif %}
+                        </a>
+                    </li>
+                    <li class="tab characters {% block activetab_characters %}{% endblock %}">
+                        <a href="{% url "characters" %}"></a>
+                    </li>
+                    <li class="tab tradingtree {% block activetab_tradingtree %}{% endblock %}">
+                        <a href="{% url "trading-tree" %}"></a>
+                    </li>
+                    <li class="tab coloringcave {% block activetab_coloringcave %}{% endblock %}">
+                        <a href="{% url "coloring-cave" %}"></a>
+                    </li>
+                    <li class="tab special {% block activetab_special %}{% endblock %}">
+                        <a href="{% url "special" %}"></a>
+                    </li>
+                </ul>
 
-<table class="contentpane">
-<tr>
-<td class="left"><div class="spacer"></div></td>
-<td class="content">
+                <table class="contentpane">
+                    <tr>
+                        <td class="left"><div class="spacer"></div></td>
+                        <td class="content">
 
-{% block grass %}{% endblock %}
+                            {% block grass %}{% endblock %}
 
-<div class="body {% block utility_page %}{% endblock %}">
-<div class="bodyprop {% block body_prop %}{% endblock %}"></div>
+                            <div class="body {% block utility_page %}{% endblock %}">
+                            <div class="bodyprop {% block body_prop %}{% endblock %}"></div>
 
-<div class="dialog" id="dialog_confirm" title="Confirmation">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog_confirm_text">Are you sure?</span></p>
-</div>
+                            <div class="dialog" id="dialog_confirm" title="Confirmation">
+                                <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog_confirm_text">Are you sure?</span></p>
+                            </div>
 
-{% block pagenav %}{% endblock %}
+                            {% block pagenav %}{% endblock %}
 
-{% block content %}{% endblock %}
+                            {% block content %}{% endblock %}
 
+                        </td>
+                        <td class="right"><div class="spacer"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="bottomleft"></td>
+                        <td class="bottom"><div class="spacer"></div></td>
+                        <td class="bottomright"></td>
+                    </tr> 
+                </table>
 
-<!--<br clear="left" />-->
-</div>
- 
-</td>
-<td class="right"><div class="spacer"></div></td>
-</tr>
-<tr>
-<td class="bottomleft"></td>
-<td class="bottom"><div class="spacer"></div></td>
-<td class="bottomright"></td>
-</tr> 
-</table>
+            </td>
 
-</td>
+            <!--Right Column-->
+            <td class="userpane">
 
+                {% include "fanart/userpane.html" %}
 
-
-
-<!--Right Column-->
-<td class="userpane">
-
-{% include "fanart/userpane.html" %}
-
-</td>
-</tr>
-</table>
-
-<%--
-inc_footer.jsp
-Structural component containing the sticky footer.
---%>
-
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+            </td>
+        </tr>
+    </table>
 
 </div>
-
-<%
-  pageContext.setAttribute("now", new java.util.Date());
-%>
 
 <div class="footer">
-	<ul>
-	<li><a href="/pop_about.jsp" rel="shadowbox;width=500;height=600">About</a></li>
-	<li><a href="/pop_tos.jsp" rel="shadowbox;width=750;height=600">Terms of Use / Guidelines</a></li>
-	<li><a href="/pop_privacy.jsp" rel="shadowbox;width=500;height=600">Privacy Policy</a></li>
-	<li><a href="/pop_help.jsp" rel="shadowbox;width=500;height=600">Help</a></li>
-	</ul>
-	<div class="footertext">
-	<p>Web design &copy; 1995-<fmt:formatDate value="${now}" pattern="yyyy"/> <a href="mailto:btman@lionking.org">Brian Tiemann</a></p>
-	</div>
+    <ul>
+        <li><a href="/pop_about.jsp" rel="shadowbox;width=500;height=600">About</a></li>
+        <li><a href="/pop_tos.jsp" rel="shadowbox;width=750;height=600">Terms of Use / Guidelines</a></li>
+        <li><a href="/pop_privacy.jsp" rel="shadowbox;width=500;height=600">Privacy Policy</a></li>
+        <li><a href="/pop_help.jsp" rel="shadowbox;width=500;height=600">Help</a></li>
+    </ul>
+    <div class="footertext">
+    <p>Web design &copy; 1995-{% now "Y" %} <a href="mailto:btman@lionking.org">Brian Tiemann</a></p>
+    </div>
 </div>
 
 </body>
