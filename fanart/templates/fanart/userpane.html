@@ -100,7 +100,7 @@ Favorite Pictures</h1>
 <div class="userbox">
 <h1>
 <a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
-Sketcher</h1>
+Drawpile</h1>
 <div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
 
 {% if request.session.sketcher_box %}
@@ -108,8 +108,9 @@ Sketcher</h1>
 {% endif %}
 
 </div>
-<div class="userboxfooter">
-<a href="/Sketcher/">Sketcher</a>
+<div class="userboxfooter" style="height: 20px;">
+<a href="https://drawpile.net/download/">Get Drawpile</a>
+<p>Join: <b><code>fanart.lionking.org:28000</code></b></p>
 </div>
 </div>
 
