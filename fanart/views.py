@@ -512,6 +512,22 @@ class ContestEntryCreateView(CreateView):
         return response
 
 
+class ContestVoteView(CreateView):
+    model = models.ContestVote
+    form_class = forms.ContestVoteForm
+    template_name = 'fanart/contest.html'
+
+    def form_valid(self, form):
+        models.ContestVote.objects.filter(entry__contest=form.cleaned_data['entry'].contest, user=self.request.user).delete()
+
+        contest_vote = form.save(commit=False)
+        contest_vote.user = self.request.user
+        contest_vote.save()
+
+        response = super(ContestVoteView, self).form_valid(form)
+        return response
+
+
 class FavoritePicturesView(UserPaneMixin, TemplateView):
     template_name = 'fanart/favorite_pictures.html'
 

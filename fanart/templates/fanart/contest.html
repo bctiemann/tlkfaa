@@ -264,10 +264,12 @@ Sort by:
 			<input type="hidden" name="pictureid" value="" />
 			</form>
 
-			<form name="contestform" method="POST" action="Contests.jsp">
+			<form name="contestform" method="POST" action="{% url "contest-vote" contest_id=contest.id %}">
 			<input type="hidden" name="fnc" value="vote" />
 			<input type="hidden" name="contestid" value="${contest.contestid}" />
 			<input type="hidden" name="pictureid" value="" />
+			<input type="hidden" name="entry" value="" />
+                        {% csrf_token %}
 			</form>
 		</c:if>
                 {% endif %}
@@ -278,128 +280,6 @@ Sort by:
                     {% endwith %}
                 {% endfor %}
 
-
-                {% if contest.is_ended %}
-		<c:choose>
-		<c:when test="${contest.deadline < now}">
-
-			<sql:query var="qryContestPics">
-			SELECT *,count(*) AS numvotes FROM contestpics
-			INNER JOIN pictures ON pictures.pictureid=contestpics.pictureid
-			INNER JOIN contestvotes ON contestvotes.pictureid=pictures.pictureid
-			INNER JOIN artists ON artists.artistid=pictures.artistid
-			WHERE contestvotes.contestid=?
-			AND picpublic=true
-			GROUP BY contestvotes.pictureid,contestvotes.contestid
-			ORDER BY numvotes DESC
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-
-			<c:set var="contestplace" value="1" />
-			<c:forEach var="contestpic" items="${qryContestPics.rows}">
-				<c:set var="title" value="${contestpic.title}" />
-				<tags:printPicture
-					picnumber=""
-					pictureid="${contestpic.pictureid}"
-					basename="${contestpic.basename}"
-					extension="${contestpic.extension}"
-					type="${contestpic.type}"
-					folder="${contestpic.folderid}"
-					title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-					artistname="${contestpic.artistname}"
-					dirname="${contestpic.dirname}"
-					width="${contestpic.width}"
-					height="${contestpic.height}"
-					thumbheight="${contestpic.thumbheight}"
-					allowcomments="${contestpic.allowcomments_p && contestpic.allowcomments}"
-					numcomments="${contestpic.numcomments}"
-					numpicfaves="${contestpic.numpicfaves}"
-					cc_base="${contestpic.coloring_baseid}"
-					showcolored="1"
-					gallery="contest_${contest.contestid}"
-					contest="${showcontest}"
-					contestform="document.contestform"
-					contestvote="0"
-					contestvotes="${contestpic.numvotes}"
-					contestplace="${contestplace}"
-					voted="${voted}"
-					contestremove="0"
-					>
-					<jsp:attribute name="uploaded">
-						<fmt:formatDate value="${contestpic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-					</jsp:attribute>  
-					<jsp:attribute name="filesize">
-						<fmt:formatNumber value="${contestpic.filesize / 1024}" type="number" pattern="###" />
-					</jsp:attribute>
-				</tags:printPicture>
-				<c:set var="contestplace" value="${contestplace + 1}" />
-			</c:forEach>
-
-		</c:when>
-                {% else %}
-		<c:otherwise>
-
-			<sql:query var="qryContestPics">
-			SELECT * FROM contestpics,pictures,artists
-			WHERE contestpics.pictureid=pictures.pictureid
-			AND pictures.artistid=artists.artistid
-			AND contestpics.contestid=?
-			AND picpublic=true
-			ORDER BY entered
-			<sql:param value="${contest.contestid}" />
-			</sql:query>
-
-			<c:forEach var="contestpic" items="${qryContestPics.rows}">
-
-				<c:set var="title" value="${contestpic.title}" />
-				<c:set var="contestremove" value="0" />
-				<c:if test="${contestpic.artistid == artist.artistid || contest.artistid == artist.artistid}">
-					<c:set var="contestremove" value="1" />
-				</c:if>
-				<tags:printPicture
-					picnumber=""
-					pictureid="${contestpic.pictureid}"
-					basename="${contestpic.basename}"
-					extension="${contestpic.extension}"
-					type="${contestpic.type}"
-					folder="${contestpic.folderid}"
-					title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-					artistname="${contestpic.artistname}"
-					dirname="${contestpic.dirname}"
-					width="${contestpic.width}"
-					height="${contestpic.height}"
-					thumbheight="${contestpic.thumbheight}"
-					allowcomments="${contestpic.allowcomments_p && contestpic.allowcomments}"
-					numcomments="${contestpic.numcomments}"
-					numpicfaves="${contestpic.numpicfaves}"
-					cc_base="${contestpic.coloring_baseid}"
-					showcolored="1"
-					gallery="contest_${contest.contestid}"
-					contest="${showcontest}"
-					contestform="document.contestform"
-					contestvote="${contest.allowvoting}"
-					voted="${voted}"
-					contestremove="${contestremove}"
-					>
-					<jsp:attribute name="uploaded">
-						<fmt:formatDate value="${contestpic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-					</jsp:attribute>  
-					<jsp:attribute name="filesize">
-						<fmt:formatNumber value="${contestpic.filesize / 1024}" type="number" pattern="###" />
-					</jsp:attribute>
-				</tags:printPicture>
-
-			</c:forEach>
-
-			<form name="contestform" method="POST" action="Contests.jsp">
-			<input type="hidden" name="fnc" value="vote" />
-			<input type="hidden" name="contestid" value="${contest.contestid}" />
-			<input type="hidden" name="pictureid" value="" />
-			</form>
-
-		</c:otherwise>
-		</c:choose>
-                {% endif %}
 
 	</c:forEach>
 

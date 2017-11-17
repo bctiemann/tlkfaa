@@ -142,3 +142,10 @@ class ContestEntryForm(forms.ModelForm):
     class Meta:
         model = models.ContestEntry
         fields = []
+
+
+class ContestVoteForm(forms.ModelForm):
+
+    class Meta:
+        model = models.ContestVote
+        fields = ['entry']

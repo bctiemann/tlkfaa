@@ -32,10 +32,10 @@
 {{ picture.title|bbcode|safe }}
 </div>
 
-{% if contest %}
+{% if contest and not contest.is_ended %}
 <div class="picvote">
-{% if contest.allow_voting %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture(${contest},${pictureid})" /> Vote for this picture{% endif %}
-{% if my_vote.entry == entry or contest.creator == user %}<button type="button" class="small" onClick="removeContestPic(${contestform},${pictureid})">Remove</button>{% endif %}
+{% if contest.allow_voting %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture({{ contest.id }},{{ entry.id }})" /> Vote for this picture{% endif %}
+{% if entry.picture.artist == user or contest.creator == user %}<button type="button" class="small" onClick="removeContestPic({{ contestform }},{{ picture.id }})">Remove</button>{% endif %}
 </div>
 {% endif %}
 

@@ -849,9 +849,6 @@ class Contest(models.Model):
 
     @property
     def days_left(self):
-        logger.info(self.date_end)
-        logger.info(timezone.now())
-        logger.info(self.date_end - timezone.now())
         return (self.date_end - timezone.now()).days
 
     @property
@@ -896,7 +893,10 @@ class ContestEntry(models.Model):
 class ContestVote(models.Model):
     entry = models.ForeignKey('ContestEntry', null=True, blank=True)
     user = models.ForeignKey('User', null=True, blank=True)
-    date_voted = models.DateTimeField(null=True, blank=True)
+    date_voted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('contest', kwargs={'contest_id': self.entry.contest.id})
 
 
 class PrivateMessage(models.Model):

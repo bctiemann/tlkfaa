@@ -2305,8 +2305,9 @@ function setupRecovery(recovertype) {
   });
 }
 
-function votePicture(contestid,pictureid) {
-  document.contestform.pictureid.value=pictureid;
+function votePicture(contestid,entryid) {
+//  document.contestform.pictureid.value=pictureid;
+  document.contestform.entry.value=entryid;
   document.contestform.submit();
 }
 
