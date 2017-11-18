@@ -2375,7 +2375,8 @@ function refreshPMBox(pmbox,page,viewmode,showpages,showstatus,w) {
     w = window;
   }
   var S = w.Shadowbox;
-  var url = "ajax_pms.jsp?op=privatemsgs&page="+page+"&box="+pmbox+"&viewmode="+viewmode+"&showpages="+showpages+"&showstatus="+showstatus;
+//  var url = "ajax_pms.jsp?op=privatemsgs&page="+page+"&box="+pmbox+"&viewmode="+viewmode+"&showpages="+showpages+"&showstatus="+showstatus;
+  var url = '/pms/' + pmbox + '/?op=privatemsgs&page='+page+"&box="+pmbox+"&viewmode="+viewmode+"&showpages="+showpages+"&showstatus="+showstatus;
   $('#pms',w.document).load(url,function() {
     S.setup('#pms table a');
     $('div.selector a',w.document).removeClass('selected');

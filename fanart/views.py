@@ -1342,7 +1342,6 @@ class RemoveColoringPictureView(DeleteView):
         return reverse('coloring-pictures', kwargs={'coloring_base_id': self.object.base.id})
 
 
-
 class PicturePickerView(TemplateView):
     template_name = 'includes/pick_picture.html'
 
@@ -1374,5 +1373,41 @@ class PicturePickerView(TemplateView):
         context['sort_by'] = sort_by
         context['selected_folder'] = selected_folder
         context['pictures'] = pictures
+
+        return context
+
+
+class PMsView(TemplateView):
+    template_name = 'includes/private_messages.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PMsView, self).get_context_data(*args, **kwargs)
+
+        box = kwargs.get('box', 'in')
+        pms = None
+        if box == 'in':
+             pms = self.request.user.pms_received.all()
+        elif box == 'out':
+             pms = self.request.user.pms_sent.all()
+        elif box == 'trash':
+             pms = self.request.user.pms_received.filter(deleted_by_recipient=True)
+
+        context['box'] = box
+        context['pms'] = pms
+
+        return context
+
+
+class PMView(DetailView):
+    model = models.PrivateMessage
+    template_name = 'includes/pm.html'
+
+    def get_object(self):
+        return get_object_or_404(models.PrivateMessage, (Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=self.kwargs['pm_id'])
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PMView, self).get_context_data(*args, **kwargs)
+
+        context['pm'] = self.object
 
         return context

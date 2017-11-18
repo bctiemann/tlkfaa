@@ -1,0 +1,459 @@
+{% extends "fanart/base_popup.html" %}
+{% load bbcode_tags %}
+{% load util_tags %}
+
+{% block content %}
+
+
+{% comment %}
+<%--
+pop_viewpm.jsp
+Popup page for viewing a private message.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<jsp:include page="inc_root/inc_header_pop.jsp" />
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="pmid" value="${param.pmid}" integerOnly="true" />
+<fmt:parseNumber var="recptid" value="${param.recptid}" integerOnly="true" />
+<fmt:parseNumber var="showpages" value="${param.showpages}" integerOnly="true" />
+<fmt:parseNumber var="showstatus" value="${param.showstatus}" integerOnly="true" />
+<fmt:parseNumber var="replytoshout" value="${param.replytoshout}" integerOnly="true" />
+</c:catch>
+<c:set var="viewmode" value="all" />
+<c:if test="${param.viewmode == 'new'}"><c:set var="viewmode" value="new" /></c:if>
+<c:if test="${showpages != 1}"><c:set var="showpages" value="0" /></c:if>
+<c:if test="${showstatus != 1}"><c:set var="showstatus" value="0" /></c:if>
+
+<c:set var="perpage" value="20" />
+
+
+<c:if test="${loggedin == 1}">
+
+<c:choose>
+<c:when test="${param.op == 'new'}">
+
+	<c:choose>
+	<c:when test="${recptid > 0}">
+		<c:set var="recptid" value="${recptid}" />
+		<sql:query var="qryRecpt">
+		SELECT userid,artistid,artistname,email FROM artists
+		WHERE userid=?
+		<sql:param value="${recptid}" />
+		</sql:query>
+	</c:when>
+	<c:otherwise>
+		<sql:query var="qryRecpt">
+		SELECT userid,artistid,artistname,email FROM artists
+		WHERE artistname=?
+		<sql:param value="${param.recpt}" />
+		</sql:query>
+	</c:otherwise>
+	</c:choose>
+
+	<sql:query var="qryBlocked">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${recptartistid}" />   
+	</sql:query>
+
+	<c:choose>
+	<c:when test="${qryRecpt.rowCount > 0 && qryBlocked.rowCount == 0}">
+		<c:set var="recpt" value="${qryRecpt.rows[0]}" />
+
+		<c:set var="recptid" value="${recpt.userid}" />
+		<c:set var="recptartistid" value="${recpt.artistid}" />
+		<c:set var="recptname" value="${recpt.artistname}" />
+		<c:set var="recptemail" value="${recpt.email}" />
+		<c:set var="sendername" value="${artist.artistname}" />
+
+		<c:set var="newsubject" value="${param.subject}" />
+		<c:set var="newmessage" value="${param.message}" />
+		<sql:update var="updReply">
+		INSERT INTO pms (senderid,recptid,sent,replyto,subject,message)
+		VALUES (?,?,NOW(),0,?,?)
+		<sql:param value="${user.userid}" />
+		<sql:param value="${recptid}" />
+		<sql:param value="${param.subject}" />
+		<sql:param value="${param.message}" />
+		</sql:update>
+
+		Sent.
+
+		<script type="text/javascript">
+//		refreshPMBox('out',1,'all',1,1,window.parent);
+		</script>
+
+		<%
+			String recptname = (String)pageContext.getAttribute("recptname");
+			String recptemail = (String)pageContext.getAttribute("recptemail");
+			String sendername = (String)pageContext.getAttribute("sendername");
+			String msgBody = "This is an automated message from The Lion King Fan-Art Archive.\n\nYou have received a new Private Message from " + sendername + ".\n\nPlease visit http://fanart.lionking.org and check your PMs in ArtManager.";
+			sendEmail("fanart@lionking.org", recptemail, "TLKFAA Private Message", msgBody, false);
+		%>
+
+	</c:when>
+	<c:when test="${qryBlocked.rowCount > 0}">
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		<p>You have been blocked from sending private messages to this recipient.</p>
+		</div>
+
+	</c:when>
+	<c:otherwise>
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		<p>The specified recipient was not found.</p>
+		</div>
+
+	</c:otherwise>
+	</c:choose>
+
+</c:when>
+{% endcomment %}
+
+{% if pm %}
+<c:when test="${pmid > 0}">
+
+	<sql:query var="qryPM">
+	SELECT pms.*,artists.artistname,artists.dirname,artists.email FROM pms,artists,users
+	WHERE pms.senderid=users.userid
+	AND artists.userid=users.userid
+	AND pmid=?
+	AND (recptid=? OR senderid=?)
+	ORDER BY sent DESC
+	<sql:param value="${pmid}" />
+	<sql:param value="${user.userid}" />
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<sql:query var="qryBlocked">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${recptartistid}" />   
+	</sql:query>
+
+	<c:choose>
+	<c:when test="${qryPM.rowCount > 0}">
+
+		<c:forEach var="pm" items="${qryPM.rows}">
+			<c:set var="thispm" value="${pm}" />
+			<c:set var="recptname" value="${pm.artistname}" />
+			<c:set var="recptemail" value="${pm.email}" />
+			<c:set var="sendername" value="${artist.artistname}" />
+		</c:forEach>
+
+		<c:choose>
+		<c:when test="${(thispm.recptid == user.userid && thispm.deleted_r == true) || (thispm.senderid == user.userid && thispm.deleted_s == true)}">
+			<c:set var="box" value="trash" />
+			<sql:query var="qryPMsFull">
+			SELECT * FROM pms
+			WHERE ((recptid=? AND deleted_r=true) OR (senderid=? AND deleted_s=true))
+			AND sent>?
+			<sql:param value="${user.userid}" />
+			<sql:param value="${user.userid}" />
+			<sql:param value="${thispm.sent}" />
+			</sql:query>
+		</c:when>
+		<c:when test="${thispm.senderid == user.userid}">
+			<c:set var="box" value="out" />
+			<sql:query var="qryPMsFull">
+			SELECT * FROM pms
+			WHERE senderid=?
+			AND deleted_s=false
+			AND sent>?
+			<sql:param value="${user.userid}" />
+			<sql:param value="${thispm.sent}" />
+			</sql:query>
+		</c:when>
+		<c:when test="${thispm.recptid == user.userid}">
+			<c:set var="box" value="in" />
+			<sql:query var="qryPMsFull">
+			SELECT * FROM pms
+			WHERE recptid=?
+			AND deleted_r=false
+			AND sent>?
+			<sql:param value="${user.userid}" />
+			<sql:param value="${thispm.sent}" />
+			</sql:query>
+		</c:when>
+		</c:choose>
+		<fmt:parseNumber var="page" value="${((qryPMsFull.rowCount) / perpage) + 1}" integerOnly="true" />
+
+		<c:if test="${showpages == 1 || box == 'in'}">
+		<script type="text/javascript">
+		refreshPMBox('${box}',${page},'${viewmode}',${showpages},${showstatus},window.parent);
+		</script>
+		</c:if>
+
+		<c:choose>
+		<c:when test="${param.op == 'reply'}">
+
+			<c:set var="newsubject" value="${thispm.subject}" />
+			<c:set var="newmessage" value="${param.message}" />
+			<%
+			  String newsubject = (String)pageContext.getAttribute("newsubject");
+			  newsubject = newsubject.replaceAll("^Re:","");
+			  pageContext.setAttribute("newsubject",newsubject);
+			%>
+			<c:set var="newsubject" value="Re: ${newsubject}" />
+
+			<sql:update var="updReply">
+			INSERT INTO pms (senderid,recptid,sent,replyto,subject,message)
+			VALUES (?,?,NOW(),?,?,?)
+			<sql:param value="${user.userid}" />
+			<sql:param value="${thispm.senderid}" />
+			<sql:param value="${thispm.pmid}" />
+			<sql:param value="${thispm.subject}" />
+			<sql:param value="${param.message}" />
+			</sql:update>
+
+			<sql:update var="updPM">
+			UPDATE pms 
+			SET replied=true
+			WHERE pmid=?
+			<sql:param value="${thispm.pmid}" />
+			</sql:update>
+
+			Replied.
+
+			<%
+				String recptname = (String)pageContext.getAttribute("recptname");
+				String recptemail = (String)pageContext.getAttribute("recptemail");
+				String sendername = (String)pageContext.getAttribute("sendername");
+				String msgBody = "This is an automated message from The Lion King Fan-Art Archive.\n\nYou have received a new Private Message from " + sendername + ".\n\nPlease visit http://fanart.lionking.org and check your PMs in ArtManager.";
+				sendEmail("fanart@lionking.org", recptemail, "TLKFAA Private Message", msgBody, false);
+			%>
+
+		</c:when>
+
+		<c:otherwise>
+
+			<c:set var="subject" value="${thispm.subject}" />
+			<c:set var="message" value="${thispm.message}" />
+
+                        {% if pm.sender == user and pm.recipient != user %}
+			<c:choose>
+			<c:when test="${thispm.senderid == user.userid && thispm.recptid != user.userid}">
+
+				<sql:query var="qryRepliedTo">
+				SELECT artists.artistname,dirname FROM artists,users
+				WHERE artists.userid=users.userid
+				AND users.userid=?
+				<sql:param value="${thispm.recptid}" />
+				</sql:query>
+
+				<c:forEach var="repliedto" items="${qryRepliedTo.rows}">
+				<c:set var="repliedtoartist" value="${repliedto}" />
+				</c:forEach>
+
+				<h3>Your <c:choose><c:when test="${thispm.replyto > 0}">reply</c:when><c:otherwise>message</c:otherwise></c:choose> to ${repliedtoartist.artistname}:</h3>
+
+				<c:if test="${thispm.replyto > 0}">
+				This is a reply to <a href="pop_viewpm.jsp?pmid=${thispm.replyto}&viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}">this message.</a>
+				</c:if>
+
+				<div class="pm">
+				<div class="pmsubject"><%= formatText((String)pageContext.getAttribute("subject")) %></div>
+				<div class="picdate">Sent <fmt:formatDate value="${thispm.sent}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
+				<div class="pmtext">
+				<%= formatText((String)pageContext.getAttribute("message")) %>
+				</div>
+				</div>
+
+			</c:when>
+                        {% else %}
+			<c:otherwise>
+
+				<sql:update var="updPM">
+				UPDATE pms 
+				SET viewed=true
+				WHERE pmid=?
+				<sql:param value="${thispm.pmid}" />
+				</sql:update>
+
+			<h3>Private Message from {{ pm.sender.username }}:</h3>
+
+                        {% if pm.reply_to %}
+			<c:if test="${thispm.replyto > 0}">
+			This is a reply to <a href="pop_viewpm.jsp?pmid=${thispm.replyto}&viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}">this message.</a>
+			</c:if>
+                        {% endif %}
+
+			<div class="pm">
+			<div class="pmsubject">{{ pm.subject|bbcode|safe }}</div>
+			<div class="picdate">Sent {{ pm.date_sent|date }}</div>
+			<div class="pmtext">
+                        {{ pm.message|bbcode|safe }}
+			</div>
+			</div>
+
+                        {% if not blocked %}
+			<c:if test="${qryBlocked.rowCount == 0}">
+				<h3>Reply:</h3>
+
+				<form method="post" action="pop_viewpm.jsp">
+
+				<textarea name="message" class="pm">
+
+
+[quote]
+{{ pm.message }}
+[/quote]
+</textarea><br />
+				<button type="submit">Send</button>
+				<input type="hidden" name="op" value="reply" />
+				<input type="hidden" name="pmid" value="{{ pm.id }}" />
+
+				</form>
+
+			</c:if>
+                        {% endif %}
+
+			</c:otherwise>
+			</c:choose>
+                        {% endif %}
+
+		</c:otherwise>
+		</c:choose>
+
+{% comment %}
+	</c:when>
+	<c:otherwise>
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		The specified message ID is invalid.
+		</div>
+
+	</c:otherwise>
+	</c:choose>
+{% endcomment %}
+
+</c:when>
+{% else %}
+<c:otherwise>
+
+	<c:choose>
+	<c:when test="${recptid > 0}">
+		<c:set var="recptid" value="${recptid}" />
+	</c:when>
+	<c:otherwise>
+		<sql:query var="qryRecpt">
+		SELECT userid,artistid FROM artists
+		WHERE artistname=?
+		<sql:param value="${param.recpt}" />
+		</sql:query>
+		<c:forEach var="recpt" items="${qryRecpt.rows}">
+		<c:set var="recptid" value="${recpt.userid}" />
+		<c:set var="recptartistid" value="${recpt.artistid}" />
+		</c:forEach>
+	</c:otherwise>
+	</c:choose>
+
+	<sql:query var="qryBlocked">
+	SELECT * FROM blocks
+	WHERE userid=?
+	AND (artistid=? OR artistid=0)
+	<sql:param value="${user.userid}" />
+	<sql:param value="${recptartistid}" />   
+	</sql:query>
+
+	<c:if test="${replytoshout > 0}">
+		<sql:query var="qryReplyToShout">
+		SELECT * FROM shouts
+		WHERE shoutid=?
+		AND userid=?
+		<sql:param value="${replytoshout}" />
+		<sql:param value="${recptid}" />
+		</sql:query>
+		<c:forEach var="replyto" items="${qryReplyToShout.rows}">
+			<c:set var="quote" value="
+
+
+[quote]
+${replyto.comment}
+[/quote]" />
+		</c:forEach>
+	</c:if>
+
+	<c:choose>
+	<c:when test="${qryBlocked.rowCount > 0}">
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		<p>You have been blocked from sending private messages to this recipient.</p>
+		</div>
+
+	</c:when>
+	<c:otherwise>
+
+		<h3>New Private Message</h3>
+
+		<form method="post" action="pop_viewpm.jsp" name="pm_new" id="pm_new">
+
+		<table class="formtable">
+		<tr>
+		<td class="label">To</td>
+		<td class="data">
+		<c:choose>
+		<c:when test="${recptid > 0}" >
+			<sql:query var="qryRecpt">
+			SELECT artistname FROM artists
+			WHERE userid=?
+			<sql:param value="${recptid}" />
+			</sql:query>
+			<c:forEach var="recpt" items="${qryRecpt.rows}">
+			${recpt.artistname}
+			<input type="hidden" name="recptid" value="${recptid}" validate="hasvalue" message="You must specify a recipient." />
+			</c:forEach>
+		</c:when>
+		<c:otherwise>
+			<input name="recpt" id="recpt" validate="hasvalue" message="You must specify a recipient." />
+		</c:otherwise>
+		</c:choose>
+		</td>
+		</tr>
+		<tr>
+		<td class="label">Subject</td>
+		<td class="data"><input name="subject" id="subject" maxlength="255" validate="hasvalue" message="You must enter a subject." /></td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data">
+		<textarea name="message" class="pm">${quote}</textarea><br />
+		<button type="button" onClick="validateForm('pm_new','document.pm_new.submit()')">Send</button>
+		</td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="new" />
+		<input type="hidden" name="pmid" value="${pmid}" />
+
+		</form>
+
+	</c:otherwise>
+	</c:choose>
+
+</c:otherwise>
+</c:choose>
+{% endif %}
+
+</c:if>
+
+{% endblock %}

@@ -47,8 +47,7 @@ class DashboardView(ArtManagerPaneView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
 
-#        context['pms'] = self.request.user.pms_received.filter(date_viewed__isnull=True)
-        context['pms'] = self.request.user.pms_received.all()
+        context['pms'] = self.request.user.pms_received.filter(date_viewed__isnull=True)
         context['box'] = 'in'
 
         return context
@@ -115,12 +114,20 @@ class CustomizeView(TemplateView):
         return super(CustomizeView, self).get(request, *args, **kwargs)
 
 
-class PrivateMessagesView(TemplateView):
+class PrivateMessagesView(ArtManagerPaneView):
     template_name = 'artmanager/private_msgs.html'
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'private-msgs'
         return super(PrivateMessagesView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(PrivateMessagesView, self).get_context_data(**kwargs)
+
+        context['pms'] = self.request.user.pms_received.all()
+        context['box'] = 'in'
+
+        return context
 
 
 class TradingTreeView(TemplateView):

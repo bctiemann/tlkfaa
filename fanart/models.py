@@ -919,6 +919,9 @@ class PrivateMessage(models.Model):
     deleted_by_sender = models.BooleanField(default=False)
     deleted_by_recipient = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ['-date_sent']
+
 
 class SpecialFeature(models.Model):
     keyword = models.CharField(max_length=32, blank=True)

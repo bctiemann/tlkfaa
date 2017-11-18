@@ -159,9 +159,7 @@ WHERE artistid=?
 <h3 class="sectionheader">Unread Private Messages</h3>
 
 <div id="pms">
-{% with showstatus=True %}
 {% include "includes/private_messages.html" %}
-{% endwith %}
 <jsp:include page="ajax_pms.jsp?box=in&viewmode=new&showpages=0&showstatus=0" />
 </div>
 

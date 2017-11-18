@@ -316,7 +316,7 @@ AJAX helper for listing the PMs in a box.
 				{{ pm.recipient.username }}
                         {% endif %}
 			</td>
-			<td><a href="pop_viewpm.jsp?pmid=${pm.pmid}&viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}" rel="shadowbox[pms_${param._}];width=500;height=600">{{ pm.subject }}</a></td>
+			<td><a href="{% url "pm" pm_id=pm.id %}?viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}" rel="shadowbox[pms_${param._}];width=500;height=600">{{ pm.subject }}</a></td>
 			<td class="date">{{ pm.date_sent|date }}</td>
 			</tr>
 
