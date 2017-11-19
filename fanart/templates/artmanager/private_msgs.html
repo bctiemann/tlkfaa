@@ -48,7 +48,7 @@ ArtManager component for managing your private messages.
 </c:when>
 {% else %}
 <c:otherwise>
-	<a href="pop_viewpm.jsp" rel="shadowbox;width=500;height=600">New private message</a>
+	<a href="{% url "pm-user" %}" rel="shadowbox;width=500;height=600">New private message</a>
 </c:otherwise>
 </c:choose>
 {% endif %}

@@ -92,6 +92,10 @@ urlpatterns = [
 
     url(r'^pms/(?P<box>(in|out|trash))/$', fanart_views.PMsView.as_view(), name='pms'),
     url(r'^pm/(?:(?P<pm_id>[0-9]+)/)?$', fanart_views.PMView.as_view(), name='pm'),
+    url(r'^pm/shout/(?P<shout_id>[0-9]+)/?$', fanart_views.PMShoutView.as_view(), name='pm-shout'),
+    url(r'^pm/user/(?:(?P<recipient_id>[0-9]+)/)?$', fanart_views.PMUserView.as_view(), name='pm-user'),
+    url(r'^pm/create/$', fanart_views.PMCreateView.as_view(), name='pm-create'),
+    url(r'^pm/success/(?P<pm_id>[0-9]+)/$', fanart_views.PMSuccessView.as_view(), name='pm-success'),
 
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='admin-announcements'),

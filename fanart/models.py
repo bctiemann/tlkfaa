@@ -415,6 +415,10 @@ class PictureComment(BaseComment):
 class Shout(BaseComment):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received')
 
+    @property
+    def quoted_comment(self):
+        return '\n\n\n[quote]\n{0}\n[/quote]'.format(self.comment)
+
     def get_absolute_url(self):
         return reverse('shouts', kwargs={'artist_id': self.artist.id})
 
@@ -910,7 +914,7 @@ class ContestVote(models.Model):
 class PrivateMessage(models.Model):
     sender = models.ForeignKey('User', null=True, blank=True, related_name='pms_sent')
     recipient = models.ForeignKey('User', null=True, blank=True, related_name='pms_received')
-    date_sent = models.DateTimeField(null=True, blank=True)
+    date_sent = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     reply_to = models.ForeignKey('PrivateMessage', null=True, blank=True)
     subject = models.TextField(blank=True)
     message = models.TextField(blank=True)
@@ -918,6 +922,10 @@ class PrivateMessage(models.Model):
     date_replied = models.DateTimeField(null=True, blank=True)
     deleted_by_sender = models.BooleanField(default=False)
     deleted_by_recipient = models.BooleanField(default=False)
+
+    @property
+    def quoted_message(self):
+        return '\n\n\n[quote]\n{0}\n[/quote]'.format(self.message)
 
     class Meta:
         ordering = ['-date_sent']

@@ -1,0 +1,9 @@
+{% load bbcode_tags %}
+
+<div class="pm">
+    <div class="pmsubject">{{ pm.subject|bbcode|safe }}</div>
+    <div class="picdate">Sent {{ pm.date_sent|date }}</div>
+    <div class="pmtext">
+        {{ pm.message|bbcode|safe }}
+    </div>
+</div>

@@ -149,3 +149,10 @@ class ContestVoteForm(forms.ModelForm):
     class Meta:
         model = models.ContestVote
         fields = ['entry']
+
+
+class PMForm(forms.ModelForm):
+
+    class Meta:
+        model = models.PrivateMessage
+        fields = ['reply_to', 'subject', 'message', 'recipient']

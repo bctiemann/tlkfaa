@@ -274,7 +274,8 @@ function doAotmVote(artistid) {
 function replyPM(recptid,shoutid) {
   Shadowbox.open({
     player: 'iframe',
-    content: '/pop_viewpm.jsp?recptid='+recptid+'&replytoshout='+shoutid,
+//    content: '/pop_viewpm.jsp?recptid='+recptid+'&replytoshout='+shoutid,
+    content: '/pm/shout/' + shoutid + '/',
     width: 500,
     height: 600
   })
@@ -2436,7 +2437,8 @@ $(document).ready(function() {
   $("input#artistlogin,input#recpt,input#blockuser,input#searchartist").autocomplete({
     source: function(request, response) {
       $.ajax({
-        url: "/ajax_ac_artists.jsp",
+//        url: "/ajax_ac_artists.jsp",
+        url: '/artists-ac/' + request.term,
         dataType: "json",
         data: {
           term: request.term
@@ -2460,6 +2462,9 @@ $(document).ready(function() {
       }
       if ($(this).attr('id') == 'blockuser') {
         $('#blockuserid').val(ui.item.userid);
+      }
+      if ($(this).attr('id') == 'recpt') {
+        $('#recipient').val(ui.item.userid);
       }
     },
   });

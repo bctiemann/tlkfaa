@@ -1,4 +1,5 @@
 {% load static %}
+
 <%--
 ajax_pms.jsp
 AJAX helper for listing the PMs in a box.
@@ -91,23 +92,29 @@ AJAX helper for listing the PMs in a box.
 </c:when>
 <c:otherwise>
 
+        {% if showstatus %}
 	<c:if test="${showstatus == 1}">
 		<script type="text/javascript">
 		var selitems = new Array();
 		</script>
 
 		<div class="globalactionslink">
+                        {% if box == "trash" %}
 			<c:choose>
 			<c:when test="${box == 'trash'}">
 			<a href="javascript:nop()" onClick="movePMs('restore','${box}')">Restore Selected</a>
 			</c:when>
+                        {% else %}
 			<c:otherwise>
 			<a href="javascript:nop()" onClick="movePMs('delete','${box}')">Delete Selected</a>
 			</c:otherwise>
 			</c:choose>   
+                        {% endif %}
 		</div>
 	</c:if>
+        {% endif %}
 
+{% comment %}
 	<c:choose>
 	<c:when test="${box == 'in'}">
 
@@ -254,6 +261,7 @@ AJAX helper for listing the PMs in a box.
 
 	</c:when>
 	</c:choose>
+{% endcomment %}
 
         {% if pms.exists %}
 	<c:choose>

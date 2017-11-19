@@ -1,0 +1,18 @@
+{% extends "fanart/base_popup.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+
+
+Your message was sent.
+
+<h3>Your {% if pm.reply_to %}reply{% else %}message{% endif %} to {{ pm.recipient.username }}:</h3>
+
+{% if pm.reply_to %}
+    This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}?viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}">this message.</a>
+{% endif %}
+
+{% include "includes/pm_content.html" %}
+
+
+{% endblock %}
