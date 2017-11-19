@@ -263,7 +263,10 @@ AJAX helper for listing the PMs in a box.
 	</c:choose>
 {% endcomment %}
 
-        {% if pms.exists %}
+        {% if pms|length > 0 %}
+
+        {{ pages_link.pages_nav|safe }}
+
 	<c:choose>
 	<c:when test="${qryPMs.rowCount > 0}">
 

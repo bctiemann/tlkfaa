@@ -56,11 +56,15 @@ ArtManager component for managing your private messages.
 
 <div id="pms">
 {% with showstatus=True showpages=True %}
-{% include "includes/private_messages.html" %}
+{#{% include "includes/private_messages.html" %}#}
 {% endwith %}
 <jsp:include page="ajax_pms.jsp?op=privatemsgs&box=${box}&showpages=1&showstatus=1" />
 </div>
 <div id="pmstatus"></div>
+
+<script type="text/javascript">
+refreshPMBox('in',1,'all',1,1);
+</script>
 
 </c:if>
 

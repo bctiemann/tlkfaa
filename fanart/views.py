@@ -1392,10 +1392,27 @@ class PMsView(TemplateView):
         elif box == 'trash':
              pms = self.request.user.pms_received.filter(deleted_by_recipient=True)
 
+        context['pms_paginator'] = Paginator(pms, settings.PMS_PER_PAGE)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            pms_page = context['pms_paginator'].page(page)
+        except EmptyPage:
+            pms_page = context['pms_paginator'].page(1)
+
         context['box'] = box
-        context['pms'] = pms
+        context['pms'] = pms_page
         if self.request.GET.get('showstatus'):
             context['showstatus'] = True
+
+        logger.info(len(pms))
+        logger.info(pms_page)
+        logger.info(pms_page.number)
+        context['pages_link'] = utils.PagesLink(len(pms), settings.PMS_PER_PAGE, pms_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET, selection_type='ajax')
+        logger.info(context['pages_link'])
+        logger.info(context['pages_link'].pages_nav)
 
         return context
 
