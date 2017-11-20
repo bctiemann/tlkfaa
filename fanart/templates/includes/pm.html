@@ -51,6 +51,12 @@
 		</c:if>
 {% endcomment %}
 
+		<script type="text/javascript">
+                var pageParams = window.parent.pageParams;
+console.log(pageParams);
+		refreshPMBox(pageParams.pmbox, pageParams.page, pageParams.viewmode, pageParams.showpages, pageParams.showstatus, window.parent);
+		</script>
+
     {% if pm.sender == user and pm.recipient != user %}
 
         <h3>Your {% if pm.reply_to %}reply{% else %}message{% endif %} to {{ pm.recipient.username }}:</h3>

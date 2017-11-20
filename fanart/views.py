@@ -1431,6 +1431,10 @@ class PMView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(PMView, self).get_context_data(*args, **kwargs)
 
+        if self.object.recipient == self.request.user and self.object.date_viewed == None:
+            self.object.date_viewed = timezone.now()
+            self.object.save()
+
         context['pm'] = self.object
         context['blocked'] = models.Block.objects.filter(user=context['pm'].sender, blocked_user=self.request.user).exists()
 
