@@ -156,3 +156,10 @@ class PMForm(forms.ModelForm):
     class Meta:
         model = models.PrivateMessage
         fields = ['reply_to', 'subject', 'message', 'recipient']
+
+
+class SocialMediaIdentityForm(forms.ModelForm):
+
+    class Meta:
+        model = models.SocialMediaIdentity
+        fields = ['social_media', 'identity']

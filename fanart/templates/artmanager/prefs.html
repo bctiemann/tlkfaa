@@ -1,1 +1,377 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_prefs.jsp
+ArtManager component for managing your profile info/prefs. Operates in two modes, for active or inactive artist accounts.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.security.*,java.math.*,java.util.*,java.io.*" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<c:set var="basepath" value="${basepath}" scope="page" />
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+
+<c:if test="${loggedin == 1}">
+
+        {% if user.is_artist %}
+	<c:choose>
+	<c:when test="${artist.active == true}">
+		<h2>Your Artist Information and Preferences</h2>
+	</c:when>
+        {% else %}
+	<c:otherwise>
+		<h2>Your Profile Information</h2>
+	</c:otherwise>
+	</c:choose>
+        {% endif %}
+
+        {% if user.is_artist %}
+	<c:choose>
+	<c:when test="${artist.active == true}">
+
+		<form name="userform" id="userform" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label"></td>
+
+		<td class="data"><button type="button" onClick="confirmDeactivate()">Deactivate Artist Account</button></td>
+		<td class="legend"></td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="prefs" />
+		<input type="hidden" name="fnc" value="deactivate" />
+		</form>
+
+		<h3 class="sectionheader">Identity</h3>
+
+		<script type="text/javascript">
+		var artistname_clean = "{{ user.username_escaped|safe }}";
+		var sortname_clean = "{{ user.sort_name_escaped|safe }}";
+		</script>
+
+		<form name="artistform" id="artistform" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label">Artist Name</td>
+		<td class="data">{{ user.username }} <a href="javascript:nop()" onClick="changeArtistName(artistname_clean,sortname_clean)">change</a></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td colspan="3" class="nopadding">
+		<div id="newname_form">
+
+		<div class="pastnames">Past names:<br />
+		<table>
+                {% for past_name in user.past_names %}
+		<tr>
+		<td class="smalldata">{{ past_name.name }}</td>
+		<td class="smalldata">{{ past_name.date_changed|date:"SHORT_DATE_FORMAT" }}</td>
+		</tr>
+                {% endfor %}
+		</table>
+		</div>
+
+		<table class="formtable" style="width: 400px">
+		<tr>
+		<td class="label">New Name</td>
+		<td class="data"><input type="text" class="std" name="newname" id="newname" maxlength="32" onKeyUp="refreshNameSort(this.value,null,document.getElementById('sortname'));checkAvail(this.value)" /><br /><div id="newnameavailable"></div></td>
+		</tr>
+		<tr>
+		<td class="label">Sorting Name</td>
+		<td class="data">
+		<select name="sortname" id="sortname">
+		</select>
+		</td>
+		</tr>
+		</table>
+
+		</div>
+		</td>
+		</tr>
+		<tr>
+		<td class="label">Password</td>
+		<td class="data"><input type="password" class="std" name="passwd" id="passwd" value="********" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Repeat Password</td>
+		<td class="data"><input type="password" class="std" name="passwd_repeat" id="passwd_repeat" value="********" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Your Gallery is</td>
+		<td class="data">
+		<select name="is_public" id="is_public">
+		<option {% if user.is_public %}selected{% endif %} value="1">Visible to all visitors to the Archive</option>
+		<option {% if not user.is_public %}selected{% endif %} value="0">Visible only to registered users of the Archive</option>
+		</select>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Profile Picture</td>
+		<td class="data">
+		<div id="profilepic">
+        {% if user.profile_pic_id %}
+        <a id="profilepic_link" href="{{ user.profile_pic_url }}" rel="shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
+        {% else %}
+                (none)
+        {% endif %}
+        <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
+                </div>
+		<div><input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('artistform','picture_upload','profilepic',null,false,5000)">Upload</button></div>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		</table>
+
+		<h3 class="sectionheader">Contact</h3>
+
+		<table class="formtable">
+		<tr>
+		<td class="label">Email</td>
+		<td class="data"><input type="text" class="std" name="email" id="email" value="{{ user.email }}" validate="email" /></td>
+		<td class="legend">Must be a real, working address</td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data inputlabels"><input type="checkbox" name="showemail" id="showemail" value="1" {% if user.show_email %}checked{% endif %} /> Display your email address in public</td>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">IM Clients</td>
+		<td class="data" id="imclients">
+                {% include "includes/social_media.html" %}
+		</td>
+		</tr>
+		</table>
+
+		<h3 class="sectionheader">About You</h3>
+
+		<table class="formtable">
+		<tr>
+		<td class="label">Description</td>
+		<td class="data"><textarea name="artistdesc" id="artistdesc">{{ user.description }}</textarea></td>
+		<td class="legend">You can use <a target="_blank" href="http://www.bbcode.org/reference.php">BBcode</a> for formatting.</td>
+		</tr>
+		<tr>
+		<td class="label">Birthdate</td>
+		<td class="data">
+		<input class="std" name="birthdate_pick" id="birthdate_pick" value="{{ user.birth_date|date:"m/d/Y" }}" />
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data inputlabels"><input type="checkbox" name="showbirthdate" id="showbirthdate" value="1" <c:if test="${artist.showbirthdate == true}">checked</c:if> /> Display your birthdate in public</td>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data inputlabels"><input type="checkbox" name="showbirthdate_age" id="showbirthdate_age" value="1" <c:if test="${artist.showbirthdate_age == true}">checked</c:if> /> Display your age</td>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Gender</td>
+		<td class="data">
+		<select name="gender" id="gender">
+		<option <c:if test="${artist.gender == '0'}">selected</c:if> value="0">(No Response)</option>
+		<option <c:if test="${artist.gender == '1'}">selected</c:if> value="1">Male</option>
+		<option <c:if test="${artist.gender == '2'}">selected</c:if> value="2">Female</option>
+		</select>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Where You Live</td>
+		<c:set var="location" value="${artist.location}" />
+		<td class="data"><input type="text" class="std" name="location" id="location" value="<%= sanitizeHTML((String)pageContext.getAttribute("location"),0) %>" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Occupation</td>
+		<c:set var="occupation" value="${artist.occupation}" />
+		<td class="data"><input type="text" class="std" name="occupation" id="occupation" value="<%= sanitizeHTML((String)pageContext.getAttribute("occupation"),0) %>" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Website URL</td>
+		<c:set var="website" value="${artist.website}" />
+		<td class="data"><input type="text" class="std" name="website" id="website" value="<%= sanitizeHTML((String)pageContext.getAttribute("website"),0) %>" /></td>
+		<td class="legend"></td>
+		</tr>
+		</table>
+
+		<h3 class="sectionheader">Preferences</h3>
+
+		<table class="formtable">
+		<tr>
+		<td class="label">Allow</td>
+		<td class="data">
+		<input type="checkbox" name="allowshouts" id="allowshouts" value="1" <c:if test="${artist.allowshouts == true}">checked</c:if> /> <b>Roars</b><br />
+		<input type="checkbox" name="allowcomments" id="allowcomments" value="1" <c:if test="${artist.allowcomments == true}">checked</c:if> /> <b>Picture Comments</b> (by default; can be overridden per-picture)<br />
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Receive Email Notifications For</td>
+		<td class="data">
+		<input type="checkbox" name="emailshouts" id="emailshouts" value="1" <c:if test="${artist.emailshouts == true}">checked</c:if> /> <b>Roars</b><br />
+		<input type="checkbox" name="emailcomments" id="emailcomments" value="1" <c:if test="${artist.emailcomments == true}">checked</c:if> /> <b>Picture Comments</b><br />
+		<input type="checkbox" name="emailpms" id="emailpms" value="1" <c:if test="${artist.emailpms == true}">checked</c:if> /> <b>Private Messages</b><br />
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data inputlabels"><input type="checkbox" name="showcc" id="showcc" value="1" <c:if test="${artist.showcc == true}">checked</c:if> /> Include your Coloring Cave art in your Gallery</td>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label"></td>
+		<td class="data inputlabels"><input type="checkbox" name="commissions" id="commissions" value="1" <c:if test="${artist.commissions == true}">checked</c:if> /> Accepting requests or commissions</td>
+		</td>
+		<td class="legend"></td>
+		</tr>
+
+		<tr>
+		<td colspan="3" class="buttons">
+		<button type="button" onClick="validateForm('artistform','updatePrefs(\'commit\')')">Save Changes</button>
+		</td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="prefs" />
+		<input type="hidden" name="uploadop" value="profilepic" />
+		<input type="hidden" name="fnc" value="commit" />
+		</form>
+
+	</c:when>
+        {% else %}
+	<c:otherwise>
+
+		<form name="userform" id="userform" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label"></td>
+		<td class="data"><button type="button" onClick="confirmActivate()">Activate Artist Account</button></td>
+		<td class="legend"></td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="prefs" />
+		<input type="hidden" name="fnc" value="activate" />
+		</form>
+
+		<script type="text/javascript">
+		var artistname_clean = "${fn:replace(artist.artistname,'\"','\\\"')}";
+		var sortname_clean = "${fn:replace(artist.sortname,'\"','\\\"')}";
+		</script>
+
+		<form name="artistform" id="artistform" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label">Name</td>
+		<td class="data">${artist.artistname} <a href="javascript:nop()" onClick="changeArtistName(artistname_clean,sortname_clean)">change</a></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td colspan="3" class="nopadding">
+		<div id="newname_form">
+
+		<div class="pastnames">Past names:<br />
+		<sql:query var="qryArtistNames" scope="session">
+		SELECT name,date_format(changedon,"%c/%e/%Y") as changed FROM artistnames
+		WHERE artistid=?
+		ORDER BY changedon
+		<sql:param value="${artist.artistid}" />
+		</sql:query>
+		<table>
+		<c:forEach var="artistname" items="${qryArtistNames.rows}">
+		<tr>
+		<td class="smalldata">${artistname.name}</td>
+		<td class="smalldata">${artistname.changed}</td>
+		</tr>
+		</c:forEach>
+		</table>
+		</div>
+
+		<table class="formtable" style="width: 400px">
+		<tr>
+		<td class="label">New Name</td>
+		<td class="data"><input type="text" class="std" name="newname" maxlength="32" onKeyUp="refreshNameSort(this.value,null,document.getElementById('sortname'));checkAvail(this.value)" /><br /><div id="newnameavailable"></div></td>
+		</tr>
+		<tr>
+		<td class="label">Sorting Name</td>
+		<td class="data">
+		<select name="sortname" id="sortname">
+		</select>
+		</td>
+		</tr>
+		</table>
+
+		</div>
+		</td>
+		</tr>
+		<tr>
+		<td class="label">Password</td>
+		<td class="data"><input type="password" class="std" name="passwd" id="passwd" value="********" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Repeat Password</td>
+		<td class="data"><input type="password" class="std" name="passwd_repeat" id="passwd_repeat" value="********" /></td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Profile Picture</td>
+		<td class="data">
+		<div id="profilepic"><jsp:include page="/api/upload_success.jsp?op=profilepic" /></div>
+		<div><input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('artistform','picture_upload','profilepic',null,false,5000)">Upload</button></div>
+		</td>
+		<td class="legend"></td>
+		</tr>
+		<tr>
+		<td class="label">Email</td>
+		<td class="data"><input type="text" class="std" name="email" id="email" value="${user.email}" validate="email" /></td>
+		<td class="legend">Must be a real, working address</td>
+		</tr>
+		<tr>
+		<td class="label">Send Email Notifications For</td>
+		<td class="data">
+		<input type="checkbox" name="emailpms" id="emailpms" value="1" <c:if test="${artist.emailpms == true}">checked</c:if> /> Private Messages<br />
+		</td>
+		<td class="legend"></td>
+		</tr>
+
+		<tr>
+		<td colspan="2" class="buttons">
+		<button type="button" onClick="validateForm('artistform','document.artistform.submit()')">Save Changes</button>
+		</td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="prefs" />
+		<input type="hidden" name="uploadop" value="profilepic" />
+		<input type="hidden" name="fnc" value="commit" />
+		</form>
+
+	</c:otherwise>
+	</c:choose>
+        {% endif %}
+
+</c:if>
+
+{% endblock %}

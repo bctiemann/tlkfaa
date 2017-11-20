@@ -241,6 +241,18 @@ ORDER BY fanart_user.sort_name
             years -= 1
         return years
 
+    @property
+    def past_names(self):
+        return self.artistname_set.order_by('-date_changed')
+
+    @property
+    def username_escaped(self):
+        return self.username.replace('"', '\\\"')
+
+    @property
+    def sort_name_escaped(self):
+        return self.sort_name.replace('"', '\\\"')
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 

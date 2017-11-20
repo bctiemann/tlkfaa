@@ -1563,3 +1563,51 @@ class MarkShoutsReadView(APIView):
                 pass
         response['success'] = True
         return Response(response)
+
+
+class CheckNameView(APIView):
+
+    def get(self, request):
+        artist_name = request.GET.get('name')
+        dir_name = request.GET.get('dir_name')
+        response = {
+            'name_available': not models.User.objects.filter(Q(username=artist_name) | Q(dir_name=dir_name)).exists(),
+        }
+        return Response(response)
+
+
+class SocialMediaIdentitiesView(TemplateView):
+    template_name = 'includes/social_media.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SocialMediaIdentitiesView, self).get_context_data(**kwargs)
+
+        context['social_medias'] = models.SocialMedia.objects.all()
+
+        return context
+
+
+class AddSocialMediaIdentityView(CreateView):
+    model = models.SocialMediaIdentity
+    form_class = forms.SocialMediaIdentityForm
+
+    def form_valid(self, form):
+        identity = form.save(commit=False)
+        identity.user = self.request.user
+        identity.save()
+
+        response = super(AddSocialMediaIdentityView, self).form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse('social-media-identities', kwargs={})
+
+
+class RemoveSocialMediaIdentityView(DeleteView):
+    model = models.SocialMediaIdentity
+
+    def get_object(self):
+        return get_object_or_404(models.SocialMediaIdentity, pk=self.kwargs['identity_id'], user=self.request.user)
+
+    def get_success_url(self):
+        return reverse('social-media-identities', kwargs={})

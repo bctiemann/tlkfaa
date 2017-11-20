@@ -67,6 +67,7 @@ urlpatterns = [
     url(r'^characters-ac/(?P<term>.+)/$', fanart_views.CharactersAutocompleteView.as_view(), name='characters-autocomplete'),
     url(r'^species-ac/(?P<term>.+)/$', fanart_views.SpeciesAutocompleteView.as_view(), name='species-autocomplete'),
     url(r'^artists-ac/(?P<term>.+)/$', fanart_views.ArtistsAutocompleteView.as_view(), name='artists-autocomplete'),
+    url(r'^check-name/$', fanart_views.CheckNameView.as_view(), name='check-name'),
 
     url(r'^offer/(?P<offer_id>[0-9]+)/$', fanart_views.OfferView.as_view(), name='offer'),
     url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', fanart_views.EditOfferView.as_view(), name='edit-offer'),
@@ -103,6 +104,10 @@ urlpatterns = [
 
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='admin-announcements'),
+
+    url(r'^social_media/identities/$', fanart_views.SocialMediaIdentitiesView.as_view(), name='social-media-identities'),
+    url(r'^social_media/add/$', fanart_views.AddSocialMediaIdentityView.as_view(), name='add-social-media-identity'),
+    url(r'^social_media/(?P<identity_id>[0-9]+)/remove/$', fanart_views.RemoveSocialMediaIdentityView.as_view(), name='remove-social-media-identity'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]

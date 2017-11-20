@@ -311,20 +311,37 @@ function checkAvail(name) {
   newdirname = newdirname.replace(/[\\']/g,"");
   newdirname = newdirname.replace(/[^a-zA-Z0-9]/g,"_");
   newdirname = newdirname.toLowerCase();
-  url="ajax_checkname.jsp?dirname="+newdirname+"&name="+name;
-  $('#newnameavailable').load(url);
+//  url="ajax_checkname.jsp?dirname="+newdirname+"&name="+name;
+  var url = '/check-name/?dir_name=' + newdirname + '&name=' + name;
+  $.getJSON(url, function(data) {
+    if (data.name_available) {
+      $('#newnameavailable').html('Available');
+    } else {
+      $('#newnameavailable').html('Taken');
+    }
+  });
 }
 
 function addIM(imclient,imid) {
   var myimid = imid.value;
   myimid = myimid.replace(/[^0-9a-zA-Z_@\.-]/g,"");
-  var url="ajax_imclients.jsp?op=add&imclientid="+imclient.options[imclient.selectedIndex].value+"&imid="+myimid;
-  $('#imclients').load(url);
+//  var url="ajax_imclients.jsp?op=add&imclientid="+imclient.options[imclient.selectedIndex].value+"&imid="+myimid;
+  var url = '/social_media/add/';
+  var params = {
+    'social_media': imclient.options[imclient.selectedIndex].value,
+    'identity': myimid,
+  };
+  $.post(url, params, function(data) {
+    $('#imclients').html(data);
+  });
 }
 
 function removeIM(imidid) {
-  var url = "ajax_imclients.jsp?op=remove&imidid="+imidid;
-  $('#imclients').load(url);
+//  var url = "ajax_imclients.jsp?op=remove&imidid="+imidid;
+  var url = '/social_media/' + imidid + '/remove/';
+  $.post(url, {}, function(data) {
+    $('#imclients').html(data);
+  });
 }
 
 function uploadPicture(formid,fileinput,successdiv,hideformdiv,refresh,pausems) {

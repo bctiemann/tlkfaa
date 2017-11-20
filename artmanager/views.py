@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
 
-from fanart.models import User
+from fanart import models
 from fanart.views import UserPaneMixin
 
 
@@ -56,7 +56,7 @@ class DashboardView(ArtManagerPaneView):
 class PrefsView(DetailView):
 #class ArtManagerPrefsView(DetailView, FormMixin):
     template_name = 'artmanager/prefs.html'
-    model = User
+    model = models.User
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'prefs'
@@ -64,6 +64,13 @@ class PrefsView(DetailView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super(PrefsView, self).get_context_data(**kwargs)
+
+        context['social_medias'] = models.SocialMedia.objects.all()
+
+        return context
 
 
 class UploadView(TemplateView):
