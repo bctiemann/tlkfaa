@@ -91,6 +91,7 @@ urlpatterns = [
     url(r'^pick/picture/(?:(?P<target>[a-z]+)/)?$', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
 
     url(r'^pms/(?P<box>(in|out|trash))/$', fanart_views.PMsView.as_view(), name='pms'),
+    url(r'^pms/(?P<action>(delete|restore))/$', fanart_views.PMsMoveView.as_view(), name='pms-move'),
     url(r'^pm/(?:(?P<pm_id>[0-9]+)/)?$', fanart_views.PMView.as_view(), name='pm'),
     url(r'^pm/shout/(?P<shout_id>[0-9]+)/?$', fanart_views.PMShoutView.as_view(), name='pm-shout'),
     url(r'^pm/user/(?:(?P<recipient_id>[0-9]+)/)?$', fanart_views.PMUserView.as_view(), name='pm-user'),

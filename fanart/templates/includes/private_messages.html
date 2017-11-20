@@ -302,11 +302,6 @@ AJAX helper for listing the PMs in a box.
                                 {% if pm.recipient == user %}
 				<c:choose>
 				<c:when test="${pm.recptid == user.userid}">
-					<sql:query var="qryFrom">
-					SELECT * FROM users
-					WHERE userid=?
-					<sql:param value="${pm.senderid}" />
-					</sql:query>
 					<c:forEach var="sender" items="${qryFrom.rows}">
 						From {{ pm.sender.username }}
 					</c:forEach>
@@ -356,3 +351,10 @@ AJAX helper for listing the PMs in a box.
 
 </c:if>
 
+<script type="text/javascript">
+    pageParams.pmbox = '{{ box }}';
+    pageParams.page = {{ pms.number }};
+    pageParams.viewmode = 'all';
+    pageParams.showpages = {{ showpages|yesno:"true,false" }};
+    pageParams.showstatus = {{ showstatus|yesno:"true,false" }};
+</script>

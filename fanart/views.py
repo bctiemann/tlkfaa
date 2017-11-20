@@ -1386,11 +1386,13 @@ class PMsView(TemplateView):
         box = kwargs.get('box', 'in')
         pms = None
         if box == 'in':
-             pms = self.request.user.pms_received.all()
+             pms = self.request.user.pms_received.filter(deleted_by_recipient=False)
         elif box == 'out':
-             pms = self.request.user.pms_sent.all()
+             pms = self.request.user.pms_sent.filter(deleted_by_sender=False)
         elif box == 'trash':
-             pms = self.request.user.pms_received.filter(deleted_by_recipient=True)
+             pms = self.request.user.pms_sent.filter(deleted_by_sender=True).union(self.request.user.pms_received.filter(deleted_by_recipient=True))
+
+        pms = pms.order_by('-date_sent')
 
         context['pms_paginator'] = Paginator(pms, settings.PMS_PER_PAGE)
         try:
@@ -1406,6 +1408,8 @@ class PMsView(TemplateView):
         context['pms'] = pms_page
         if self.request.GET.get('showstatus'):
             context['showstatus'] = True
+        if self.request.GET.get('showpages'):
+            context['showpages'] = True
 
         logger.info(len(pms))
         logger.info(pms_page)
@@ -1493,3 +1497,34 @@ class PMUserView(TemplateView):
             context['blocked'] = models.Block.objects.filter(user=context['recipient'], blocked_user=self.request.user).exists()
 
         return context
+
+
+class PMsMoveView(APIView):
+
+    def post(self, request, action):
+        response = {'success': False, 'action': action, 'pm_ids': request.POST.get('pm_ids')}
+        logger.info(action)
+        for pm_id in (request.POST.get('pm_ids')).split(','):
+            if not pm_id:
+                continue
+            try:
+                pm = models.PrivateMessage.objects.get((Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=pm_id)
+                logger.info(pm)
+                if action == 'delete':
+                    if pm.sender == request.user:
+                        logger.info('deleting sender')
+                        pm.deleted_by_sender = True
+                    elif pm.recipient == request.user:
+                        logger.info('deleting recipient')
+                        pm.deleted_by_recipient = True
+                elif action == 'restore':
+                    if pm.sender == request.user:
+                        pm.deleted_by_sender = False
+                    elif pm.recipient == request.user:
+                        pm.deleted_by_recipient = False
+                pm.save()
+            except models.PrivateMessage.DoesNotExist:
+                logger.info('{0} not found'.format(pm_id))
+                continue
+        return Response(response)
+

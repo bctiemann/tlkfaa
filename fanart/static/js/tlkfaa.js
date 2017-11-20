@@ -1070,9 +1070,17 @@ function movePMs(fnc,box) {
       modal: true,
       buttons: {
         "OK": function() {
-          var url = "ajax_pms.jsp?pmlist="+s.selectlist+"&fnc="+fnc;
-          $('#pmstatus').load(url,function() {
-            window.location.href = "/ArtManager.jsp?op=privatemsgs&box="+box;
+//          var url = "ajax_pms.jsp?pmlist="+s.selectlist+"&fnc="+fnc;
+          var url = '/pms/' + fnc + '/';
+          var params = {
+            'pm_ids': s.selectlist,
+          };
+          $.post(url, params, function(data) {
+console.log(data);
+          refreshPMBox(pageParams.pmbox, pageParams.page, pageParams.viewmode, pageParams.showpages, pageParams.showstatus);
+          $('#dialog_confirm').dialog('close');
+//          $('#pmstatus').load(url,function() {
+//            window.location.href = "/ArtManager.jsp?op=privatemsgs&box="+box;
           });
         },
         Cancel: function() {
