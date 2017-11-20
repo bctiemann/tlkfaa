@@ -189,6 +189,14 @@ ORDER BY fanart_user.sort_name
         return [b.blocked_user for b in self.blocked_by.all()]
 
     @property
+    def unread_comments(self):
+        return PictureComment.objects.filter(picture__artist=self, is_received=False).order_by('-date_posted')
+
+    @property
+    def unread_shouts(self):
+        return Shout.objects.filter(artist=self, is_received=False).order_by('-date_posted')
+
+    @property
     def first_upload(self):
         try:
             return self.picture_set.all().order_by('date_uploaded').first().date_uploaded

@@ -73,7 +73,9 @@
 
 <script type="text/javascript">
     pageParams.pmbox = '{{ box }}';
+    {% if pms.number %}
     pageParams.page = {{ pms.number }};
+    {% endif %}
     pageParams.viewmode = 'all';
     pageParams.showpages = {{ showpages|yesno:"true,false" }};
     pageParams.showstatus = {{ showstatus|yesno:"true,false" }};
