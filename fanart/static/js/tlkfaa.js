@@ -1046,7 +1046,14 @@ function markRead(type,showall,myselitems) {
       modal: true,
       buttons: {
         "Mark Read": function() {
-          window.location.href = "/ArtManager.jsp?op=" + type + "s&fnc=markread&type=received&showall=" + showall + "&itemlist="+s.selectlist;
+          var url = '/' + type + 's/mark_read/';
+          var params = {
+              'comment_ids': s.selectlist,
+          };
+          $.post(url, params, function(data) {
+            window.location.reload();
+          });
+//          window.location.href = "/ArtManager.jsp?op=" + type + "s&fnc=markread&type=received&showall=" + showall + "&itemlist="+s.selectlist;
         },
         Cancel: function() {
           $(this).dialog('close');

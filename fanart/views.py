@@ -1411,12 +1411,7 @@ class PMsView(TemplateView):
         if self.request.GET.get('showpages'):
             context['showpages'] = True
 
-        logger.info(len(pms))
-        logger.info(pms_page)
-        logger.info(pms_page.number)
         context['pages_link'] = utils.PagesLink(len(pms), settings.PMS_PER_PAGE, pms_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET, selection_type='ajax')
-        logger.info(context['pages_link'])
-        logger.info(context['pages_link'].pages_nav)
 
         return context
 
@@ -1530,5 +1525,41 @@ class PMsMoveView(APIView):
             except models.PrivateMessage.DoesNotExist:
                 logger.info('{0} not found'.format(pm_id))
                 continue
+        response['success'] = True
         return Response(response)
 
+
+class MarkCommentsReadView(APIView):
+
+    def post(self, request):
+        response = {'success': False}
+        for comment_id in (request.POST.get('comment_ids')).split(','):
+            if not comment_id:
+                continue
+            try:
+                comment = models.PictureComment.objects.get(pk=comment_id, picture__artist=request.user)
+                comment.is_received = True
+                comment.save()
+                logger.info(comment.id)
+            except models.PictureComment.DoesNotExist:
+                pass
+        response['success'] = True
+        return Response(response)
+
+
+class MarkShoutsReadView(APIView):
+
+    def post(self, request):
+        response = {'success': False}
+        for shout_id in (request.POST.get('comment_ids')).split(','):
+            if not shout_id:
+                continue
+            try:
+                shout = models.Shout.objects.get(pk=shout_id, artist=request.user)
+                shout.is_received = True
+                shout.save()
+                logger.info(shout.id)
+            except models.Shout.DoesNotExist:
+                pass
+        response['success'] = True
+        return Response(response)
