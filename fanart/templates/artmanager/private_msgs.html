@@ -2,72 +2,29 @@
 
 {% block am_content %}
 
-<%--
-inc_privatemsgs.jsp
-ArtManager component for managing your private messages.
---%>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-
-<c:if test="${loggedin == 1}">
-
-<c:choose>
-<c:when test="${param.box == 'out'}">
-	<c:set var="box" value="out" />
-</c:when>
-<c:when test="${param.box == 'trash'}">
-	<c:set var="box" value="trash" />
-</c:when>
-<c:otherwise>
-	<c:set var="box" value="in" />
-</c:otherwise>
-</c:choose>
-
-
 <h2>Private Messages</h2>
 
 <div class="selector">
-<a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('in',1,'all',1,1)">Inbox</a>
-<a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('out',1,'all',1,1)">Sent</a>
-<a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('trash',1,'all',1,1)">Trash</a>
+    <a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('in',1,'all',1,1)">Inbox</a>
+    <a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('out',1,'all',1,1)">Sent</a>
+    <a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('trash',1,'all',1,1)">Trash</a>
 </div>
 
 {% if not user.is_paid %}
-<c:choose>
-<c:when test="${artist.ispaid == false}">
-	<div class="pageinfo">
-	<p>Sending and receiving new private messages is a feature only available to paid Premium members.</p>
-	</div>
-</c:when>
+    <div class="pageinfo">
+        <p>Sending and receiving new private messages is a feature only available to paid Premium members.</p>
+    </div>
 {% else %}
-<c:otherwise>
-	<a href="{% url "pm-user" %}" rel="shadowbox;width=500;height=600">New private message</a>
-</c:otherwise>
-</c:choose>
+    <a href="{% url "pm-user" %}" rel="shadowbox;width=500;height=600">New private message</a>
 {% endif %}
 
 
-<div id="pms">
-{% with showstatus=True showpages=True %}
-{#{% include "includes/private_messages.html" %}#}
-{% endwith %}
-<jsp:include page="ajax_pms.jsp?op=privatemsgs&box=${box}&showpages=1&showstatus=1" />
-</div>
+<div id="pms"></div>
 <div id="pmstatus"></div>
 
 <script type="text/javascript">
 refreshPMBox('in',1,'all',1,1);
-
 var pageParams = {};
 </script>
-
-</c:if>
 
 {% endblock %}

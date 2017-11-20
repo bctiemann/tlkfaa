@@ -6,82 +6,27 @@
 
 {% if pm %}
 
-{% comment %}
-		<c:choose>
-		<c:when test="${(thispm.recptid == user.userid && thispm.deleted_r == true) || (thispm.senderid == user.userid && thispm.deleted_s == true)}">
-			<c:set var="box" value="trash" />
-			<sql:query var="qryPMsFull">
-			SELECT * FROM pms
-			WHERE ((recptid=? AND deleted_r=true) OR (senderid=? AND deleted_s=true))
-			AND sent>?
-			<sql:param value="${user.userid}" />
-			<sql:param value="${user.userid}" />
-			<sql:param value="${thispm.sent}" />
-			</sql:query>
-		</c:when>
-		<c:when test="${thispm.senderid == user.userid}">
-			<c:set var="box" value="out" />
-			<sql:query var="qryPMsFull">
-			SELECT * FROM pms
-			WHERE senderid=?
-			AND deleted_s=false
-			AND sent>?
-			<sql:param value="${user.userid}" />
-			<sql:param value="${thispm.sent}" />
-			</sql:query>
-		</c:when>
-		<c:when test="${thispm.recptid == user.userid}">
-			<c:set var="box" value="in" />
-			<sql:query var="qryPMsFull">
-			SELECT * FROM pms
-			WHERE recptid=?
-			AND deleted_r=false
-			AND sent>?
-			<sql:param value="${user.userid}" />
-			<sql:param value="${thispm.sent}" />
-			</sql:query>
-		</c:when>
-		</c:choose>
-		<fmt:parseNumber var="page" value="${((qryPMsFull.rowCount) / perpage) + 1}" integerOnly="true" />
-
-		<c:if test="${showpages == 1 || box == 'in'}">
-		<script type="text/javascript">
-		refreshPMBox('${box}',${page},'${viewmode}',${showpages},${showstatus},window.parent);
-		</script>
-		</c:if>
-{% endcomment %}
-
-		<script type="text/javascript">
-                var pageParams = window.parent.pageParams;
-console.log(pageParams);
-		refreshPMBox(pageParams.pmbox, pageParams.page, pageParams.viewmode, pageParams.showpages, pageParams.showstatus, window.parent);
-		</script>
+    <script type="text/javascript">
+        var pageParams = window.parent.pageParams;
+        refreshPMBox(pageParams.pmbox, pageParams.page, pageParams.viewmode, pageParams.showpages, pageParams.showstatus, window.parent);
+    </script>
 
     {% if pm.sender == user and pm.recipient != user %}
 
         <h3>Your {% if pm.reply_to %}reply{% else %}message{% endif %} to {{ pm.recipient.username }}:</h3>
 
         {% if pm.reply_to %}
-            This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}?viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}">this message.</a>
+            This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}">this message.</a>
         {% endif %}
 
         {% include "includes/pm_content.html" %}
 
     {% else %}
 
-{% comment %}
-				<sql:update var="updPM">
-				UPDATE pms 
-				SET viewed=true
-				WHERE pmid=?
-				<sql:param value="${thispm.pmid}" />
-				</sql:update>
-{% endcomment %}
-
         <h3>Private Message from {{ pm.sender.username }}:</h3>
 
         {% if pm.reply_to %}
-            This is a reply to <a href="pop_viewpm.jsp?pmid=${thispm.replyto}&viewmode=${viewmode}&showpages=${showpages}&showstatus=${showstatus}">this message.</a>
+            This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}">this message.</a>
         {% endif %}
 
         {% include "includes/pm_content.html" %}
