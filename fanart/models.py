@@ -49,10 +49,17 @@ def get_image_thumb_large_path(instance, filename):
     return '{0}/thumb_large/{1}'.format(instance.id, filename)
 
 
-def validate_username(value):
+def validate_unique_username(value):
     if User.objects.filter(username=value).exists():
         raise ValidationError(
             _('The name %(value)s is already in use.'),
+            params={'value': value},
+        )
+
+def validate_unique_email(value):
+    if User.objects.filter(email=value).exists():
+        raise ValidationError(
+            _('The email %(value)s is already in use.'),
             params={'value': value},
         )
 
@@ -83,7 +90,7 @@ class User(AbstractUser):
         unique=True,
         help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
 #        validators=[username_validator],
-        validators=[validate_username],
+        validators=[validate_unique_username],
         error_messages={
             'unique': _("A user with that username already exists."),
         },

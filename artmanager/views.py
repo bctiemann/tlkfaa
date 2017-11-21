@@ -100,7 +100,7 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
         new_username = self.request.POST.get('username', None)
         if new_username and new_username != user.username:
             try:
-                models.validate_username(new_username)
+                models.validate_unique_username(new_username)
             except ValidationError as e:
                 ajax_response = {
                     'success': False,
@@ -127,6 +127,19 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
             user.set_password(password_hash)
             update_session_auth_hash(self.request, user)
 
+        new_email = self.request.POST.get('email', None)
+        if new_email != user.email:
+            try:
+                models.validate_unique_email(new_email)
+            except ValidationError as e:
+                ajax_response = {
+                    'success': False,
+                    'errors': {'username': e.messages},
+                }
+                return HttpResponse(json.dumps(ajax_response))
+
+            user.email = new_email
+
         user.save()
 
         return response
@@ -136,8 +149,12 @@ class PrefsUpdateProfileView(PrefsUpdateView):
     form_class = forms.ProfilePrefsForm
 
 
-class UserModeView(PrefsUpdateView):
+class UserModeView(AjaxableResponseMixin, UpdateView):
+    model = models.User
     form_class = forms.UserModeForm
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class UploadView(TemplateView):

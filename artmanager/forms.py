@@ -20,7 +20,7 @@ class PrefsForm(forms.ModelForm):
 
     class Meta:
         model = models.User
-        fields = ['description', 'email', 'is_public', 'show_email', 'birth_date', 'show_birthdate', 'show_birthdate_age',
+        fields = ['description', 'is_public', 'show_email', 'birth_date', 'show_birthdate', 'show_birthdate_age',
             'gender', 'location', 'occupation', 'website',
             'allow_shouts', 'allow_comments', 'email_shouts', 'email_comments', 'email_pms',
             'show_coloring_cave', 'commissions_open',]
@@ -30,7 +30,7 @@ class ProfilePrefsForm(PrefsForm):
 
     class Meta:
         model = models.User
-        fields = ['email', 'email_pms',]
+        fields = ['email_pms',]
 
 
 class UserModeForm(forms.ModelForm):
