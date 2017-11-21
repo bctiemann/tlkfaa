@@ -163,3 +163,12 @@ class SocialMediaIdentityForm(forms.ModelForm):
     class Meta:
         model = models.SocialMediaIdentity
         fields = ['social_media', 'identity']
+
+
+class UploadProfilePicForm(forms.ModelForm):
+
+    class Meta:
+        model = models.User
+        fields = ['profile_picture']
+
+

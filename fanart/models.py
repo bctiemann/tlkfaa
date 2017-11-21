@@ -42,11 +42,16 @@ def get_coloring_path(instance, filename):
 def get_coloring_thumb_path(instance, filename):
     return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
 
-def get_image_thumb_small_path(instance, filename):
-    return '{0}/thumb_small/{1}'.format(instance.id, filename)
+def get_profile_path(instance, filename):
+    extension = filename.split('.')[-1].lower()
+    filename = '{0}.{1}'.format(uuid.uuid4(), extension)
+    return 'profiles/{0}'.format(filename)
 
-def get_image_thumb_large_path(instance, filename):
-    return '{0}/thumb_large/{1}'.format(instance.id, filename)
+#def get_image_thumb_small_path(instance, filename):
+#    return '{0}/thumb_small/{1}'.format(instance.id, filename)
+#
+#def get_image_thumb_large_path(instance, filename):
+#    return '{0}/thumb_large/{1}'.format(instance.id, filename)
 
 
 def validate_unique_username(value):
@@ -144,6 +149,11 @@ class User(AbstractUser):
     email_pms = models.BooleanField(default=True)
     show_coloring_cave = models.BooleanField(default=True)
     commissions_open = models.BooleanField(default=True)
+
+    profile_picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='profile_height', width_field='profile_width', upload_to=get_profile_path, null=True, blank=True)
+    profile_width = models.IntegerField(null=True, blank=True)
+    profile_height = models.IntegerField(null=True, blank=True)
+
     profile_pic_id = models.IntegerField(null=True, blank=True)
     profile_pic_ext = models.CharField(max_length=5, blank=True)
     banner_id = models.IntegerField(null=True, blank=True)
@@ -245,11 +255,27 @@ ORDER BY fanart_user.sort_name
 
     @property
     def profile_pic_url(self):
+        if self.profile_picture:
+            return self.profile_picture.url
         return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
 
     @property
     def profile_pic_thumbnail_url(self):
-        return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+        return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
+#        return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+
+    @property
+    def profile_pic_thumbnail(self):
+        if self.profile_picture:
+            filename_parts = (self.profile_picture.path.split('/')[-1]).split('.')
+            basename = '.'.join(filename_parts[:-1])
+            extension = filename_parts[-1].lower()
+            return '{0}.s.{1}'.format(basename, extension)
+
+#            path = ('/').join(self.picture.path.split('/')[:-1])
+#            return '{0}/{1}.s.jpg'.format(path, self.id)
+
+        return '{0}.s.{1}'.format(self.profile_pic_id, self.profile_pic_ext)
 
     @property
     def birthdate_age(self):
@@ -298,6 +324,13 @@ ORDER BY fanart_user.sort_name
         self.save()
 
         return new_dir_name
+
+    def save(self, update_thumbs=False, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(User, self).save(*args, **kwargs)
+        logger.info(self.profile_picture)
+        if update_thumbs:
+            create_thumbnails.apply_async(('User', self.id,), countdown=20)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)

@@ -55,12 +55,24 @@ def create_thumbnail(model, picture_object, thumb_size):
     if model == 'TradingClaim':
         image_path = '{0}/Artwork/claims/{1}.{2}'.format(settings.MEDIA_ROOT, picture_object.id, picture_object.extension)
         new_image_path = '{0}/Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
+        orig_height = picture_object.height
+        orig_width = picture_object.width
     elif model == 'ColoringPicture':
         image_path = '{0}/Artwork/coloring/{1}.{2}'.format(settings.MEDIA_ROOT, picture_object.id, picture_object.extension)
         new_image_path = '{0}/Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
+        orig_height = picture_object.height
+        orig_width = picture_object.width
+    elif model == 'User':
+        image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.profile_picture.name)
+        filename_parts = picture_object.profile_picture.name.split('.')
+        basename = '.'.join(filename_parts[:-1])
+        extension = filename_parts[-1].lower()
+        new_image_path = '{0}/{1}.s.{2}'.format(settings.MEDIA_ROOT, basename, extension)
+        orig_height = picture_object.profile_height
+        orig_width = picture_object.profile_width
 
     im = Image.open(image_path)
-    im.thumbnail((max_pixels, max_pixels * picture_object.height / picture_object.width))
+    im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
     im.save(new_image_path, im.format)
 
     return im.size

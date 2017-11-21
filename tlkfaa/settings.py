@@ -294,3 +294,14 @@ THUMB_SIZE = {
     'large': 240,
 }
 
+CONTENT_TYPE = {
+    'image/jpg': 'jpg',
+    'image/gif': 'gif',
+    'image/png': 'png',
+}
+
+PROFILE_TYPES = [
+    'image/jpg',
+    'image/png',
+    'image/gif',
+]

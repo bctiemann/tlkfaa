@@ -337,6 +337,38 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
                         (none)
                     {% endif %}
                     <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
+
+
+<input id="fileupload" type="file" name="profile_picture" data-url="{% url "upload-profile-pic" %}">
+<div id="progress">
+    <div class="bar" style="width: 0%;"></div>
+</div>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        dropZone: null,
+        done: function (e, data) {
+console.log(data);
+//            var url = '/claim/{{ claim.id }}/upload/';
+//            $('#claim_{{ claim.id }}').load(url, function() {});
+//            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+//            $.each(data.result.files, function (index, file) {
+//                $('<p/>').text(file.name).appendTo(document.body);
+//            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+    });
+});
+</script>
+
                 </div>
 		<div><input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('artistform','picture_upload','profilepic',null,false,5000)">Upload</button></div>
 		</td>

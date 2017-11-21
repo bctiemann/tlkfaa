@@ -1614,3 +1614,45 @@ class RemoveSocialMediaIdentityView(DeleteView):
 
     def get_success_url(self):
         return reverse('social-media-identities', kwargs={})
+
+
+class UploadProfilePicView(UpdateView):
+    model = models.User
+    form_class = forms.UploadProfilePicForm
+    template_name = 'includes/claim.html'
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.FILES)
+#        self.object.picture = self.request.FILES['picture']
+#        self.object.filename = self.request.FILES['picture'].name
+#        self.object.date_uploaded = timezone.now()
+        super(UploadProfilePicView, self).form_valid(form)
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UploadProfilePicView, self).get_context_data(*args, **kwargs)
+        return context
+
+
+class ProfilePicStatusView(APIView):
+
+    def get(self, request, offer_id=None):
+        response = {}
+        if request.user.profile_picture:
+            path_parts = request.user.profile_picture.name.split('/')
+            path = '/'.join(path_parts[:-1])
+            filename_parts = path_parts[-1].split('.')
+            basename = '.'.join(filename_parts[:-1])
+            extension = filename_parts[-1].lower()
+            new_image_path = '{0}/{1}/{2}.s.{3}'.format(settings.MEDIA_ROOT, path, basename, extension)
+            response = {
+                'thumbnail_url': request.user.profile_pic_thumbnail_url,
+                'thumbnail_done': os.path.exists(new_image_path),
+            }
+        return Response(response)
