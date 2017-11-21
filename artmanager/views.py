@@ -10,10 +10,15 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
 
+from django.core.exceptions import ValidationError
+#from django.utils.translation import ugettext_lazy as _
+
 from fanart import models
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
+
+import json
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,7 +64,6 @@ class DashboardView(ArtManagerPaneView):
 
 
 class PrefsView(DetailView):
-#class ArtManagerPrefsView(DetailView, FormMixin):
     template_name = 'artmanager/prefs.html'
     model = models.User
 
@@ -87,7 +91,24 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
 
     def form_valid(self, form):
         response = super(PrefsUpdateView, self).form_valid(form)
+
         logger.info(self.request.POST)
+
+        user = form.save(commit=False)
+        new_username = self.request.POST.get('username', None)
+        if new_username and new_username != user.username:
+            try:
+                models.validate_username(new_username)
+            except ValidationError as e:
+                ajax_response = {
+                    'success': False,
+                    'errors': {'username': e.messages},
+                }
+                return HttpResponse(json.dumps(ajax_response))
+
+            user.username = new_username
+        user.save()
+
         return response
 
 

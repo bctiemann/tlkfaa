@@ -303,7 +303,7 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<table class="formtable" style="width: 400px">
 		<tr>
 		<td class="label">New Name</td>
-		<td class="data"><input type="text" class="std" name="newname" maxlength="32" onKeyUp="refreshNameSort(this.value,null,document.getElementById('sortname'));checkAvail(this.value)" /><br /><div id="newnameavailable"></div></td>
+		<td class="data"><input type="text" class="std" name="newname" id="newname" maxlength="32" onKeyUp="refreshNameSort(this.value,null,document.getElementById('sortname'));checkAvail(this.value)" /><br /><div id="newnameavailable"></div></td>
 		</tr>
 		<tr>
 		<td class="label">Sorting Name</td>

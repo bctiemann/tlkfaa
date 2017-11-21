@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class PrefsForm(forms.ModelForm):
+    email = forms.EmailField()
 
     class Meta:
         model = models.User

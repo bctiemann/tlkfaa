@@ -10,6 +10,9 @@ from django.contrib.auth.models import BaseUserManager, UserManager, AbstractUse
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+
 import uuid
 import datetime
 import os
@@ -45,6 +48,14 @@ def get_image_thumb_large_path(instance, filename):
     return '{0}/thumb_large/{1}'.format(instance.id, filename)
 
 
+def validate_username(value):
+    if User.objects.filter(username=value).exists():
+        raise ValidationError(
+            _('The name %(value)s is already in use.'),
+            params={'value': value},
+        )
+
+
 class OverwriteStorage(FileSystemStorage):
 
     def get_available_name(self, name, max_length=None):
@@ -71,6 +82,7 @@ class User(AbstractUser):
         unique=True,
         help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
 #        validators=[username_validator],
+        validators=[validate_username],
         error_messages={
             'unique': _("A user with that username already exists."),
         },

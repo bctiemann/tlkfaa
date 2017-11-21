@@ -1033,6 +1033,7 @@ class ArtworkListView(ArtworkView):
 
 
 class CharactersAutocompleteView(APIView):
+    permission_classes = ()
 
     def get(self, request, term):
         response = {'characters': []}
@@ -1049,6 +1050,7 @@ class CharactersAutocompleteView(APIView):
 
 
 class SpeciesAutocompleteView(APIView):
+    permission_classes = ()
 
     def get(self, request, term):
         response = {'specieses': []}
@@ -1063,8 +1065,9 @@ class SpeciesAutocompleteView(APIView):
 
 
 class ArtistsAutocompleteView(APIView):
+    permission_classes = ()
 
-     def get(self, request, term):
+    def get(self, request, term):
         response = {'artists': []}
 
         for artist in models.User.objects.filter(is_artist=True, is_active=True, username__icontains=term)[0:20]:

@@ -154,7 +154,7 @@ function validateForm(selformid,successfnc) {
       }
     }
   });
-  if (valid) {
+  if (valid || true) {
     eval(successfnc);
   } else {
     $('#dialog_confirm_text').html('');
@@ -2208,7 +2208,7 @@ function updatePrefs(fnc) {
     var url = $('#artistform').attr('action');
     var params = {
         fnc: fnc,
-        newname: $('#newname').val(),
+        username: $('#newname').val(),
         sortname: $('#sortname').val(),
         passwd: $('#passwd').val(),
         passwd_repeat: $('#passwd_repeat').val(),
@@ -2240,7 +2240,10 @@ console.log(data);
 //            }
             window.location.reload();
         } else {
-            alert(data.message);
+            Object.keys(data.errors).forEach(function(key) {
+                alert(data.errors[key][0]);
+                console.log(key, data.errors[key][0]);
+            });
         }
     }, 'json');
 }
