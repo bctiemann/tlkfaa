@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 import uuid
 import datetime
 import os
+import re
 
 from fanart.utils import dictfetchall
 from fanart.tasks import create_thumbnails
@@ -264,6 +265,32 @@ ORDER BY fanart_user.sort_name
     @property
     def sort_name_escaped(self):
         return self.sort_name.replace('"', '\\\"')
+
+    @property
+    def absolute_dir_name(self):
+        return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, self.dir_name)
+
+    def change_dir_name(self):
+        new_dir_name = re.sub('&#[0-9]+;', 'x', self.username)
+        new_dir_name = re.sub("[\\']", '', new_dir_name)
+        new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
+
+        if new_dir_name == self.dir_name:
+            return self.dir_name
+
+        new_absolute_dir_name = '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, new_dir_name)
+
+        if os.path.isdir(new_absolute_dir_name):
+            raise ValidationError(
+                _('The directory name %(value)s is already in use.'),
+                params={'value': new_dir_name},
+            )
+
+        os.rename(self.absolute_dir_name, new_absolute_dir_name)
+        self.dir_name = new_dir_name
+        self.save()
+
+        return new_dir_name
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)

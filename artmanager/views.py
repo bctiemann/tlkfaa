@@ -107,6 +107,8 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
                 return HttpResponse(json.dumps(ajax_response))
 
             user.username = new_username
+            new_dir_name = user.change_dir_name()
+
         user.save()
 
         return response
