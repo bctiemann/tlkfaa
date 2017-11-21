@@ -2190,33 +2190,33 @@ function updatePrefs(fnc) {
         sortname: $('#sortname').val(),
         passwd: $('#passwd').val(),
         passwd_repeat: $('#passwd_repeat').val(),
-        is_public: $('#is_public').val() == '1' ? true : false,
+        is_public: $('#is_public').val() == '1',
         email: $('#email').val(),
-        show_email: $('#showemail').prop('checked') ? true : false,
+        show_email: $('#showemail').prop('checked'),
         description: $('#artistdesc').val(),
-        commissions: $('#commissions').prop('checked') ? 1 : 0,
+        commissions_open: $('#commissions').prop('checked'),
         birth_date: $('#birthdate_pick').val(),
-        showbirthdate: $('#showbirthdate').prop('checked') ? 1 : 0,
-        showbirthdate_age: $('#showbirthdate_age').prop('checked') ? 1 : 0,
+        show_birthdate: $('#showbirthdate').prop('checked'),
+        show_birthdate_age: $('#showbirthdate_age').prop('checked'),
         gender: $('#gender').val(),
         location: $('#location').val(),
         occupation: $('#occupation').val(),
         website: $('#website').val(),
-        allowshouts: $('#allowshouts').prop('checked') ? 1 : 0,
-        allowcomments: $('#allowcomments').prop('checked') ? 1 : 0,
-        emailshouts: $('#emailshouts').prop('checked') ? 1 : 0,
-        emailcomments: $('#emailcomments').prop('checked') ? 1 : 0,
-        emailpms: $('#emailpms').prop('checked') ? 1 : 0,
-        showcc: $('#showcc').prop('checked') ? 1 : 0,
+        allow_shouts: $('#allowshouts').prop('checked'),
+        allow_comments: $('#allowcomments').prop('checked'),
+        email_shouts: $('#emailshouts').prop('checked'),
+        email_comments: $('#emailcomments').prop('checked'),
+        email_pms: $('#emailpms').prop('checked'),
+        show_coloring_cave: $('#showcc').prop('checked'),
     };
 console.log(params);
     $.post(url, params, function(data) {
 console.log(data);
         if (data.success) {
-            if (data.name_changed || data.passwd_changed) {
-                set_prefsname(data.storename, data.storepass);
-            }
-//            window.location.reload();
+//            if (data.name_changed || data.passwd_changed) {
+//                set_prefsname(data.storename, data.storepass);
+//            }
+            window.location.reload();
         } else {
             alert(data.message);
         }
