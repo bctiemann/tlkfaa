@@ -14,6 +14,7 @@ urlpatterns = [
 #    ),
     url(r'^dashboard/$', artmanager_views.DashboardView.as_view(), name='dashboard'),
     url(r'^prefs/$', artmanager_views.PrefsView.as_view(), name='prefs'),
+    url(r'^prefs/update/$', artmanager_views.PrefsUpdateView.as_view(), name='prefs-update'),
     url(r'^upload/$', artmanager_views.UploadView.as_view(), name='upload'),
     url(r'^artwork/$', artmanager_views.ArtworkView.as_view(), name='artwork'),
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),

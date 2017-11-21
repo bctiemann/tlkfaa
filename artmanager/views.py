@@ -12,6 +12,11 @@ from django.shortcuts import render
 
 from fanart import models
 from fanart.views import UserPaneMixin
+from fanart.forms import AjaxableResponseMixin
+from artmanager import forms
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class BaseRedirectView(RedirectView):
@@ -71,6 +76,19 @@ class PrefsView(DetailView):
         context['social_medias'] = models.SocialMedia.objects.all()
 
         return context
+
+
+class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
+    model = models.User
+    form_class = forms.PrefsForm
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = super(PrefsUpdateView, self).form_valid(form)
+        logger.info(self.request.POST)
+        return response
 
 
 class UploadView(TemplateView):
@@ -207,3 +225,4 @@ class BlocksView(TemplateView):
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'blocks'
         return super(BlocksView, self).get(request, *args, **kwargs)
+

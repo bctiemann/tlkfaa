@@ -60,7 +60,7 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		var sortname_clean = "{{ user.sort_name_escaped|safe }}";
 		</script>
 
-		<form name="artistform" id="artistform" method="POST" action="ArtManager.jsp">
+		<form name="artistform" id="artistform" method="POST" action="{% url "artmanager:prefs-update" %}">
 		<table class="formtable">
 		<tr>
 		<td class="label">Artist Name</td>
@@ -175,13 +175,13 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		</tr>
 		<tr>
 		<td class="label"></td>
-		<td class="data inputlabels"><input type="checkbox" name="showbirthdate" id="showbirthdate" value="1" <c:if test="${artist.showbirthdate == true}">checked</c:if> /> Display your birthdate in public</td>
+		<td class="data inputlabels"><input type="checkbox" name="showbirthdate" id="showbirthdate" value="1" {% if user.show_birthdate %}checked{% endif %} /> Display your birthdate in public</td>
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label"></td>
-		<td class="data inputlabels"><input type="checkbox" name="showbirthdate_age" id="showbirthdate_age" value="1" <c:if test="${artist.showbirthdate_age == true}">checked</c:if> /> Display your age</td>
+		<td class="data inputlabels"><input type="checkbox" name="showbirthdate_age" id="showbirthdate_age" value="1" {% if user.show_birthdate_age %}checked{% endif %} /> Display your age</td>
 		</td>
 		<td class="legend"></td>
 		</tr>
@@ -189,29 +189,26 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<td class="label">Gender</td>
 		<td class="data">
 		<select name="gender" id="gender">
-		<option <c:if test="${artist.gender == '0'}">selected</c:if> value="0">(No Response)</option>
-		<option <c:if test="${artist.gender == '1'}">selected</c:if> value="1">Male</option>
-		<option <c:if test="${artist.gender == '2'}">selected</c:if> value="2">Female</option>
+		<option {% if user.gender == '' %}selected{% endif %} value="">(No Response)</option>
+		<option {% if user.gender == "male" %}selected{% endif %} value="male">Male</option>
+		<option {% if user.gender == "female" %}selected{% endif %} value="female">Female</option>
 		</select>
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label">Where You Live</td>
-		<c:set var="location" value="${artist.location}" />
-		<td class="data"><input type="text" class="std" name="location" id="location" value="<%= sanitizeHTML((String)pageContext.getAttribute("location"),0) %>" /></td>
+		<td class="data"><input type="text" class="std" name="location" id="location" value="{{ user.location }}" /></td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label">Occupation</td>
-		<c:set var="occupation" value="${artist.occupation}" />
-		<td class="data"><input type="text" class="std" name="occupation" id="occupation" value="<%= sanitizeHTML((String)pageContext.getAttribute("occupation"),0) %>" /></td>
+		<td class="data"><input type="text" class="std" name="occupation" id="occupation" value="{{ user.occupation }}" /></td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label">Website URL</td>
-		<c:set var="website" value="${artist.website}" />
-		<td class="data"><input type="text" class="std" name="website" id="website" value="<%= sanitizeHTML((String)pageContext.getAttribute("website"),0) %>" /></td>
+		<td class="data"><input type="text" class="std" name="website" id="website" value="{{ user.website }}" /></td>
 		<td class="legend"></td>
 		</tr>
 		</table>
@@ -222,29 +219,29 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<tr>
 		<td class="label">Allow</td>
 		<td class="data">
-		<input type="checkbox" name="allowshouts" id="allowshouts" value="1" <c:if test="${artist.allowshouts == true}">checked</c:if> /> <b>Roars</b><br />
-		<input type="checkbox" name="allowcomments" id="allowcomments" value="1" <c:if test="${artist.allowcomments == true}">checked</c:if> /> <b>Picture Comments</b> (by default; can be overridden per-picture)<br />
+		<input type="checkbox" name="allowshouts" id="allowshouts" value="1" {% if user.allow_shouts %}checked{% endif %} /> <b>Roars</b><br />
+		<input type="checkbox" name="allowcomments" id="allowcomments" value="1" {% if user.allow_comments %}checked{% endif %} /> <b>Picture Comments</b> (by default; can be overridden per-picture)<br />
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label">Receive Email Notifications For</td>
 		<td class="data">
-		<input type="checkbox" name="emailshouts" id="emailshouts" value="1" <c:if test="${artist.emailshouts == true}">checked</c:if> /> <b>Roars</b><br />
-		<input type="checkbox" name="emailcomments" id="emailcomments" value="1" <c:if test="${artist.emailcomments == true}">checked</c:if> /> <b>Picture Comments</b><br />
-		<input type="checkbox" name="emailpms" id="emailpms" value="1" <c:if test="${artist.emailpms == true}">checked</c:if> /> <b>Private Messages</b><br />
+		<input type="checkbox" name="emailshouts" id="emailshouts" value="1" {% if user.email_shouts %}checked{% endif %} /> <b>Roars</b><br />
+		<input type="checkbox" name="emailcomments" id="emailcomments" value="1" {% if user.email_comments %}checked{% endif %} /> <b>Picture Comments</b><br />
+		<input type="checkbox" name="emailpms" id="emailpms" value="1" {% if user.email_pms %}checked{% endif %} /> <b>Private Messages</b><br />
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label"></td>
-		<td class="data inputlabels"><input type="checkbox" name="showcc" id="showcc" value="1" <c:if test="${artist.showcc == true}">checked</c:if> /> Include your Coloring Cave art in your Gallery</td>
+		<td class="data inputlabels"><input type="checkbox" name="showcc" id="showcc" value="1" {% if user.show_coloring_cave %}checked{% endif %} /> Include your Coloring Cave art in your Gallery</td>
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label"></td>
-		<td class="data inputlabels"><input type="checkbox" name="commissions" id="commissions" value="1" <c:if test="${artist.commissions == true}">checked</c:if> /> Accepting requests or commissions</td>
+		<td class="data inputlabels"><input type="checkbox" name="commissions" id="commissions" value="1" {% if user.commissions_open %}checked{% endif %} /> Accepting requests or commissions</td>
 		</td>
 		<td class="legend"></td>
 		</tr>

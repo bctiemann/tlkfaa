@@ -2183,19 +2183,19 @@ function deleteFolder(folderid) {
 }
 
 function updatePrefs(fnc) {
-    var url = '/api/updatePrefs.jsp';
+    var url = $('#artistform').attr('action');
     var params = {
         fnc: fnc,
         newname: $('#newname').val(),
         sortname: $('#sortname').val(),
         passwd: $('#passwd').val(),
         passwd_repeat: $('#passwd_repeat').val(),
-        is_public: $('#is_public').val(),
+        is_public: $('#is_public').val() == '1' ? true : false,
         email: $('#email').val(),
-        showemail: $('#showemail').prop('checked') ? 1 : 0,
-        artistdesc: $('#artistdesc').val(),
+        show_email: $('#showemail').prop('checked') ? true : false,
+        description: $('#artistdesc').val(),
         commissions: $('#commissions').prop('checked') ? 1 : 0,
-        birthdate: $('#birthdate').val(),
+        birth_date: $('#birthdate_pick').val(),
         showbirthdate: $('#showbirthdate').prop('checked') ? 1 : 0,
         showbirthdate_age: $('#showbirthdate_age').prop('checked') ? 1 : 0,
         gender: $('#gender').val(),
@@ -2209,13 +2209,14 @@ function updatePrefs(fnc) {
         emailpms: $('#emailpms').prop('checked') ? 1 : 0,
         showcc: $('#showcc').prop('checked') ? 1 : 0,
     };
+console.log(params);
     $.post(url, params, function(data) {
 console.log(data);
         if (data.success) {
             if (data.name_changed || data.passwd_changed) {
                 set_prefsname(data.storename, data.storepass);
             }
-            window.location.reload();
+//            window.location.reload();
         } else {
             alert(data.message);
         }
@@ -2509,7 +2510,8 @@ $(document).ready(function() {
   $('#offerslayout,div.masonry').masonry({ singleMode: false, animate: true });
 //  $('#favoritepicturesbox').masonry({ singleMode: true });
   $('#birthdate_pick').datepicker();
-  $('#birthdate_pick').datepicker("option", "dateFormat", "m/d/yy");
+//  $('#birthdate_pick').datepicker("option", "dateFormat", "m/d/yy");
+  $('#birthdate_pick').datepicker("option", "dateFormat", "yy-mm-dd");
   $('#birthdate_pick').datepicker("option", "changeYear", true);
   $('#birthdate_pick').datepicker("option", "defaultDate", "-14y");
 //  $('.picturetile a').wTooltip({
