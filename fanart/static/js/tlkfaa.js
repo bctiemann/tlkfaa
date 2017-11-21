@@ -2209,7 +2209,7 @@ function updatePrefs(fnc) {
     var params = {
         fnc: fnc,
         username: $('#newname').val(),
-        sortname: $('#sortname').val(),
+        sort_name: $('#sortname').val(),
         passwd: $('#passwd').val(),
         passwd_repeat: $('#passwd_repeat').val(),
         is_public: $('#is_public').val() == '1',

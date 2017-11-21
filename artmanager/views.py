@@ -113,6 +113,10 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
 
             models.ArtistName.objects.create(artist=user, name=new_username)
 
+        new_sort_name = self.request.POST.get('sort_name', None)
+        if new_sort_name:
+            user.sort_name = new_sort_name
+
         passwd = self.request.POST.get('passwd', None)
         passwd_repeat = self.request.POST.get('passwd_repeat', None)
         if passwd != '********':
