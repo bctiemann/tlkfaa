@@ -9,6 +9,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
+from django.contrib.auth import update_session_auth_hash
 
 from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
@@ -19,6 +20,7 @@ from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
 
 import json
+import hashlib
 
 import logging
 logger = logging.getLogger(__name__)
@@ -108,6 +110,22 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
 
             user.username = new_username
             new_dir_name = user.change_dir_name()
+
+        passwd = self.request.POST.get('passwd', None)
+        passwd_repeat = self.request.POST.get('passwd_repeat', None)
+        if passwd != '********':
+            if passwd != passwd_repeat:
+                ajax_response = {
+                    'success': False,
+                    'errors': {'password': ['The passwords you entered did not match']},
+                }
+                return HttpResponse(json.dumps(ajax_response))
+
+            m = hashlib.md5()
+            m.update(passwd)
+            password_hash = m.hexdigest()
+            user.set_password(password_hash)
+            update_session_auth_hash(self.request, user)
 
         user.save()
 
