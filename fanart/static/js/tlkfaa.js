@@ -537,7 +537,18 @@ function confirmActivate() {
         modal: true,
         buttons: {
             "Activate": function() {
-                updatePrefs('activate');
+                var url = $('#user_mode_form').attr('action');
+                var params = {
+                    is_artist: true,
+                };
+                $.post(url, params, function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }, 'json');
             },
             Cancel: function() {
                 $(this).dialog('close');
@@ -553,7 +564,18 @@ function confirmDeactivate() {
         modal: true,
         buttons: {
             "Dectivate": function() {
-                updatePrefs('deactivate');
+                var url = $('#user_mode_form').attr('action');
+                var params = {
+                    is_artist: false,
+                };
+                $.post(url, params, function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }, 'json');
             },
             Cancel: function() {
                 $(this).dialog('close');

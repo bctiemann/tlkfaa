@@ -40,7 +40,7 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 	<c:choose>
 	<c:when test="${artist.active == true}">
 
-		<form name="userform" id="userform" method="POST" action="ArtManager.jsp">
+		<form name="user_mode_form" id="user_mode_form" method="POST" action="{% url "artmanager:prefs-usermode" %}">
 		<table class="formtable">
 		<tr>
 		<td class="label"></td>
@@ -123,12 +123,12 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<td class="label">Profile Picture</td>
 		<td class="data">
 		<div id="profilepic">
-        {% if user.profile_pic_id %}
-        <a id="profilepic_link" href="{{ user.profile_pic_url }}" rel="shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
-        {% else %}
-                (none)
-        {% endif %}
-        <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
+                    {% if user.profile_pic_id %}
+                        <a id="profilepic_link" href="{{ user.profile_pic_url }}" rel="shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
+                    {% else %}
+                        (none)
+                    {% endif %}
+                    <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
                 </div>
 		<div><input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('artistform','picture_upload','profilepic',null,false,5000)">Upload</button></div>
 		</td>
@@ -261,7 +261,7 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
         {% else %}
 	<c:otherwise>
 
-		<form name="userform" id="userform" method="POST" action="ArtManager.jsp">
+		<form name="user_mode_form" id="user_mode_form" method="POST" action="{% url "artmanager:prefs-usermode" %}">
 		<table class="formtable">
 		<tr>
 		<td class="label"></td>
@@ -274,15 +274,15 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		</form>
 
 		<script type="text/javascript">
-		var artistname_clean = "${fn:replace(artist.artistname,'\"','\\\"')}";
-		var sortname_clean = "${fn:replace(artist.sortname,'\"','\\\"')}";
+		var artistname_clean = "{{ user.username_escaped|safe }}";
+		var sortname_clean = "{{ user.sort_name_escaped|safe }}";
 		</script>
 
-		<form name="artistform" id="artistform" method="POST" action="ArtManager.jsp">
+		<form name="artistform" id="artistform" method="POST" action="{% url "artmanager:prefs-update-profile" %}">
 		<table class="formtable">
 		<tr>
 		<td class="label">Name</td>
-		<td class="data">${artist.artistname} <a href="javascript:nop()" onClick="changeArtistName(artistname_clean,sortname_clean)">change</a></td>
+		<td class="data">{{ user.username }} <a href="javascript:nop()" onClick="changeArtistName(artistname_clean,sortname_clean)">change</a></td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
@@ -290,19 +290,13 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<div id="newname_form">
 
 		<div class="pastnames">Past names:<br />
-		<sql:query var="qryArtistNames" scope="session">
-		SELECT name,date_format(changedon,"%c/%e/%Y") as changed FROM artistnames
-		WHERE artistid=?
-		ORDER BY changedon
-		<sql:param value="${artist.artistid}" />
-		</sql:query>
 		<table>
-		<c:forEach var="artistname" items="${qryArtistNames.rows}">
+                {% for past_name in user.past_names %}
 		<tr>
-		<td class="smalldata">${artistname.name}</td>
-		<td class="smalldata">${artistname.changed}</td>
+		<td class="smalldata">{{ past_name.name }}</td>
+		<td class="smalldata">{{ past_name.date_changed|date:"SHORT_DATE_FORMAT" }}</td>
 		</tr>
-		</c:forEach>
+                {% endfor %}
 		</table>
 		</div>
 
@@ -336,27 +330,34 @@ ArtManager component for managing your profile info/prefs. Operates in two modes
 		<tr>
 		<td class="label">Profile Picture</td>
 		<td class="data">
-		<div id="profilepic"><jsp:include page="/api/upload_success.jsp?op=profilepic" /></div>
+		<div id="profilepic">
+                    {% if user.profile_pic_id %}
+                        <a id="profilepic_link" href="{{ user.profile_pic_url }}" rel="shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
+                    {% else %}
+                        (none)
+                    {% endif %}
+                    <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
+                </div>
 		<div><input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('artistform','picture_upload','profilepic',null,false,5000)">Upload</button></div>
 		</td>
 		<td class="legend"></td>
 		</tr>
 		<tr>
 		<td class="label">Email</td>
-		<td class="data"><input type="text" class="std" name="email" id="email" value="${user.email}" validate="email" /></td>
+		<td class="data"><input type="text" class="std" name="email" id="email" value="{{ user.email }}" validate="email" /></td>
 		<td class="legend">Must be a real, working address</td>
 		</tr>
 		<tr>
 		<td class="label">Send Email Notifications For</td>
 		<td class="data">
-		<input type="checkbox" name="emailpms" id="emailpms" value="1" <c:if test="${artist.emailpms == true}">checked</c:if> /> Private Messages<br />
+		<input type="checkbox" name="emailpms" id="emailpms" value="1" {% if user.email_pms %}checked{% endif %} /> Private Messages<br />
 		</td>
 		<td class="legend"></td>
 		</tr>
 
 		<tr>
 		<td colspan="2" class="buttons">
-		<button type="button" onClick="validateForm('artistform','document.artistform.submit()')">Save Changes</button>
+		<button type="button" onClick="validateForm('artistform','updatePrefs(\'commit\')')">Save Changes</button>
 		</td>
 		</tr>
 		</table>

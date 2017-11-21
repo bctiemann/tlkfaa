@@ -23,3 +23,17 @@ class PrefsForm(forms.ModelForm):
             'gender', 'location', 'occupation', 'website',
             'allow_shouts', 'allow_comments', 'email_shouts', 'email_comments', 'email_pms',
             'show_coloring_cave', 'commissions_open',]
+
+
+class ProfilePrefsForm(PrefsForm):
+
+    class Meta:
+        model = models.User
+        fields = ['email', 'email_pms',]
+
+
+class UserModeForm(forms.ModelForm):
+
+    class Meta:
+        model = models.User
+        fields = ['is_artist']

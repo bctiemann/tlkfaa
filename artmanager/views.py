@@ -91,6 +91,14 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
         return response
 
 
+class PrefsUpdateProfileView(PrefsUpdateView):
+    form_class = forms.ProfilePrefsForm
+
+
+class UserModeView(PrefsUpdateView):
+    form_class = forms.UserModeForm
+
+
 class UploadView(TemplateView):
     template_name = 'artmanager/upload.html'
 
