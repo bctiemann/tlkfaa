@@ -681,8 +681,9 @@ class Command(BaseCommand):
                 f = fanart_models.UnviewedPicture.objects.create(
                     user = user,
                     picture = picture,
-                    date_added = a['added'],
                 )
+                f.date_added = a['added']
+                f.save()
 
         if self.do_approval_access:
             c.execute("""SELECT * FROM approval_access""")
@@ -706,9 +707,10 @@ class Command(BaseCommand):
                     user = None
                 f = fanart_models.AdminBlog.objects.create(
                     user = user,
-                    date_posted = a['posted'],
                     message = a['message'],
                 )
+                f.date_posted = a['posted']
+                f.save()
 
         if self.do_artistnames:
             c.execute("""SELECT * FROM artistnames""")
@@ -720,8 +722,9 @@ class Command(BaseCommand):
                 f = fanart_models.ArtistName.objects.create(
                     artist = artist,
                     name = a['name'],
-                    date_changed = a['changedon'],
                 )
+                f.date_changed = a['changedon']
+                f.save()
 
         if self.do_blocks:
             c.execute("""SELECT * FROM blocks""")
@@ -737,8 +740,9 @@ class Command(BaseCommand):
                 f = fanart_models.Block.objects.create(
                     user = user,
                     blocked_user = blocked_user,
-                    date_blocked = a['blockedon'],
                 )
+                f.date_blocked = a['blockedon']
+                f.save()
 
         if self.do_bulletins:
             c.execute("""SELECT * FROM bulletins""")
@@ -752,7 +756,6 @@ class Command(BaseCommand):
                         user = None
                 f = fanart_models.Bulletin.objects.create(
                     user = user,
-                    date_posted = a['posted'],
                     is_published = a['published'],
                     date_published = a['publishedon'],
                     title = a['title'],
@@ -760,6 +763,8 @@ class Command(BaseCommand):
                     is_admin = a['admin'],
                     show_email = a['showemail'] if a['showemail'] != None else False,
                 )
+                f.date_posted = a['posted']
+                f.save()
 
         if self.do_contests:
             c.execute("""SELECT * FROM contests""")
@@ -777,7 +782,6 @@ class Command(BaseCommand):
                     title = a['title'],
                     description = a['description'],
                     rules = a['rules'],
-                    date_created = a['created'],
                     date_start = a['startdate'],
                     date_end = a['deadline'],
                     is_active = a['active'],
@@ -786,6 +790,8 @@ class Command(BaseCommand):
                     allow_anonymous_entries = a['anonymous'],
                     allow_voting = a['allowvoting'],
                 )
+                f.date_created = a['created']
+                f.save()
 
         if self.do_contestpics:
             c.execute("""SELECT * FROM contestpics""")

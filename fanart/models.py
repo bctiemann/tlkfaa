@@ -856,7 +856,7 @@ class UnviewedPicture(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
     picture = models.ForeignKey('Picture', null=True, blank=True)
     artist = models.ForeignKey('User', null=True, blank=True, related_name='new_pictures')
-    date_added = models.DateTimeField(null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class ApprovalAccess(models.Model):
@@ -867,14 +867,14 @@ class ApprovalAccess(models.Model):
 
 class AdminBlog(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     message = models.TextField(blank=True)
 
 
 class ArtistName(models.Model):
     artist = models.ForeignKey('User', null=True, blank=True)
-    date_changed = models.DateTimeField(null=True, blank=True)
-    name = models.CharField(max_length=32, blank=True)
+    date_changed = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    name = models.CharField(max_length=150, blank=True)
 
 
 class Block(models.Model):
@@ -885,7 +885,7 @@ class Block(models.Model):
 
 class Bulletin(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     is_published = models.BooleanField(default=False)
     date_published = models.DateTimeField(null=True, blank=True)
     title = models.TextField(blank=True)
@@ -906,7 +906,7 @@ class Contest(models.Model):
     title = models.CharField(max_length=64, blank=True)
     description = models.TextField(blank=True)
     rules = models.TextField(blank=True)
-    date_created = models.DateTimeField(null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     date_start = models.DateTimeField(null=True, blank=True)
     date_end = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)

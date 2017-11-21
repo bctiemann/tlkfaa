@@ -111,6 +111,8 @@ class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
             user.username = new_username
             new_dir_name = user.change_dir_name()
 
+            models.ArtistName.objects.create(artist=user, name=new_username)
+
         passwd = self.request.POST.get('passwd', None)
         passwd_repeat = self.request.POST.get('passwd_repeat', None)
         if passwd != '********':
