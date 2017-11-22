@@ -2022,7 +2022,7 @@ function displayFoldersEditable(folders, foldersKeyedById, folderid, isFlat) {
             html: folders[i].description,
         }));
 
-        if (folders[i].latestpicture != '') {
+        if (folders[i].latestpicture) {
             folderPreviewLi.append($('<div>', {
                 class: 'latestpicture previewPopupTrigger',
                 type: 'picture',
