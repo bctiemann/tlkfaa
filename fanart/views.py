@@ -1626,6 +1626,10 @@ class UploadProfilePicView(UpdateView):
         self.old_profile_pic_thumbnail_path = user.profile_pic_thumbnail_path
         return user
 
+    def form_invalid(self, form):
+        response = {'success': False}
+        return JsonResponse(response)
+
     def form_valid(self, form):
         response = {'success': False}
 
