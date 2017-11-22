@@ -3,6 +3,24 @@
 
 {% block am_content %}
 
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+
+var checkThumbs = function() {
+    var url = '/profile-pic/upload/status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        $('#profilepic img').attr('src', data.thumbnail_url);
+        if (!data.thumbnail_done) {
+            continueChecking = true;
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+
 <%--
 inc_prefs.jsp
 ArtManager component for managing your profile info/prefs. Operates in two modes, for active or inactive artist accounts.
@@ -353,7 +371,7 @@ $(function () {
 console.log(data);
 //            var url = '/claim/{{ claim.id }}/upload/';
 //            $('#claim_{{ claim.id }}').load(url, function() {});
-//            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 //            $.each(data.result.files, function (index, file) {
 //                $('<p/>').text(file.name).appendTo(document.body);
 //            });
