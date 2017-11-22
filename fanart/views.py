@@ -1653,15 +1653,8 @@ class ProfilePicStatusView(APIView):
     def get(self, request, offer_id=None):
         response = {}
         if request.user.profile_picture:
-            path_parts = request.user.profile_picture.name.split('/')
-            path = '/'.join(path_parts[:-1])
-            filename_parts = path_parts[-1].split('.')
-            basename = '.'.join(filename_parts[:-1])
-            extension = filename_parts[-1].lower()
-            new_image_path = '{0}/{1}/{2}.s.{3}'.format(settings.MEDIA_ROOT, path, basename, extension)
             response = {
                 'thumbnail_url': request.user.profile_pic_thumbnail_url,
-#                'thumbnail_done': os.path.exists(new_image_path),
-                'thumbnail_done': os.path.exists(request.user.profile_pic_thumbnail_path),
+                'thumbnail_done': request.user.profile_pic_thumbnail_created,
             }
         return Response(response)

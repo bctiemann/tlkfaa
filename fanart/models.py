@@ -264,9 +264,13 @@ ORDER BY fanart_user.sort_name
 #        return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
 #        return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
 
-        if os.path.exists(self.profile_pic_thumbnail_path):
+        if self.profile_pic_thumbnail_created:
             return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def profile_pic_thumbnail_created(self):
+        return os.path.exists(self.profile_pic_thumbnail_path)
 
     @property
     def profile_pic_thumbnail_path(self):
