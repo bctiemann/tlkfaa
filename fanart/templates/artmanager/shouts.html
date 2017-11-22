@@ -1,1 +1,253 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_shouts.jsp
+ArtManager component for managing the shouts you've received and posted.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${loggedin == 1}">
+
+<c:choose>
+<c:when test="${artist.active == true}">
+	<c:set var="type" value="received" />
+	<c:if test="${param.type == 'posted'}">
+	<c:set var="type" value="posted" />
+	</c:if>
+</c:when>
+<c:otherwise>
+	<c:set var="type" value="posted" />
+</c:otherwise>
+</c:choose>
+
+<c:set var="showall" value="1" />
+<c:if test="${param.showall != 1}">
+<c:set var="showallclause" value="AND viewed=false" />
+<c:set var="showall" value="0" />
+</c:if>
+
+
+<c:if test="${param.fnc == 'markread'}">
+        
+	<c:forEach var="markshout" items="${fn:split(param.itemlist, ',')}">
+		<c:set var="shout" value="0" />
+		<c:catch var="catchException">
+		<fmt:parseNumber var="shout" value="${markshout}" integerOnly="true" />
+		</c:catch>
+		<c:if test="${shout > 0}">
+		<sql:update var="updShout">
+		UPDATE shouts SET
+		viewed=true
+		WHERE shoutid=?
+		AND artistid=?
+		<sql:param value="${shout}" />
+		<sql:param value="${artist.artistid}" />
+		</sql:update>
+		</c:if>
+	</c:forEach>
+        
+</c:if>   
+
+
+<h2>Your Roars</h2>
+
+<c:if test="${artist.active == true}">
+<div class="selector_commentview">
+<div class="selector">
+<a class="<c:if test="${type == 'posted'}">selected</c:if>" href="/ArtManager.jsp?op=shouts&type=posted">posted</a>
+<a class="<c:if test="${type == 'received'}">selected</c:if>" href="/ArtManager.jsp?op=shouts&type=received">received</a>
+</div>
+<c:if test="${type == 'received'}">
+	<div class="selector">
+	View: <a class="<c:if test="${showall == 0}">selected</c:if>" href="/ArtManager.jsp?op=shouts&type=${type}&showall=0">unread</a>
+	<a class="<c:if test="${showall == 1}">selected</c:if>" href="/ArtManager.jsp?op=shouts&type=${type}&showall=1">all</a>
+	</div>
+</c:if>
+<br clear="left" />
+</div>
+</c:if>
+
+<c:choose>
+<c:when test="${type == 'posted'}">
+
+	<sql:query var="qryShoutsFull">
+	SELECT * FROM shouts
+	WHERE userid=?
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<c:set var="numItems" value="${qryShoutsFull.rowCount} " />
+	<c:choose>
+	<c:when test="${page > 0}"> 
+	<c:set var="page" value="${page} " />
+	</c:when>
+	<c:otherwise>
+	<c:set var="page" value="0 " />
+	</c:otherwise>
+	</c:choose>
+	<%
+	  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
+	  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
+
+	  Hashtable Pages = pagesLink(numItems,50,pageNum,true,"","text",request.getQueryString());
+
+	  pageContext.setAttribute("offset",Pages.get("offset"));
+	  pageContext.setAttribute("thispage",Pages.get("thispage"));
+	  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
+	%>
+
+	<sql:query var="qryShouts">
+	SELECT * FROM shouts,artists
+	WHERE shouts.artistid=artists.artistid
+	AND shouts.userid=?
+	ORDER BY posted DESC
+	LIMIT ${offset},${thispage}
+	<sql:param value="${user.userid}" />
+	</sql:query>
+
+	<%= Pages.get("pages") %>
+
+	<c:forEach var="shout" items="${qryShouts.rows}">
+
+		<form name="editcomment_${shout.shoutid}">
+		<div class="comment" id="shout_${shout.shoutid}">
+		<div class="commentname">
+			<div class="commentdate"><fmt:formatDate value="${shout.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
+			Roared to <a href="/Artists/${shout.dirname}/">${shout.artistname}</a>
+		</div>
+		<div class="commenttext clearAfter <c:if test="${shout.deleted == true}">commentdeleted</c:if>" id="shouttext_${shout.shoutid}">
+			<c:set var="shouttext" value="${shout.comment}" />
+			<table><tr><td>
+			<%= formatText((String)pageContext.getAttribute("shouttext")) %>
+			</td></tr></table>
+			<div class="commentbuttons">
+			<c:if test="${shout.deleted == false}"><button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button></c:if>
+			</div>
+			<br clear="all" />
+		</div>
+		</div>
+		</form>
+
+	</c:forEach>
+
+</c:when>
+<c:when test="${type == 'received'}">
+
+	<div class="globalactionslink">
+	<a href="javascript:nop()" onClick="markRead('shout','${showall}')">Mark all selected as read</a>
+	</div>
+        
+	<div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
+
+	<sql:query var="qryShoutsFull">
+	SELECT * FROM shouts
+	WHERE artistid=?
+	${showallclause}
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<c:set var="numItems" value="${qryShoutsFull.rowCount} " />
+	<c:choose>
+	<c:when test="${page > 0}"> 
+	<c:set var="page" value="${page} " />
+	</c:when>
+	<c:otherwise>
+	<c:set var="page" value="0 " />
+	</c:otherwise>
+	</c:choose>
+	<%
+	  int numItems = Integer.parseInt(((String)pageContext.getAttribute("numItems")).trim());
+	  int pageNum = Integer.parseInt(((String)pageContext.getAttribute("page")).trim());
+
+	  Hashtable Pages = pagesLink(numItems,50,pageNum,true,"","text",request.getQueryString());
+
+	  pageContext.setAttribute("offset",Pages.get("offset"));
+	  pageContext.setAttribute("thispage",Pages.get("thispage"));
+	  pageContext.setAttribute("pagetotal",Pages.get("pagetotal"));
+	%>
+
+	<sql:query var="qryShouts">
+	SELECT * FROM shouts,users
+	LEFT JOIN artists ON artists.userid=users.userid
+	WHERE shouts.userid=users.userid
+	AND shouts.artistid=?
+	${showallclause}
+	ORDER BY posted DESC
+	LIMIT ${offset},${thispage}
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<%= Pages.get("pages") %>
+
+	<c:forEach var="shout" items="${qryShouts.rows}">
+
+		<form name="editcomment_${shout.shoutid}">
+		<div class="comment" id="shout_${shout.shoutid}">
+		<div class="commentname">
+			<div class="commentdate"><fmt:formatDate value="${shout.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></div>
+			<c:if test="${shout.viewed == false}"><input type="checkbox" name="select_${shout.shoutid}" id="select_${shout.shoutid}" value="1" /></c:if>
+			<c:choose>
+			<c:when test="${shout.active == true}">
+			<a href="/Artists/${shout.dirname}/">${shout.username}</a>
+			</c:when>
+			<c:otherwise>
+			${shout.username}
+			</c:otherwise>
+			</c:choose>
+			</div>
+		<div class="commenttext clearAfter <c:if test="${shout.deleted == true}">commentdeleted</c:if>" id="shouttext_${shout.shoutid}">
+			<div class="commentprofilepic">
+			<c:if test="${shout.profilepic > 0}">
+				<c:choose>
+				<c:when test="${shout.active == true}">
+				<a href="/Artists/${shout.dirname}/"><img src="/profiles/${shout.profilepic}.s.${shout.profilepic_ext}" /></a>
+				</c:when>
+				<c:otherwise>
+				<img src="/profiles/${shout.profilepic}.s.${shout.profilepic_ext}" />
+				</c:otherwise>
+				</c:choose>
+			</c:if>
+			</div>
+			<c:set var="shouttext" value="${shout.comment}" />
+			<table><tr><td>
+			<%= formatText((String)pageContext.getAttribute("shouttext")) %>
+			</td></tr></table>
+			<div class="commentbuttons">
+			<button type="button" class="small" onClick="replyPM(${shout.userid},${shout.shoutid})">Reply PM</button>
+			<c:if test="${shout.deleted == false}"><button type="button" class="small" onClick="deleteShout(${shout.shoutid})">Delete</button></c:if>
+			</div>
+			<br clear="all" />
+		</div>
+		</div>
+		</form>
+
+		<c:if test="${shout.viewed == false}">
+		<script type="text/javascript">
+		selitems.push(${shout.shoutid});
+		</script>
+		</c:if>
+
+	</c:forEach>
+
+</c:when>
+</c:choose>
+
+</c:if>
+
+{% endblock %}

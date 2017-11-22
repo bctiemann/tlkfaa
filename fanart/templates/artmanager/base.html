@@ -34,7 +34,7 @@
             <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">Private Messages</a>
             <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "trading-tree" %}selected{% endif %}">Trading Tree</a>
             <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "coloring-cave" %}selected{% endif %}">Coloring Cave</a>
-            <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "contest" %}selected{% endif %}">Contests</a>
+            <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "contests" %}selected{% endif %}">Contests</a>
             <a href="{% url "artmanager:bulletins" %}" class="sectionend {% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "bulletins" %}selected{% endif %}">Bulletins</a>
 {#            <a href="{% url "artmanager:upload-history" %}" class="{% if page == "upload-history" %}selected{% endif %}">Upload History</a> #}
             <a href="{% url "artmanager:comments" %}" class="{% if page == "comments" %}selected{% endif %}">Comments</a>

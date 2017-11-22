@@ -1,1 +1,134 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_contests.jsp
+ArtManager component for managing the appearance of your gallery page.
+--%>
+
+<%@include file="inc_root/inc_functions.jsp"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:if test="${loggedin == 1}">
+
+<c:choose>
+<c:when test="${param.fnc == 'commit'}">
+
+	<sql:update var="updBannerText">
+	UPDATE artists SET
+	bannertext=?,
+	bannertext_min=?,
+	bannertextupdated=NOW()
+	WHERE artistid=?
+	<sql:param value="${param.bannertext}" />
+	<sql:param value="${param.bannertext_min}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:update>
+
+	Updated.
+
+</c:when>
+<c:otherwise>
+
+	<h2>Customize Your Gallery Appearance</h2>
+
+	<div class="pageinfo">
+
+	<p>You can customize the appearance of your page by adding a banner across the top or a collapsible announcement box.</p>
+
+	</div>
+
+
+	<h3 class="sectionheader">Banner</h3>
+
+	<div class="pageinfo">
+
+	<p>Upload a banner image to go at the top of your page. Optimal dimensions are 600 &times; 120 pixels; larger images will be scaled to fit.</p>
+
+	</div>
+
+	<form name="bannerform" id="bannerform">
+	<div id="banner"><jsp:include page="/api/upload_success.jsp?uploadop=banner" /></div>
+	<input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('bannerform','picture_upload','banner')">Upload</button>
+	<input type="hidden" name="uploadop" value="banner" />
+	</form>
+
+	<div class="pageinfo">
+	</div>
+
+	<sql:query var="qryCustomIcons">
+	SELECT icon,ext,type
+	FROM customicons
+	WHERE artistid=?
+	ORDER BY type
+	<sql:param value="${artistid_temp}" />
+	</sql:query>
+
+	<c:if test="${qryCustomIcons.rowCount > 0}">
+
+		<h3 class="sectionheader">Custom Icons (legacy)</h3>
+
+		<p>These icons appeared on your gallery page in the old site. They're shown here for your convenience.</p>
+
+		<c:forEach var="icon" items="${qryCustomIcons.rows}">
+			<img src="/Artwork/Artists/icons/${icon.icon}.${icon.ext}" />
+		</c:forEach>
+
+	</c:if>
+
+	<h3 class="sectionheader">Announcement Box</h3>
+
+	<div class="pageinfo">
+
+	<p>The announcement box appears below the banner, and is normally hidden (it can be expanded and viewed by clicking the tab). You can specify a "preview" line of text to appear when the banner is hidden.</p>
+
+	</div>
+
+	<c:set var="bannertext" value="${fn:replace(artist.bannertext,'<','&lt;')}" />
+	<c:set var="bannertext" value="${fn:replace(bannertext,'>','&gt;')}" />
+	<c:set var="bannertext_min" value="${fn:replace(artist.bannertext_min,'<','&lt;')}" />
+	<c:set var="bannertext_min" value="${fn:replace(bannertext_min,'>','&gt;')}" />
+
+	<form name="bannertextform" id="bannertextform" method="POST" action="ArtManager.jsp">
+	<table class="formtable">
+	<tr>
+	<td class="label">Preview Text</td>
+	<td class="data"><input class="std" name="bannertext_min" maxlength="80" value="${fn:replace(bannertext_min,'\"','&quot;')}" /></td>
+	</tr>
+	<tr>
+	<td class="label">Announcements</td>
+	<td class="data"><textarea name="bannertext">${bannertext}</textarea></td>
+	</tr>
+	<tr>
+	<td colspan="3" class="buttons">
+	<button type="button" onClick="refreshBannerPreview(this.form)">Preview</button>
+	<button type="submit">Save Changes</button>
+	</td>
+	</tr>
+	</table>
+	<input type="hidden" name="op" value="customize" />
+	<input type="hidden" name="fnc" value="commit" />
+	</form>
+
+	Preview:
+	<c:set var="bannertext" value="${artist.bannertext}" />
+	<div class="bannertextpreview" id="bannertextpreview">
+	<%= formatText((String)pageContext.getAttribute("bannertext")) %>
+	</div>
+
+</c:otherwise>
+</c:choose>
+
+</c:if>
+
+{% endblock %}

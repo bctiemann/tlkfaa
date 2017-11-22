@@ -1,1 +1,433 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_tradingtree.jsp
+ArtManager component for managing your Trading Tree offers.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" import="javazoom.upload.*,java.util.*,java.io.*,java.sql.*,javax.sql.*,javax.naming.*" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="characterid" value="${param.characterid}" integerOnly="true" />
+<fmt:parseNumber var="offerid" value="${param.offerid}" integerOnly="true" />
+<fmt:parseNumber var="claimid" value="${param.claimid}" integerOnly="true" />
+</c:catch>
+
+<c:if test="${loggedin == 1}">
+
+<c:choose>
+<c:when test="${artist.ispaid == false}">
+<jsp:include page="inc_notpaidfeature.jsp" />
+</c:when>
+<c:otherwise>
+
+<c:set var="offertype" value="icon" />
+<c:if test="${param.offertype == 'adoptable'}">
+<c:set var="offertype" value="adoptable" />
+</c:if>
+
+{% comment %}
+<c:choose>
+<c:when test="${param.uploadop == 'newoffer'}">
+
+	<c:if test="${param.offertype == 'adoptable'}">
+		<sql:query var="qryAdoptable">
+		SELECT * FROM offers
+		WHERE type='adoptable'
+		AND characterid=?
+		AND artistid=?
+		AND active=true
+		AND visible=true
+		<sql:param value="${characterid}" />
+		<sql:param value="${artist.artistid}" />
+		</sql:query>
+		<c:if test="${qryAdoptable.rowCount == 0}">
+			<sql:query var="qryCharacter">
+			SELECT * FROM characters
+			WHERE characterid=?
+			AND characters.artistid=?
+			<sql:param value="${characterid}" />
+			<sql:param value="${artist.artistid}" />
+			</sql:query>
+			<c:forEach var="character" items="${qryCharacter.rows}">
+
+				<c:choose>
+				<c:when test="${character.profilepic > 0}">
+					<sql:query var="qryCharacterPic">
+					SELECT * FROM pictures
+					WHERE pictureid=?
+					AND artistid=?
+					AND deleted IS NULL
+					<sql:param value="${character.profilepic}" />
+					<sql:param value="${artist.artistid}" />
+					</sql:query>
+					<c:set var="picturetype" value="picture" />
+				</c:when>
+				<c:when test="${character.profilepic_c > 0}">
+					<sql:query var="qryCharacterPic">
+					SELECT * FROM coloring_pics,coloring_base
+					WHERE basepic=coloring_baseid
+					AND coloring_picid=?
+					AND coloring_pics.artistid=?
+					<sql:param value="${character.profilepic_c}" />
+					<sql:param value="${artist.artistid}" />
+					</sql:query>
+					<c:set var="picturetype" value="ccpic" />
+				</c:when>
+				</c:choose>
+
+				<c:forEach var="ccpic" items="${qryCharacterPic.rows}">
+				<c:set var="characterpic" value="${ccpic}" scope="page" />
+				</c:forEach>
+
+				<c:set var="thumbheight" value="0" />
+				<c:if test="${qryCharacterPic.rowCount > 0}">
+					<c:set var="height" value="${characterpic.height}" />
+					<c:set var="width" value="${characterpic.width}" />
+					<%
+					  int width = Integer.parseInt((String)pageContext.getAttribute("width").toString());
+					  int height = Integer.parseInt((String)pageContext.getAttribute("height").toString());
+					  int thumbwidth = 120;
+					  float thumbheight = (float)height * ((float)thumbwidth/(float)width);
+					  pageContext.setAttribute("thumbheight",thumbheight);
+					%>
+				</c:if>
+
+				<c:set var="newtitle" value="${param.title}" />
+				<c:set var="newcomment" value="${param.comment}" />
+
+				<sql:transaction>
+				<sql:update var="updUpload">
+				INSERT INTO offers
+				(artistid,type,posted,title,comment,characterid,active,visible,thumbheight)
+				VALUES (?,?,NOW(),?,?,?,1,1,?)
+				<sql:param value="${artist.artistid}" />
+				<sql:param value="${param.offertype}" />
+				<sql:param value="${fn:substring(param.title,0,64)}" />
+				<sql:param value="${param.comment}" />
+				<sql:param value="${characterid}" />
+				<sql:param value="${thumbheight}" />
+				</sql:update>
+				<sql:query var="qryUpload" scope="session">
+				SELECT last_insert_id() AS offerid FROM offers
+				LIMIT 1
+				</sql:query>
+				<c:forEach var="row" items="${qryUpload.rows}">
+					<c:set var="offerid" value="${row.offerid}" scope="page" />
+				</c:forEach>
+				</sql:transaction>
+				<c:if test="${qryCharacterPic.rowCount > 0 && offerid > 0}">
+					<c:set var="basepath" value="${basepath}" scope="page" />
+					<c:set var="artistdir" value="${artist.dirname}" />
+					<c:set var="basename" value="${characterpic.basename}" />
+					<c:set var="artistid" value="${artist.artistid}" />
+					<c:set var="extension" value="${characterpic.extension}" />
+					<c:set var="ccpicid" value="${characterpic.coloring_picid}" />
+					<c:set var="picturetype" value="${picturetype}" />
+					<%
+					  String basepath = (String)pageContext.getAttribute("basepath");
+					  String extension = (String)pageContext.getAttribute("extension");
+					  String offerid = (String)pageContext.getAttribute("offerid").toString();
+					  String picturetype = (String)pageContext.getAttribute("picturetype");
+					  int thumbwidth = 120;
+					  String charpicfn = "";
+					  if (picturetype.equals("picture")) {
+					    String artistdir = (String)pageContext.getAttribute("artistdir");
+					    String basename = (String)pageContext.getAttribute("basename");
+					    charpicfn = basepath+"/Artists/"+artistdir+"/"+basename+"."+extension;
+					  } else if (picturetype.equals("ccpic")) {
+					    String ccpicid = (String)pageContext.getAttribute("ccpicid").toString();
+					    charpicfn = basepath+"/Artwork/coloring/"+ccpicid+"."+extension;
+					  }
+					  String newtfn = basepath+"/Artwork/offers/"+offerid+".s.jpg";
+					  File f = new File(charpicfn);
+					  File ft = new File(newtfn);
+					  InputStream ins = new FileInputStream(f);
+					  OutputStream outs = new FileOutputStream(ft);
+					  byte[] buf = new byte[1024];
+					  int len;
+					  while ((len = ins.read(buf)) > 0){
+					    outs.write(buf, 0, len);
+					  }
+					  ins.close();
+					  outs.close();
+
+					  String cmd = "";
+					  Runtime r = Runtime.getRuntime();
+					  Process p = null;
+					  cmd = "/usr/local/bin/mogrify -geometry "+thumbwidth+" -format jpg "+newtfn;
+					  p = r .exec(cmd);
+					%>
+				</c:if>
+
+				<c:set var="artistid" value="${artist.artistid}" scope="page" />
+				<%
+				    String artistid = (String)pageContext.getAttribute("artistid").toString();
+				    String offerid = (String)pageContext.getAttribute("offerid").toString();
+				    printLog("Artist " + artistid + " posted adoptable offerid " + offerid + ".");
+				%>
+			</c:forEach>
+		</c:if>
+	</c:if>
+
+</c:when>
+<c:when test="${param.fnc == 'remove' && offerid > 0}">
+
+	<sql:update var="updOffer">
+	UPDATE offers SET 
+	visible=false,
+	active=false
+	WHERE offerid=?
+	AND artistid=?
+	<sql:param value="${offerid}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:update>
+
+</c:when>
+<%--
+<c:when test="${param.fnc == 'acceptclaim' && claimid > 0}">
+
+	<sql:query var="qryClaim">
+	SELECT * FROM claims,offers
+	WHERE claims.offerid=offers.offerid
+	AND claimid=?
+	AND userid=?
+	<sql:param value="${claimid}" />
+	<sql:param value="${artist.userid}" />
+	</sql:query>
+	<c:forEach var="claim" items="${qryClaim.rows}">
+		Accepting claim ${claim.claimid}...
+		<c:choose>
+		<c:when test="${claim.type == 'icon'}">
+			<sql:update var="updIcon">
+			UPDATE claims
+			SET fulfilled=NOW()
+			WHERE claimid=?
+			AND userid=?
+			<sql:param value="${claimid}" />
+			<sql:param value="${artist.userid}" />
+			</sql:update>
+		</c:when>
+		<c:when test="${claim.type == 'adoptable'}">
+			<sql:query var="qryOffer">
+			SELECT * FROM offers,artists,characters
+			WHERE offers.artistid=artists.artistid
+			AND offers.characterid=characters.characterid
+			AND offers.offerid=?
+			<sql:param value="${claim.offerid}" />
+			</sql:query>
+			<c:forEach var="offer" items="${qryOffer.rows}">
+				${offer.charactername}
+				<c:choose>
+				<c:when test="${offer.profilepic > 0}">
+					<c:set var="commentadd" value="
+
+Previous owner's reference picture: http://${servername}/Picture.jsp?pictureid=${offer.profilepic}" />
+				</c:when>
+				<c:when test="${offer.profilepic_c > 0}">
+					<c:set var="commentadd" value="
+
+Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=${offer.profilepic_c}" />
+				</c:when>
+				</c:choose>
+				<sql:update var="updCharacter">
+				UPDATE characters
+				SET artistid=?,
+				description=?,
+				profilepic=0,
+				profilepic_c=0,
+				adopted=NOW(),
+				adoptedfrom=?
+				WHERE characterid=?
+				<sql:param value="${artist.artistid}" />
+				<sql:param value="${offer.description}${commentadd}" />
+				<sql:param value="${offer.artistid}" />
+				<sql:param value="${offer.characterid}" />
+				</sql:update>
+
+				<sql:update var="updOffer">
+				UPDATE offers
+				SET active=false,
+				visible=false
+				WHERE offerid=?
+				<sql:param value="${claim.offerid}" />
+				</sql:update>
+			</c:forEach>
+
+		</c:when>
+		</c:choose>
+	</c:forEach>
+
+</c:when>
+--%>
+</c:choose>
+{% endcomment %}
+
+<c:choose>
+<c:when test="${param.mode == 'yours' || artist.active == false}">
+
+	<c:if test="${artist.active == true}">
+	<div class="am_altpagelink"><a class="button" href="ArtManager.jsp?op=tradingtree">Offer Art</a></div>
+	</c:if>
+
+	<h2>For You from the Trading Tree</h2>
+
+	<div class="selector">
+	<a class="<c:if test="${offertype == 'icon'}">selected</c:if>" href="/ArtManager.jsp?op=tradingtree&mode=yours&offertype=icon">icons</a>
+	<a class="<c:if test="${offertype == 'adoptable'}">selected</c:if>" href="/ArtManager.jsp?op=tradingtree&mode=yours&offertype=adoptable">adoptables</a>
+	</div>
+
+	<jsp:include page="inc_root/inc_ttforyou.jsp?offertype=${offertype}&showall=1" />
+
+</c:when>
+<c:otherwise>
+
+	<div class="am_altpagelink"><a class="button" href="ArtManager.jsp?op=tradingtree&mode=yours">For You</a></div>
+
+	<h2>Offer Art on the Trading Tree</h2>
+
+	<div class="selector">
+	<a class="<c:if test="${offertype == 'icon'}">selected</c:if>" href="/ArtManager.jsp?op=tradingtree&offertype=icon">icons</a>
+	<a class="<c:if test="${offertype == 'adoptable'}">selected</c:if>" href="/ArtManager.jsp?op=tradingtree&offertype=adoptable">adoptables</a>
+	</div>
+
+	<div class="pageinfo">
+
+	<c:choose>
+	<c:when test="${offertype == 'icon'}">
+	<p>
+	<b>Icons:</b> Upload a picture that you can customize for other artists to use as a personalized avatar. Artists will apply at the Trading Tree for you to 
+	customize it according to the reference they provide.
+	<p>
+	</c:when>
+	<c:when test="${offertype == 'adoptable'}">
+	<p>
+	<b>Adoptables:</b> Select a character from your Characters section and put it up for adoption. Artists will apply to adopt the character at the Trading Tree,
+	and you can choose which one wins.
+	<p>
+	</c:when>
+	</c:choose>
+
+	</div>
+
+	<%--
+	<div class="offerselect_hidden" id="offerselect_icon">
+	<input type="file" name="uploadfile" />
+	</div>
+	<div class="offerselect_hidden" id="offerselect_adoptable">
+	<span id="charactername"></span><input type="hidden" name="characterid" value="" /><a href="pop_pickcharacter.jsp?op=tradingtree" rel="shadowbox;width=500;height=600">select character</a>
+	</div>
+	--%>
+
+	<c:if test="${offerid > 0}">
+	<sql:query var="qryOffer">
+	SELECT * FROM offers
+	WHERE offerid=?
+	AND artistid=?
+	AND visible=true
+	ORDER BY posted DESC
+	<sql:param value="${offerid}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+	</c:if>
+
+	<c:choose>
+	<c:when test="${offerid > 0 && qryOffer.rowCount > 0}">
+
+		<jsp:include page="/ajax_edittradingtree.jsp?offerid=${offerid}" />
+
+	</c:when>
+	<c:otherwise>
+
+		<c:if test="${characterid > 0}">
+		<sql:query var="qryCharacter">
+		SELECT * FROM characters
+		WHERE characterid=?
+		AND artistid=?
+		<sql:param value="${characterid}" />
+		<sql:param value="${artist.artistid}" />
+		</sql:query>
+		<c:forEach var="character" items="${qryCharacter.rows}">
+			<c:set var="preloadcharacter" value="${character}" />
+		</c:forEach>
+		</c:if>
+
+		<form name="offerform_new" id="offerform_new" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label">Post new ${offertype}</td>
+		<td class="data" id="offerselect">
+		<c:choose>
+		<c:when test="${offertype == 'icon'}">
+		<input type="file" name="uploadfile" id="uploadfile" validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." />
+		</c:when>
+		<c:when test="${offertype == 'adoptable'}">
+		<span id="charactername">
+			<c:if test="${qryCharacter.rowCount > 0}">
+				${preloadcharacter.charactername}
+			</c:if>
+		</span><input type="hidden" name="characterid" value="<c:if test="${qryCharacter.rowCount > 0}">${preloadcharacter.characterid}</c:if>" validate="hasvalue" message="You must select a character to put up for adoption." /><a href="pop_pickcharacter.jsp?op=tradingtree" rel="shadowbox;width=500;height=600">select character</a>
+		</c:when>
+		</c:choose>
+		</td>
+		</tr>
+		<tr>
+		<td class="label">Title</td>
+		<td class="data"><input type="text" class="std" name="title" validate="hasvalue" message="You must enter a title for this offer." /></td>
+		</tr>
+		<tr>
+		<td class="label">Comment</td>
+		<td class="data"><textarea name="comment"></textarea></td>
+		</tr>
+		<tr>
+		<td colspan="2" class="buttons">
+		<c:choose>
+		<c:when test="${offertype == 'icon'}">
+		<button type="button" onClick="validateForm('offerform_new','uploadPicture(\'offerform_new\',\'uploadfile\',\'offerslayout\',null,true)')">Post Icon Offer</button>
+		</c:when>
+		<c:when test="${offertype == 'adoptable'}">
+		<button type="button" onClick="validateForm('offerform_new','document.offerform_new.submit()')">Post Adoptable</button>
+		</c:when>
+		</c:choose>
+		</td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="tradingtree" />
+		<input type="hidden" name="uploadop" value="newoffer" />
+		<input type="hidden" name="todo" value="newoffer" />
+		<input type="hidden" name="offertype" value="${offertype}" />
+		</form>
+
+		<div id="offerslayout-foo">
+
+{#		<jsp:include page="/api/upload_success.jsp?op=newoffer&offertype=${offertype}" />#}
+
+		<br clear="left" />
+
+		</div>
+{% comment %}
+
+	</c:otherwise>
+	</c:choose>
+{% endcomment %}
+
+</c:otherwise>
+</c:choose>
+
+</c:otherwise>
+</c:choose>
+
+</c:if>
+
+{% endblock %}

@@ -1,1 +1,63 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_upload.jsp
+ArtManager component for uploading new pictures.
+--%>
+
+<%@include file="inc_root/inc_functions.jsp"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:set var="minpicturesnoguidelines" value="2" />
+
+
+<c:if test="${loggedin == 1}">
+
+<sql:query var="qryPending">
+SELECT * FROM pending
+WHERE artistid=?
+<sql:param value="${artist.artistid}" />
+</sql:query>
+
+<div class="am_altpagelink"><a class="button" href="ArtManager.jsp?op=pending">Pending Uploads (<span class="pending-uploads">${qryPending.rowCount}</span>)</a></div>
+
+<h2>Upload Artwork</h2>
+
+<div class="pageinfo">
+
+<p>You are responsible for knowing and adhering to the <a href="javascript:nop()" onClick="toggleGuidelines()">Guidelines</a> for appropriate content for this site.</p>
+
+<p>Please remember that the two most important requirements for your submitted artwork are:
+<ul>
+<li>It must be your own original work</li>
+<li>It must be on-topic (relating in some way to <i>The Lion King</i>)
+</ul>
+
+</div>
+
+<div id="guidelines" <c:if test="${artist.numpictures < minpicturesnoguidelines}">style="display: block;"</c:if>>
+<c:if test="${artist.numpictures < minpicturesnoguidelines}"><jsp:include page="/Guidelines.html" /></c:if>
+</div>
+
+<div id="uploadsuccess"></div>
+<div id="loading"></div>
+
+<div id="uploadformdiv">
+<jsp:include page="ajax_uploadform.jsp" />
+</div>
+
+</c:if>
+
+<input type="hidden" id="edit_artistid" value="${artist.artistid}" />
+
+{% endblock %}

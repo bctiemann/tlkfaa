@@ -1,1 +1,245 @@
 {% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+<%--
+inc_bulletins.jsp
+ArtManager component for managing your bulletins.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:if test="${loggedin == 1}">
+
+<c:choose>
+<c:when test="${artist.ispaid == false}">
+<jsp:include page="inc_notpaidfeature.jsp" />
+</c:when>
+<c:otherwise>
+
+<h2>Manage Bulletins</h2>
+
+<c:choose>
+<c:when test="${param.fnc == 'post'}">
+
+	<c:choose>
+	<c:when test="${artist.artistid == 79}">
+		<c:set var="admin" value="1" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="admin" value="0" />
+	</c:otherwise>
+	</c:choose>
+
+	<sql:transaction>
+	<sql:update var="updBulletin">
+	INSERT INTO bulletins (artistid,posted,title,bulletin,admin,showemail)
+	VALUES (?,NOW(),?,?,?,?)
+	<sql:param value="${artist.artistid}" />
+	<sql:param value="${fn:substring(param.title,0,255)}" />
+	<sql:param value="${param.bulletin}" />
+	<sql:param value="${admin}" />
+	<sql:param value="${param.showemail}" />
+	</sql:update>
+	<sql:query var="qryBulletin">
+	SELECT last_insert_id() AS bulletinid FROM bulletins
+	LIMIT 1
+	</sql:query>
+	<c:set var="bulletinid" value="${qryBulletin.rows[0].bulletinid}" />
+	</sql:transaction>
+
+	Your bulletin has been posted.
+
+	<c:set var="artistname" value="${artist.artistname}" />
+	<c:set var="title" value="${param.title}" />
+	<c:set var="bulletin" value="${param.bulletin}" />
+	<%
+	    String bulletinid = pageContext.getAttribute("bulletinid").toString();
+	    String artistname = (String)pageContext.getAttribute("artistname");
+	    String title = (String)pageContext.getAttribute("title");
+	    String bulletin = (String)pageContext.getAttribute("bulletin");
+	    sendEmail("fanart@lionking.org", "btman@lionking.org", "Bulletin posted by " + artistname, "Bulletin " + bulletinid + " was posted by " + artistname + ":\n\n" + title + "\n\n" + bulletin, false);
+	    printLog("Bulletin posted by " + artistname + ".");
+	%>
+
+</c:when>
+<c:when test="${param.fnc == 'edit'}">
+
+	<sql:update var="updBulletin">
+	UPDATE bulletins SET 
+	title=?,
+	bulletin=?,
+	showemail=?
+	WHERE bulletinid=?
+	AND artistid=?
+	AND published=false
+	<sql:param value="${fn:substring(param.title,0,255)}" />
+	<sql:param value="${param.bulletin}" />
+	<sql:param value="${param.showemail}" />
+	<sql:param value="${param.bulletinid}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:update>
+
+	Your changes have been saved.
+
+	<c:set var="bulletinid" value="${param.bulletinid}" />
+	<c:set var="artistname" value="${artist.artistname}" />
+	<%
+	    String bulletinid = (String)pageContext.getAttribute("bulletinid");
+	    String artistname = (String)pageContext.getAttribute("artistname");
+	    printLog("Bulletin " + bulletinid + " edited by " + artistname + ".");
+	%>
+
+</c:when>
+<c:when test="${param.fnc == 'delete'}">
+
+	<sql:update var="updBulletin">
+	DELETE FROM bulletins
+	WHERE bulletinid=?
+	AND artistid=?
+	<sql:param value="${param.bulletinid}" />
+	<sql:param value="${artist.artistid}" />
+	</sql:update>
+
+	Your bulletin has been deleted.
+
+	<c:set var="bulletinid" value="${param.bulletinid}" />
+	<c:set var="artistname" value="${artist.artistname}" />
+	<%
+	    String bulletinid = (String)pageContext.getAttribute("bulletinid");
+	    String artistname = (String)pageContext.getAttribute("artistname");
+	    printLog("Bulletin " + bulletinid + " deleted by " + artistname + ".");
+	%>
+
+</c:when>
+<c:otherwise>
+
+	<h3 class="sectionheader">Post New Bulletin</h3>
+	<div class="bulletin">
+
+	<form name="bulletin_new" id="bulletin_new" method="POST" action="ArtManager.jsp">
+	<table class="formtable">
+	<tr>
+	<td class="label">Title</td>
+	<td class="data"><input type="text" class="std" name="title" maxlength="255" validate="hasvalue" message="You must enter a title." /></td>
+	</tr>
+	<tr>
+	<td class="label">Bulletin</td>
+	<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
+	</tr>
+	<tr>
+	<td colspan="2" class="buttons">
+	<button type="button" onClick="validateForm('bulletin_new','document.bulletin_new.submit()')">Post</button>   
+	</td>
+	</tr>
+	</table>
+	<input type="hidden" name="op" value="bulletins" />
+	<input type="hidden" name="fnc" value="post" />
+	</form>
+	</div>
+
+
+	<h3 class="sectionheader">Unpublished Bulletins</h3>
+
+	<sql:query var="qryBulletinsUnPub">
+	SELECT * FROM bulletins
+	WHERE artistid=?
+	AND published=false
+	ORDER BY posted DESC
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<c:forEach var="bulletin" items="${qryBulletinsUnPub.rows}">
+
+		<div class="bulletin">
+		<form name="bulletin_${bulletin.bulletinid}" id="bulletin_${bulletin.bulletinid}" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label">Posted</td>
+		<td class="data"><fmt:formatDate value="${bulletin.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></td>
+		</tr>
+		<tr>
+		<td class="label">Title</td>
+		<c:set var="title" value="${bulletin.title}" />
+		<td class="data"><input type="text" class="std" name="title" maxlength="255" value="<%= sanitizeHTML((String)pageContext.getAttribute("title"),255) %>" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
+		</tr>
+		<tr>
+		<td class="label">Bulletin</td>
+		<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty.">${bulletin.bulletin}</textarea></td>
+		</tr>
+		<tr>
+		<td colspan="2" class="buttons">
+		<button type="button" onClick="validateForm('bulletin_${bulletin.bulletinid}','document.bulletin_${bulletin.bulletinid}.submit()')">Edit</button>
+		<button type="button" onClick="deleteBulletin(form,${bulletin.bulletinid})">Delete</button>
+		</td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="bulletins" />
+		<input type="hidden" name="fnc" value="edit" />
+		<input type="hidden" name="bulletinid" value="${bulletin.bulletinid}" />
+		</form>
+		</div>
+
+	</c:forEach>
+
+
+	<h3 class="sectionheader">Published Bulletins</h3>
+
+	<sql:query var="qryBulletinsPub">
+	SELECT * FROM bulletins
+	WHERE artistid=?
+	AND published=true
+	ORDER BY posted DESC
+	LIMIT 20
+	<sql:param value="${artist.artistid}" />
+	</sql:query>
+
+	<c:forEach var="bulletin" items="${qryBulletinsPub.rows}">
+
+		<c:set var="bulletintext" value="${bulletin.bulletin}" />
+
+		<div class="bulletin">
+		<form name="bulletin_${bulletin.bulletinid}" method="POST" action="ArtManager.jsp">
+		<table class="formtable">
+		<tr>
+		<td class="label">Posted</td>
+		<td class="data">
+		<button class="rightbutton" type="button" onClick="deleteBulletin(form,${bulletin.bulletinid})">Delete</button>
+		<fmt:formatDate value="${bulletin.posted}" type="both" pattern="HH:mm E M/d/yyyy" />
+		</td>
+		</tr>
+		<tr>
+		<td class="label">Title</td>
+		<td class="data">${bulletin.title}</td>
+		</tr>
+		<tr>
+		<td class="label">Bulletin</td>
+		<td class="data"><%= formatText((String)pageContext.getAttribute("bulletintext")) %></td>
+		</tr>
+		</table>
+		<input type="hidden" name="op" value="bulletins" />
+		<input type="hidden" name="fnc" value="edit" />
+		<input type="hidden" name="bulletinid" value="${bulletin.bulletinid}" />
+		</form>
+		</div>
+
+	</c:forEach>
+
+</c:otherwise>
+</c:choose>
+
+</c:otherwise>
+</c:choose>
+
+</c:if>
+
+{% endblock %}
