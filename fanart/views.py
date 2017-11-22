@@ -1259,7 +1259,7 @@ class OfferStatusView(APIView):
             if claim.picture:
                 response[claim.id] = {
                     'thumbnail_url': claim.thumbnail_url,
-                    'thumbnail_done': os.path.exists(claim.thumbnail)
+                    'thumbnail_done': claim.thumbnail_created,
                 }
         return Response(response)
 
@@ -1320,7 +1320,7 @@ class ColoringPictureStatusView(APIView):
             if coloring_picture.picture and coloring_picture.filename:
                 response[coloring_picture.id] = {
                     'thumbnail_url': coloring_picture.thumbnail_url,
-                    'thumbnail_done': os.path.exists(coloring_picture.thumbnail)
+                    'thumbnail_done': coloring_picture.thumbnail_created,
                 }
         return Response(response)
 

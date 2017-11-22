@@ -1,5 +1,9 @@
 {% load bbcode_tags %}
 
+<script type="text/javascript">
+var refreshingThumbs = false;
+</script>
+
 {% for colored_picture in coloring_base.coloringpicture_set.all %}
     <a name="{{ colored_picture.id }}"></a>
     <div class="ccpic">
@@ -19,7 +23,19 @@
             </tr>
         </table>
     </div>
+
+{% if not colored_picture.thumbnail_created %}
+<script type="text/javascript">
+refreshingThumbs = true;
+</script>
+{% endif %}
 {% endfor %}
+
+<script type="text/javascript">
+if (refreshingThumbs) {
+    refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+}
+</script>
 
 <div id="progress">
     <div class="bar" style="width: 0%;"></div>

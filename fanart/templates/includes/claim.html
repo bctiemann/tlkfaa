@@ -63,6 +63,10 @@ $(function () {
         },
     });
 });
+
+{% if not claim.thumbnail_created %}
+refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+{% endif %}
 </script>
                             </div>
                         {% endif %}

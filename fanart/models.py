@@ -717,6 +717,10 @@ class ColoringPicture(models.Model):
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
+    def thumbnail_created(self):
+        return os.path.exists(self.thumbnail)
+
+    @property
     def url(self):
         return '{0}Artwork/coloring/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
 
@@ -831,6 +835,10 @@ class TradingClaim(models.Model):
         if os.path.exists(self.thumbnail):
             return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def thumbnail_created(self):
+        return os.path.exists(self.thumbnail)
 
     @property
     def url(self):
