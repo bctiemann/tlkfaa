@@ -565,7 +565,7 @@ function confirmDeactivate() {
         resizable: false,
         modal: true,
         buttons: {
-            "Dectivate": function() {
+            "Deactivate": function() {
                 var url = $('#user_mode_form').attr('action');
                 var params = {
                     is_artist: false,
