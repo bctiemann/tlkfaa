@@ -1619,10 +1619,12 @@ class RemoveSocialMediaIdentityView(DeleteView):
 class UploadProfilePicView(UpdateView):
     model = models.User
     form_class = forms.UploadProfilePicForm
-    template_name = 'includes/claim.html'
 
     def get_object(self):
-        return self.request.user
+        user = self.request.user
+        self.old_profile_picture = user.profile_picture
+        self.old_profile_pic_thumbnail_path = user.profile_pic_thumbnail_path
+        return user
 
     def form_valid(self, form):
         response = {'success': False}
@@ -1633,12 +1635,18 @@ class UploadProfilePicView(UpdateView):
 #        self.object.date_uploaded = timezone.now()
 
         try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_pic_thumbnail))
+            if self.old_profile_picture:
+                os.remove(self.old_profile_picture.path)
+            if self.old_profile_pic_thumbnail_path:
+                os.remove(self.old_profile_pic_thumbnail_path)
         except OSError:
             pass
 
 #        super(UploadProfilePicView, self).form_valid(form)
+        if self.object.profile_pic_id:
+            self.object.profile_pic_id = None
+            self.object.profile_pic_ext = ''
+
         self.object.save(update_thumbs=True)
 
         return JsonResponse(response)
@@ -1654,7 +1662,33 @@ class ProfilePicStatusView(APIView):
         response = {}
         if request.user.profile_picture:
             response = {
+                'url': request.user.profile_pic_url,
                 'thumbnail_url': request.user.profile_pic_thumbnail_url,
                 'thumbnail_done': request.user.profile_pic_thumbnail_created,
             }
         return Response(response)
+
+
+class RemoveProfilePicView(UpdateView):
+    model = models.User
+    form_class = forms.RemoveProfilePicForm
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = {'success': True}
+
+        logger.info(self.object.profile_picture.name)
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_picture.name))
+            os.remove(self.object.profile_pic_thumbnail_path)
+        except OSError:
+            pass
+
+        self.object.profile_picture = None
+        self.object.profile_width = None
+        self.object.profile_height = None
+        self.object.save()
+
+        return JsonResponse(response)

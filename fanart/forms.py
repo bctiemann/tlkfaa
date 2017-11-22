@@ -172,3 +172,10 @@ class UploadProfilePicForm(forms.ModelForm):
         fields = ['profile_picture']
 
 
+class RemoveProfilePicForm(forms.ModelForm):
+
+    class Meta:
+        model = models.User
+        fields = []
+
+

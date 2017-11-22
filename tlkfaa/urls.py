@@ -111,6 +111,7 @@ urlpatterns = [
 
     url(r'^profile-pic/upload/$', fanart_views.UploadProfilePicView.as_view(), name='upload-profile-pic'),
     url(r'^profile-pic/upload/status/$', fanart_views.ProfilePicStatusView.as_view(), name='profile-pic-status'),
+    url(r'^profile-pic/remove/$', fanart_views.RemoveProfilePicView.as_view(), name='remove-profile-pic'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
 ]

@@ -262,10 +262,11 @@ ORDER BY fanart_user.sort_name
     @property
     def profile_pic_thumbnail_url(self):
 #        return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
-#        return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
 
-        if self.profile_pic_thumbnail_created:
+        if self.profile_picture and self.profile_pic_thumbnail_created:
             return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
+        elif self.profile_pic_id:
+            return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property

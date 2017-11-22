@@ -415,8 +415,10 @@ console.log(data);
 }
 
 function removeProfilePic() {
-  var url = "/ajax_upload.jsp?uploadop=removeprofilepic";
-  $('#profilepic').load(url);
+  var url = '/profile-pic/remove/';
+  $.post(url, {}, function(data) {
+    $('#profilepic').hide();
+  });
 }
 
 function removeBanner() {
