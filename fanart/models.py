@@ -19,7 +19,7 @@ import os
 import re
 
 from fanart.utils import dictfetchall
-from fanart.tasks import create_thumbnails
+from fanart.tasks import process_images
 
 import logging
 logger = logging.getLogger(__name__)
@@ -348,7 +348,9 @@ ORDER BY fanart_user.sort_name
         super(User, self).save(*args, **kwargs)
         logger.info(self.profile_picture)
         if update_thumbs:
-            create_thumbnails.apply_async(('User', self.id,), countdown=20)
+            process_images.apply_async(('User', self.id, 'small'), countdown=20)
+            if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
+                process_images.apply_async(('User', self.id, 'profile'), countdown=20)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
@@ -422,11 +424,11 @@ class Picture(models.Model):
 
     @property
     def preview_width(self):
-        return settings.PREVIEW_WIDTH
+        return settings.THUMB_SIZE['large']
 
     @property
     def preview_height(self):
-        return int(self.height * settings.PREVIEW_WIDTH / self.width)
+        return int(self.height * settings.THUMB_SIZE['large'] / self.width)
 
     @property
     def thumb_height_x2(self):
@@ -727,20 +729,20 @@ class ColoringPicture(models.Model):
 
     @property
     def preview_width(self):
-        return settings.PREVIEW_WIDTH
+        return settings.THUMB_SIZE['large']
 
     @property
     def preview_height(self):
-        return int(self.height * settings.PREVIEW_WIDTH / self.width)
+        return int(self.height * settings.THUMB_SIZE['large'] / self.width)
 
 
     @property
     def thumb_width(self):
-        return settings.THUMB_WIDTH
+        return settings.THUMB_SIZE['small']
 
     @property
     def thumb_height(self):
-        return int(self.height * settings.THUMB_WIDTH / self.width)
+        return int(self.height * settings.THUMB_SIZE['small'] / self.width)
 
     @property
     def thumb_height_x2(self):
@@ -754,7 +756,7 @@ class ColoringPicture(models.Model):
         super(ColoringPicture, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
-            create_thumbnails.apply_async(('ColoringPicture', self.id,), countdown=20)
+            process_images.apply_async(('ColoringPicture', self.id, 'small'), countdown=20)
 
 
 class TradingOffer(models.Model):
@@ -850,7 +852,7 @@ class TradingClaim(models.Model):
         super(TradingClaim, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
-            create_thumbnails.apply_async(('TradingClaim', self.id,), countdown=20)
+            process_images.apply_async(('TradingClaim', self.id, 'small'), countdown=20)
 
     def get_absolute_url(self):
         return reverse('upload-claim', kwargs={'claim_id': self.id})

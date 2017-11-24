@@ -67,7 +67,10 @@ def create_thumbnail(model, picture_object, thumb_size):
         filename_parts = picture_object.profile_picture.name.split('.')
         basename = '.'.join(filename_parts[:-1])
         extension = filename_parts[-1].lower()
-        new_image_path = '{0}/{1}.s.{2}'.format(settings.MEDIA_ROOT, basename, extension)
+        if thumb_size == 'small':
+            new_image_path = '{0}/{1}.s.{2}'.format(settings.MEDIA_ROOT, basename, extension)
+        else:
+            new_image_path = image_path
         orig_height = picture_object.profile_height
         orig_width = picture_object.profile_width
 
@@ -77,16 +80,27 @@ def create_thumbnail(model, picture_object, thumb_size):
 
     return im.size
 
+def resize_image(model, picture_object, thumb_size):
+    logger.info('Resizing {0} {1} to {2} px'.format(model, picture_object.id, max_pixels))
+    max_pixels = settings.IMAGE_SIZE[model]
+
+    if model == 'User':
+        pass
+
+    return None, None
+
 @shared_task
-def create_thumbnails(model, object_id):
+def process_images(model, object_id, thumb_size='small'):
     from fanart import models
     model_class = getattr(models, model)
     picture_object = model_class.objects.get(pk=object_id)
-    width, height = create_thumbnail(model, picture_object, 'small')
+    width, height = create_thumbnail(model, picture_object, thumb_size)
 #    picture_object.width_thumb_small, picture_object.height_thumb_small = create_thumbnail(picture_object, 'small')
 #    picture_object.width_thumb_large, picture_object.height_thumb_large = create_thumbnail(picture_object, 'large')
 #    picture_object.thumb_small = '{0}/{1}'.format(settings.THUMB_SIZE['small'], picture_object.file.name)
 #    picture_object.thumb_large = '{0}/{1}'.format(settings.THUMB_SIZE['large'], picture_object.file.name)
-    picture_object.generated_thumbs = True
+#    picture_object.generated_thumbs = True
     picture_object.save(update_thumbs=False)
 
+#@shared_task
+#def resize_image(model, object_id):
