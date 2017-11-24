@@ -185,6 +185,7 @@ class UploadView(TemplateView):
 
         context['replacing_picture'] = replacing_picture
         context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
+        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
 
         return context
 
@@ -234,6 +235,13 @@ class PictureFormView(DetailView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+
+class TagCharactersView(TemplateView):
+    template_name = 'artmanager/tag_characters.html'
+
+    def get(self, request, *args, **kwargs):
+        return super(TagCharactersView, self).get(request, *args, **kwargs)
 
 
 class FoldersView(TemplateView):

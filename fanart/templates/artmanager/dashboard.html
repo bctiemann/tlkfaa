@@ -34,7 +34,7 @@
 	<td class="label">Profile Picture</td>
 	<td class="data">
         {% if user.profile_pic_id or user.profile_picture %}
-		<a href="{{ user.profile_pic_url }}" rel="shadowbox"><img class="thumb" src="{{ user.profile_pic_thumbnail_url }}" /></a>
+		<a href="{{ user.profile_pic_url }}" rel="shadowbox"><img class="thumb" src="{{ user.profile_pic_url }}" /></a>
         {% else %}
 		(none)
         {% endif %}

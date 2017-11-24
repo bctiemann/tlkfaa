@@ -480,6 +480,14 @@ class Picture(models.Model):
             return Picture.objects.filter(user=self.artist, folder=None)
         return self.folder.picture_set
 
+    @property
+    def keywords_string(self):
+        return ','.join([t.tag for t in self.tags.all()])
+
+    @property
+    def character_id_list(self):
+        return ','.join([str(pc.character.id) for pc in self.picturecharacter_set.all()])
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)
 

@@ -1,0 +1,11 @@
+<input type="hidden" name="characters" id="characterstagged_{{ obj }}" value="{{ taglist }}" />
+<table class="formtable tagcharacters">
+{% for pc in picture.picturecharacter_set.all %}
+    <tr>
+        <td><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></td>
+        <td>{% if pc.character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=pc.character.owner.dir_name %}">{{ pc.character.owner.username }}</a>{% endif %}</td>
+        <td><a href="javascript:nop()" onClick="tagCharacter(${character.characterid},'remove','{{ obj }}')">remove</a></td>
+    </tr>
+{% endfor %}
+</table>
+

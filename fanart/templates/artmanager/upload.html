@@ -3,7 +3,9 @@
 
 {% block am_content %}
 
-<div class="am_altpagelink"><a class="button" href="{% url "artmanager:pending" %}">Pending Uploads (<span class="pending-uploads">{{ user.pending_set.count }}</span>)</a></div>
+<div class="am_altpagelink">
+    <a class="button" href="{% url "artmanager:pending" %}">Pending Uploads (<span class="pending-uploads">{{ user.pending_set.count }}</span>)</a>
+</div>
 
 <h2>Upload Artwork</h2>
 

@@ -23,6 +23,7 @@ via AJAX after a picture is uploaded.
 
 <c:set var="replacement" value="0" />
 
+{% if replacing_picture %}
 <c:if test="${replace > 0}">
 
 	<sql:query var="qryReplacePending">
@@ -34,6 +35,10 @@ via AJAX after a picture is uploaded.
 	</sql:query>
 
 	<c:if test="${qryReplacePending.rowCount == 0}">
+
+                {% with picture=replacing_picture %}
+                {% include "includes/picture.html" %}
+                {% endwith %}
 
 		<sql:query var="qryReplace">
 		SELECT * FROM pictures
@@ -82,7 +87,7 @@ via AJAX after a picture is uploaded.
 	</c:if>
 
 </c:if>
-
+{% endif %}
 
 <form name="uploadform" id="uploadform" method="POST" action="ArtManager.jsp" enctype="multipart/form-data">
 <table class="formtable">
@@ -114,7 +119,9 @@ WHERE pictureid=?
 {% if replacing_picture.picturecharacter_set.exists %}
 <c:choose>
 <c:when test="${qryPictureCharacters.rowCount > 0}">
+        {% with obj="new" taglist=replacing_picture.character_id_list %}
         {% include "artmanager/tag_characters.html" %}
+        {% endwith %}
 	<jsp:include page="ajax_tagcharacters.jsp?obj=new&taglist=${taglist}" />
 	<script type="text/javascript">
 	setupAutocompleteCharacter('new',"tagCharacter(ui.item.characterid,'add','new')");
@@ -145,8 +152,9 @@ WHERE pictureid=?
 <td class="label">Keywords
 <div class="charcount">Comma separated</div>
 </td>
-<td class="data"><input type="text" name="keywords" value="${fn:replace(replacepic.keywords,'\"','&quot;')}" class="std" id="keywords_new" /></td>
+<td class="data"><input type="text" name="keywords" value="{{ replacing_picture.keywords_string }}" class="std" id="keywords_new" /></td>
 </tr>
+{% if user.auto_approve %}
 <c:choose>
 <c:when test="${artist.autoapprove == true}">
 	<tr>
@@ -154,6 +162,7 @@ WHERE pictureid=?
 	<td class="data inputlabels"><input type="checkbox" name="forceapprove" id="forceapprove" value="1"> <label for="forceapprove">Have this picture manually approved by the administrator</label></td>
 	</tr>
 </c:when>
+{% else %}
 <c:otherwise>
 	<tr>
 	<td class="label">Notes to Administrator</td>
@@ -165,6 +174,7 @@ WHERE pictureid=?
 	</tr>
 </c:otherwise>
 </c:choose>
+{% endif %}
 {% if replacing_picture %}
 <c:if test="${replacement > 0}">
 	<tr>

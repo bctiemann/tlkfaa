@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^artwork/$', artmanager_views.ArtworkView.as_view(), name='artwork'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/$', artmanager_views.PictureDetailView.as_view(), name='artwork-picture-detail'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/edit/$', artmanager_views.PictureFormView.as_view(), name='artwork-picture-form'),
+    url(r'^artwork/tag_characters/(?P<obj>(new|[0-9]+))/$', artmanager_views.TagCharactersView.as_view(), name='tag-characters'),
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),
     url(r'^artwall/$', artmanager_views.ArtWallView.as_view(), name='artwall'),
     url(r'^characters/$', artmanager_views.CharactersView.as_view(), name='characters'),

@@ -1223,7 +1223,8 @@ function selectCharacter(characterid) {
 }
 
 function setupTagCharacters(pictureid,obj) {
-  var url = "/ajax_tagcharacters.jsp?obj="+obj;
+//  var url = "/ajax_tagcharacters.jsp?obj="+obj;
+  var url = '/ArtManager/artwork/tag_characters/' + obj + '/';
   if (pictureid) {
     url += "&pictureid="+pictureid
   }
