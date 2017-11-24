@@ -180,7 +180,9 @@ class UploadView(TemplateView):
         if replacing_picture_id:
             try:
                 replacing_picture = models.Picture.objects.get(pk=replacing_picture_id, artist=self.request.user)
-            except:
+                context['tagged_characters'] = [pc.character for pc in replacing_picture.picturecharacter_set.all()]
+                context['tag_list'] = ','.join([str(character.id) for character in context['tagged_characters']])
+            except models.Picture.DoesNotExist:
                 pass
 
         context['replacing_picture'] = replacing_picture
@@ -213,7 +215,7 @@ class ArtworkView(TemplateView):
         if folder_id:
             try:
                 folder = models.Folder.objects.get(pk=folder_id, user=self.request.user)
-            except:
+            except models.Folder.DoesNotExist:
                 pass
 
         pictures = self.request.user.picture_set.filter(folder=folder)
@@ -242,6 +244,18 @@ class TagCharactersView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         return super(TagCharactersView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(TagCharactersView, self).get_context_data(**kwargs)
+
+        tag_list = self.request.GET.get('taglist', None)
+        if tag_list:
+            context['tag_list'] = tag_list
+            context['tagged_characters'] = models.Character.objects.filter(pk__in=tag_list.split(','))
+
+        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
+
+        return context
 
 
 class FoldersView(TemplateView):

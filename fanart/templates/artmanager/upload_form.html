@@ -1,29 +1,14 @@
-<%--
-ajax_uploadform.jsp
-AJAX helper to display the picture upload form. Invoked inline on inc_upload.jsp, and also repainted
-via AJAX after a picture is uploaded.
---%>
-
-<%@include file="inc_root/inc_functions.jsp"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="replace" value="${param.replace}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${loggedin == 1}">
-
-<c:set var="replacement" value="0" />
-
 {% if replacing_picture %}
+
+    Replacing picture:
+
+    {% with picture=replacing_picture %}
+        {% include "includes/picture.html" %}
+    {% endwith %}
+
+{% endif %}
+
+{% comment %}
 <c:if test="${replace > 0}">
 
 	<sql:query var="qryReplacePending">
@@ -35,10 +20,6 @@ via AJAX after a picture is uploaded.
 	</sql:query>
 
 	<c:if test="${qryReplacePending.rowCount == 0}">
-
-                {% with picture=replacing_picture %}
-                {% include "includes/picture.html" %}
-                {% endwith %}
 
 		<sql:query var="qryReplace">
 		SELECT * FROM pictures
@@ -87,7 +68,7 @@ via AJAX after a picture is uploaded.
 	</c:if>
 
 </c:if>
-{% endif %}
+{% endcomment %}
 
 <form name="uploadform" id="uploadform" method="POST" action="ArtManager.jsp" enctype="multipart/form-data">
 <table class="formtable">
@@ -106,14 +87,6 @@ via AJAX after a picture is uploaded.
 <tr>
 <td class="label">Characters</td>
 <td class="data">
-<sql:query var="qryPictureCharacters">
-SELECT * FROM picturecharacters
-WHERE pictureid=?
-<sql:param value="${replacepic.pictureid}" />
-</sql:query>
-<c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
-	<c:set var="taglist" value="${taglist},${picturecharacter.characterid}" />
-</c:forEach>
 <a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'new')">tag characters</a>
 <div id="tagcharacters_new">
 {% if replacing_picture.picturecharacter_set.exists %}

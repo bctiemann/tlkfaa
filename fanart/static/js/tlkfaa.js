@@ -1392,13 +1392,19 @@ function tagCharacter(characterid,fnc,obj) {
   if (fnc == 'add') {
     newtaglist.push(characterid);
   }
-  var url = "/ajax_tagcharacters.jsp?obj="+obj+"&taglist="+newtaglist.join(',')+"&op=update";
+//  var url = "/ajax_tagcharacters.jsp?obj="+obj+"&taglist="+newtaglist.join(',')+"&op=update";
+  var url = '/ArtManager/artwork/tag_characters/' + obj + '/?taglist=' + newtaglist.join(',');
 console.log(url);
-  $('#charactertaglist_'+obj).load(url,function() {
-    $('input#character_pick_'+obj).val("");
-    $('select#canoncharacter_pick_'+obj).val(0);
-    $('select#yourcharacter_pick_'+obj).val(0);
+  $('#tagcharacters_'+obj).load(url,function() {
+//    $('#tagcharacters_'+obj).slideDown('fast');
+    setupAutocompleteCharacter(obj,"tagCharacter(ui.item.characterid,'add',obj);");
+//    $('a.tagcharacters').hide();
   });
+//  $('#charactertaglist_'+obj).load(url, function(data) {
+//    $('input#character_pick_'+obj).val('');
+//    $('select#canoncharacter_pick_'+obj).val(0);
+//    $('select#yourcharacter_pick_'+obj).val(0);
+//  });
 }
 
 function updateCharacterList(list,term,page) {

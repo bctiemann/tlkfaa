@@ -1,62 +1,4 @@
-<%--
-ajax_tagcharacters.jsp
-AJAX helper for showing the characters tagged in a picture and allowing the artist to tag characters.
-Invoked inline in various places (e.g. inc_upload.jsp), as well as via AJAX when editing a picture, etc.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
-</c:catch>
-<c:set var="obj" value="${fn:replace(param.obj,'\\'','')}" />
-
-<c:if test="${loggedin == 1}">
-
 {% comment %}
-<c:choose>
-<c:when test="${param.op == 'update' && param.taglist != null}">
-
-	<input type="hidden" name="characters" id="characterstagged_{{ obj }}" value="{{ taglist }}" />
-	<table class="formtable tagcharacters">
-	<c:forEach var="characterid" items="${fn:split(param.taglist, ',')}">
-		<c:set var="char_id" value="0" />
-		<c:catch var="catchException">
-		<fmt:parseNumber var="char_id" value="${characterid}" integerOnly="true" />
-		</c:catch>
-		<c:if test="${char_id > 0}">
-		<sql:query var="qryCharacter">
-		SELECT characters.*,artists.artistname,artists.dirname FROM characters 
-		LEFT JOIN artists ON characters.artistid=artists.artistid
-		WHERE characterid=?
-		AND characters.deleted IS NULL
-		<sql:param value="${char_id}" />
-		</sql:query>
-
-		<c:forEach var="character" items="${qryCharacter.rows}">
-			<tr>
-			<td><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></td>
-			<td><c:choose><c:when test="${character.artistid == null}">(Canon)</c:when><c:otherwise><a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise></c:choose></td>
-			<td><a href="javascript:nop()" onClick="tagCharacter(${character.characterid},'remove','${obj}')">remove</a></td>
-			</tr>
-		</c:forEach>
-		</c:if>
-	</c:forEach>
-	</table>
-
-</c:when>
-{% endcomment %}
-
-<c:otherwise>
-
 <c:set var="taglist" value="${param.taglist}" />
 <%-- This needs to take into account pendingid if this function (preserve tagged char list when you click on the "tag characters" link) is
 to work. Probably not worth it since there will always be the clearing-out behavior for new uploads. --%>
@@ -85,52 +27,43 @@ AND deleted IS NULL
 ORDER BY charactername
 <sql:param value="${artist.artistid}" />
 </sql:query>
+{% endcomment %}
 
 <div class="tagcharacters">
 
-<table class="formtable tagcharacters">
-<tr>
-<td class="label">Canon</td>
-<td class="data"><select name="canoncharacter" id="canoncharacter_pick_{{ obj }}" onChange="tagCharacter(this.options[this.selectedIndex].value,'add','{{ obj }}')">
-<option value="0">(Select)</option>
-{% for character in canon_characters %}
-<c:forEach var="character" items="${qryCharacterCanon.rows}">
-<option value="{{ character.id }}">{{ character.name }}</option>
-</c:forEach>
-{% endfor %}
-</select>
-</td>
-</tr>
-<tr>
-<td class="label">Yours</td>
-<td class="data"><select name="yourcharacter" id="yourcharacter_pick_${obj}" onChange="tagCharacter(this.options[this.selectedIndex].value,'add','${obj}')">
-<option value="0">(Select)</option>
-{% for character in user.character_set.all %}
-<c:forEach var="character" items="${qryCharacterYours.rows}">
-<option value="${character.characterid}">{{ character.name }}</option>
-</c:forEach>
-{% endfor %}
-</select>
-</td>
-</tr>
-<tr>
-<td class="label">Other</td>
-<td class="data"><input name="character" id="character_pick_${obj}" onBlur="this.value=''" /></td>
-</tr>
-</table>
+    <table class="formtable tagcharacters">
+        <tr>
+            <td class="label">Canon</td>
+            <td class="data">
+                <select name="canoncharacter" id="canoncharacter_pick_{{ obj }}" onChange="tagCharacter(this.options[this.selectedIndex].value,'add','{{ obj }}')">
+                    <option value="0">(Select)</option>
+                    {% for character in canon_characters %}
+                        <option value="{{ character.id }}">{{ character.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Yours</td>
+            <td class="data">
+                <select name="yourcharacter" id="yourcharacter_pick_{{ obj }}" onChange="tagCharacter(this.options[this.selectedIndex].value,'add','{{ obj }}')">
+                    <option value="0">(Select)</option>
+                    {% for character in user.character_set.all %}
+                        <option value="{{ character.id }}">{{ character.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Other</td>
+            <td class="data"><input name="character" id="character_pick_{{ obj }}" onBlur="this.value=''" /></td>
+        </tr>
+    </table>
 
-<div id="charactertaglist_{{ obj }}">
-{% with picture=replacing_picture %}
-{% include "artmanager/tagged_characters.html" %}
-{% endwith %}
-<jsp:include page="/ajax_tagcharacters.jsp?op=update&taglist=${taglist}" />
-</div>
+    <div id="charactertaglist_{{ obj }}">
+        {% with picture=replacing_picture %}
+            {% include "artmanager/tagged_characters.html" %}
+        {% endwith %}
+    </div>
 
 </div>
-
-</c:otherwise>
-</c:choose>
-
-</c:if>
-
-
