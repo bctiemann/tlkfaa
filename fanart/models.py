@@ -47,6 +47,9 @@ def get_profile_path(instance, filename):
     filename = '{0}.{1}'.format(uuid.uuid4(), extension)
     return 'profiles/{0}'.format(filename)
 
+def get_pending_path(instance, filename):
+    return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
+
 #def get_image_thumb_small_path(instance, filename):
 #    return '{0}/thumb_small/{1}'.format(instance.id, filename)
 #
@@ -655,16 +658,17 @@ class Favorite(models.Model):
 class Pending(models.Model):
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_pending_path, null=True, blank=True)
     filename = models.CharField(max_length=255, blank=True)
     extension = models.CharField(max_length=5, blank=True)
     type = models.CharField(max_length=32, blank=True)
     is_movie = models.BooleanField(default=False)
     has_thumb = models.BooleanField(default=False)
     title = models.TextField(blank=True)
-    width = models.IntegerField(blank=True)
-    height = models.IntegerField(blank=True)
-    file_size = models.IntegerField(blank=True)
-    date_uploaded = models.DateTimeField(null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    file_size = models.IntegerField(null=True, blank=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     hash = models.CharField(max_length=32, blank=True)
     notify_approval = models.BooleanField(default=False)
     work_in_progress = models.BooleanField(default=False)
@@ -682,6 +686,9 @@ class Pending(models.Model):
     is_scanned = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
+
+    def get_absolute_url(self):
+        return reverse('artmanager:upload', kwargs={'pending_id': self.id})
 
 
 class ColoringBase(models.Model):
@@ -877,7 +884,7 @@ class PictureCharacter(models.Model):
     picture = models.ForeignKey('Picture', null=True, blank=True)
     pending = models.ForeignKey('Pending', null=True, blank=True)
     character = models.ForeignKey('Character', null=True, blank=True)
-    date_tagged = models.DateTimeField(null=True, blank=True)
+    date_tagged = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class Tag(models.Model):

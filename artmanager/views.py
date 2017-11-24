@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -189,6 +189,48 @@ class UploadView(TemplateView):
         context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
         context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
 
+        return context
+
+
+class UploadFileView(CreateView):
+    model = models.Pending
+    form_class = forms.UploadFileForm
+#    template_name = 'includes/colored_pictures.html'
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.POST)
+
+        try:
+            folder = models.Folder.objects.get(pk=self.request.POST.get('folder', None), user=self.request.user)
+        except models.Folder.DoesNotExist:
+            folder = None
+
+        pending = form.save(commit=False)
+        pending.artist = self.request.user
+        pending.folder = folder
+        pending.picture = self.request.FILES['picture']
+        pending.filename = self.request.FILES['picture'].name
+        pending.save()
+
+        for character_id in (self.request.POST.get('characters')).split(','):
+            if character_id:
+                logger.info(character_id)
+                try:
+                    character = models.Character.objects.get(pk=character_id)
+                except models.Character.DoesNotExist:
+                    continue
+                logger.info(character)
+                pc = models.PictureCharacter.objects.create(pending=pending, character=character)
+                logger.info(pc)
+
+        super(UploadFileView, self).form_valid(form)
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UploadFileView, self).get_context_data(*args, **kwargs)
         return context
 
 

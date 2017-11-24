@@ -560,8 +560,9 @@ class Command(BaseCommand):
                     picture = picture,
                     pending = pending,
                     character = character,
-                    date_tagged = pc['tagged_on'],
                 )
+                f.date_tagged = pc['tagged_on']
+                f.save()
                 character.num_pictures = character.picturecharacter_set.count()
                 character.save()
                 if f.date_tagged and (character.date_tagged == None or f.date_tagged.replace(tzinfo=timezone.utc) > character.date_tagged):

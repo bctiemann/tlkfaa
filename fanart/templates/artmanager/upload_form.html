@@ -74,7 +74,8 @@
 <table class="formtable">
 <tr>
 <td class="label">File</td>
-<td class="data"><input name="uploadfile" type="file" id="uploadfile" validate="hasvalue" message="You must select a file to upload." /></td>
+<td class="data"><input name="uploadfile" type="file" id="uploadfile" validate="hasvalue" message="You must select a file to upload." />
+<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-file" %}"></td>
 </tr>
 <tr>
 <td class="label">Folder</td>
@@ -132,7 +133,7 @@
 <c:when test="${artist.autoapprove == true}">
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="forceapprove" id="forceapprove" value="1"> <label for="forceapprove">Have this picture manually approved by the administrator</label></td>
+	<td class="data inputlabels"><input type="checkbox" name="force_approve" id="forceapprove" value="1"> <label for="forceapprove">Have this picture manually approved by the administrator</label></td>
 	</tr>
 </c:when>
 {% else %}
@@ -143,7 +144,7 @@
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="notify" id="notify" value="1"> <label for="notify">Be notified by email when this picture is accepted</label></td>
+	<td class="data inputlabels"><input type="checkbox" name="notify_approval" id="notify" value="1"> <label for="notify">Be notified by email when this picture is accepted</label></td>
 	</tr>
 </c:otherwise>
 </c:choose>
@@ -153,7 +154,7 @@
 	<tr>
 	<td class="label"></td>
 	<td class="data">
-	<select name="replacedate">
+	<select name="reset_upload_date">
 	<option selected value="1">Set upload date to today
 	<option value="0">Use original upload date
 	</select>
@@ -161,17 +162,17 @@
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="replacenotify" id="replacenotify" value="1"> <label for="replacenotify">Notify your fans that this picture has been replaced</label></td>
+	<td class="data inputlabels"><input type="checkbox" name="notify_replacement" id="replacenotify" value="1"> <label for="replacenotify">Notify your fans that this picture has been replaced</label></td>
 	</tr>
 </c:if>
 {% endif %}
 <tr>
 <td class="label"></td>
-<td class="data inputlabels"><input type="checkbox" name="wip" id="wip" value="1" {% if replacing_picture.work_in_progress %}checked{% endif %}> <label for="wip">Work In Progress (WIP)</label></td>
+<td class="data inputlabels"><input type="checkbox" name="work_in_progress" id="wip" value="1" {% if replacing_picture.work_in_progress %}checked{% endif %}> <label for="wip">Work In Progress (WIP)</label></td>
 </tr>
 <tr>
 <td class="label"></td>
-<td class="data inputlabels"><input type="checkbox" name="allowcomments" id="allowcomments" value="1" {% if replacing_picture.allow_comments and user.allow_comments %}checked{% endif %}> <label for="allowcomments">Allow comments on this picture</label></td>
+<td class="data inputlabels"><input type="checkbox" name="allow_comments" id="allowcomments" value="1" {% if replacing_picture.allow_comments and user.allow_comments %}checked{% endif %}> <label for="allowcomments">Allow comments on this picture</label></td>
 </tr>
 </table>
 </div>
@@ -184,11 +185,41 @@
 </tr>
 </table>
 
+<button type="button" id="up_btn" class="start">Upload</button>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        dropZone: null,
+//        autoUpload: false,
+        done: function (e, data) {
+//            var url = '/coloring/{{ coloring_base.id }}/';
+//            $('#cc_{{ coloring_base.id }}').load(url, function() {});
+//            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+        add: function (e, data) {
+            $("#up_btn").off('click').on('click', function () {
+console.log(data);
+                data.submit();
+            });
+        },
+    });
+});
+</script>
+
 <input type="hidden" name="op" value="upload" />
 <input type="hidden" name="uploadop" value="upload" />
 <input type="hidden" name="todo" value="upload" />
 <input type="hidden" name="commit" value="1" />
-<input type="hidden" name="replacement" value="{{ replacing_picture.id }}" />
+<input type="hidden" name="replaces_picture" value="{{ replacing_picture.id }}" />
 </form>
 
 
