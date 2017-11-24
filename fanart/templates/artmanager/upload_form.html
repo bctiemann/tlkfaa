@@ -105,32 +105,36 @@ via AJAX after a picture is uploaded.
 SELECT * FROM picturecharacters
 WHERE pictureid=?
 <sql:param value="${replacepic.pictureid}" />
-</sql:query>  
+</sql:query>
 <c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
 	<c:set var="taglist" value="${taglist},${picturecharacter.characterid}" />
 </c:forEach>
 <a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'new')">tag characters</a>
 <div id="tagcharacters_new">
+{% if replacing_picture.picturecharacter_set.exists %}
 <c:choose>
 <c:when test="${qryPictureCharacters.rowCount > 0}">
+        {% include "artmanager/tag_characters.html" %}
 	<jsp:include page="ajax_tagcharacters.jsp?obj=new&taglist=${taglist}" />
 	<script type="text/javascript">
 	setupAutocompleteCharacter('new',"tagCharacter(ui.item.characterid,'add','new')");
 	$('a.tagcharacters').hide();
 	</script>
 </c:when>
+{% else %}
 <c:otherwise>
 	<input type="hidden" name="characters" id="characterstagged_new" value="" />
 </c:otherwise>
 </c:choose>
+{% endif %}
 </div>
 </td>
 </tr>
 <tr>
 <td class="label">Description
-<div class="charcount" id="title_charcount">${fn:length(replacepic.title)} / ${maxtitlechars}</div>
+<div class="charcount" id="title_charcount">{{ replacing_picture.title|length }} / {{ max_title_chars }}</div>
 </td>
-<td class="data"><textarea name="title" id="ta_title" validate="hasvalue,maxlen:${maxtitlechars}" message="You must enter a description for the picture, up to ${maxtitlechars} characters long." onKeyUp="refreshCharCount(this,${maxtitlechars},'title_charcount')">${replacepic.title}</textarea></td>
+<td class="data"><textarea name="title" id="ta_title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="You must enter a description for the picture, up to ${maxtitlechars} characters long." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_charcount')">{{ replacing_picture.title }}</textarea></td>
 </tr>
 </table>
 

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
@@ -169,6 +170,23 @@ class UploadView(TemplateView):
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'upload'
         return super(UploadView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(UploadView, self).get_context_data(**kwargs)
+
+        replacing_picture = None
+        replacing_picture_id = self.request.GET.get('replace', None)
+        logger.info(replacing_picture_id)
+        if replacing_picture_id:
+            try:
+                replacing_picture = models.Picture.objects.get(pk=replacing_picture_id, artist=self.request.user)
+            except:
+                pass
+
+        context['replacing_picture'] = replacing_picture
+        context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
+
+        return context
 
 
 class PendingView(TemplateView):
