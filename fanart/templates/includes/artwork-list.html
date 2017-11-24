@@ -10,7 +10,7 @@
 
         {% for tag in top_300_tags %}
         <div class="tagcolumn">
-                <div class="tag"><a class="tag" href="{% url "artwork" %}?list=tag&term={{ tag.tag }}">{{ tag.tag }} <span class="tagcount">{{ tag.num_pictures }}</span></a></div>
+                <div class="tag"><a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag.tag }}">{{ tag.tag }} <span class="tagcount">{{ tag.num_pictures }}</span></a></div>
 	</div>
         {% endfor %}
 
