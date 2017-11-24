@@ -171,12 +171,38 @@ class UploadView(TemplateView):
         return super(UploadView, self).get(request, *args, **kwargs)
 
 
+class PendingView(TemplateView):
+    template_name = 'artmanager/pending.html'
+
+    def get(self, request, *args, **kwargs):
+        request.session['am_page'] = 'pending'
+        return super(PendingView, self).get(request, *args, **kwargs)
+
+
 class ArtworkView(TemplateView):
     template_name = 'artmanager/artwork.html'
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'artwork'
         return super(ArtworkView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtworkView, self).get_context_data(**kwargs)
+
+        folder = None
+        folder_id = self.request.GET.get('folderid', None)
+        if folder_id:
+            try:
+                folder = models.Folder.objects.get(pk=folder_id, user=self.request.user)
+            except:
+                pass
+
+        pictures = self.request.user.picture_set.filter(folder=folder)
+
+        context['folder'] = folder
+        context['pictures'] = pictures
+
+        return context
 
 
 class FoldersView(TemplateView):

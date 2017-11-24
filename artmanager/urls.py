@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^prefs/update/profile/$', artmanager_views.PrefsUpdateProfileView.as_view(), name='prefs-update-profile'),
     url(r'^prefs/usermode/$', artmanager_views.UserModeView.as_view(), name='prefs-usermode'),
     url(r'^upload/$', artmanager_views.UploadView.as_view(), name='upload'),
+    url(r'^pending/$', artmanager_views.PendingView.as_view(), name='pending'),
     url(r'^artwork/$', artmanager_views.ArtworkView.as_view(), name='artwork'),
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),
     url(r'^artwall/$', artmanager_views.ArtWallView.as_view(), name='artwall'),

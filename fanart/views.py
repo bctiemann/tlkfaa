@@ -575,6 +575,10 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         return context
 
 
+class GuidelinesView(TemplateView):
+    template_name = 'includes/guidelines.html'
+
+
 class UserBoxSetView(APIView):
 
     def get(self, request, box=None, show=None):

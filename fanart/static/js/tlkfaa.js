@@ -487,7 +487,7 @@ function toggleGuidelines() {
   if (status == "block") {
     $('#guidelines').slideUp('fast');
   } else {
-    var url = "/Guidelines.html";
+    var url = "/Guidelines/";
     $('#guidelines').load(url,function() {
       $('#guidelines').slideDown('fast');
     });

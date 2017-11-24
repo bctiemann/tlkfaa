@@ -174,6 +174,10 @@ class User(AbstractUser):
         return '{0}/Artists/{1}/'.format(settings.SERVER_BASE_URL, self.dir_name)
 
     @property
+    def show_guidelines(self):
+        return self.num_pictures < settings.MIN_PICTURES_TO_HIDE_GUIDELINES
+
+    @property
     def get_example_pic(self):
         if self.example_pic:
             return self.example.pic

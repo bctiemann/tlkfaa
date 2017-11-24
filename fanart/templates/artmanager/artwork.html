@@ -340,20 +340,22 @@ ArtManager component for managing your pictures. Note that folderid -1 is the sy
 <h2>Your Artwork</h2>
 
 Folder:
-<select name="switchfolder" class="foldermenu" folderid="${folderid}" onChange="switchParam(this, 'folderid')">
-    <option value="-1" <c:if test="${folderid == '-1'}">selected</c:if>>(Coloring Cave)</option>
-    <option value="0" <c:if test="${folderid == 0}">selected</c:if>>(Main)</option>
+<select name="switchfolder" class="foldermenu" folderid="{{ folder.id }}" onChange="switchParam(this, 'folderid')">
+    <option value="-1" {% if folder.id == -1 %}selected{% endif %}>(Coloring Cave)</option>
+    <option value="0" {% if folder == None %}selected{% endif %}>(Main)</option>
 </select>
 
+{% if folder.id != -1 %}
 <c:if test="${folderid != -1}">
 Sort by:
 <select name="sortby" onChange="switchParam(this, 'sortby')">
-    <option <c:if test="${param.sortby == 'newest'}">selected</c:if> value="newest">Newest</option>
-    <option <c:if test="${param.sortby == 'oldest'}">selected</c:if> value="oldest">Oldest</option>
-    <option <c:if test="${param.sortby == 'popularity'}">selected</c:if> value="popularity">Popularity</option>
-    <option <c:if test="${param.sortby == 'comments'}">selected</c:if> value="comments">Comments</option>
+    <option {% if sort_by == "newest" %}selected{% endif %} value="newest">Newest</option>
+    <option {% if sort_by == "oldest" %}selected{% endif %} value="oldest">Oldest</option>
+    <option {% if sort_by == "popularity" %}selected{% endif %} value="popularity">Popularity</option>
+    <option {% if sort_by == "comments" %}selected{% endif %} value="comments">Comments</option>
 </select>
 </c:if>
+{% endif %}
 
 <div class="globalactions actions-container">
 	<a href="javascript:nop()"><div class="actions_hover" id="actions_global">All Selected</div></a>
@@ -376,6 +378,7 @@ Sort by:
 <%--<div class="picturestatus" id="picturestatus_0"></div>--%>
 <div class="pictureiconstatus" id="pictureiconstatus_0"></div>
 
+{% if folder.id == -1 %}
 <c:choose>
 <c:when test="${folderid == -1}">
 
@@ -467,6 +470,7 @@ Sort by:
 	</c:forEach>
 
 </c:when>
+{% else %}
 <c:otherwise>
 
 	<c:choose>
@@ -550,6 +554,7 @@ Sort by:
 
 	<%= Pages.get("pages") %>
 
+        {% for picture in pictures %}
 	<c:forEach var="picture" items="${qryPictures.rows}">
 
 		<sql:query var="qryReplacement">
@@ -560,61 +565,65 @@ Sort by:
 		<sql:param value="${artist.artistid}" />
 		</sql:query>
 
-		<div class="picture editpicture <c:if test="${picture.picpublic == false}">privatepicture</c:if>" id="picture_${picture.pictureid}">
-<%--		<form name="editpicture_${picture.pictureid}" method="post" action="ArtManager.jsp">--%>
+		<div class="picture editpicture {% if not picture.is_public %}privatepicture{% endif %}" id="picture_{{ picture.id }}">
 		<table>
 		<tr>
 		<td class="thumb">
-		<input type="checkbox" id="select_${picture.pictureid}" /> Select<br />
-		<a href="/Artwork/Artists/${artist.dirname}/${fanart:encodeURI(picture.basename)}.${picture.extension}?${picture.pictureid}" rel="shadowbox[pictures]"><img class="thumb" src="/Artwork/Artists/${artist.dirname}/${fanart:encodeURI(picture.basename)}.p.jpg" /></a>
+		<input type="checkbox" id="select_{{ picture.id }}" /> Select<br />
+		<a href="{{ picture.url }}?{{ picture.id }}" rel="shadowbox[pictures]"><img class="thumb" src="{{ picture.preview_url }}" /></a>
 		<div class="picturestats">
-		<fmt:formatDate value="${picture.uploaded}" type="both" pattern="E M/d/yyyy" /><br />
-		${picture.width} x ${picture.height}<br />
-		<fmt:formatNumber value="${picture.filesize / 1024}" type="number" pattern="###" /> KB<br />
-		${picture.numcomments} comments<br />
-		<a href="javascript:nop()" onClick="togglePicFans(${picture.pictureid})">${picture.numpicfaves} favorites</a><br />
+		{{ picture.date_uploaded|date:"D n/j/Y" }}<br />
+		{{ picture.width }} x {{ picture.height }}<br />
+                {{ picture.file_size|filesizeformat }}<br />
+		{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}<br />
+		<a href="javascript:nop()" onClick="togglePicFans({{ picture.id }})">{{ picture.num_faves }} favorite{{ picture.num_faves|pluralize }}</a><br />
 		</div>
 		</td>
 		<td class="fullwidth picturedetails">
 
 		<div class="actions-container">
-			<a href="javascript:nop()"><div class="actions_hover" id="actions_${picture.pictureid}">Actions</div></a>
-			<div class="actions_menu" id="actions_${picture.pictureid}_popup">
+			<a href="javascript:nop()"><div class="actions_hover" id="actions_{{ picture.id }}">Actions</div></a>
+			<div class="actions_menu" id="actions_{{ picture.id }}_popup">
 				<h3>Actions</h3>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPicture(${picture.pictureid})">Edit</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPicture({{ picture.id }})">Edit</a>
+                                {% if picture.replacement_pending %}
 				<c:choose>
 				<c:when test="${qryReplacement.rowCount > 0}">
 					<a class="ui-state-default ui-corner-all ui-state-disabled" href="javascript:nop()">(Replacement Pending)</a>
 				</c:when>
+                                {% else %}
 				<c:otherwise>
-					<a class="ui-state-default ui-corner-all" href="ArtManager.jsp?op=upload&replace=${picture.pictureid}">Replace</a>
+					<a class="ui-state-default ui-corner-all" href="{% url "artmanager:upload" %}?replace={{ picture.id }}">Replace</a>
 				</c:otherwise>
 				</c:choose>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePicture(${picture.pictureid},${folderid},${page})">Delete</a>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupRequest(${picture.pictureid})">ArtWall</a>
-				<a class="ui-state-default ui-corner-all" href="ArtManager.jsp?op=coloringcave&pictureid=${picture.pictureid}">Coloring Cave</a>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setExamplePic(${picture.pictureid})">Set as Icon</a>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove(${picture.pictureid},${folderid},${page})" id="movetofolderlink_${picture.pictureid}">Move to Folder<div class="movetofolder" id="movetofolder_${picture.pictureid}"></div></a>
+                                {% endif %}
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePicture({{ picture.id }},{{ folder.id }},{{ page }})">Delete</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupRequest({{ picture.id }})">ArtWall</a>
+				<a class="ui-state-default ui-corner-all" href="ArtManager.jsp?op=coloringcave&pictureid={{ picture.id }}">Coloring Cave</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setExamplePic({{ picture.id }})">Set as Icon</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove({{ picture.id }},{{ folder.id }},{{ page }})" id="movetofolderlink_{{ picture.id }}">Move to Folder<div class="movetofolder" id="movetofolder_{{ picture.id }}"></div></a>
 			</div>
 		</div>
 
 		<div class="picturedetails">
 
-		<div id="editpicture_${picture.pictureid}">
-		<jsp:include page="ajax_editpicture.jsp?pictureid=${picture.pictureid}" />
+		<div id="editpicture_{{ picture.id }}">
+		<jsp:include page="ajax_editpicture.jsp?pictureid={{ picture.id }}" />
 		</div>
 
-		<div class="picturerequestsstatus" id="picturerequestsstatus_${picture.pictureid}">
+		<div class="picturerequestsstatus" id="picturerequestsstatus_{{ picture.id }}">
 		<jsp:include page="ajax_request.jsp?op=list&pictureid=${picture.pictureid}" />
 		</div>
 
-		<div class="picadmininfo pictureiconstatus" id="pictureiconstatus_${picture.pictureid}">
-		<c:if test="${picture.pictureid == artist.examplepic}">
+		<div class="picadmininfo pictureiconstatus" id="pictureiconstatus_{{ picture.id }}">
+                {% if picture == user.example_pic %}
+		<c:if test="{{ picture == artist.example_pic }">
 		<jsp:include page="ajax_setexamplepic.jsp?pictureid=${picture.pictureid}" />
 		</c:if>
+                {% endif %}
 		</div>
 
-		<div class="picfans" id="picfans_${picture.pictureid}"></div>
+		<div class="picfans" id="picfans_{{ picture.id }}"></div>
 
 		</div>
 		</td>
@@ -622,30 +631,32 @@ Sort by:
 		</table>
 <%--
 		<input type="hidden" name="fnc" value="apply" />
-		<input type="hidden" name="pictureid" value="${picture.pictureid}" />
+		<input type="hidden" name="pictureid" value="{{ picture.id }}" />
 		<input type="hidden" name="op" value="pictures" />
 		</form>
 --%>
 		</div>
 
 		<script type="text/javascript">
-		selitems.push(${picture.pictureid});
+		selitems.push({{ picture.id }});
 		</script>
 
 	</c:forEach>
+        {% endfor %}
 
 </c:otherwise>
 </c:choose>
+{% endif %}
 
 </c:if>
 
 
 <div class="dialog" id="dialog_select_destination_folder" title="Select Destination Folder">
-<select id="select_destination_folder" class="foldermenu" folderid="${folderid}" onchange="">
+<select id="select_destination_folder" class="foldermenu" folderid="{{ folder.id }}" onchange="">
     <option value="0" <c:if test="${folderid == 0}">selected</c:if>>(Main)</option>
 </select>
 </div>
 
-<input type="hidden" id="edit_artistid" value="${artist.artistid}" />
+<input type="hidden" id="edit_artistid" value="{{ user.id }}" />
 
 {% endblock %}
