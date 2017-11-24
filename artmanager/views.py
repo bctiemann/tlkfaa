@@ -204,6 +204,19 @@ class ArtworkView(TemplateView):
 
         return context
 
+class PictureDetailView(DetailView):
+    template_name = 'artmanager/picture_detail.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+
+class PictureFormView(DetailView):
+    template_name = 'artmanager/picture_form.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
 
 class FoldersView(TemplateView):
     template_name = 'artmanager/folders.html'

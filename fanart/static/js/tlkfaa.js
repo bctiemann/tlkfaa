@@ -682,7 +682,7 @@ function setupEditPending(pendingid) {
 }
 
 function setupEditPicture(pictureid) {
-  var url = "/ajax_editpicture.jsp?op=form&pictureid="+pictureid;
+  var url = '/ArtManager/artwork/picture/' + pictureid + '/edit/';
   $('#editpicture_'+pictureid).load(url,function() {
     setupAutocompleteCharacter(pictureid,"tagCharacter(ui.item.characterid,'add',obj);");
 //    $('div.actions_menu').hide();

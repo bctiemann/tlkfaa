@@ -51,7 +51,7 @@
 
 <div class="tags">
 {% for tag in picture.tags.all %}
-	<a class="tag" href="/Artwork/?list=tag&term={{ tag }}">{{ tag }}</a>
+	<a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag }}">{{ tag }}</a>
 {% endfor %}
 </div>
 

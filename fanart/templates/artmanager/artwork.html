@@ -608,6 +608,7 @@ Sort by:
 		<div class="picturedetails">
 
 		<div id="editpicture_{{ picture.id }}">
+                {% include "artmanager/picture_detail.html" %}
 		<jsp:include page="ajax_editpicture.jsp?pictureid={{ picture.id }}" />
 		</div>
 

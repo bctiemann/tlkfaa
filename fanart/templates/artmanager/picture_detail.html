@@ -1,0 +1,30 @@
+{% load bbcode_tags %}
+
+<div class="pictitle">
+    {{ picture.title|bbcode|safe }}
+</div>
+
+<div class="tagcharacters">
+    <h4>Tagged characters:</h4>
+    <table>
+        {% for pc in picture.picturecharacter_set.all %}
+            <tr>
+                <td><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></td>
+                <td>
+                    {% if pc.character.is_canon %}
+                        (Canon)
+                    {% else %}
+                        <a href="{% url "artist" dir_name=pc.character.owner.dir_name %}">{{ pc.character.owner.username }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="tags">
+    {% for tag in picture.tags.all %}
+        <a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag.tag }}">{{ tag.tag }}</a>
+    {% endfor %}
+</div>
+
