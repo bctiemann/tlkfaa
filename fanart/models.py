@@ -687,6 +687,28 @@ class Pending(models.Model):
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
 
+    @property
+    def basename(self):
+        return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def extension(self):
+        if self.filename:
+            return self.filename.split('.')[-1].lower()
+        return self.picture.name.split('.')[-1].lower()
+
+    @property
+    def directory(self):
+        return self.picture.name.split('/')[1]
+
+    @property
+    def thumbnail_url(self):
+        return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+
+    @property
+    def preview_url(self):
+        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+
     def get_absolute_url(self):
         return reverse('artmanager:upload', kwargs={'pending_id': self.id})
 

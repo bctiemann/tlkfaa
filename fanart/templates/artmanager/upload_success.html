@@ -22,6 +22,8 @@
                 {% endif %}
 	</div>
 
+        {% include "includes/pending.html" %}
+
 	<sql:query var="qryPending">
 	SELECT * FROM pending
 	WHERE pendingid=?
@@ -136,3 +138,5 @@
 
 	</c:if>
 
+{% comment %}
+{% endcomment %}

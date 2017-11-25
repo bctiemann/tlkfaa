@@ -105,8 +105,12 @@ ORDER BY uploaded ASC
 <sql:param value="${artist.artistid}" />
 </sql:query>
 
+{% for pending in user.pending_set.all %}
 <c:forEach var="pending" items="${qryPending.rows}">
 
+{% include "includes/pending.html" %}
+
+{% comment %}
 <c:set var="filename" value="${pending.filename}" />
 <div class="picture pendingpicture">
 <table>
@@ -175,6 +179,7 @@ Replacement for <a href="/Picture.jsp?pictureid=${pending.replacement}"><img src
 </tr>
 </table>
 </div>
+{% endcomment %}
 
 <script type="text/javascript">
 $('#actions_${pending.pendingid}').popupmenu({
@@ -183,6 +188,7 @@ $('#actions_${pending.pendingid}').popupmenu({
 </script>
 
 </c:forEach>
+{% endfor %}
 
 </c:if>
 

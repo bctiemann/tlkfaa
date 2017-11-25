@@ -1,0 +1,107 @@
+{% load bbcode_tags %}
+
+<c:set var="filename" value="${pending.filename}" />
+<div class="picture pendingpicture">
+<table>
+<tr>
+<td class="thumb">
+<a href="/upload/FanArt.${pending.pendingid}.${artist.artistid}.${pending.extension}" rel="shadowbox[pending]">
+{% if pending.is_movie %}
+<c:choose>
+<c:when test="${pending.ismovie == true}">
+	<img class="thumb moviethumb" src="/images/movie_icon.gif" />
+</c:when>
+{% else %}
+<c:otherwise>
+	<img class="thumb" src="/upload/FanArt.${pending.pendingid}.${artist.artistid}.p.jpg" />
+</c:otherwise>
+</c:choose>
+{% endif %}
+</a>
+<div class="picturestats">
+<fmt:formatDate value="${pending.uploaded}" type="both" pattern="E M/d/yyyy" /><br />
+<c:if test="${pending.ismovie == false}">
+{{ pending.width }} x {{ pending.height }} {{ pending.warnings }}<c:if test="${pending.width > maxwidth || pending.height > maxheight}">
+<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="<c:choose><c:when test="${artist.autoapprove == true}">3</c:when><c:otherwise>1</c:otherwise></c:choose>"><img src="/images/warning.png" /></a>
+</c:if><br />
+</c:if>
+{{ pending.picture.size|filesizeformat }}<fmt:formatNumber value="${pending.filesize / 1024}" type="number" pattern="###" /> KB <c:if test="${pending.filesize > maxfilesize && pending.ismovie == false}">
+<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="<c:choose><c:when test="${artist.autoapprove == true}">3</c:when><c:otherwise>2</c:otherwise></c:choose>"><img src="/images/warning.png" /></a>
+</c:if><br />
+</div>
+</td>
+<td class="fullwidth picturedetails">
+
+<a href="javascript:nop()"><div class="actions_hover" id="actions_${pending.pendingid}">Actions</div></a>
+<div class="actions_menu" id="actions_${pending.pendingid}_popup">
+<h3>Actions</h3>
+<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPending(${pending.pendingid})">Edit</a>
+<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending(${pending.pendingid})">Delete</a>
+</div>
+
+<div class="picturedetails">
+
+<div class="picadmininfo">
+<c:set var="fnparts" value="${fn:split(pending.filename,'\\\\')}" />
+{{ pending.filename }}
+</div>
+
+<div id="editpending_${pending.pendingid}">
+
+        <sql:query var="qryPictureCharacters">
+        SELECT characters.*,artists.artistname,artists.dirname FROM picturecharacters,characters LEFT JOIN artists
+        ON characters.artistid=artists.artistid
+        WHERE pendingid=?
+        AND picturecharacters.characterid=characters.characterid
+        <sql:param value="${pending.pendingid}" />
+        </sql:query>
+
+        <c:set var="title" value="{{ pending.title }}" />
+        <div class="pictitle">
+        {{ pending.title|bbcode|safe }}
+        </div>
+
+        <c:if test="${qryPictureCharacters.rowCount > 0}">
+        <div class="tagcharacters">
+        <h4>Tagged characters:</h4>
+        <table>
+        <c:forEach var="character" items="${qryPictureCharacters.rows}">
+                <tr>
+                <td><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></td>
+                <td><c:choose><c:when test="${character.artistid == 0}">(Canon)</c:when><c:otherwise><a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise></c:choose></td>
+                </tr>
+        </c:forEach>
+        </table>
+        </div>
+        </c:if>
+                
+        <div class="tags">
+        <c:forEach var="tag" items="${pending.keywords}">
+                <a class="tag" href="/Artwork/?list=tag&term=${tag}">${tag}</a>
+        </c:forEach>
+        </div>
+
+<jsp:include page="/ajax_editpending.jsp?pendingid=${pending.pendingid}" />
+</div>
+
+<c:if test="${pending.replacement > 0}">
+<div class="replacementpic">
+<sql:query var="qryReplacePic">
+SELECT * FROM pictures
+WHERE pictureid=?
+AND artistid=?
+AND deleted IS NULL
+<sql:param value="${pending.replacement}" />
+<sql:param value="${artist.artistid}" />
+</sql:query>
+<c:forEach var="replacepic" items="${qryReplacePic.rows}">
+Replacement for <a href="/Picture.jsp?pictureid=${pending.replacement}"><img src="/Artists/${artist.dirname}/${fanart:encodeURI(replacepic.basename)}.p.jpg" /></a>
+</c:forEach>
+</div>
+</c:if>
+
+</div>
+</td>
+</tr>
+</table>
+</div>
