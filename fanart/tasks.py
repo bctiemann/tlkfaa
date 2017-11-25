@@ -62,6 +62,11 @@ def create_thumbnail(model, picture_object, thumb_size):
         new_image_path = '{0}/Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
         orig_height = picture_object.height
         orig_width = picture_object.width
+    elif model == 'Pending':
+        image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.picture.name)
+        new_image_path = picture_object.thumbnail_path
+        orig_height = picture_object.height
+        orig_width = picture_object.width
     elif model == 'User':
         image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.profile_picture.name)
         filename_parts = picture_object.profile_picture.name.split('.')
@@ -100,7 +105,7 @@ def process_images(model, object_id, thumb_size='small'):
 #    picture_object.thumb_small = '{0}/{1}'.format(settings.THUMB_SIZE['small'], picture_object.file.name)
 #    picture_object.thumb_large = '{0}/{1}'.format(settings.THUMB_SIZE['large'], picture_object.file.name)
 #    picture_object.generated_thumbs = True
-    picture_object.save(update_thumbs=False)
+    return picture_object.save(update_thumbs=False)
 
 #@shared_task
 #def resize_image(model, object_id):

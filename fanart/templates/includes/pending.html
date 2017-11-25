@@ -5,7 +5,7 @@
 <table>
 <tr>
 <td class="thumb">
-<a href="/upload/FanArt.${pending.pendingid}.${artist.artistid}.${pending.extension}" rel="shadowbox[pending]">
+<a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
 {% if pending.is_movie %}
 <c:choose>
 <c:when test="${pending.ismovie == true}">
@@ -13,13 +13,13 @@
 </c:when>
 {% else %}
 <c:otherwise>
-	<img class="thumb" src="/upload/FanArt.${pending.pendingid}.${artist.artistid}.p.jpg" />
+	<img class="thumb" src="{{ pending.picture.url }}" />
 </c:otherwise>
 </c:choose>
 {% endif %}
 </a>
 <div class="picturestats">
-<fmt:formatDate value="${pending.uploaded}" type="both" pattern="E M/d/yyyy" /><br />
+{{ pending.date_uploaded|date }}<br />
 <c:if test="${pending.ismovie == false}">
 {{ pending.width }} x {{ pending.height }} {{ pending.warnings }}<c:if test="${pending.width > maxwidth || pending.height > maxheight}">
 <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="<c:choose><c:when test="${artist.autoapprove == true}">3</c:when><c:otherwise>1</c:otherwise></c:choose>"><img src="/images/warning.png" /></a>
@@ -32,11 +32,11 @@
 </td>
 <td class="fullwidth picturedetails">
 
-<a href="javascript:nop()"><div class="actions_hover" id="actions_${pending.pendingid}">Actions</div></a>
-<div class="actions_menu" id="actions_${pending.pendingid}_popup">
+<a href="javascript:nop()"><div class="actions_hover" id="actions_{{ pending.id }}">Actions</div></a>
+<div class="actions_menu" id="actions_{{ pending.id }}_popup">
 <h3>Actions</h3>
-<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPending(${pending.pendingid})">Edit</a>
-<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending(${pending.pendingid})">Delete</a>
+<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPending({{ pending.id }})">Edit</a>
+<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending({{ pending.id }})">Delete</a>
 </div>
 
 <div class="picturedetails">
@@ -46,7 +46,7 @@
 {{ pending.filename }}
 </div>
 
-<div id="editpending_${pending.pendingid}">
+<div id="editpending_{{ pending.id }}">
 
         <sql:query var="qryPictureCharacters">
         SELECT characters.*,artists.artistname,artists.dirname FROM picturecharacters,characters LEFT JOIN artists

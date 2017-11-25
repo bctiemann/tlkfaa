@@ -182,8 +182,8 @@ Replacement for <a href="/Picture.jsp?pictureid=${pending.replacement}"><img src
 {% endcomment %}
 
 <script type="text/javascript">
-$('#actions_${pending.pendingid}').popupmenu({
-    target: "#actions_${pending.pendingid}_popup",
+$('#actions_{{ pending.id }}').popupmenu({
+    target: "#actions_{{ pending.id }}_popup",
     time: 300 });  
 </script>
 

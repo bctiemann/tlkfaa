@@ -1008,7 +1008,13 @@ function deletePending(pendingid) {
       modal: true,
       buttons: {
         "Delete": function() {
-          window.location.href = "/ArtManager.jsp?op=pending&fnc=delete&picturelist="+s.selectlist;
+//          window.location.href = "/ArtManager.jsp?op=pending&fnc=delete&picturelist="+s.selectlist;
+          var url = '/ArtManager/pending/' + pendingid + '/delete/';
+          $.post(url, function(data) {
+              if (data.success) {
+                  window.location.reload();
+              };
+          });
         },
         Cancel: function() {
           $(this).dialog('close');

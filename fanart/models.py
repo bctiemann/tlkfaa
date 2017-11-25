@@ -659,8 +659,8 @@ class Pending(models.Model):
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_pending_path, null=True, blank=True)
-    filename = models.CharField(max_length=255, blank=True)
-    extension = models.CharField(max_length=5, blank=True)
+    filename = models.CharField(max_length=255, blank=True, default='')
+#    extension = models.CharField(max_length=5, blank=True, default='')
     type = models.CharField(max_length=32, blank=True)
     is_movie = models.BooleanField(default=False)
     has_thumb = models.BooleanField(default=False)
@@ -709,8 +709,24 @@ class Pending(models.Model):
     def preview_url(self):
         return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
 
+    @property
+    def thumbnail_path(self):
+        path_parts = self.picture.name.split('/')
+        path = '/'.join(path_parts[:-1])
+        filename_parts = path_parts[-1].split('.')
+        basename = '.'.join(filename_parts[:-1])
+        extension = filename_parts[-1].lower()
+        return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
+
     def get_absolute_url(self):
         return reverse('artmanager:upload', kwargs={'pending_id': self.id})
+
+    def save(self, update_thumbs=True, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(Pending, self).save(*args, **kwargs)
+        logger.info(self.picture)
+        if update_thumbs:
+            process_images.apply_async(('Pending', self.id, 'small'), countdown=20)
 
 
 class ColoringBase(models.Model):

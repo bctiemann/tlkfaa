@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, FormMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth import update_session_auth_hash
@@ -22,6 +22,8 @@ from artmanager import forms
 
 import json
 import hashlib
+import os
+import shutil
 
 import logging
 logger = logging.getLogger(__name__)
@@ -254,6 +256,26 @@ class PendingView(TemplateView):
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'pending'
         return super(PendingView, self).get(request, *args, **kwargs)
+
+
+class DeletePendingView(DeleteView):
+    model = models.Pending
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.object.directory), ignore_errors=True)
+
+        self.object.delete()
+
+        response['success'] = True
+
+        return JsonResponse(response)
 
 
 class ArtworkView(TemplateView):
