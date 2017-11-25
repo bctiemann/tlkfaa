@@ -79,7 +79,12 @@ def create_thumbnail(model, picture_object, thumb_size):
         orig_height = picture_object.profile_height
         orig_width = picture_object.profile_width
 
-    im = Image.open(image_path)
+    try:
+        im = Image.open(image_path)
+    except IOError:
+        logger.error('{0} not found. Possibly already deleted.'.format(image_path))
+        return None, None
+
     im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
     im.save(new_image_path, im.format)
 
@@ -98,7 +103,12 @@ def resize_image(model, picture_object, thumb_size):
 def process_images(model, object_id, thumb_size='small'):
     from fanart import models
     model_class = getattr(models, model)
-    picture_object = model_class.objects.get(pk=object_id)
+
+    try:
+        picture_object = model_class.objects.get(pk=object_id)
+    except model_class.DoesNotExist:
+        return None
+
     width, height = create_thumbnail(model, picture_object, thumb_size)
 #    picture_object.width_thumb_small, picture_object.height_thumb_small = create_thumbnail(picture_object, 'small')
 #    picture_object.width_thumb_large, picture_object.height_thumb_large = create_thumbnail(picture_object, 'large')

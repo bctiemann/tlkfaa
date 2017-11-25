@@ -218,7 +218,7 @@ class UploadFileView(CreateView):
         pending.folder = folder
         pending.picture = self.request.FILES['picture']
         pending.filename = self.request.FILES['picture'].name
-        pending.save()
+        pending.save(update_thumbs=False)
 
         for character_id in (self.request.POST.get('characters')).split(','):
             if character_id:
