@@ -192,6 +192,10 @@ class UploadView(TemplateView):
         return context
 
 
+class UploadFormView(TemplateView):
+    template_name = 'artmanager/upload_form.html'
+
+
 class UploadFileView(CreateView):
     model = models.Pending
     form_class = forms.UploadFileForm
@@ -227,11 +231,21 @@ class UploadFileView(CreateView):
 
         super(UploadFileView, self).form_valid(form)
 
+        response['success'] = True
+        response['pending_id'] = pending.id
+
         return JsonResponse(response)
 
     def get_context_data(self, *args, **kwargs):
         context = super(UploadFileView, self).get_context_data(*args, **kwargs)
         return context
+
+
+class UploadSuccessView(DetailView):
+    template_name = 'artmanager/upload_success.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
 
 class PendingView(TemplateView):

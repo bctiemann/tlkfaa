@@ -186,7 +186,9 @@
 </table>
 
 <button type="button" id="up_btn" class="start">Upload</button>
-
+                    <div id="progress">
+                        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+                    </div>
 <script>
 $(function () {
     $('#fileupload').fileupload({
@@ -194,9 +196,21 @@ $(function () {
         dropZone: null,
 //        autoUpload: false,
         done: function (e, data) {
-//            var url = '/coloring/{{ coloring_base.id }}/';
-//            $('#cc_{{ coloring_base.id }}').load(url, function() {});
-//            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+
+            $('#uploadsuccess').slideUp('fast');
+            $('#uploadformdiv').slideUp('fast');
+            $('#uploadsuccess').load('/ArtManager/upload/success/' + data.result.pending_id, function(data) {
+                $('#uploadsuccess').slideDown('fast');
+                $('#uploadformdiv').html(data);
+                Shadowbox.setup('#uploadformdiv a.shadowbox');
+                $('#uploadformdiv').load('/ArtManager/upload/form/',function() {
+                    $(this).slideDown();
+                    setupTooltipPreview();
+                });
+                $('#comment').val('');
+            });
+//            $('.pending-uploads').html(data.pending);
+            
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
