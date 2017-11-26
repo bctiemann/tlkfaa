@@ -1,237 +1,53 @@
 {% load bbcode_tags %}
 {% load util_tags %}
 
-<%--
-ajax_editpending.jsp
-AJAX helper for editing pending pictures, invoked from inc_pending.jsp.
---%>
+<form name="editpending_{{ pending.id }}">
+    <table class="formtable">
+        <tr>
+            <td class="label">Folder</td>
+            <td class="data">
+                <select name="folder" class="foldermenu">
+                    <option value="0">(Main)</option>
+                    {% for folder in folders %}
+                        <option value="{{ folder.id }}" {% if pending.folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Characters</td>
+            <td class="data">
 
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="pendingid" value="${param.pendingid}" integerOnly="true" />
-<fmt:parseNumber var="folderid" value="${param.folderid}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${loggedin == 1 && pendingid > 0}">
-
-{% comment %}
-<c:if test="${param.op == 'edit'}">
-
-	<sql:update var="updPending">
-	UPDATE pending SET
-	folderid=?,
-	title=?,
-	keywords=?
-	WHERE pendingid=?
-	AND artistid=?
-	<sql:param value="${folderid > 0 ? folderid : null}" />
-	<sql:param value="${param.title}" />
-	<sql:param value="${param.keywords}" />
-	<sql:param value="${pendingid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-	<%-- Process characters for this pending picture --%>
-
-	<c:set var="tagged_characters" value="0" />
-	<c:forEach var="characterid" items="${fn:split(param.characters, ',')}">
-		<c:if test="${characterid.matches('[0-9]+')}">
-			<c:set var="tagged_characters" value="${tagged_characters},${characterid}" />
-		</c:if>
-	</c:forEach>
-
-	<sql:query var="qryPictureCharacters">
-	SELECT * FROM picturecharacters
-	WHERE pendingid=?
-	AND characterid NOT IN (${tagged_characters})
-	<sql:param value="${pendingid}" />
-        </sql:query>
-
-	<c:forEach var="character" items="${qryPictureCharacters.rows}">
-		<sql:update var="updPictureCharacter">
-		DELETE FROM picturecharacters
-		WHERE pendingid=?
-		AND characterid=?
-		<sql:param value="${pendingid}" />
-		<sql:param value="${character.characterid}" />
-		</sql:update>
-		<c:set var="artistid" value="${artist.artistid}" />
-		<c:set var="pendingid" value="${pendingid}" />
-		<c:set var="characterid" value="${character.characterid}" />
-		<%
-			String artistid = pageContext.getAttribute("artistid").toString();
-			String pendingid = pageContext.getAttribute("pendingid").toString();
-			String characterid = pageContext.getAttribute("characterid").toString();
-			printLog("Artist " + artistid + " untagged character " + characterid + " in pending picture " + pendingid + ".");
-		%>
-	</c:forEach>
-
-	<c:forEach var="characterid" items="${fn:split(param.characters, ',')}">
-		<c:set var="c" value="0" />
-		<c:catch var="catchException">
-		<fmt:parseNumber var="c" value="${characterid}" integerOnly="true" />
-		</c:catch>
-		<c:if test="${c > 0}">
-			<sql:query var="qryExistingCharacter">
-			SELECT * FROM picturecharacters
-			WHERE pendingid=?
-			AND characterid=?
-			<sql:param value="${pendingid}" />
-			<sql:param value="${c}" />
-			</sql:query>
-			<c:if test="${qryExistingCharacter.rowCount == 0}">
-
-				<sql:update var="updPendingCharacters">
-				INSERT INTO picturecharacters (pendingid,characterid,tagged_on)
-				VALUES (?,?,NOW())
-				<sql:param value="${pendingid}" />
-				<sql:param value="${c}" />
-				</sql:update>
-				<c:set var="artistid" value="${artist.artistid}" />
-				<c:set var="pendingid" value="${pendingid}" />
-				<c:set var="characterid" value="${characterid}" />
-				<%
-					String artistid = pageContext.getAttribute("artistid").toString();
-					String pendingid = pageContext.getAttribute("pendingid").toString();
-					String characterid = pageContext.getAttribute("characterid").toString();
-					printLog("Artist " + artistid + " tagged character " + characterid + " in pending picture " + pendingid + ".");
-				%>
-			</c:if>
-		</c:if>
-	</c:forEach>
-
-</c:if>
-{% endcomment %}
-
-<sql:query var="qryPending">
-SELECT * FROM pending
-WHERE pendingid=?
-AND artistid=?
-<sql:param value="${pendingid}" />
-<sql:param value="${artist.artistid}" />
-</sql:query>
-
-<c:forEach var="pending" items="${qryPending.rows}">
-
-<c:choose>
-<c:when test="${param.op == 'form'}">
-
-	<form name="editpending_{{ pending.id }}">
-	<table class="formtable">
-	<tr>
-	<td class="label">Folder</td>
-	<td class="data">
-	<select name="folder" class="foldermenu">
-	<option value="0">(Main)</option>
-        {% for folder in folders %}
-            <option value="{{ folder.id }}" {% if pending.folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
-        {% endfor %}
-	<jsp:include page="inc_root/inc_foldertree.jsp?mode=select&folderid=0&selfolderid=${pending.folderid}&artistid=${artist.artistid}" />
-	</select>
-	</td>
-	</tr>
-	<tr>
-	<td class="label">Characters</td>
-	<td class="data">
-
-{% comment %}
-<div id="tagcharacters_{{ pending.id }}">
-</div>
-{% endcomment %}
-
-	<a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'{{ pending.id }}')">tag characters</a>
-	<div id="tagcharacters_{{ pending.id }}" style="display: block">
-{% if pending.tagged_characters|length %}
-{% with obj=pending.id tagged_characters=pending.tagged_characters %}
-{% include "artmanager/tag_characters.html" %}
-{% endwith %}
-	<c:choose>
-		<c:when test="${qryPictureCharacters.rowCount > 0}">
-		<jsp:include page="ajax_tagcharacters.jsp?obj=${pendingid}&taglist=${taglist}" />
-		<script type="text/javascript">
-		$('a.tagcharacters').hide();
-		</script>
-	</c:when>
-{% else %}
-	<c:otherwise>
-		<input type="hidden" name="characters" id="characterstagged_{{ pending.id }}" value="" />
-	</c:otherwise>
-	</c:choose>
-{% endif %}
-	</div>
-	</td>
-	</tr>
-	<tr>
-	<td class="label">Description</td>
-	<td class="data"><textarea name="title">{{ pending.title|bbcode|safe }}</textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Keywords
-	<div class="charcount">Comma separated</div>
-	</td>
-	<td class="data"><input type="text" name="keywords" id="keywords_{{ pending.id }}" value="{{ pending.keywords }}" /></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="editPending({{ pending.id }},this.form)">Save Changes</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="pendingid" value="{{ pending.id }}" />
-	<input type="hidden" name="op" value="edit" />
-	</form>
-
-</c:when>
-{% comment %}
-<c:otherwise>
-
-	<sql:query var="qryPictureCharacters">
-	SELECT characters.*,artists.artistname,artists.dirname FROM picturecharacters,characters LEFT JOIN artists
-	ON characters.artistid=artists.artistid
-	WHERE pendingid=?
-	AND picturecharacters.characterid=characters.characterid
-	<sql:param value="${pending.pendingid}" />
-	</sql:query>
-
-	<c:set var="title" value="${pending.title}" />
-	<div class="pictitle">
-	<%= formatText((String)pageContext.getAttribute("title")) %>
-	</div>
-
-	<c:if test="${qryPictureCharacters.rowCount > 0}">
-	<div class="tagcharacters">
-	<h4>Tagged characters:</h4>
-	<table>
-	<c:forEach var="character" items="${qryPictureCharacters.rows}">
-		<tr>
-		<td><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></td>
-		<td><c:choose><c:when test="${character.artistid == 0}">(Canon)</c:when><c:otherwise><a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise></c:choose></td>
-		</tr>
-	</c:forEach>
-	</table>
-	</div>
-	</c:if>
-
-        <div class="tags">
-        <c:forEach var="tag" items="${pending.keywords}">
-                <a class="tag" href="/Artwork/?list=tag&term=${tag}">${tag}</a>
-        </c:forEach>
-        </div>
-
-</c:otherwise>
-</c:choose>
-{% endcomment %}
-
-</c:forEach>
-
-</c:if>
+                <a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'{{ pending.id }}')">tag characters</a>
+                <div id="tagcharacters_{{ pending.id }}" style="display: block">
+                    {% if pending.tagged_characters|length %}
+                        {% with obj=pending.id tagged_characters=pending.tagged_characters %}
+                            {% include "artmanager/tag_characters.html" %}
+                        {% endwith %}
+                        <script type="text/javascript">
+                        $('a.tagcharacters').hide();
+                        </script>
+                    {% else %}
+                        <input type="hidden" name="characters" id="characterstagged_{{ pending.id }}" value="" />
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Description</td>
+            <td class="data"><textarea name="title">{{ pending.title|bbcode|safe }}</textarea></td>
+        </tr>
+        <tr>
+            <td class="label">Keywords
+                <div class="charcount">Comma separated</div>
+            </td>
+            <td class="data"><input type="text" name="keywords" id="keywords_{{ pending.id }}" value="{{ pending.keywords }}" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="buttons">
+                <button type="button" onClick="editPending({{ pending.id }},this.form)">Save Changes</button>
+            </td>
+        </tr>
+    </table>
+</form>
 
