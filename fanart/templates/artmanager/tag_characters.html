@@ -61,8 +61,8 @@ ORDER BY charactername
     </table>
 
     <div id="charactertaglist_{{ obj }}">
-        {% with picture=replacing_picture %}
             {% include "artmanager/tagged_characters.html" %}
+        {% with picture=replacing_picture %}
         {% endwith %}
     </div>
 

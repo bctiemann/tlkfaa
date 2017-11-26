@@ -8,15 +8,9 @@
 <td class="thumb">
 <a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
 {% if pending.is_movie %}
-<c:choose>
-<c:when test="${pending.ismovie == true}">
-	<img class="thumb moviethumb" src="/images/movie_icon.gif" />
-</c:when>
+	<img class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
 {% else %}
-<c:otherwise>
 	<img class="thumb" src="{{ pending.thumbnail_url }}" />
-</c:otherwise>
-</c:choose>
 {% endif %}
 </a>
 <div class="picturestats">
@@ -59,57 +53,40 @@
 
 <div id="editpending_{{ pending.id }}">
 
-        <sql:query var="qryPictureCharacters">
-        SELECT characters.*,artists.artistname,artists.dirname FROM picturecharacters,characters LEFT JOIN artists
-        ON characters.artistid=artists.artistid
-        WHERE pendingid=?
-        AND picturecharacters.characterid=characters.characterid
-        <sql:param value="${pending.pendingid}" />
-        </sql:query>
-
-        <c:set var="title" value="{{ pending.title }}" />
         <div class="pictitle">
         {{ pending.title|bbcode|safe }}
         </div>
 
-        <c:if test="${qryPictureCharacters.rowCount > 0}">
+        {% if pending.picturecharacter_set.exists %}
         <div class="tagcharacters">
         <h4>Tagged characters:</h4>
         <table>
-        <c:forEach var="character" items="${qryPictureCharacters.rows}">
+        {% for pc in pending.picturecharacter_set.all %}
                 <tr>
-                <td><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></td>
-                <td><c:choose><c:when test="${character.artistid == 0}">(Canon)</c:when><c:otherwise><a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise></c:choose></td>
+                <td><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></td>
+                <td>{% if pc.character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=pc.character.owner.dir_name %}">{{ pc.character.owner.username }}</a>{% endif %}</td>
                 </tr>
-        </c:forEach>
+        {% endfor %}
         </table>
         </div>
-        </c:if>
+        {% endif %}
                 
         <div class="tags">
-        <c:forEach var="tag" items="${pending.keywords}">
-                <a class="tag" href="/Artwork/?list=tag&term=${tag}">${tag}</a>
-        </c:forEach>
+        {% for tag in pending.get_tags %}
+            {% if tag %}
+                <a class="tag" href="/Artwork/?list=tag&term=${tag}">{{ tag }}</a>
+            {% endif %}
+        {% endfor %}
         </div>
 
-<jsp:include page="/ajax_editpending.jsp?pendingid=${pending.pendingid}" />
+{# <jsp:include page="/ajax_editpending.jsp?pendingid=${pending.pendingid}" /> #}
 </div>
 
-<c:if test="${pending.replacement > 0}">
+{% if pending.replaces_picture %}
 <div class="replacementpic">
-<sql:query var="qryReplacePic">
-SELECT * FROM pictures
-WHERE pictureid=?
-AND artistid=?
-AND deleted IS NULL
-<sql:param value="${pending.replacement}" />
-<sql:param value="${artist.artistid}" />
-</sql:query>
-<c:forEach var="replacepic" items="${qryReplacePic.rows}">
-Replacement for <a href="/Picture.jsp?pictureid=${pending.replacement}"><img src="/Artists/${artist.dirname}/${fanart:encodeURI(replacepic.basename)}.p.jpg" /></a>
-</c:forEach>
+Replacement for <a href="{% url "picture" picture_id=pending.replaces_picture.id %}"><img src="{{ pending.replaces_picture.preview_url }}" /></a>
 </div>
-</c:if>
+{% endif %}
 
 </div>
 </td>

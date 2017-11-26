@@ -670,7 +670,8 @@ function setupEditCharacter(characterid) {
 }
 
 function setupEditPending(pendingid) {
-  var url = "/ajax_editpending.jsp?op=form&pendingid="+pendingid;
+//  var url = "/ajax_editpending.jsp?op=form&pendingid="+pendingid;
+  var url = '/ArtManager/pending/' + pendingid + '/edit/';
   $('#editpending_'+pendingid).load(url,function() {
     setupAutocompleteCharacter(pendingid,"tagCharacter(ui.item.characterid,'add',obj);");
     $('div.actions_menu').hide();
@@ -746,15 +747,26 @@ function editPending(pendingid,pendingform) {
   var title = pendingform.title.value;
   var keywords = uniqueKeywords.join(',');
   var characters = pendingform.characters.value;
-  $.post("/ajax_editpending.jsp",{ 
+//  $.post("/ajax_editpending.jsp",{ 
+  $.post('/ArtManager/pending/' + pendingid + '/update/', {
       op: "edit",
       pendingid: pendingid, 
-      folderid: folderid,
+      folder: folderid,
       title: title,
       keywords: keywords,
       characters: characters
     },function(data) {
-    $('#editpending_'+pendingid).html(data);
+      $('#pending_'+pendingid).html(data);
+      $('#actions_'+pendingid).popupmenu({
+        target: "#actions_" + pendingid + "_popup",
+        time: 300,
+      });
+      $('#pending_'+pendingid+' .actions_menu a').mouseenter(function() {
+        $(this).addClass('ui-state-hover');
+      });
+      $('#pending_'+pendingid+' .actions_menu a').mouseleave(function() {
+        $(this).removeClass('ui-state-hover');
+      });
   });
 }
 

@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
 
 from fanart import models
+from fanart import utils
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
@@ -256,6 +257,38 @@ class PendingView(TemplateView):
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'pending'
         return super(PendingView, self).get(request, *args, **kwargs)
+
+
+class PendingDetailView(DetailView):
+    template_name = 'includes/pending.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
+
+
+class PendingFormView(DetailView):
+    model = models.Pending
+    template_name = 'artmanager/edit_pending.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(PendingFormView, self).get_context_data(**kwargs)
+
+        context['folders'] = utils.tree_to_list(self.request.user.folder_set.all(), sort_by='name')
+        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
+        context['tag_list'] = ','.join([str(character.id) for character in self.object.tagged_characters])
+
+        return context
+
+class UpdatePendingView(UpdateView):
+    model = models.Pending
+    form_class = forms.PendingForm
+    template_name = 'artmanager/edit_pending.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
 
 class DeletePendingView(DeleteView):

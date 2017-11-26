@@ -108,7 +108,9 @@ ORDER BY uploaded ASC
 {% for pending in user.pending_set.all %}
 <c:forEach var="pending" items="${qryPending.rows}">
 
+<div id="pending_{{ pending.id }}">
 {% include "includes/pending.html" %}
+</div>
 
 {% comment %}
 <c:set var="filename" value="${pending.filename}" />

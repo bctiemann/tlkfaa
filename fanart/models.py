@@ -726,8 +726,16 @@ class Pending(models.Model):
     def size_warning(self):
         return self.picture.size > settings.MAX_UPLOAD_SIZE and not self.is_movie
 
+    @property
+    def get_tags(self):
+        return self.keywords.split(',')
+
+    @property
+    def tagged_characters(self):
+        return [pc.character for pc in self.picturecharacter_set.all()]
+
     def get_absolute_url(self):
-        return reverse('artmanager:upload', kwargs={'pending_id': self.id})
+        return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
 
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
