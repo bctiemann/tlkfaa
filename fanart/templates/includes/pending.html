@@ -1,95 +1,85 @@
 {% load static %}
 {% load bbcode_tags %}
 
-<c:set var="filename" value="${pending.filename}" />
 <div class="picture pendingpicture">
-<table>
-<tr>
-<td class="thumb">
-<a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
-{% if pending.is_movie %}
-	<img class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
-{% else %}
-	<img class="thumb" src="{{ pending.thumbnail_url }}" />
-{% endif %}
-</a>
-<div class="picturestats">
-{{ pending.date_uploaded|date }}<br />
-<c:if test="${pending.ismovie == false}">
-{{ pending.width }} x {{ pending.height }}
+    <table>
+        <tr>
+            <td class="thumb">
+                <a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
+                    {% if pending.is_movie %}
+                        <img class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
+                    {% else %}
+                        <img class="thumb" src="{{ pending.thumbnail_url }}" />
+                    {% endif %}
+                </a>
+                <div class="picturestats">
+                    {{ pending.date_uploaded|date }}<br />
+                    {% if not pending.is_movie %}
+                        {{ pending.width }} x {{ pending.height }}
 
-{% if pending.dimensions_warning %}
-<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}1{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
-{% endif %}
+                        {% if pending.dimensions_warning %}
+                            <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}1{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                        {% endif %}
+                        <br />
+                    {% endif %}
 
-<br />
+                    {{ pending.picture.size|filesizeformat }}
+                    {% if pending.size_warning %}
+                        <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                    {% endif %}
+                    <br />
+                </div>
+            </td>
+            <td class="fullwidth picturedetails">
 
-{{ pending.picture.size|filesizeformat }}
+                <a href="javascript:nop()"><div class="actions_hover" id="actions_{{ pending.id }}">Actions</div></a>
+                <div class="actions_menu" id="actions_{{ pending.id }}_popup">
+                    <h3>Actions</h3>
+                    <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPending({{ pending.id }})">Edit</a>
+                    <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending({{ pending.id }})">Delete</a>
+                </div>
 
-{% if pending.size_warning %}
-<c:if test="${pending.filesize > maxfilesize && pending.ismovie == false}">
-<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
-</c:if>
-{% endif %}
+                <div class="picturedetails">
 
-<br />
-</div>
-</td>
-<td class="fullwidth picturedetails">
+                    <div class="picadmininfo">{{ pending.filename }}</div>
 
-<a href="javascript:nop()"><div class="actions_hover" id="actions_{{ pending.id }}">Actions</div></a>
-<div class="actions_menu" id="actions_{{ pending.id }}_popup">
-<h3>Actions</h3>
-<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditPending({{ pending.id }})">Edit</a>
-<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending({{ pending.id }})">Delete</a>
-</div>
+                    <div id="editpending_{{ pending.id }}">
 
-<div class="picturedetails">
+                    <div class="pictitle">
+                        {{ pending.title|bbcode|safe }}
+                    </div>
 
-<div class="picadmininfo">
-<c:set var="fnparts" value="${fn:split(pending.filename,'\\\\')}" />
-{{ pending.filename }}
-</div>
-
-<div id="editpending_{{ pending.id }}">
-
-        <div class="pictitle">
-        {{ pending.title|bbcode|safe }}
-        </div>
-
-        {% if pending.picturecharacter_set.exists %}
-        <div class="tagcharacters">
-        <h4>Tagged characters:</h4>
-        <table>
-        {% for pc in pending.picturecharacter_set.all %}
-                <tr>
-                <td><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></td>
-                <td>{% if pc.character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=pc.character.owner.dir_name %}">{{ pc.character.owner.username }}</a>{% endif %}</td>
-                </tr>
-        {% endfor %}
-        </table>
-        </div>
-        {% endif %}
+                    {% if pending.picturecharacter_set.exists %}
+                    <div class="tagcharacters">
+                        <h4>Tagged characters:</h4>
+                        <table>
+                            {% for pc in pending.picturecharacter_set.all %}
+                                <tr>
+                                    <td><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></td>
+                                    <td>{% if pc.character.is_canon %}(Canon){% else %}<a href="{% url "artist" dir_name=pc.character.owner.dir_name %}">{{ pc.character.owner.username }}</a>{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endif %}
                 
-        <div class="tags">
-        {% for tag in pending.get_tags %}
-            {% if tag %}
-                <a class="tag" href="/Artwork/?list=tag&term=${tag}">{{ tag }}</a>
-            {% endif %}
-        {% endfor %}
-        </div>
+                    <div class="tags">
+                    {% for tag in pending.get_tags %}
+                        {% if tag %}
+                            <a class="tag" href="/Artwork/?list=tag&term=${tag}">{{ tag }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
 
-{# <jsp:include page="/ajax_editpending.jsp?pendingid=${pending.pendingid}" /> #}
-</div>
+                </div>
 
-{% if pending.replaces_picture %}
-<div class="replacementpic">
-Replacement for <a href="{% url "picture" picture_id=pending.replaces_picture.id %}"><img src="{{ pending.replaces_picture.preview_url }}" /></a>
-</div>
-{% endif %}
+                {% if pending.replaces_picture %}
+                    <div class="replacementpic">
+                        Replacement for <a href="{% url "picture" picture_id=pending.replaces_picture.id %}"><img src="{{ pending.replaces_picture.preview_url }}" /></a>
+                    </div>
+                {% endif %}
 
-</div>
-</td>
-</tr>
-</table>
+            </td>
+        </tr>
+    </table>
 </div>
