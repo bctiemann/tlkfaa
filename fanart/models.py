@@ -744,6 +744,9 @@ class Pending(models.Model):
         if update_thumbs:
             process_images.apply_async(('Pending', self.id, 'small'), countdown=20)
 
+    class Meta:
+        ordering = ['date_uploaded']
+
 
 class ColoringBase(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
