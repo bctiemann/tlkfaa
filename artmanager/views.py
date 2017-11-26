@@ -282,7 +282,7 @@ class PendingFormView(DetailView):
 
         return context
 
-class UpdatePendingView(UpdateView):
+class PendingUpdateView(UpdateView):
     model = models.Pending
     form_class = forms.PendingForm
     template_name = 'artmanager/edit_pending.html'
@@ -290,8 +290,25 @@ class UpdatePendingView(UpdateView):
     def get_object(self):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
+    def form_valid(self, form):
+        response = super(PendingUpdateView, self).form_valid(form)
 
-class DeletePendingView(DeleteView):
+        logger.info(self.request.POST)
+
+        self.object.picturecharacter_set.all().delete()
+        for character_id in (self.request.POST.get('characters')).split(','):
+            if character_id:
+                logger.info(character_id)
+                try:
+                    character = models.Character.objects.get(pk=character_id)
+                except models.Character.DoesNotExist:
+                    continue
+                logger.info(character)
+                pc = models.PictureCharacter.objects.create(pending=self.object, character=character)
+
+        return response
+
+class PendingDeleteView(DeleteView):
     model = models.Pending
 
     def get_object(self):
