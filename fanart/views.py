@@ -869,6 +869,18 @@ class ColoringPictureTooltipView(TemplateView):
         context['coloring_picture'] = coloring_picture
         return context
 
+class MessageTooltipView(TemplateView):
+    template_name = 'includes/tooltip_message.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MessageTooltipView, self).get_context_data(**kwargs)
+
+        context['max_width'] = settings.MAX_UPLOAD_WIDTH
+        context['max_height'] = settings.MAX_UPLOAD_HEIGHT
+        context['max_size'] = settings.MAX_UPLOAD_SIZE
+
+        return context
+
 
 class CharacterView(TemplateView):
     template_name = 'fanart/character.html'

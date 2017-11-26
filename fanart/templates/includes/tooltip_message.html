@@ -1,0 +1,28 @@
+{% if msg_id == "1" %}
+
+<div class="previewPopupResult" id="preview_{{ msg_id }}">   
+    <div class="tooltipdata">   
+        <p>The picture dimensions may be too large.</p>
+        <p>Please consider resizing the picture to reduce it to less than {{ max_width }} x {{ max_height }} pixels.</p>
+    </div>
+</div> 
+
+{% elif msg_id == "2" %}
+
+<div class="previewPopupResult" id="preview_{{ msg_id }}">   
+    <div class="tooltipdata">
+        <p>The file size may be excessive.</p>
+        <p>Please consider attempting to reduce the file to less than {{ max_size|filesizeformat }} by resizing, adjusting the compression/quality, or choosing a different format.</p>
+    </div>
+</div> 
+
+{% elif msg_id == "3" %}
+
+<div class="previewPopupResult" id="preview_{{ msg_id }}">
+    <div class="tooltipdata">   
+        <p>Although you have Auto-Approval in effect, this picture has been stored for manual approval.</p>
+        <p>Auto-approval will only apply to pictures smaller than {{ max_width }} x {{ max_height }} pixels and under {{ max_size|filesizeformat }}.</p>
+    </div>
+</div> 
+
+{% endif %}

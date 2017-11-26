@@ -718,6 +718,14 @@ class Pending(models.Model):
         extension = filename_parts[-1].lower()
         return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
 
+    @property
+    def dimensions_warning(self):
+        return self.width > settings.MAX_UPLOAD_WIDTH or self.height > settings.MAX_UPLOAD_HEIGHT
+
+    @property
+    def size_warning(self):
+        return self.picture.size > settings.MAX_UPLOAD_SIZE and not self.is_movie
+
     def get_absolute_url(self):
         return reverse('artmanager:upload', kwargs={'pending_id': self.id})
 

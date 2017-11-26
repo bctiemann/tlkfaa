@@ -93,6 +93,7 @@ urlpatterns = [
 
     url(r'^tooltip/picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureTooltipView.as_view(), name='picture-tooltip'),
     url(r'^tooltip/coloring_picture/(?P<coloring_picture_id>[0-9]+)/$', fanart_views.ColoringPictureTooltipView.as_view(), name='coloring-picture-tooltip'),
+    url(r'^tooltip/msg/(?P<msg_id>[0-9]+)/$', fanart_views.MessageTooltipView.as_view(), name='message-tooltip'),
 
     url(r'^pick/picture/(?:(?P<target>[a-z]+)/)?$', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
 

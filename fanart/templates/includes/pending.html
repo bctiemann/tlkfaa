@@ -1,3 +1,4 @@
+{% load static %}
 {% load bbcode_tags %}
 
 <c:set var="filename" value="${pending.filename}" />
@@ -21,13 +22,23 @@
 <div class="picturestats">
 {{ pending.date_uploaded|date }}<br />
 <c:if test="${pending.ismovie == false}">
-{{ pending.width }} x {{ pending.height }} {{ pending.warnings }}<c:if test="${pending.width > maxwidth || pending.height > maxheight}">
-<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="<c:choose><c:when test="${artist.autoapprove == true}">3</c:when><c:otherwise>1</c:otherwise></c:choose>"><img src="/images/warning.png" /></a>
-</c:if><br />
+{{ pending.width }} x {{ pending.height }}
+
+{% if pending.dimensions_warning %}
+<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}1{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+{% endif %}
+
+<br />
+
+{{ pending.picture.size|filesizeformat }}
+
+{% if pending.size_warning %}
+<c:if test="${pending.filesize > maxfilesize && pending.ismovie == false}">
+<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
 </c:if>
-{{ pending.picture.size|filesizeformat }}<fmt:formatNumber value="${pending.filesize / 1024}" type="number" pattern="###" /> KB <c:if test="${pending.filesize > maxfilesize && pending.ismovie == false}">
-<a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="<c:choose><c:when test="${artist.autoapprove == true}">3</c:when><c:otherwise>2</c:otherwise></c:choose>"><img src="/images/warning.png" /></a>
-</c:if><br />
+{% endif %}
+
+<br />
 </div>
 </td>
 <td class="fullwidth picturedetails">
