@@ -8,188 +8,132 @@
 
 {% endif %}
 
-{% comment %}
-<c:if test="${replace > 0}">
+<form name="uploadform" id="uploadform" method="POST" enctype="multipart/form-data">
+    <table class="formtable">
+        <tr>
+            <td class="label">File</td>
+            <td class="data">
+                {#<input name="uploadfile" type="file" id="uploadfile" validate="hasvalue" message="You must select a file to upload." />#}
+                <input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-file" %}">
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Folder</td>
+            <td class="data">
+                <select name="folder" class="foldermenu">
+                    <option value="0">(Main)</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Characters</td>
+            <td class="data">
+                <a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'new')">tag characters</a>
+                <div id="tagcharacters_new">
+                    {% if replacing_picture.picturecharacter_set.exists %}
+                        {% with obj="new" taglist=replacing_picture.character_id_list %}
+                            {% include "artmanager/tag_characters.html" %}
+                        {% endwith %}
+                        <script type="text/javascript">
+                        setupAutocompleteCharacter('new',"tagCharacter(ui.item.characterid,'add','new')");
+                        $('a.tagcharacters').hide();
+                        </script>
+                    {% else %}
+                        <input type="hidden" name="characters" id="characterstagged_new" value="" />
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">
+                Description
+                <div class="charcount" id="title_charcount">{{ replacing_picture.title|length }} / {{ max_title_chars }}</div>
+            </td>
+            <td class="data">
+                <textarea name="title" id="ta_title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="You must enter a description for the picture, up to ${maxtitlechars} characters long." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_charcount')">{{ replacing_picture.title }}</textarea>
+            </td>
+        </tr>
+    </table>
 
-	<sql:query var="qryReplacePending">
-	SELECT * FROM pending
-	WHERE replacement=?
-	AND artistid=?
-	<sql:param value="${replace}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
+    <a href="javascript:nop()" onClick="$('#uploadoptions').slideToggle('fast')">options</a>
+    <div class="uploadoptions" id="uploadoptions">
+        <table class="formtable">
+            <tr>
+                <td class="label">
+                    Keywords
+                    <div class="charcount">Comma separated</div>
+                </td>
+                <td class="data"><input type="text" name="keywords" value="{{ replacing_picture.keywords_string }}" class="std" id="keywords_new" /></td>
+            </tr>
+            {% if user.auto_approve %}
+                <tr>
+                    <td class="label"></td>
+                    <td class="data inputlabels">
+                        <input type="checkbox" name="force_approve" id="forceapprove" value="1">
+                        <label for="forceapprove">Have this picture manually approved by the administrator</label>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="label">Notes to Administrator</td>
+                    <td class="data"><input type="text" name="notes" value="" class="std" /></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="data inputlabels"><input type="checkbox" name="notify_approval" id="notify" value="1">
+                    <label for="notify">Be notified by email when this picture is accepted</label></td>
+                </tr>
+            {% endif %}
 
-	<c:if test="${qryReplacePending.rowCount == 0}">
+            {% if replacing_picture %}
+                <tr>
+                    <td class="label"></td>
+                    <td class="data">
+                        <select name="reset_upload_date">
+                            <option selected value="1">Set upload date to today</option>
+                            <option value="0">Use original upload date</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="data inputlabels">
+                        <input type="checkbox" name="notify_replacement" id="replacenotify" value="1">
+                        <label for="replacenotify">Notify your fans that this picture has been replaced</label>
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td class="label"></td>
+                <td class="data inputlabels">
+                    <input type="checkbox" name="work_in_progress" id="wip" value="1" {% if replacing_picture.work_in_progress %}checked{% endif %}>
+                    <label for="wip">Work In Progress (WIP)</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="label"></td>
+                <td class="data inputlabels">
+                    <input type="checkbox" name="allow_comments" id="allowcomments" value="1" {% if replacing_picture.allow_comments and user.allow_comments %}checked{% endif %}>
+                    <label for="allowcomments">Allow comments on this picture</label>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-		<sql:query var="qryReplace">
-		SELECT * FROM pictures
-		WHERE pictureid=?
-		AND artistid=?
-		AND deleted IS NULL
-		<sql:param value="${replace}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:query>
+    <table class="formtable">
+        <tr>
+            <td colspan="2" class="buttons">
+                {#<button type="button" onClick="validateForm('uploadform','uploadPicture(\'uploadform\',\'uploadfile\',\'uploadsuccess\',null,false,4000)')">Upload (old)</button>#}
+                <button type="button" id="up_btn" class="start">Upload</button>
+            </td>
+        </tr>
+    </table>
 
-		<c:forEach var="replace" items="${qryReplace.rows}">
-			<c:set var="replacepic" value="${replace}" scope="page" />
+    <div id="progress">
+        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+    </div>
 
-			Replacing picture:
-
-			<c:set var="replacement" value="${replacepic.pictureid}" />
-			<c:set var="title" value="${replacepic.title}" />
-			<tags:printPicture
-				picnumber="${picnumber}"
-				pictureid="${replacepic.pictureid}"
-				basename="${replacepic.basename}"
-				extension="${replacepic.extension}"
-				type="${replacepic.type}"
-				title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-				dirname="${artist.dirname}"
-				width="${replacepic.width}"
-				height="${replacepic.height}"
-				thumbheight="${replacepic.thumbheight}"
-				allowcomments="${replacepic.allowcomments_p && artist.allowcomments}"
-				numcomments="${replacepic.numcomments}"
-				numpicfaves="${replacepic.numpicfaves}"
-				gallery="${artist.dirname}"
-				folder="${replacepic.folderid}"
-				cc_base="${replacepic.coloring_baseid}"
-				showcolored="0"
-				>
-				<jsp:attribute name="uploaded">
-					<fmt:formatDate value="${replacepic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-				</jsp:attribute>
-				<jsp:attribute name="filesize">
-					<fmt:formatNumber value="${replacepic.filesize / 1024}" type="number" pattern="###" />
-				</jsp:attribute>
-			</tags:printPicture>
-		</c:forEach>
-
-	</c:if>
-
-</c:if>
-{% endcomment %}
-
-<form name="uploadform" id="uploadform" method="POST" action="ArtManager.jsp" enctype="multipart/form-data">
-<table class="formtable">
-<tr>
-<td class="label">File</td>
-<td class="data"><input name="uploadfile" type="file" id="uploadfile" validate="hasvalue" message="You must select a file to upload." />
-<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-file" %}"></td>
-</tr>
-<tr>
-<td class="label">Folder</td>
-<td class="data">
-<select name="folder" class="foldermenu">
-<option value="0">(Main)</option>
-</select>
-</td>
-</tr>
-<tr>
-<td class="label">Characters</td>
-<td class="data">
-<a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'new')">tag characters</a>
-<div id="tagcharacters_new">
-{% if replacing_picture.picturecharacter_set.exists %}
-<c:choose>
-<c:when test="${qryPictureCharacters.rowCount > 0}">
-        {% with obj="new" taglist=replacing_picture.character_id_list %}
-        {% include "artmanager/tag_characters.html" %}
-        {% endwith %}
-	<jsp:include page="ajax_tagcharacters.jsp?obj=new&taglist=${taglist}" />
-	<script type="text/javascript">
-	setupAutocompleteCharacter('new',"tagCharacter(ui.item.characterid,'add','new')");
-	$('a.tagcharacters').hide();
-	</script>
-</c:when>
-{% else %}
-<c:otherwise>
-	<input type="hidden" name="characters" id="characterstagged_new" value="" />
-</c:otherwise>
-</c:choose>
-{% endif %}
-</div>
-</td>
-</tr>
-<tr>
-<td class="label">Description
-<div class="charcount" id="title_charcount">{{ replacing_picture.title|length }} / {{ max_title_chars }}</div>
-</td>
-<td class="data"><textarea name="title" id="ta_title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="You must enter a description for the picture, up to ${maxtitlechars} characters long." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_charcount')">{{ replacing_picture.title }}</textarea></td>
-</tr>
-</table>
-
-<a href="javascript:nop()" onClick="$('#uploadoptions').slideToggle('fast')">options</a>
-<div class="uploadoptions" id="uploadoptions">
-<table class="formtable">
-<tr>
-<td class="label">Keywords
-<div class="charcount">Comma separated</div>
-</td>
-<td class="data"><input type="text" name="keywords" value="{{ replacing_picture.keywords_string }}" class="std" id="keywords_new" /></td>
-</tr>
-{% if user.auto_approve %}
-<c:choose>
-<c:when test="${artist.autoapprove == true}">
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="force_approve" id="forceapprove" value="1"> <label for="forceapprove">Have this picture manually approved by the administrator</label></td>
-	</tr>
-</c:when>
-{% else %}
-<c:otherwise>
-	<tr>
-	<td class="label">Notes to Administrator</td>
-	<td class="data"><input type="text" name="notes" value="" class="std" /></td>
-	</tr>
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="notify_approval" id="notify" value="1"> <label for="notify">Be notified by email when this picture is accepted</label></td>
-	</tr>
-</c:otherwise>
-</c:choose>
-{% endif %}
-{% if replacing_picture %}
-<c:if test="${replacement > 0}">
-	<tr>
-	<td class="label"></td>
-	<td class="data">
-	<select name="reset_upload_date">
-	<option selected value="1">Set upload date to today
-	<option value="0">Use original upload date
-	</select>
-	</td>
-	</tr>
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="notify_replacement" id="replacenotify" value="1"> <label for="replacenotify">Notify your fans that this picture has been replaced</label></td>
-	</tr>
-</c:if>
-{% endif %}
-<tr>
-<td class="label"></td>
-<td class="data inputlabels"><input type="checkbox" name="work_in_progress" id="wip" value="1" {% if replacing_picture.work_in_progress %}checked{% endif %}> <label for="wip">Work In Progress (WIP)</label></td>
-</tr>
-<tr>
-<td class="label"></td>
-<td class="data inputlabels"><input type="checkbox" name="allow_comments" id="allowcomments" value="1" {% if replacing_picture.allow_comments and user.allow_comments %}checked{% endif %}> <label for="allowcomments">Allow comments on this picture</label></td>
-</tr>
-</table>
-</div>
-
-<table class="formtable">
-<tr>
-<td colspan="2" class="buttons">
-<button type="button" onClick="validateForm('uploadform','uploadPicture(\'uploadform\',\'uploadfile\',\'uploadsuccess\',null,false,4000)')">Upload</button>
-</td>
-</tr>
-</table>
-
-<button type="button" id="up_btn" class="start">Upload</button>
-                    <div id="progress">
-                        <div class="bar" style="border-width: 0px; width: 0%;"></div>
-                    </div>
-<script>
+    <script>
 $(function () {
     $('#fileupload').fileupload({
         dataType: 'json',
@@ -227,15 +171,7 @@ console.log(data);
         },
     });
 });
-</script>
+    </script>
 
-<input type="hidden" name="op" value="upload" />
-<input type="hidden" name="uploadop" value="upload" />
-<input type="hidden" name="todo" value="upload" />
-<input type="hidden" name="commit" value="1" />
-<input type="hidden" name="replaces_picture" value="{{ replacing_picture.id }}" />
+    <input type="hidden" name="replaces_picture" value="{{ replacing_picture.id }}" />
 </form>
-
-
-</c:if>
-
