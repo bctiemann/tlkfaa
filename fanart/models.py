@@ -703,7 +703,9 @@ class Pending(models.Model):
 
     @property
     def thumbnail_url(self):
-        return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+        if os.path.exists(self.thumbnail_path):
+            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
@@ -717,6 +719,10 @@ class Pending(models.Model):
         basename = '.'.join(filename_parts[:-1])
         extension = filename_parts[-1].lower()
         return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
+
+    @property
+    def thumbnail_created(self):
+        return os.path.exists(self.thumbnail_path)
 
     @property
     def dimensions_warning(self):
@@ -783,7 +789,7 @@ class ColoringPicture(models.Model):
         return self.picture.name.split('.')[-1].lower()
 
     @property
-    def thumbnail(self):
+    def thumbnail_path(self):
         if not self.picture:
             return None
         path = ('/').join(self.picture.path.split('/')[:-1])
@@ -791,13 +797,13 @@ class ColoringPicture(models.Model):
 
     @property
     def thumbnail_url(self):
-        if os.path.exists(self.thumbnail):
+        if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_created(self):
-        return os.path.exists(self.thumbnail)
+        return os.path.exists(self.thumbnail_path)
 
     @property
     def url(self):
@@ -903,7 +909,7 @@ class TradingClaim(models.Model):
         return self.filename.split('.')[-1].lower()
 
     @property
-    def thumbnail(self):
+    def thumbnail_path(self):
         if not self.picture:
             return None
         path = ('/').join(self.picture.path.split('/')[:-1])
@@ -911,13 +917,13 @@ class TradingClaim(models.Model):
 
     @property
     def thumbnail_url(self):
-        if os.path.exists(self.thumbnail):
+        if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_created(self):
-        return os.path.exists(self.thumbnail)
+        return os.path.exists(self.thumbnail_path)
 
     @property
     def url(self):

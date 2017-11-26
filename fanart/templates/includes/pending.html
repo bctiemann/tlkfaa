@@ -7,9 +7,9 @@
             <td class="thumb">
                 <a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
                     {% if pending.is_movie %}
-                        <img class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
+                        <img id="pendingthumb_{{ pending.id }}" class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
                     {% else %}
-                        <img class="thumb" src="{{ pending.thumbnail_url }}" />
+                        <img id="pendingthumb_{{ pending.id }}" class="thumb" src="{{ pending.thumbnail_url }}" />
                     {% endif %}
                 </a>
                 <div class="picturestats">

@@ -1152,7 +1152,7 @@ class RemoveUploadClaimView(UpdateView):
         self.object.date_fulfilled = None
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
         except OSError:
             pass
         self.object.picture = None
@@ -1352,7 +1352,7 @@ class RemoveColoringPictureView(DeleteView):
         logger.info(self.object.picture.name)
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
         except OSError:
             pass
         return super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)

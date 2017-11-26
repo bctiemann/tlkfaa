@@ -7,6 +7,27 @@
     <a class="button" href="{% url "artmanager:pending" %}">Pending Uploads (<span class="pending-uploads">{{ user.pending_set.count }}</span>)</a>
 </div>
 
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+
+var checkThumbs = function() {
+    var url = '/ArtManager/pending/status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (pending_id in data) {
+            $('img#pendingthumb_' + pending_id).attr('src', data[pending_id].thumbnail_url);
+            if (!data[pending_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+console.log(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+
 <h2>Upload Artwork</h2>
 
 <div class="pageinfo">

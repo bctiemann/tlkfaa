@@ -8,6 +8,29 @@
 
 {% endif %}
 
+{% comment %}
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+
+var checkThumbs = function() {
+    var url = '/ArtManager/pending/status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (pending_id in data) {
+            $('img#pendingthumb_' + pending_id).attr('src', data[pending_id].thumbnail_url);
+            if (!data[pending_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+console.log(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+{% endcomment %}
+
 <form name="uploadform" id="uploadform" method="POST" enctype="multipart/form-data">
     <table class="formtable">
         <tr>
@@ -154,7 +177,8 @@ $(function () {
                 $('#comment').val('');
             });
 //            $('.pending-uploads').html(data.pending);
-            
+
+            refreshThumbsInterval = setInterval('checkThumbs()', 1000);            
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);

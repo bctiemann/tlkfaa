@@ -15,6 +15,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+
 from fanart import models
 from fanart import utils
 from fanart.views import UserPaneMixin
@@ -249,6 +253,18 @@ class UploadSuccessView(DetailView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
+
+
+class PendingStatusView(APIView):
+
+    def get(self, request, pending_id=None):
+        response = {}
+        for pending in request.user.pending_set.all():
+            response[pending.id] = {
+                'thumbnail_url': pending.thumbnail_url,
+                'thumbnail_done': pending.thumbnail_created,
+            }
+        return Response(response)
 
 
 class PendingView(TemplateView):
