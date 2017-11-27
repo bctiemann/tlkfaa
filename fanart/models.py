@@ -510,6 +510,10 @@ class Picture(models.Model):
     def character_id_list(self):
         return ','.join([str(pc.character.id) for pc in self.picturecharacter_set.all()])
 
+    @property
+    def replacement_pending(self):
+        return Pending.objects.filter(replaces_picture=self).exists()
+
     def get_absolute_url(self):
         return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
 

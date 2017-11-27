@@ -507,6 +507,7 @@ Sort by:
 {% else %}
 <c:otherwise>
 
+{% comment %}
 	<c:choose>
 	<c:when test="${param.sortby == 'newest'}">
 		<c:set var="sortby" value="uploaded" />
@@ -587,10 +588,14 @@ Sort by:
 	</c:choose>
 
 	<%= Pages.get("pages") %>
+{% endcomment %}
+
+        {{ pages_link.pages_nav|safe }}
 
         {% for picture in pictures %}
 	<c:forEach var="picture" items="${qryPictures.rows}">
 
+{% comment %}
 		<sql:query var="qryReplacement">
 		SELECT * FROM pending
 		WHERE replacement=?
@@ -598,6 +603,7 @@ Sort by:
 		<sql:param value="${picture.pictureid}" />
 		<sql:param value="${artist.artistid}" />
 		</sql:query>
+{% endcomment %}
 
 		<div class="picture editpicture {% if not picture.is_public %}privatepicture{% endif %}" id="picture_{{ picture.id }}">
 		<table>
