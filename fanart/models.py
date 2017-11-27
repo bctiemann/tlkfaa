@@ -774,6 +774,11 @@ class ColoringBase(models.Model):
     def thumbnail_url(self):
         return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.picture.artist.dir_name, self.picture.basename)
 
+    def refresh_num_colored(self):
+        self.num_colored = self.coloringpicture_set.count()
+        self.save()
+
+
 class ColoringPicture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True, blank=True)

@@ -81,11 +81,11 @@ AND (coloring_pics.artistid=? OR coloring_base.artistid=?)
 	<table class="formtable">
 	<tr>
 	<td class="label">Comment</td>
-	<td class="data"><textarea name="comment">${ccpic.comment}</textarea></td>
+	<td class="data"><textarea name="comment">{{ picture.comment }}</textarea></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="editCCPic(${ccpic.coloring_picid},this.form)">Save Changes</button>
+	<button type="button" onClick="editCCPic({{ picture.id }},this.form)">Save Changes</button>
 	</td>
 	</tr>
 	</table>

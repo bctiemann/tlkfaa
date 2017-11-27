@@ -697,11 +697,8 @@ function setupEditPicture(pictureid) {
 function setupEditCCPic(ccpicid) {
 //  var url = "/ajax_editccpic.jsp?op=form&ccpicid="+ccpicid;
   var url = '/ArtManager/artwork/coloring_picture/' + ccpicid + '/edit/';
-console.log(url);
   $('#editccpic_'+ccpicid).load(url,function(data) {
-console.log(data);
-
-    $('div.actions_menu').hide();
+//    $('div.actions_menu').hide();
   });
 }
 
@@ -808,9 +805,10 @@ function editPicture(pictureid,pictureform) {
 
 function editCCPic(ccpicid,ccpicform) {
   var comment = ccpicform.comment.value;
-  $.post("/ajax_editccpic.jsp",{ 
+//  $.post("/ajax_editccpic.jsp",{ 
+  $.post('/ArtManager/artwork/coloring_picture/' + ccpicid + '/update/', {
       op: "edit",
-      ccpicid: ccpicid, 
+      ccpicid: ccpicid,
       comment: comment
     },function(data) {
     $('#editccpic_'+ccpicid).html(data);
@@ -1057,7 +1055,13 @@ function deleteCCPic(pictureid,page) {
       modal: true,
       buttons: {
         "Delete": function() {
-          window.location.href = "/ArtManager.jsp?op=artwork&fnc=deletecc&folderid=-1&ccpiclist="+s.selectlist+"&page="+page;
+          var url = '/ArtManager/artwork/coloring_picture/' + pictureid + '/delete/';
+          $.post(url, function(data) {
+            if (data.success) {
+                window.location.reload();
+            }
+          });
+//          window.location.href = "/ArtManager.jsp?op=artwork&fnc=deletecc&folderid=-1&ccpiclist="+s.selectlist+"&page="+page;
         },
         Cancel: function() {
           $(this).dialog('close');

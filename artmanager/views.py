@@ -382,6 +382,20 @@ class PictureDetailView(DetailView):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
 
 
+class ColoringPictureDetailView(DetailView):
+    template_name = 'artmanager/coloring_picture.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(ColoringPictureDetailView, self).get_context_data(**kwargs)
+
+        context['picture'] = self.object
+
+        return context
+
+
 class PictureFormView(DetailView):
     template_name = 'artmanager/picture_form.html'
 
@@ -399,7 +413,7 @@ class PictureFormView(DetailView):
 
 
 class ColoringPictureFormView(DetailView):
-    template_name = 'artmanager/cc_pic_form.html'
+    template_name = 'artmanager/coloring_picture_form.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
@@ -407,9 +421,7 @@ class ColoringPictureFormView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ColoringPictureFormView, self).get_context_data(**kwargs)
 
-        context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
-#        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
-#        context['tag_list'] = ','.join([str(character.id) for character in self.object.tagged_characters])
+        context['picture'] = self.object
 
         return context
 
@@ -448,6 +460,83 @@ class PictureUpdateView(UpdateView):
         self.object.save()
 
         return response
+
+
+class ColoringPictureUpdateView(UpdateView):
+    model = models.ColoringPicture
+    form_class = forms.ColoringPictureForm
+    template_name = 'artmanager/coloring_picture_form.html'
+
+    def get_object(self):
+        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+
+    def form_valid(self, form):
+        response = super(ColoringPictureUpdateView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        return response
+
+    def get_success_url(self):
+        return reverse('artmanager:artwork-coloring-picture-detail', kwargs={'coloring_picture_id': self.object.id})
+
+
+class PictureDeleteView(DeleteView):
+    model = models.Picture
+
+    def get_object(self):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+
+class ColoringPictureDeleteView(DeleteView):
+    model = models.ColoringPicture
+
+    def get_object(self):
+        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+        logger.info(self.object.picture.name)
+
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
+        except OSError:
+            pass
+
+        for character in models.Character.objects.filter(profile_coloring_picture=self.object):
+            character.profile_coloring_picture = None
+            character.save()
+
+        self.object.base.refresh_num_colored()
+
+#        <sql:update var="updCCPic">
+#        DELETE FROM coloring_pics
+#        WHERE coloring_picid=?
+#        <sql:param value="${ccpic.coloring_picid}" />
+#        </sql:update>
+
+#        <sql:update var="updCCBase">
+#        UPDATE coloring_base
+#        SET numcolored=numcolored-1
+#        WHERE coloring_baseid=?
+#        <sql:param value="${ccpic.basepic}" />
+#        </sql:update>
+
+#        <sql:update var="updCharacters">
+#        UPDATE characters
+#        SET profilepic_c=0
+#        WHERE profilepic_c=?
+#        <sql:param value="${ccpic.coloring_picid}" />
+#        </sql:update>
+
+        self.object.delete()
+
+        response['success'] = True
+
+        return JsonResponse(response)
 
 
 class TagCharactersView(TemplateView):

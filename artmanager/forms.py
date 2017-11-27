@@ -59,3 +59,10 @@ class PictureForm(forms.ModelForm):
     class Meta:
         model = models.Picture
         fields = ['title', 'keywords', 'is_public', 'work_in_progress', 'allow_comments']
+
+
+class ColoringPictureForm(forms.ModelForm):
+
+    class Meta:
+        model = models.ColoringPicture
+        fields = ['comment']
