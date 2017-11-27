@@ -11,6 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth import update_session_auth_hash
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
@@ -354,6 +355,10 @@ class ArtworkView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArtworkView, self).get_context_data(**kwargs)
 
+        sort_by = self.request.GET.get('sort_by', None)
+        if not sort_by in ['newest', 'oldest', 'popularity', 'comments']:
+            sort_by = 'newest'
+
         folder_id = self.request.GET.get('folderid', None)
         if folder_id == 'cc':
             pictures = self.request.user.coloringpicture_set.all()
@@ -368,10 +373,31 @@ class ArtworkView(TemplateView):
                     pass
 
             pictures = self.request.user.picture_set.filter(folder=folder)
+            if sort_by == 'newest':
+                pictures = pictures.order_by('-date_uploaded')
+            if sort_by == 'oldest':
+                pictures = pictures.order_by('date_uploaded')
+            if sort_by == 'popularity':
+                pictures = pictures.order_by('-num_faves')
+            if sort_by == 'comments':
+                pictures = pictures.order_by('-num_comments')
+
             context['folder'] = folder
             context['coloring_cave'] = False
 
-        context['pictures'] = pictures
+        context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            pictures_page = context['pictures_paginator'].page(page)
+        except EmptyPage:
+            pictures_page = context['pictures_paginator'].page(1)
+
+        context['pictures'] = pictures_page
+        context['sort_by'] = sort_by
+        context['pages_link'] = utils.PagesLink(len(pictures), settings.PICTURES_PER_PAGE_ARTMANAGER, pictures_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 

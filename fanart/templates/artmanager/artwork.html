@@ -3,6 +3,8 @@
 
 {% block am_content %}
 
+
+{% comment %}
 <%--
 inc_artwork.jsp
 ArtManager component for managing your pictures. Note that folderid -1 is the synthetic Coloring Cave "folder".
@@ -335,6 +337,7 @@ ArtManager component for managing your pictures. Note that folderid -1 is the sy
 <c:otherwise>
 </c:otherwise>
 </c:choose>
+{% endcomment %}
 
 
 <script type="text/javascript">
@@ -362,17 +365,16 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 
 <h2>Your Artwork</h2>
 
-f: {{ folder_id }}
 Folder:
 <select name="switchfolder" class="foldermenu" folderid="{{ folder.id }}" onChange="switchParam(this, 'folderid')">
     <option value="cc" {% if coloring_cave %}selected{% endif %}>(Coloring Cave)</option>
     <option value="0" {% if not coloring_cave and folder == None %}selected{% endif %}>(Main)</option>
 </select>
 
-{% if folder.id != -1 %}
+{% if not coloring_cave %}
 <c:if test="${folderid != -1}">
 Sort by:
-<select name="sortby" onChange="switchParam(this, 'sortby')">
+<select name="sortby" onChange="switchParam(this, 'sort_by')">
     <option {% if sort_by == "newest" %}selected{% endif %} value="newest">Newest</option>
     <option {% if sort_by == "oldest" %}selected{% endif %} value="oldest">Oldest</option>
     <option {% if sort_by == "popularity" %}selected{% endif %} value="popularity">Popularity</option>
@@ -402,8 +404,10 @@ Sort by:
 
 <div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
 
+{% comment %}
 <%--<div class="picturestatus" id="picturestatus_0"></div>--%>
 <div class="pictureiconstatus" id="pictureiconstatus_0"></div>
+{% endcomment %}
 
 {% if coloring_cave %}
 <c:choose>
