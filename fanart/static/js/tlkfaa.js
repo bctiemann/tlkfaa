@@ -779,18 +779,19 @@ function editPicture(pictureid,pictureform) {
   var title = pictureform.title.value;
   var keywords = uniqueKeywords.join(',');
   var characters = pictureform.characters.value;
-  var wip = pictureform.wip.checked ? 1 : 0;
-  var allowcomments = pictureform.allowcomments.checked ? 1 : 0;
-  var picpublic = pictureform.private.checked ? 0 : 1;
-  $.post("/ajax_editpicture.jsp",{
+  var wip = pictureform.wip.checked;
+  var allowcomments = pictureform.allowcomments.checked;
+  var picpublic = !pictureform.private.checked;
+//  $.post("/ajax_editpicture.jsp",{
+  $.post('/ArtManager/artwork/picture/' + pictureid + '/update/', {
       op: "edit",
       pictureid: pictureid,
       title: title,
       keywords: keywords,
       characters: characters,
-      wip: wip,
-      allowcomments: allowcomments,
-      picpublic: picpublic
+      work_in_progress: wip,
+      allow_comments: allowcomments,
+      is_public: picpublic
     },function(data) {
     $('#editpicture_'+pictureid).html(data);
     if (picpublic) {

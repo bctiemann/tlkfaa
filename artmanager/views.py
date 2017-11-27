@@ -392,6 +392,42 @@ class PictureFormView(DetailView):
         return context
 
 
+class PictureUpdateView(UpdateView):
+    model = models.Picture
+    form_class = forms.PictureForm
+    template_name = 'artmanager/picture_form.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+    def form_valid(self, form):
+        response = super(PictureUpdateView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        self.object.picturecharacter_set.all().delete()
+        for character_id in (self.request.POST.get('characters')).split(','):
+            if character_id:
+                logger.info(character_id)
+                try:
+                    character = models.Character.objects.get(pk=character_id)
+                except models.Character.DoesNotExist:
+                    continue
+                logger.info(character)
+                pc = models.PictureCharacter.objects.create(picture=self.object, character=character)
+
+        picture_tags = []
+        for keyword in (self.request.POST.get('keywords')).split(','):
+            if keyword:
+                tag, is_created = models.Tag.objects.get_or_create(tag=keyword)
+                print tag, is_created
+                picture_tags.append(tag)
+        self.object.tags = picture_tags
+        self.object.save()
+
+        return response
+
+
 class TagCharactersView(TemplateView):
     template_name = 'artmanager/tag_characters.html'
 

@@ -52,3 +52,10 @@ class PendingForm(forms.ModelForm):
     class Meta:
         model = models.Pending
         fields = ['title', 'keywords', 'folder']
+
+
+class PictureForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Picture
+        fields = ['title', 'keywords', 'is_public', 'work_in_progress', 'allow_comments']

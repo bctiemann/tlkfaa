@@ -1,235 +1,13 @@
-<%--
-ajax_editpicture.jsp
-AJAX helper for editing pictures, invoked from inc_pictures.jsp.
---%>
+<h4>Edit picture</h4>
 
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<form name="editpicture_{{ picture.id }}" id="editpicture_{{ picture.id }}" onSubmit="return false;">
+    <table class="formtable">
+        <tr>
+            <td class="label">Characters</td>
+            <td class="data">
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
-<fmt:parseNumber var="wip" value="${param.wip}" integerOnly="true" />
-<fmt:parseNumber var="allowcomments" value="${param.allowcomments}" integerOnly="true" />
-<fmt:parseNumber var="picpublic" value="${param.picpublic}" integerOnly="true" />
-</c:catch>
-<c:if test="${wip != 1}"><c:set var="wip" value="0" /></c:if>
-<c:if test="${allowcomments != 1}"><c:set var="allowcomments" value="0" /></c:if>
-<c:if test="${picpublic != 1}"><c:set var="picpublic" value="0" /></c:if>
-
-<c:if test="${loggedin == 1 && pictureid > 0}">
-
-{% comment %}
-<c:if test="${param.op == 'edit'}">
-
-	<sql:update var="updPicture">
-	UPDATE pictures SET
-	title=?,
-	keywords=?,
-	wip=?,
-	allowcomments_p=?,
-	picpublic=?
-	WHERE pictureid=?
-	AND artistid=?
-	<sql:param value="${param.title}" />
-	<sql:param value="${param.keywords}" />
-	<sql:param value="${wip}" />
-	<sql:param value="${allowcomments}" />
-	<sql:param value="${picpublic}" />
-	<sql:param value="${pictureid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-
-	<%-- Process characters for this picture --%>
-
-	<c:set var="tagged_characters" value="0" />
-	<c:forEach var="characterid" items="${fn:split(param.characters, ',')}">
-		<c:if test="${characterid.matches('[0-9]+')}">
-			<c:set var="tagged_characters" value="${tagged_characters},${characterid}" />
-		</c:if>
-	</c:forEach>
-
-	<sql:query var="qryPictureCharacters">
-	SELECT * FROM picturecharacters
-	WHERE pictureid=?
-	AND characterid NOT IN (${tagged_characters})
-	<sql:param value="${pictureid}" />
-	</sql:query>
-
-	<c:forEach var="character" items="${qryPictureCharacters.rows}">
-		<sql:update var="updPictureCharacter">
-		DELETE FROM picturecharacters
-		WHERE pictureid=?
-		AND characterid=?
-		<sql:param value="${pictureid}" />
-		<sql:param value="${character.characterid}" />
-		</sql:update>
-		<c:set var="artistid" value="${artist.artistid}" />
-		<c:set var="pictureid" value="${pictureid}" />
-		<c:set var="characterid" value="${character.characterid}" />
-		<%
-			String artistid = pageContext.getAttribute("artistid").toString();
-			String pictureid = pageContext.getAttribute("pictureid").toString();
-			String characterid = pageContext.getAttribute("characterid").toString();
-			printLog("Artist " + artistid + " untagged character " + characterid + " in picture " + pictureid + ".");
-		%>
-	</c:forEach>
-
-	<c:forEach var="characterid" items="${fn:split(param.characters, ',')}">
-		<c:set var="c" value="0" />
-		<c:catch var="catchException">
-		<fmt:parseNumber var="c" value="${characterid}" integerOnly="true" />
-		</c:catch>
-		<c:if test="${c > 0}">
-			<sql:query var="qryExistingCharacter">
-			SELECT * FROM picturecharacters
-			WHERE pictureid=?
-			AND characterid=?
-			<sql:param value="${pictureid}" />
-			<sql:param value="${c}" />
-			</sql:query>
-			<c:if test="${qryExistingCharacter.rowCount == 0}">
-				<sql:update var="updPictureCharacters">
-				INSERT INTO picturecharacters (pictureid,characterid,tagged_on)
-				VALUES (?,?,NOW())
-				<sql:param value="${pictureid}" />
-				<sql:param value="${c}" />
-				</sql:update>
-				<c:set var="artistid" value="${artist.artistid}" />
-				<c:set var="pictureid" value="${pictureid}" />
-				<c:set var="characterid" value="${characterid}" />
-				<%
-					String artistid = pageContext.getAttribute("artistid").toString();
-					String pictureid = pageContext.getAttribute("pictureid").toString();
-					String characterid = pageContext.getAttribute("characterid").toString();
-					printLog("Artist " + artistid + " tagged character " + characterid + " in picture " + pictureid + ".");
-				%>
-			</c:if>
-		</c:if>
-
-	</c:forEach>
-
-
-	<%-- Process tags for this picture --%>
-
-	<sql:query var="qryPictureTags">
-	SELECT * FROM picturetags
-	WHERE pictureid=?
-	<sql:param value="${pictureid}" />
-	</sql:query>
-	<c:forEach var="tag" items="${qryPictureTags.rows}">
-		<sql:update var="updTag">
-		UPDATE tags SET numpictures=numpictures-1
-		WHERE tagid=?
-		<sql:param value="${tag.tagid}" />
-		</sql:update>
-	</c:forEach>
-	<sql:update var="updKeywords}">
-	DELETE FROM picturetags
-	WHERE pictureid=?
-	<sql:param value="${pictureid}" />
-	</sql:update>
-
-	<c:forEach var="thistag" items="${fn:split(param.keywords, ',')}">
-		<c:set var="thistag" value="${fn:trim(thistag)}" />
-		<c:if test="${thistag != ''}">
-			<sql:query var="qryTag">
-			SELECT * FROM tags
-			WHERE tag=?
-			<sql:param value="${thistag}" />
-			</sql:query>
-			<c:forEach var="tag" items="${qryTag.rows}">
-				<c:set var="tagid" value="${tag.tagid}" />
-			</c:forEach>
-			<c:if test="${qryTag.rowCount == 0}">
-				<sql:transaction>
-				<sql:update var="updNewTag">
-				INSERT INTO tags (tag)
-				VALUES (?)
-				<sql:param value="${thistag}" />
-				</sql:update>
-				<sql:query var="qryNewTag">
-				SELECT last_insert_id() AS tagid FROM tags
-				LIMIT 1
-				</sql:query>
-				<c:forEach var="newtag" items="${qryNewTag.rows}">
-					<c:set var="tagid" value="${newtag.tagid}" />
-				</c:forEach>
-				</sql:transaction>
-			</c:if>
-
-			<sql:update var="updKeywords}">
-			DELETE FROM picturetags
-			WHERE pictureid=?
-			AND tagid=?
-			<sql:param value="${pictureid}" />
-			<sql:param value="${tagid}" />
-			</sql:update>
-
-			<sql:update var="updTag">
-			INSERT INTO picturetags (pictureid,tagid)
-			VALUES (?,?)
-			<sql:param value="${pictureid}" />
-			<sql:param value="${tagid}" />
-			</sql:update>
-
-			<sql:update var="updTag">
-			UPDATE tags SET numpictures=numpictures+1
-			WHERE tagid=?
-			<sql:param value="${tagid}" />
-			</sql:update>
-		</c:if>
-	</c:forEach>
-
-</c:if>
-{% endcomment %}
-
-<sql:query var="qryPicture">
-SELECT * FROM pictures
-WHERE pictureid=?
-AND artistid=?
-AND deleted IS NULL
-<sql:param value="${pictureid}" />
-<sql:param value="${artist.artistid}" />
-</sql:query>
-
-<c:forEach var="picture" items="${qryPicture.rows}">
-
-<c:choose>
-<c:when test="${param.op == 'form'}">
-
-	<h4>Edit picture</h4>
-	<form name="editpicture_{{ picture.id }}" id="editpicture_{{ picture.id }}" onSubmit="return false;">
-	<table class="formtable">
-	<tr>
-	<td class="label">Characters</td>
-	<td class="data">
-	<sql:query var="qryPictureCharacters">
-	SELECT * FROM picturecharacters 
-	WHERE pictureid=?
-	<sql:param value="${pictureid}" />
-	</sql:query>
-
-	<c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
-		<c:choose>
-		<c:when test="${empty taglist}">
-			<c:set var="taglist" value="${picturecharacter.characterid}" />
-		</c:when>
-		<c:otherwise>
-			<c:set var="taglist" value="${taglist},${picturecharacter.characterid}" />
-		</c:otherwise>
-		</c:choose>
-	</c:forEach>
-
-	<a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'{{ picture.id }}')">tag characters</a>
-	<div id="tagcharacters_{{ picture.id }}" style="display: block">
+                <a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'{{ picture.id }}')">tag characters</a>
+                <div id="tagcharacters_{{ picture.id }}" style="display: block">
                     {% if picture.tagged_characters|length %}
                         {% with obj=picture.id tagged_characters=picture.tagged_characters %}
                             {% include "artmanager/tag_characters.html" %}
@@ -240,106 +18,54 @@ AND deleted IS NULL
                     {% else %}
                         <input type="hidden" name="characters" id="characterstagged_{{ picture.id }}" value="" />
                     {% endif %}
-{% comment %}
-	<c:choose>
-	<c:when test="${qryPictureCharacters.rowCount > 0}">
-		<jsp:include page="ajax_tagcharacters.jsp?obj=${pictureid}&taglist=${taglist}" />
-		<script type="text/javascript">
-		$('a.tagcharacters').hide();
-		</script>
-	</c:when>
-	<c:otherwise>
-		<input type="hidden" name="characters" id="characterstagged_{{ picture.id }}" value="" />
-	</c:otherwise>
-	</c:choose>
-{% endcomment %}
-	</div>
-	</td>
-	</tr>
-	<tr>
-	<td class="label">Description
-	<div class="charcount" id="title_{{ picture.id }}_charcount">{{ picture.title|length }} / {{ max_title_chars }}</div>
-	<div class="charcount"><a target="_blank" href="http://www.bbcode.org/reference.php">BBcode</a> allowed</div>
-	</td>
-	<td class="data"><textarea name="title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="The picture description must be longer than zero and less than ${maxtitlechars} characters." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_{{ picture.id }}_charcount')">{{ picture.title }}</textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Keywords
-	<div class="charcount">Comma separated</div>
-	</td>
-	<td class="data"><input type="text" name="keywords" value="{{ picture.keywords_string }}" class="keywords" id="keywords_{{ picture.id }}" /></td>
-	</tr>
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="private" id="private" value="1" {% if not picture.is_public %}checked{% endif %}> <label for="private">Private</label></td>
-	</tr>
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="wip" id="wip" value="1" {% if picture.work_in_progress %}checked{% endif %}> <label for="wip">Work In Progress (WIP)</label></td>
-	</tr>
-	<tr>
-	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="allowcomments" id="allowcomments" value="1" {% if picture.allow_comments %}checked{% endif %}> <label for="allowcomments">Allow comments on this picture</label></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('editpicture_{{ picture.id }}','editPicture({{ picture.id }},document.editpicture_{{ picture.id }})')">Save Changes</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="pictureid" value="{{ picture.id }}" />
-	<input type="hidden" name="op" value="edit" />
-	</form>
-
-</c:when>
-{% comment %}
-<c:otherwise>
-
-	<sql:query var="qryPictureCharacters">
-	SELECT characters.*,artists.artistname,artists.dirname FROM picturecharacters,characters LEFT JOIN artists
-	ON characters.artistid=artists.artistid
-	WHERE pictureid=?
-	AND picturecharacters.characterid=characters.characterid
-	<sql:param value="${picture.pictureid}" />
-	</sql:query>
-
-	<c:set var="title" value="${picture.title}" />
-	<div class="pictitle">
-	<%= formatText((String)pageContext.getAttribute("title")) %>
-	</div>
-
-	<c:if test="${qryPictureCharacters.rowCount > 0}">
-	<div class="tagcharacters">
-	<h4>Tagged characters:</h4>
-	<table>
-	<c:forEach var="character" items="${qryPictureCharacters.rows}">
-		<tr>
-		<td><a href="/Characters/?characterid=${character.characterid}">${character.charactername}</a></td>
-		<td><c:choose><c:when test="${character.artistid == 0}">(Canon)</c:when><c:otherwise><a href="/Artists/${character.dirname}/">${character.artistname}</a></c:otherwise></c:choose></td>
-		</tr>
-	</c:forEach>
-	</table>
-	</div>
-	</c:if>
-
-	<sql:query var="qryTags">
-	SELECT * FROM picturetags
-	INNER JOIN tags ON tags.tagid=picturetags.tagid
-	WHERE pictureid=?
-	<sql:param value="${picture.pictureid}" />
-	</sql:query>
-
-	<div class="tags">
-	<c:forEach var="tag" items="${qryTags.rows}">
-		<a class="tag" href="/Artwork/?list=tag&term=${tag.tag}">${tag.tag}</a>
-	</c:forEach>
-	</div>
-
-</c:otherwise>
-</c:choose>
-{% endcomment %}
-
-</c:forEach>
-
-</c:if>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">
+                Description
+                <div class="charcount" id="title_{{ picture.id }}_charcount">{{ picture.title|length }} / {{ max_title_chars }}</div>
+                <div class="charcount"><a target="_blank" href="http://www.bbcode.org/reference.php">BBcode</a> allowed</div>
+            </td>
+            <td class="data">
+                <textarea name="title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="The picture description must be longer than zero and less than ${maxtitlechars} characters." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_{{ picture.id }}_charcount')">{{ picture.title }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">
+                Keywords
+                <div class="charcount">Comma separated</div>
+            </td>
+            <td class="data">
+                <input type="text" name="keywords" value="{{ picture.keywords_string }}" class="keywords" id="keywords_{{ picture.id }}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="label"></td>
+            <td class="data inputlabels">
+                <input type="checkbox" name="private" id="private" value="1" {% if not picture.is_public %}checked{% endif %}>
+                <label for="private">Private</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="label"></td>
+            <td class="data inputlabels">
+                <input type="checkbox" name="wip" id="wip" value="1" {% if picture.work_in_progress %}checked{% endif %}>
+                <label for="wip">Work In Progress (WIP)</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="label"></td>
+            <td class="data inputlabels">
+                <input type="checkbox" name="allowcomments" id="allowcomments" value="1" {% if picture.allow_comments %}checked{% endif %}>
+                <label for="allowcomments">Allow comments on this picture</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="buttons">
+                <button type="button" onClick="validateForm('editpicture_{{ picture.id }}','editPicture({{ picture.id }},document.editpicture_{{ picture.id }})')">Save Changes</button>
+            </td>
+        </tr>
+    </table>
+</form>
 
