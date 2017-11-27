@@ -1237,13 +1237,7 @@ class RemoveClaimView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         logger.info(self.object.picture.name)
-        if self.object.offer.type == 'icon':
-            try:
-                os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-                os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail))
-            except OSError:
-                pass
-            return super(RemoveClaimView, self).delete(self, request, *args, **kwargs)
+        return super(RemoveClaimView, self).delete(self, request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('offer', kwargs={'offer_id': self.object.offer.id})

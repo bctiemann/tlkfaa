@@ -963,6 +963,15 @@ class TradingClaim(models.Model):
         if update_thumbs:
             process_images.apply_async(('TradingClaim', self.id, 'small'), countdown=20)
 
+    def delete(self, *args, **kwargs):
+        if self.offer.type == 'icon':
+            try:
+                os.remove(os.path.join(settings.MEDIA_ROOT, self.picture.name))
+                os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
+            except OSError:
+                pass
+        return super(TradingClaim, self).delete(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('upload-claim', kwargs={'claim_id': self.id})
 
