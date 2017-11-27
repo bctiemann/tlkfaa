@@ -25,6 +25,7 @@ AJAX helper for editing pictures, invoked from inc_pictures.jsp.
 
 <c:if test="${loggedin == 1 && pictureid > 0}">
 
+{% comment %}
 <c:if test="${param.op == 'edit'}">
 
 	<sql:update var="updPicture">
@@ -188,6 +189,7 @@ AJAX helper for editing pictures, invoked from inc_pictures.jsp.
 	</c:forEach>
 
 </c:if>
+{% endcomment %}
 
 <sql:query var="qryPicture">
 SELECT * FROM pictures
@@ -204,7 +206,7 @@ AND deleted IS NULL
 <c:when test="${param.op == 'form'}">
 
 	<h4>Edit picture</h4>
-	<form name="editpicture_${pictureid}" id="editpicture_${pictureid}" onSubmit="return false;">
+	<form name="editpicture_{{ picture.id }}" id="editpicture_{{ picture.id }}" onSubmit="return false;">
 	<table class="formtable">
 	<tr>
 	<td class="label">Characters</td>
@@ -226,8 +228,19 @@ AND deleted IS NULL
 		</c:choose>
 	</c:forEach>
 
-	<a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'${pictureid}')">tag characters</a>
-	<div id="tagcharacters_${pictureid}" style="display: block">
+	<a class="tagcharacters" href="javascript:nop()" onClick="setupTagCharacters(null,'{{ picture.id }}')">tag characters</a>
+	<div id="tagcharacters_{{ picture.id }}" style="display: block">
+                    {% if picture.tagged_characters|length %}
+                        {% with obj=picture.id tagged_characters=picture.tagged_characters %}
+                            {% include "artmanager/tag_characters.html" %}
+                        {% endwith %}
+                        <script type="text/javascript">
+                        $('a.tagcharacters').hide();
+                        </script>
+                    {% else %}
+                        <input type="hidden" name="characters" id="characterstagged_{{ picture.id }}" value="" />
+                    {% endif %}
+{% comment %}
 	<c:choose>
 	<c:when test="${qryPictureCharacters.rowCount > 0}">
 		<jsp:include page="ajax_tagcharacters.jsp?obj=${pictureid}&taglist=${taglist}" />
@@ -236,44 +249,45 @@ AND deleted IS NULL
 		</script>
 	</c:when>
 	<c:otherwise>
-		<input type="hidden" name="characters" id="characterstagged_${pictureid}" value="" />
+		<input type="hidden" name="characters" id="characterstagged_{{ picture.id }}" value="" />
 	</c:otherwise>
 	</c:choose>
+{% endcomment %}
 	</div>
 	</td>
 	</tr>
 	<tr>
 	<td class="label">Description
-	<div class="charcount" id="title_${pictureid}_charcount">${fn:length(picture.title)} / ${maxtitlechars}</div>
+	<div class="charcount" id="title_{{ picture.id }}_charcount">{{ picture.title|length }} / {{ max_title_chars }}</div>
 	<div class="charcount"><a target="_blank" href="http://www.bbcode.org/reference.php">BBcode</a> allowed</div>
 	</td>
-	<td class="data"><textarea name="title" validate="hasvalue,maxlen:${maxtitlechars}" message="The picture description must be longer than zero and less than ${maxtitlechars} characters." onKeyUp="refreshCharCount(this,${maxtitlechars},'title_${pictureid}_charcount')">${picture.title}</textarea></td>
+	<td class="data"><textarea name="title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="The picture description must be longer than zero and less than ${maxtitlechars} characters." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_{{ picture.id }}_charcount')">{{ picture.title }}</textarea></td>
 	</tr>
 	<tr>
 	<td class="label">Keywords
 	<div class="charcount">Comma separated</div>
 	</td>
-	<td class="data"><input type="text" name="keywords" value="${fn:replace(picture.keywords,'\"','&quot;')}" class="keywords" id="keywords_${pictureid}" /></td>
+	<td class="data"><input type="text" name="keywords" value="{{ picture.keywords_string }}" class="keywords" id="keywords_{{ picture.id }}" /></td>
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="private" value="1" <c:if test="${picture.picpublic == false}">checked</c:if>> Private</td>
+	<td class="data inputlabels"><input type="checkbox" name="private" id="private" value="1" {% if not picture.is_public %}checked{% endif %}> <label for="private">Private</label></td>
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="wip" value="1" <c:if test="${picture.wip == true}">checked</c:if>> Work In Progress (WIP)</td>
+	<td class="data inputlabels"><input type="checkbox" name="wip" id="wip" value="1" {% if picture.work_in_progress %}checked{% endif %}> <label for="wip">Work In Progress (WIP)</label></td>
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input type="checkbox" name="allowcomments" value="1" <c:if test="${picture.allowcomments_p != false}">checked</c:if>> Allow comments on this picture</td>
+	<td class="data inputlabels"><input type="checkbox" name="allowcomments" id="allowcomments" value="1" {% if picture.allow_comments %}checked{% endif %}> <label for="allowcomments">Allow comments on this picture</label></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('editpicture_${pictureid}','editPicture(${picture.pictureid},document.editpicture_${pictureid})')">Save Changes</button>
+	<button type="button" onClick="validateForm('editpicture_{{ picture.id }}','editPicture({{ picture.id }},document.editpicture_{{ picture.id }})')">Save Changes</button>
 	</td>
 	</tr>
 	</table>
-	<input type="hidden" name="pictureid" value="${picture.pictureid}" />
+	<input type="hidden" name="pictureid" value="{{ picture.id }}" />
 	<input type="hidden" name="op" value="edit" />
 	</form>
 

@@ -382,6 +382,15 @@ class PictureFormView(DetailView):
     def get_object(self, queryset=None):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super(PictureFormView, self).get_context_data(**kwargs)
+
+        context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
+        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
+        context['tag_list'] = ','.join([str(character.id) for character in self.object.tagged_characters])
+
+        return context
+
 
 class TagCharactersView(TemplateView):
     template_name = 'artmanager/tag_characters.html'

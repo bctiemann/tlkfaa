@@ -484,6 +484,10 @@ class Picture(models.Model):
         return self.folder.picture_set
 
     @property
+    def tagged_characters(self):
+        return [pc.character for pc in self.picturecharacter_set.all()]
+
+    @property
     def keywords_string(self):
         return ','.join([t.tag for t in self.tags.all()])
 
