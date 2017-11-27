@@ -519,6 +519,18 @@ class ColoringPictureDeleteView(DeleteView):
         return JsonResponse(response)
 
 
+class ColoringStatusView(APIView):
+
+    def get(self, request):
+        response = {}
+        for coloring_picture in request.user.coloringpicture_set.all():
+            response[coloring_picture.id] = {
+                'thumbnail_url': coloring_picture.thumbnail_url,
+                'thumbnail_done': coloring_picture.thumbnail_created,
+            }
+        return Response(response)
+
+
 class TagCharactersView(TemplateView):
     template_name = 'artmanager/tag_characters.html'
 
