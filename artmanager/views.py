@@ -500,18 +500,6 @@ class ColoringPictureDeleteView(DeleteView):
         self.object = self.get_object()
         logger.info(self.object.picture.name)
 
-        try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
-        except OSError:
-            pass
-
-        for character in models.Character.objects.filter(profile_coloring_picture=self.object):
-            character.profile_coloring_picture = None
-            character.save()
-
-        self.object.base.refresh_num_colored()
-
         self.object.delete()
 
         response['success'] = True

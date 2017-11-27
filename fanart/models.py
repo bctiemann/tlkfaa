@@ -852,6 +852,21 @@ class ColoringPicture(models.Model):
         if update_thumbs:
             process_images.apply_async(('ColoringPicture', self.id, 'small'), countdown=20)
 
+    def delete(self, *args, **kwargs):
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.picture.name))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
+        except OSError:
+            pass
+
+        for character in Character.objects.filter(profile_coloring_picture=self):
+            character.profile_coloring_picture = None
+            character.save()
+
+        self.base.refresh_num_colored()
+
+        super(ColoringPicture, self).delete(*args, **kwargs)
+
 
 class TradingOffer(models.Model):
     TYPE_CHOICES = (
