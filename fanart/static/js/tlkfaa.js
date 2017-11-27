@@ -695,8 +695,12 @@ function setupEditPicture(pictureid) {
 }
 
 function setupEditCCPic(ccpicid) {
-  var url = "/ajax_editccpic.jsp?op=form&ccpicid="+ccpicid;
-  $('#editccpic_'+ccpicid).load(url,function() {
+//  var url = "/ajax_editccpic.jsp?op=form&ccpicid="+ccpicid;
+  var url = '/ArtManager/artwork/coloring_picture/' + ccpicid + '/edit/';
+console.log(url);
+  $('#editccpic_'+ccpicid).load(url,function(data) {
+console.log(data);
+
     $('div.actions_menu').hide();
   });
 }

@@ -284,7 +284,7 @@ class PendingDetailView(DetailView):
 
 class PendingFormView(DetailView):
     model = models.Pending
-    template_name = 'artmanager/edit_pending.html'
+    template_name = 'artmanager/pending_form.html'
 
     def get_object(self):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
@@ -301,7 +301,7 @@ class PendingFormView(DetailView):
 class PendingUpdateView(UpdateView):
     model = models.Pending
     form_class = forms.PendingForm
-    template_name = 'artmanager/edit_pending.html'
+    template_name = 'artmanager/pending_form.html'
 
     def get_object(self):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
@@ -354,23 +354,29 @@ class ArtworkView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArtworkView, self).get_context_data(**kwargs)
 
-        folder = None
         folder_id = self.request.GET.get('folderid', None)
-        if folder_id:
-            try:
-                folder = models.Folder.objects.get(pk=folder_id, user=self.request.user)
-            except models.Folder.DoesNotExist:
-                pass
+        if folder_id == 'cc':
+            pictures = self.request.user.coloringpicture_set.all()
+            context['coloring_cave'] = True
 
-        pictures = self.request.user.picture_set.filter(folder=folder)
+        else:
+            folder = None
+            if folder_id:
+                try:
+                    folder = models.Folder.objects.get(pk=folder_id, user=self.request.user)
+                except models.Folder.DoesNotExist:
+                    pass
 
-        context['folder'] = folder
+            pictures = self.request.user.picture_set.filter(folder=folder)
+            context['folder'] = folder
+            context['coloring_cave'] = False
+
         context['pictures'] = pictures
 
         return context
 
 class PictureDetailView(DetailView):
-    template_name = 'artmanager/picture_detail.html'
+    template_name = 'artmanager/picture.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
@@ -388,6 +394,22 @@ class PictureFormView(DetailView):
         context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
         context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
         context['tag_list'] = ','.join([str(character.id) for character in self.object.tagged_characters])
+
+        return context
+
+
+class ColoringPictureFormView(DetailView):
+    template_name = 'artmanager/cc_pic_form.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(ColoringPictureFormView, self).get_context_data(**kwargs)
+
+        context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
+#        context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
+#        context['tag_list'] = ','.join([str(character.id) for character in self.object.tagged_characters])
 
         return context
 

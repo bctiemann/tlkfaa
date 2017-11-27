@@ -339,10 +339,11 @@ ArtManager component for managing your pictures. Note that folderid -1 is the sy
 
 <h2>Your Artwork</h2>
 
+f: {{ folder_id }}
 Folder:
 <select name="switchfolder" class="foldermenu" folderid="{{ folder.id }}" onChange="switchParam(this, 'folderid')">
-    <option value="-1" {% if folder.id == -1 %}selected{% endif %}>(Coloring Cave)</option>
-    <option value="0" {% if folder == None %}selected{% endif %}>(Main)</option>
+    <option value="cc" {% if coloring_cave %}selected{% endif %}>(Coloring Cave)</option>
+    <option value="0" {% if not coloring_cave and folder == None %}selected{% endif %}>(Main)</option>
 </select>
 
 {% if folder.id != -1 %}
@@ -378,7 +379,7 @@ Sort by:
 <%--<div class="picturestatus" id="picturestatus_0"></div>--%>
 <div class="pictureiconstatus" id="pictureiconstatus_0"></div>
 
-{% if folder.id == -1 %}
+{% if coloring_cave %}
 <c:choose>
 <c:when test="${folderid == -1}">
 
@@ -423,38 +424,40 @@ Sort by:
 
 	<%= Pages.get("pages") %>
 
+        {% for picture in pictures %}
 	<c:forEach var="ccpic" items="${qryCCPics.rows}">
 
 		<div class="picture editpicture">
 		<table>
 		<tr>
 		<td class="thumb">
-		<input type="checkbox" id="select_${ccpic.coloring_picid}" /> Select<br />
-		<a href="/Artwork/coloring/${ccpic.coloring_picid}.${ccpic.extension}" rel="shadowbox[pictures]"><img class="thumb" src="/Artwork/coloring/${ccpic.coloring_picid}.p.jpg" /></a>
+		<input type="checkbox" id="select_{{ picture.id }}" /> Select<br />
+		<a href="{{ picture.url }}" rel="shadowbox[pictures]"><img class="thumb" src="{{ picture.thumbnail_url }}" /></a>
 		<div class="picturestats">
-		<fmt:formatDate value="${ccpic.posted}" type="both" pattern="E M/d/yyyy" /><br />
-		${ccpic.width} x ${ccpic.height}<br />
+		{{ picture.date_posted|date }}<br />
+		{{ picture.width }} x {{ picture.height }}<br />
 		</div>
 		</td>
 		<td class="fullwidth picturedetails">
 
 		<div class="actions-container">
-			<a href="javascript:nop()"><div class="actions_hover" id="actions_${ccpic.coloring_picid}">Actions</div></a>
-			<div class="actions_menu" id="actions_${ccpic.coloring_picid}_popup">
+			<a href="javascript:nop()"><div class="actions_hover" id="actions_{{ picture.id }}">Actions</div></a>
+			<div class="actions_menu" id="actions_{{ picture.id }}_popup">
 				<h3>Actions</h3>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditCCPic(${ccpic.coloring_picid})">Edit</a>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deleteCCPic(${ccpic.coloring_picid},${page})">Delete</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupEditCCPic({{ picture.id }})">Edit</a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deleteCCPic({{ picture.id }})">Delete</a>
 			</div>
 		</div>
 
 		<div class="picturedetails">
 
-		<div id="editccpic_${ccpic.coloring_picid}">
+		<div id="editccpic_{{ picture.id }}">
+                {% include "artmanager/cc_pic.html" %}
 		<jsp:include page="ajax_editccpic.jsp?ccpicid=${ccpic.coloring_picid}" />
 		</div>
 
 		<div>
-		<a href="/ColoringCave.jsp?ccid=${ccpic.basepic}">View original</a> by <a href="/Artists/${ccpic.dirname}/">${ccpic.artistname}</a>
+		<a href="{% url "coloring-cave" coloring_base_id=picture.base.id %}">View original</a> by <a href="{% url "artist" dir_name=picture.base.creator.dir_name  %}">{{ picture.base.creator.username }}</a>
 		</div>
 
 		</div>
@@ -464,10 +467,11 @@ Sort by:
 		</div>
 
 		<script type="text/javascript">
-		selitems.push(${ccpic.coloring_picid});
+		selitems.push({{ picture.id }});
 		</script>
 
 	</c:forEach>
+        {% endfor %}
 
 </c:when>
 {% else %}
@@ -608,7 +612,7 @@ Sort by:
 		<div class="picturedetails">
 
 		<div id="editpicture_{{ picture.id }}">
-                {% include "artmanager/picture_detail.html" %}
+                {% include "artmanager/picture.html" %}
 		<jsp:include page="ajax_editpicture.jsp?pictureid={{ picture.id }}" />
 		</div>
 
