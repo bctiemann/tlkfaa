@@ -214,7 +214,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def favorite_pictures(self):
-        return self.favorite_set.filter(artist__isnull=True, picture__isnull=False, character__isnull=True).prefetch_related('picture').order_by('-date_added')
+        return self.favorite_set.filter(artist__isnull=True, picture__isnull=False, character__isnull=True, picture__date_deleted__isnull=True).prefetch_related('picture').order_by('-date_added')
 
     @property
     def recently_uploaded_pictures(self):
@@ -349,6 +349,21 @@ ORDER BY fanart_user.sort_name
         self.save()
 
         return new_dir_name
+
+    def refresh_num_pictures(self):
+        self.num_pictures = self.picture_set.count()
+        self.save()
+
+    def refresh_picture_ranks(self, folder=None, refresh_folder=False):
+        pictures = self.picture_set.order_by('date_uploaded')
+        if refresh_folder:
+            pictures = pictures.filter(folder=folder)
+        for i, picture in enumerate(pictures):
+            if refresh_folder:
+                picture.rank_in_folder = i + 1
+            else:
+                picture.rank_in_artist = i + 1
+            picture.save()
 
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
@@ -497,6 +512,248 @@ class Picture(models.Model):
 
     def get_absolute_url(self):
         return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
+
+    def set_deleted(self):
+
+        UnviewedPicture.objects.filter(picture=self).delete()
+
+#                        <sql:update var="updNewPics">
+#                        DELETE FROM newpics
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#                        <sql:update var="updNewPicsPending">
+#                        DELETE FROM newpics_pending
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#        Favorite.objects.filter(picture=self).delete()
+
+#                        <sql:update var="updFavePics">
+#                        DELETE FROM favepics
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#        for comment in PictureComment.objects.filter(picture=self):
+#            comment.is_deleted = True
+#            comment.save()
+
+#                        <sql:update var="updComments">
+#                        UPDATE comments
+#                        SET deleted=1
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#                        <sql:update var="updContestVotes">
+#                        DELETE FROM contestvotes
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#                        <sql:update var="updContestPics">
+#                        DELETE FROM contestpics
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#                        <sql:update var="updCCPic">
+#                        UPDATE coloring_base
+#                        SET active=false
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+        for character in Character.objects.filter(profile_picture=self):
+            character.profile_picture = None
+            character.save()
+
+#                        <sql:update var="updCharacters">
+#                        UPDATE characters
+#                        SET profilepic=0
+#                        WHERE profilepic=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+        if self.artist.example_pic == self:
+            self.artist.example_pic = None
+            self.artist.save()
+
+#                        <sql:update var="updArtist">
+#                        UPDATE artists
+#                        SET examplepic=0
+#                        WHERE examplepic=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+#                        <sql:query var="qryRequests">
+#                        SELECT * FROM requests,artists
+#                        WHERE requests.recptid=artists.artistid
+#                        AND pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:query>
+
+#                        <c:forEach var="request" items="${qryRequests.rows}">
+#
+#                                Removing request for ${request.artistname}...<br />
+#
+#                                <sql:update var="updRequest">
+#                                DELETE FROM requests
+#                                WHERE requestid=?
+#                                <sql:param value="${request.requestid}" />
+#                                </sql:update>
+#
+#                        </c:forEach>
+
+#                        <sql:query var="qryPictureTags">
+#                        SELECT * FROM picturetags
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:query>
+
+#                        <c:forEach var="tag" items="${qryPictureTags.rows}">
+#
+#                                <sql:update var="updTag">
+#                                UPDATE tags
+#                                SET numpictures=numpictures-1
+#                                WHERE tagid=?
+#                                <sql:param value="${tag.tagid}" />
+#                                </sql:update>
+#
+#                        </c:forEach>
+
+#                        <%-- Clear tagged characters --%>
+#                        <sql:update var="updPictureCharacters">
+#                        DELETE FROM picturecharacters
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+        self.date_deleted = timezone.now()
+        self.save()
+
+#                        <%-- Delete the picture --%>
+#                        <sql:update var="updPicture">
+#                        UPDATE pictures
+#                        SET deleted=NOW()
+#                        WHERE pictureid=?
+#                        <sql:param value="${pic}" />
+#                        </sql:update>
+
+        self.artist.refresh_num_pictures()
+        self.artist.refresh_picture_ranks()
+        self.artist.refresh_picture_ranks(refresh_folder=True, folder=self.folder)
+
+#                        <%-- Update picture count for the artist --%>
+#                        <sql:query var="qryNumPicsArtist">
+#                        SELECT * FROM pictures
+#                        WHERE artistid=?
+#                        AND deleted IS NULL
+#                        <sql:param value="${artist.artistid}" />
+#                        </sql:query>
+#                        <sql:update var="updNumPicsArtist">
+#                        UPDATE artists SET numpictures=?
+#                        WHERE artistid=?
+#                        <sql:param value="${qryNumPicsArtist.rowCount}" />
+#                        <sql:param value="${artist.artistid}" />
+#                        </sql:update>
+
+        if self.folder:
+            self.folder.refresh_num_pictures()
+
+
+#                        <%-- Update picture count for this folder --%>
+#                        <c:if test="${picture.folderid > 0}">
+#                                <sql:query var="qryNumPicsFolder">
+#                                SELECT * FROM pictures
+#                                WHERE folderid=?
+#                                AND deleted IS NULL
+#                                <sql:param value="${picture.folderid}" />
+#                                </sql:query>
+#                                <sql:update var="updNumPicsFolder">
+#                                UPDATE folders SET numpictures=?
+#                                WHERE folderid=?
+#                                <sql:param value="${qryNumPicsFolder.rowCount}" />
+#                                <sql:param value="${picture.folderid}" />
+#                                </sql:update>
+#                        </c:if>
+
+        logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
+
+#                        <c:set var="artistid" value="${artist.artistid}" />
+#                        <c:set var="pictureid" value="${pic}" />
+#                        <c:set var="dirname" value="${artist.dirname}" />
+#                        <c:set var="basename" value="${picture.basename}" />
+#                        <c:set var="extension" value="${picture.extension}" />
+#                        <%
+#                          String artistid = (String)pageContext.getAttribute("artistid").toString();
+#                          String pictureid = (String)pageContext.getAttribute("pic").toString();
+#                          String basepath = (String)pageContext.getAttribute("basepath");
+#                          String dirname = (String)pageContext.getAttribute("dirname");
+#                          String basename = (String)pageContext.getAttribute("basename");
+#                          String extension = (String)pageContext.getAttribute("extension");
+#
+#                          File f = new File(basepath + "/Artwork/Artists/" + dirname + "/" + basename + "." +extension);
+#                          File ft = new File(basepath + "/Artwork/Artists/" + dirname + "/" + basename + ".s.jpg");
+#                          File fp = new File(basepath + "/Artwork/Artists/" + dirname + "/" + basename + ".p.jpg");
+#
+#                          f.delete();
+#                          ft.delete();
+#                          fp.delete();
+#
+#                          printLog("Artist " + artistid + " deleted picture " + basename + "." + extension + " (ID " + pictureid + ").");
+#                        %>
+#
+#                        <c:set var="thisfolder" value="${picture.folderid}" />
+#
+#                </c:forEach>
+
+#        </c:if>
+
+#        </c:forEach>
+
+#        <sql:query var="qryFolderPics">
+#        SELECT pictureid FROM pictures
+#        WHERE artistid=?
+#        AND folderid=?
+#        AND deleted IS NULL
+#        ORDER BY uploaded
+#        <sql:param value="${artist.artistid}" />
+#        <sql:param value="${thisfolder}" />
+#        </sql:query>
+#        <c:set var="i" value="0" />
+#        <c:forEach var="picture" items="${qryFolderPics.rows}">
+#                <c:set var="i" value="${i+1}" />
+#                <sql:update var="updFolderPic">
+#                UPDATE pictures SET
+#                rankinfolder=?
+#                WHERE pictureid=?
+#                <sql:param value="${i}" />
+#                <sql:param value="${picture.pictureid}" />
+#                </sql:update>
+#        </c:forEach>
+
+#        <sql:query var="qryArtistPics">
+#        SELECT pictureid FROM pictures
+#        WHERE artistid=?
+#        AND deleted IS NULL
+#        ORDER BY uploaded
+#        <sql:param value="${artist.artistid}" />
+#        </sql:query>
+#        <c:set var="i" value="0" />
+#        <c:forEach var="picture" items="${qryArtistPics.rows}">
+#                <c:set var="i" value="${i+1}" />
+#                <sql:update var="updArtistPic">
+#                UPDATE pictures SET
+#                rankinartist=?
+#                WHERE pictureid=?
+#                <sql:param value="${i}" />
+#                <sql:param value="${picture.pictureid}" />
+#                </sql:update>
+#        </c:forEach>
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.filename)

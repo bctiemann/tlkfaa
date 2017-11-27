@@ -983,7 +983,8 @@ function getSelectList(itemid,myselitems) {
   return {selectlist : selectlist, numselected : numselected};
 }
 
-function deletePicture(pictureid,folderid,page) {
+//function deletePicture(pictureid,folderid,page) {
+function deletePicture(pictureid) {
   var s = getSelectList(pictureid);
   if (s.numselected > 0) {
     if (s.numselected > 1) {
@@ -997,7 +998,13 @@ function deletePicture(pictureid,folderid,page) {
       modal: true,
       buttons: {
         "Delete": function() {
-          window.location.href = "/ArtManager.jsp?op=artwork&fnc=delete&folderid="+folderid+"&picturelist="+s.selectlist+"&page="+page;
+//          window.location.href = "/ArtManager.jsp?op=artwork&fnc=delete&folderid="+folderid+"&picturelist="+s.selectlist+"&page="+page;
+          var url = '/ArtManager/artwork/picture/' + pictureid + '/delete/';
+          $.post(url, function(data) {
+              if (data.success) {
+                  window.location.reload();
+              };
+          });
         },
         Cancel: function() {
           $(this).dialog('close');

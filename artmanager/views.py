@@ -487,6 +487,18 @@ class PictureDeleteView(DeleteView):
     def get_object(self):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
 
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+        logger.info(self.object)
+
+        self.object.set_deleted()
+
+        response['success'] = True
+
+        return JsonResponse(response)
+
 
 class ColoringPictureDeleteView(DeleteView):
     model = models.ColoringPicture
