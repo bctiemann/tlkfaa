@@ -512,26 +512,6 @@ class ColoringPictureDeleteView(DeleteView):
 
         self.object.base.refresh_num_colored()
 
-#        <sql:update var="updCCPic">
-#        DELETE FROM coloring_pics
-#        WHERE coloring_picid=?
-#        <sql:param value="${ccpic.coloring_picid}" />
-#        </sql:update>
-
-#        <sql:update var="updCCBase">
-#        UPDATE coloring_base
-#        SET numcolored=numcolored-1
-#        WHERE coloring_baseid=?
-#        <sql:param value="${ccpic.basepic}" />
-#        </sql:update>
-
-#        <sql:update var="updCharacters">
-#        UPDATE characters
-#        SET profilepic_c=0
-#        WHERE profilepic_c=?
-#        <sql:param value="${ccpic.coloring_picid}" />
-#        </sql:update>
-
         self.object.delete()
 
         response['success'] = True

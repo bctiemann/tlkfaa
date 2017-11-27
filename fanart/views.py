@@ -1355,6 +1355,13 @@ class RemoveColoringPictureView(DeleteView):
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
         except OSError:
             pass
+
+        for character in models.Character.objects.filter(profile_coloring_picture=self.object):
+            character.profile_coloring_picture = None
+            character.save()
+
+        self.object.base.refresh_num_colored()
+
         return super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)
 
     def get_success_url(self):
