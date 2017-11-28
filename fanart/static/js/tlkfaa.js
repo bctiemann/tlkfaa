@@ -650,11 +650,12 @@ function setupMove(pictureid) {
 function movePicture(pictureid,sel) {
     var s = getSelectList(pictureid);
     if (s.numselected > 0) {
-        var url = '/api/movePicture.jsp';
+//        var url = '/api/movePicture.jsp';
+        var url = '/ArtManager/artwork/picture/' + s.selectlist + '/move/';
         var params = {
 //            folderid: folderid,
-            picturelist: s.selectlist,
-            newfolderid: sel.options[sel.selectedIndex].value,
+            picture_ids: s.selectlist,
+            folder_id: sel.options[sel.selectedIndex].value,
 //            page: page,
         }
         $.post(url, params, function(data) {

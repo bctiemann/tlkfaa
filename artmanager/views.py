@@ -533,12 +533,49 @@ class PictureBulkDeleteView(APIView):
 
         for picture_id in self.kwargs['picture_ids'].split(','):
             try:
-                picture = models.Picture.objects.get(pk=picture_id, artist=self.request.user)
+                picture = models.Picture.objects.get(pk=picture_id, artist=request.user)
             except models.Picture.DoesNotExist:
                 pass
 
             logger.info(picture)
             picture.set_deleted()
+
+        response['success'] = True
+        return Response(response)
+
+
+class PictureBulkMoveView(APIView):
+
+    def post(self, request, picture_ids):
+        response = {'success': False}
+
+        folders_to_refresh = []
+
+        logger.info(request.POST)
+        folder = None
+        try:
+            folder_id = int(request.POST.get('folder_id'))
+            if folder_id:
+                folder = get_object_or_404(models.Folder, pk=folder_id, user=request.user)
+                folders_to_refresh.append(folder)
+        except Exception as e:
+            response['message'] = str(e)
+            return Response(response)
+
+        for picture_id in self.kwargs['picture_ids'].split(','):
+            try:
+                picture = models.Picture.objects.get(pk=picture_id, artist=request.user)
+                if picture.folder:
+                    folders_to_refresh.append(picture.folder)
+            except models.Picture.DoesNotExist:
+                pass
+
+            logger.info(picture)
+            picture.folder = folder
+            picture.save()
+
+        for folder in set(folders_to_refresh):
+            folder.refresh_num_pictures()
 
         response['success'] = True
         return Response(response)

@@ -778,6 +778,11 @@ class Folder(models.Model):
     def latest_picture(self):
         return self.picture_set.order_by('-date_uploaded').first()
 
+    def refresh_num_pictures(self):
+        logger.info('Refreshing {0}'.format(self))
+        self.num_pictures = self.picture_set.count()
+        self.save()
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.name)
 

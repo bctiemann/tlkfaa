@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/update/$', artmanager_views.PictureUpdateView.as_view(), name='artwork-update-picture'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/delete/$', artmanager_views.PictureDeleteView.as_view(), name='artwork-delete-picture'),
     url(r'^artwork/picture/(?P<picture_ids>[0-9,]+)/delete/$', artmanager_views.PictureBulkDeleteView.as_view(), name='artwork-bulk-delete-picture'),
+    url(r'^artwork/picture/(?P<picture_ids>[0-9,]+)/move/$', artmanager_views.PictureBulkMoveView.as_view(), name='artwork-bulk-move-picture'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/gift/$', artmanager_views.GiftPictureListView.as_view(), name='artwork-gift-picture-list'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/gift/form/$', artmanager_views.GiftPictureFormView.as_view(), name='artwork-gift-picture-form'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/gift/send/$', artmanager_views.GiftPictureSendView.as_view(), name='artwork-gift-picture-send'),
