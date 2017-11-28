@@ -717,9 +717,13 @@ function setupRequest(pictureid) {
 //  var url = "/ajax_request.jsp?pictureid="+pictureid;
   var url = '/ArtManager/artwork/picture/' + pictureid + '/gift/form/';
   $('#editpicture_'+pictureid).load(url,function() {
-    setupAutocompleteArtist(pictureid);
+    setupAutocompleteArtist(pictureid, 'setRequestRecipient(ui.item.artistid)');
 //    $('div.actions_menu').hide();
   });
+}
+
+function setRequestRecipient(recipient_id) {
+    $('#recipient').val(recipient_id);
 }
 
 function editCharacter(characterid,charform) {
@@ -878,22 +882,25 @@ function submitClaim(offerid,claimform) {
 }
 
 function loadArtworkPicture(pictureid) {
-    $('#editpicture_' + pictureid).load('ajax_editpicture.jsp?pictureid=' + pictureid, function() {
-        var statusurl = '/ajax_request.jsp?op=list&pictureid=' + pictureid;
+//    $('#editpicture_' + pictureid).load('ajax_editpicture.jsp?pictureid=' + pictureid, function() {
+    $('#editpicture_' + pictureid).load('/ArtManager/artwork/picture/' + pictureid + '/', function() {
+//        var statusurl = '/ajax_request.jsp?op=list&pictureid=' + pictureid;
+        var statusurl = '/ArtManager/artwork/picture/' + pictureid + '/gift/';
         $('#picturerequestsstatus_' + pictureid).load(statusurl);
     });
 }
 
 function doRequest(pictureid,requestform) {
-    var recpt = requestform.recpt.value;
-    var allfans = (requestform.allfans.checked)?1:0;
+    var recpt = requestform.recipient.value;
+    var allfans = requestform.allfans.checked;
     var message = requestform.message.value;
-    var url = '/api/request.jsp';
+//    var url = '/api/request.jsp';
+    var url = '/ArtManager/artwork/picture/' + pictureid + '/gift/send/';
     var params = {
         op: 'send',
         pictureid: pictureid,
-        recpt: recpt,
-        allfans: allfans,
+        recipient: recpt,
+        all_fans: allfans,
         message: message,
     }
 console.log(params);

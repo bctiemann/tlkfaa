@@ -639,6 +639,8 @@ class Command(BaseCommand):
                     date_accepted = a['accepted'],
                     hash = a['hash'][1:] if a['hash'] else None,
                 )
+                f.date_sent = a['sent']
+                f.save()
 
         if self.do_imclients:
             c.execute("""SELECT * FROM imclients""")

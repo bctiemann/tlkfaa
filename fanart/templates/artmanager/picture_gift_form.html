@@ -1,14 +1,14 @@
 	<h4>Post this picture on someone's ArtWall:</h4>
 
-	<form name="editrequest_${pictureid}" onSubmit="return false;">
+	<form name="editrequest_{{ picture.id }}" onSubmit="return false;">
 	<table class="formtable">
 	<tr>
 	<td class="label">Recipient</td>
-	<td><input name="recpt" id="artist_pick_${pictureid}" /></td>
+	<td><input name="recpt" id="artist_pick_{{ picture.id }}" /></td>
 	</tr>
 	<tr>
 	<td class="label"></td>
-	<td class="data inputlabels"><input name="allfans" type="checkbox" value="1" /> Send to all your visible fans</td>
+	<td class="data inputlabels"><input name="allfans" id="allfans_{{ picture.id }}" type="checkbox" value="1" /> <label for="allfans_{{ picture.id }}">Send to all your visible fans</label></td>
 	</tr>
 	<tr>
 	<td class="label">Message</td>
@@ -16,12 +16,13 @@
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="doRequest(${pictureid},this.form)">Post on ArtWall</button>
-	<button type="button" onClick="loadArtworkPicture(${pictureid})">Cancel</button>
+	<button type="button" onClick="doRequest({{ picture.id }},this.form)">Post on ArtWall</button>
+	<button type="button" onClick="loadArtworkPicture({{ picture.id }})">Cancel</button>
 	</td>
 	</tr>
 	</table>
-	<input type="hidden" name="pictureid" value="${picture.pictureid}" />
+	<input type="hidden" name="pictureid" value="{{ picture.id }}" />
 	<input type="hidden" name="op" value="send" />
+	<input type="hidden" name="recipient" id="recipient" value="" />
 	</form> 
 

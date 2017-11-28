@@ -658,20 +658,38 @@ class GiftPictureFormView(DetailView):
         return context
 
 
-class GiftPictureSendView(UpdateView):
-    model = models.Picture
-    form_class = forms.GiftPictureForm
-    template_name = 'artmanager/picture_gift_list.html'
+class GiftPictureSendView(APIView):
 
-    def get_object(self):
-        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
-
-    def form_valid(self, form):
-        response = super(PictureUpdateView, self).form_valid(form)
+    def post(self, request, picture_id):
+        response = {'success': False}
 
         logger.info(self.request.POST)
 
-        return response
+        picture = get_object_or_404(models.Picture, pk=picture_id, artist=self.request.user)
+
+        recipients = []
+
+        recipient_id = request.POST.get('recipient')
+        if json.loads(request.POST.get('all_fans')):
+            recipients = [r.id for r in request.user.fans.all()]
+        elif recipient_id:
+            recipients.append(recipient_id)
+
+        for recipient_id in recipients:
+            logger.info(recipient_id)
+            try:
+                recipient = models.User.objects.get(pk=recipient_id, is_artist=True, is_active=True)
+            except models.User.DoesNotExist:
+                pass
+
+            defaults = {
+                'message': request.POST.get('message'),
+            }
+            gift_picture = models.GiftPicture.objects.get_or_create(sender=request.user, picture=picture, recipient=recipient, defaults=defaults)
+#            gift_picture.save()
+
+        response['success'] = True
+        return Response(response)
 
 
 class TagCharactersView(TemplateView):

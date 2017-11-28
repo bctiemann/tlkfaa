@@ -1272,7 +1272,7 @@ class GiftPicture(models.Model):
     filename = models.CharField(max_length=100, blank=True)
     message = models.TextField(blank=True)
     is_active = models.BooleanField(default=False)
-    date_sent = models.DateTimeField(null=True, blank=True)
+    date_sent = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     date_accepted = models.DateTimeField(null=True, blank=True)
     hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True)
 
