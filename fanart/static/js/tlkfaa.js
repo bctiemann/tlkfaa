@@ -931,7 +931,8 @@ function removeSentRequest(pictureid,requestid) {
             'Remove': function() {
                 $(this).dialog('close');
 //                var url = "/ajax_request.jsp?op=removesent&requestid="+requestid;
-                var url = '/api/request.jsp';
+//                var url = '/api/request.jsp';
+                var url = '/ArtManager/artwork/picture/' + requestid + '/gift/delete/';
                 var params = {
                     op: 'removesent',
                     requestid: requestid,
@@ -940,7 +941,8 @@ function removeSentRequest(pictureid,requestid) {
 //                $('#genstatus').load(url,function() {
 console.log(data);
                     if (data.success) {
-                        var statusurl = '/ajax_request.jsp?op=list&pictureid=' + pictureid;
+//                        var statusurl = '/ajax_request.jsp?op=list&pictureid=' + pictureid;
+                        var statusurl = '/ArtManager/artwork/picture/' + pictureid + '/gift/';
                         $('#picturerequestsstatus_' + pictureid).load(statusurl);
                     } else {
                         alert(data.message);
@@ -1109,7 +1111,13 @@ function removeRequest(requestid) {
       modal: true,
       buttons: {
         "Remove": function() {
-          window.location.href = "/ArtManager.jsp?op=requests&fnc=remove&requestlist="+s.selectlist;
+//          window.location.href = "/ArtManager.jsp?op=requests&fnc=remove&requestlist="+s.selectlist;
+          var url = '/ArtManager/artwork/picture/' + requestid + '/gift/delete/';
+          $.post(url, function(data) {
+            if (data.success) {
+                window.location.reload();
+            }
+          }, 'json');
         },
         Cancel: function() {
           $(this).dialog('close');
