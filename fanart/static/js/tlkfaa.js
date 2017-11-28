@@ -629,14 +629,16 @@ function switchParam(sel, param) {
     window.location.href = url;
 }
 
-function setupMove(pictureid,folderid,page) {
+//function setupMove(pictureid,folderid,page) {
+function setupMove(pictureid) {
 //  var url = "ajax_folderselect.jsp?mode=select&pictureid="+pictureid+"&thisfolderid="+folderid+"&selfolderid="+folderid+"&page="+page;
 //  $('#movetofolder_'+pictureid).load(url,function() {
 //    $(this).prop('onclick', null).off('click');
 //  });
   pictureidMove = pictureid;
   $('#select_destination_folder').change(function() {
-    movePicture(pictureidMove, folderid, $(this)[0], page);
+//    movePicture(pictureidMove, folderid, $(this)[0], page);
+    movePicture(pictureidMove, $(this)[0]);
   });
 //  document.getElementById('movetofolderlink_'+pictureid).onclick = null;
   $('#dialog_select_destination_folder').dialog({
@@ -644,15 +646,16 @@ function setupMove(pictureid,folderid,page) {
   });
 }
 
-function movePicture(pictureid,folderid,sel,page) {
+//function movePicture(pictureid,folderid,sel,page) {
+function movePicture(pictureid,sel) {
     var s = getSelectList(pictureid);
     if (s.numselected > 0) {
         var url = '/api/movePicture.jsp';
         var params = {
-            folderid: folderid,
+//            folderid: folderid,
             picturelist: s.selectlist,
             newfolderid: sel.options[sel.selectedIndex].value,
-            page: page,
+//            page: page,
         }
         $.post(url, params, function(data) {
             if (data.success) {

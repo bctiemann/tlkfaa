@@ -395,7 +395,7 @@ Sort by:
         {% else %}
 	<c:otherwise>
 	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePicture(0)">Delete</a>
-	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove(0,${folderid},${page})" id="movetofolderlink_0">Move to Folder<div class="movetofolder" id="movetofolder_0"></div></a>
+	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove(0)" id="movetofolderlink_0">Move to Folder<div class="movetofolder" id="movetofolder_0"></div></a>
 	</c:otherwise>
 	</c:choose>
         {% endif %}
@@ -641,7 +641,7 @@ Sort by:
 				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupRequest({{ picture.id }})">ArtWall</a>
 				<a class="ui-state-default ui-corner-all" href="ArtManager.jsp?op=coloringcave&pictureid={{ picture.id }}">Coloring Cave</a>
 				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setExamplePic({{ picture.id }})">Set as Icon</a>
-				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove({{ picture.id }},{{ folder.id }},{{ page }})" id="movetofolderlink_{{ picture.id }}">Move to Folder<div class="movetofolder" id="movetofolder_{{ picture.id }}"></div></a>
+				<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove({{ picture.id }})" id="movetofolderlink_{{ picture.id }}">Move to Folder<div class="movetofolder" id="movetofolder_{{ picture.id }}"></div></a>
 			</div>
 		</div>
 
@@ -689,7 +689,7 @@ Sort by:
 
 <div class="dialog" id="dialog_select_destination_folder" title="Select Destination Folder">
 <select id="select_destination_folder" class="foldermenu" folderid="{{ folder.id }}" onchange="">
-    <option value="0" <c:if test="${folderid == 0}">selected</c:if>>(Main)</option>
+    <option value="0" {% if folder == None %}selected{% endif %}>(Main)</option>
 </select>
 </div>
 
