@@ -679,7 +679,10 @@ class GiftPictureSendView(APIView):
             try:
                 recipient = models.User.objects.get(pk=recipient_id, is_artist=True, is_active=True)
             except models.User.DoesNotExist:
-                pass
+                continue
+
+            if recipient == request.user:
+                continue
 
             defaults = {
                 'message': request.POST.get('message'),
