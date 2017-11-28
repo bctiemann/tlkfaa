@@ -575,6 +575,12 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         return context
 
 
+class ApproveRequestView(UpdateView):
+    model = models.GiftPicture
+    template = 'fanart/approve-request.html'
+    form_class = forms.GiftPictureForm
+
+
 class GuidelinesView(TemplateView):
     template_name = 'includes/guidelines.html'
 

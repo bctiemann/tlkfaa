@@ -26,6 +26,8 @@ urlpatterns = [
     url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
 
+    url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/$', fanart_views.ApproveRequestView.as_view(), name='approve-request'),
+
     url(r'^Guidelines/$', fanart_views.GuidelinesView.as_view(), name='guidelines'),
 
     url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)$', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),

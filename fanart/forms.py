@@ -179,3 +179,8 @@ class RemoveProfilePicForm(forms.ModelForm):
         fields = []
 
 
+class GiftPictureForm(forms.ModelForm):
+
+    class Meta:
+        model = models.GiftPicture
+        fields = []

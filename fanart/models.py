@@ -187,6 +187,15 @@ class User(AbstractUser):
         return self.picture_set.filter(date_deleted__isnull=True, is_public=True).order_by('?').first()
 
     @property
+    def possessive_pronoun(self):
+        if self.gender == 'male':
+            return 'his'
+        elif self.gender == 'female':
+            return 'her'
+        else:
+            return 'their'
+
+    @property
     def unread_received_pms_count(self):
         return self.pms_received.filter(date_viewed__isnull=True).count()
 

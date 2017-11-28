@@ -20,8 +20,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models
-from fanart import utils
+from fanart import models, utils, tasks
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
@@ -665,7 +664,7 @@ class GiftPictureSendView(APIView):
 
         logger.info(self.request.POST)
 
-        picture = get_object_or_404(models.Picture, pk=picture_id, artist=self.request.user)
+        picture = get_object_or_404(models.Picture, pk=picture_id, artist=request.user)
 
         recipients = []
 
@@ -685,8 +684,21 @@ class GiftPictureSendView(APIView):
             defaults = {
                 'message': request.POST.get('message'),
             }
-            gift_picture = models.GiftPicture.objects.get_or_create(sender=request.user, picture=picture, recipient=recipient, defaults=defaults)
-#            gift_picture.save()
+            gift_picture, created = models.GiftPicture.objects.get_or_create(sender=request.user, picture=picture, recipient=recipient, defaults=defaults)
+
+            email_context = {
+                'user': request.user,
+                'base_url': settings.SERVER_BASE_URL,
+                'url': reverse('approve-request', kwargs={'hash': gift_picture.hash}),
+            }
+            tasks.send_email.delay(
+                recipients=[recipient.email],
+                subject='TLKFAA ArtWall submission from {0}'.format(request.user.username),
+                context=email_context,
+                text_template='email/gift_sent.txt',
+                html_template='email/gift_sent.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
 
         response['success'] = True
         return Response(response)
