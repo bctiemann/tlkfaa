@@ -1065,7 +1065,7 @@ function deleteCCPic(pictureid,page) {
       modal: true,
       buttons: {
         "Delete": function() {
-          var url = '/ArtManager/artwork/coloring_picture/' + pictureid + '/delete/';
+          var url = '/ArtManager/artwork/coloring_picture/' + s.selectlist + '/delete/';
           $.post(url, function(data) {
             if (data.success) {
                 window.location.reload();

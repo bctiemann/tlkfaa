@@ -563,6 +563,24 @@ class ColoringPictureDeleteView(DeleteView):
         return JsonResponse(response)
 
 
+class ColoringPictureBulkDeleteView(APIView):
+
+    def post(self, request, coloring_picture_ids):
+        response = {'success': False}
+
+        for coloring_picture_id in self.kwargs['coloring_picture_ids'].split(','):
+            try:
+                coloring_picture = models.ColoringPicture.objects.get(pk=coloring_picture_id, artist=self.request.user)
+            except models.ColoringPicture.DoesNotExist:
+                pass
+
+            logger.info(coloring_picture)
+            coloring_picture.delete()
+
+        response['success'] = True
+        return Response(response)
+
+
 class ColoringStatusView(APIView):
 
     def get(self, request):
