@@ -970,12 +970,15 @@ function getSelectList(itemid,myselitems) {
   var numselected = 0;
   if (!myselitems) { myselitems = selitems; }
   if (itemid == 0) {
+    var selectedIds = [];
     for (i = myselitems.length - 1; i >= 0; i--) {
       if (document.getElementById('select_'+myselitems[i]).checked == true) {
-        selectlist += myselitems[i]+",";
+//        selectlist += myselitems[i]+",";
+        selectedIds.push(myselitems[i]);
         numselected++;
       }
     }
+    selectlist = selectedIds.join(',');
   } else {
     selectlist = itemid;
     numselected = 1;
@@ -999,7 +1002,7 @@ function deletePicture(pictureid) {
       buttons: {
         "Delete": function() {
 //          window.location.href = "/ArtManager.jsp?op=artwork&fnc=delete&folderid="+folderid+"&picturelist="+s.selectlist+"&page="+page;
-          var url = '/ArtManager/artwork/picture/' + pictureid + '/delete/';
+          var url = '/ArtManager/artwork/picture/' + s.selectlist + '/delete/';
           $.post(url, function(data) {
               if (data.success) {
                   window.location.reload();

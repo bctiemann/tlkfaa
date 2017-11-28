@@ -526,6 +526,24 @@ class PictureDeleteView(DeleteView):
         return JsonResponse(response)
 
 
+class PictureBulkDeleteView(APIView):
+
+    def post(self, request, picture_ids):
+        response = {'success': False}
+
+        for picture_id in self.kwargs['picture_ids'].split(','):
+            try:
+                picture = models.Picture.objects.get(pk=picture_id, artist=self.request.user)
+            except models.Picture.DoesNotExist:
+                pass
+
+            logger.info(picture)
+            picture.set_deleted()
+
+        response['success'] = True
+        return Response(response)
+
+
 class ColoringPictureDeleteView(DeleteView):
     model = models.ColoringPicture
 

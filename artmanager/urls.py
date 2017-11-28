@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/edit/$', artmanager_views.PictureFormView.as_view(), name='artwork-picture-form'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/update/$', artmanager_views.PictureUpdateView.as_view(), name='artwork-update-picture'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/delete/$', artmanager_views.PictureDeleteView.as_view(), name='artwork-delete-picture'),
+    url(r'^artwork/picture/(?P<picture_ids>[0-9,]+)/delete/$', artmanager_views.PictureBulkDeleteView.as_view(), name='artwork-bulk-delete-picture'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/$', artmanager_views.ColoringPictureDetailView.as_view(), name='artwork-coloring-picture-detail'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/edit/$', artmanager_views.ColoringPictureFormView.as_view(), name='artwork-coloring-picture-form'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/update/$', artmanager_views.ColoringPictureUpdateView.as_view(), name='artwork-update-coloring-picture'),
