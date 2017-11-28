@@ -1,18 +1,14 @@
-        {% if picture.giftpicture_set.exists %}
-	<c:if test="${qryRequests.rowCount > 0}">
-		<div class="requests">
-		<h4>Posted on others' ArtWalls:</h4>
-		<table>
-                {% for gift in picture.giftpicture_set.all %}
-		<c:forEach var="recpt" items="${qryRequests.rows}">
-		<tr>
-		<td><a href="{% url "artist" dir_name=gift.recipient.dir_name %}">{{ gift.recipient.username }}</a></td>
-		<td>{% if not gift.is_active %}(pending){% endif %}</td>
-		<td><a href="javascript:nop()" onClick="removeSentRequest({{ gift.picture.id }},{{ gift.id }})">remove</a></td>
-		</tr>
-		</c:forEach>
-                {% endfor %}
-		</table>
-		</div>
-	</c:if>
-        {% endif %}
+{% if picture.giftpicture_set.exists %}
+    <div class="requests">
+        <h4>Posted on others' ArtWalls:</h4>
+        <table>
+            {% for gift in picture.giftpicture_set.all %}
+                <tr>
+                    <td><a href="{% url "artist" dir_name=gift.recipient.dir_name %}">{{ gift.recipient.username }}</a></td>
+                    <td>{% if not gift.is_active %}(pending){% endif %}</td>
+                    <td><a href="javascript:nop()" onClick="removeSentRequest({{ gift.picture.id }},{{ gift.id }})">remove</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}

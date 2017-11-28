@@ -57,7 +57,9 @@ urlpatterns = [
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),
     url(r'^private_msgs/$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
     url(r'^trading_tree/$', artmanager_views.TradingTreeView.as_view(), name='trading-tree'),
-    url(r'^coloring_cave/$', artmanager_views.ColoringCaveView.as_view(), name='coloring-cave'),
+
+    url(r'^coloring_cave/(?:(?P<picture_id>[0-9]+)/)?$', artmanager_views.ColoringCaveView.as_view(), name='coloring-cave'),
+
     url(r'^contests/$', artmanager_views.ContestsView.as_view(), name='contests'),
     url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
