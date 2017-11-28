@@ -713,7 +713,8 @@ function setupEditOffer(offerid) {
 }
 
 function setupRequest(pictureid) {
-  var url = "/ajax_request.jsp?pictureid="+pictureid;
+//  var url = "/ajax_request.jsp?pictureid="+pictureid;
+  var url = '/ArtManager/artwork/picture/' + pictureid + '/gift/form/';
   $('#editpicture_'+pictureid).load(url,function() {
     setupAutocompleteArtist(pictureid);
 //    $('div.actions_menu').hide();

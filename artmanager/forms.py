@@ -66,3 +66,10 @@ class ColoringPictureForm(forms.ModelForm):
     class Meta:
         model = models.ColoringPicture
         fields = ['comment']
+
+
+class GiftPictureForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Picture
+        fields = []

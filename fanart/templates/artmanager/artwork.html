@@ -653,6 +653,7 @@ Sort by:
 		</div>
 
 		<div class="picturerequestsstatus" id="picturerequestsstatus_{{ picture.id }}">
+                {% include "artmanager/picture_gift_list.html" %}
 		<jsp:include page="ajax_request.jsp?op=list&pictureid=${picture.pictureid}" />
 		</div>
 

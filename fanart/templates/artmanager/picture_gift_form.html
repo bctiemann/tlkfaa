@@ -1,0 +1,27 @@
+	<h4>Post this picture on someone's ArtWall:</h4>
+
+	<form name="editrequest_${pictureid}" onSubmit="return false;">
+	<table class="formtable">
+	<tr>
+	<td class="label">Recipient</td>
+	<td><input name="recpt" id="artist_pick_${pictureid}" /></td>
+	</tr>
+	<tr>
+	<td class="label"></td>
+	<td class="data inputlabels"><input name="allfans" type="checkbox" value="1" /> Send to all your visible fans</td>
+	</tr>
+	<tr>
+	<td class="label">Message</td>
+	<td class="data"><textarea name="message"></textarea></td>
+	</tr>
+	<tr>
+	<td colspan="2" class="buttons">
+	<button type="button" onClick="doRequest(${pictureid},this.form)">Post on ArtWall</button>
+	<button type="button" onClick="loadArtworkPicture(${pictureid})">Cancel</button>
+	</td>
+	</tr>
+	</table>
+	<input type="hidden" name="pictureid" value="${picture.pictureid}" />
+	<input type="hidden" name="op" value="send" />
+	</form> 
+

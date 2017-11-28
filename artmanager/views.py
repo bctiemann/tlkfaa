@@ -593,6 +593,50 @@ class ColoringStatusView(APIView):
         return Response(response)
 
 
+class GiftPictureListView(DetailView):
+    template_name = 'artmanager/picture_gift_list.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(GiftPictureListView, self).get_context_data(**kwargs)
+
+        context['picture'] = self.object
+
+        return context
+
+
+class GiftPictureFormView(DetailView):
+    template_name = 'artmanager/picture_gift_form.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(GiftPictureFormView, self).get_context_data(**kwargs)
+
+        context['picture'] = self.object
+
+        return context
+
+
+class GiftPictureSendView(UpdateView):
+    model = models.Picture
+    form_class = forms.GiftPictureForm
+    template_name = 'artmanager/picture_gift_list.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
+
+    def form_valid(self, form):
+        response = super(PictureUpdateView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        return response
+
+
 class TagCharactersView(TemplateView):
     template_name = 'artmanager/tag_characters.html'
 
