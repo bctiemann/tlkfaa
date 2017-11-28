@@ -768,6 +768,31 @@ class FoldersView(TemplateView):
         return super(FoldersView, self).get(request, *args, **kwargs)
 
 
+class FolderUpdateView(UpdateView):
+    model = models.Folder
+    form_class = forms.FolderForm
+    template_name = 'artmanager/folders.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Folder, pk=self.kwargs['folder_id'], user=self.request.user)
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        response = {'success': False}
+        super(FolderUpdateView, self).form_valid(form)
+
+        try:
+            parent = models.Folder.objects.get(pk=self.request.POST.get('parent'), user=self.request.user)
+        except models.Folder.DoesNotExist:
+            parent = None
+
+        self.object.parent = parent
+        self.object.save()
+
+        response = {'success': True}
+        return JsonResponse(response)
+
+
 class ArtWallView(TemplateView):
     template_name = 'artmanager/artwall.html'
 

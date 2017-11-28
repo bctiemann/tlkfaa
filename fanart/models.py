@@ -574,6 +574,9 @@ class Folder(models.Model):
         self.num_pictures = self.picture_set.count()
         self.save()
 
+    def get_absolute_url(self):
+        return reverse('artist-gallery', kwargs={'dir_name': self.user.dir_name})
+
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.name)
 

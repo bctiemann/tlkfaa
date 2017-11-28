@@ -27,8 +27,8 @@ urlpatterns = [
     url(r'^pending/$', artmanager_views.PendingView.as_view(), name='pending'),
     url(r'^pending/(?P<pending_id>[0-9]+)/$', artmanager_views.PendingDetailView.as_view(), name='pending-detail'),
     url(r'^pending/(?P<pending_id>[0-9]+)/edit/$', artmanager_views.PendingFormView.as_view(), name='pending-form'),
-    url(r'^pending/(?P<pending_id>[0-9]+)/update/$', artmanager_views.PendingUpdateView.as_view(), name='update-pending'),
-    url(r'^pending/(?P<pending_id>[0-9]+)/delete/$', artmanager_views.PendingDeleteView.as_view(), name='delete-pending'),
+    url(r'^pending/(?P<pending_id>[0-9]+)/update/$', artmanager_views.PendingUpdateView.as_view(), name='pending-update'),
+    url(r'^pending/(?P<pending_id>[0-9]+)/delete/$', artmanager_views.PendingDeleteView.as_view(), name='pending-delete'),
     url(r'^pending/status/$', artmanager_views.PendingStatusView.as_view(), name='pending-status'),
 
     url(r'^artwork/$', artmanager_views.ArtworkView.as_view(), name='artwork'),
@@ -52,6 +52,8 @@ urlpatterns = [
     url(r'^artwork/tag_characters/(?P<obj>(new|[0-9]+))/$', artmanager_views.TagCharactersView.as_view(), name='tag-characters'),
 
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),
+    url(r'^folders/(?P<folder_id>[0-9]+)/update/$', artmanager_views.FolderUpdateView.as_view(), name='folder-update'),
+
     url(r'^artwall/$', artmanager_views.ArtWallView.as_view(), name='artwall'),
     url(r'^characters/$', artmanager_views.CharactersView.as_view(), name='characters'),
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),

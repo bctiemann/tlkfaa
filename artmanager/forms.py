@@ -68,8 +68,8 @@ class ColoringPictureForm(forms.ModelForm):
         fields = ['comment']
 
 
-class GiftPictureForm(forms.ModelForm):
+class FolderForm(forms.ModelForm):
 
     class Meta:
-        model = models.Picture
-        fields = []
+        model = models.Folder
+        fields = ['name', 'description']

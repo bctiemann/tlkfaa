@@ -2078,7 +2078,8 @@ function displayFoldersEditable(folders, foldersKeyedById, folderid, isFlat) {
             },
             folderid: folders[i].folderid,
             click: function() {
-                window.location.href = '/ArtManager.jsp?op=artwork&folderid=' + $(this).attr('folderid');
+//                window.location.href = '/ArtManager.jsp?op=artwork&folderid=' + $(this).attr('folderid');
+                window.location.href = '/ArtManager/artwork/?folderid=' + $(this).attr('folderid');
             },
         });
         folderPreviewLi.append($('<div>', {
@@ -2247,12 +2248,13 @@ console.log(params);
 }
 
 function editFolder(folderid) {
-    var url = '/api/editFolder.jsp';
+//    var url = '/api/editFolder.jsp';
+    var url = '/ArtManager/folders/' + folderid + '/update/';
     var params = {
         folderid: folderid,
         name: $('#name_' + folderid).val(),
         description: $('#description_' + folderid).val(),
-        moveto: $('#parent_' + folderid).val(),
+        parent: $('#parent_' + folderid).val(),
     };
     $.post(url, params, function(data) {
         if (data.success) {
