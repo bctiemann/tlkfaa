@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/gift/form/$', artmanager_views.GiftPictureFormView.as_view(), name='artwork-gift-picture-form'),
     url(r'^artwork/picture/(?P<picture_id>[0-9]+)/gift/send/$', artmanager_views.GiftPictureSendView.as_view(), name='artwork-gift-picture-send'),
     url(r'^artwork/picture/(?P<gift_picture_id>[0-9]+)/gift/delete/$', artmanager_views.GiftPictureDeleteView.as_view(), name='artwork-gift-picture-delete'),
+    url(r'^artwork/picture/(?P<picture_id>[0-9]+)/set_example/$', artmanager_views.SetExamplePictureView.as_view(), name='artwork-set-example-picture'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/$', artmanager_views.ColoringPictureDetailView.as_view(), name='artwork-coloring-picture-detail'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/edit/$', artmanager_views.ColoringPictureFormView.as_view(), name='artwork-coloring-picture-form'),
     url(r'^artwork/coloring_picture/(?P<coloring_picture_id>[0-9]+)/update/$', artmanager_views.ColoringPictureUpdateView.as_view(), name='artwork-update-coloring-picture'),

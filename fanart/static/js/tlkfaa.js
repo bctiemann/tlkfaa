@@ -968,9 +968,17 @@ function setExamplePic(pictureid) {
     buttons: {
       "OK": function() {
         $(this).dialog('close');
-        var url = "/ajax_setexamplepic.jsp?op=set&pictureid="+pictureid;
-        $('.pictureiconstatus').html("");
-        $('#pictureiconstatus_'+pictureid).load(url);
+//        var url = "/ajax_setexamplepic.jsp?op=set&pictureid="+pictureid;
+        var url = '/ArtManager/artwork/picture/' + pictureid + '/set_example/';
+//        $('.pictureiconstatus').html("");
+//        $('#pictureiconstatus_'+pictureid).load(url);
+        $.post(url, function(data) {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        }, 'json');
       },
       Cancel: function() {
         $(this).dialog('close');

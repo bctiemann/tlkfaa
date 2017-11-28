@@ -725,6 +725,22 @@ class GiftPictureDeleteView(DeleteView):
         return JsonResponse(response)
 
 
+class SetExamplePictureView(APIView):
+
+    def post(self, request, picture_id):
+        response = {'success': False}
+
+        picture = None
+        if int(picture_id):
+            picture = get_object_or_404(models.Picture, pk=picture_id, artist=request.user)
+
+        request.user.example_pic = picture
+        request.user.save()
+
+        response['success'] = True
+        return Response(response)
+
+
 class TagCharactersView(TemplateView):
     template_name = 'artmanager/tag_characters.html'
 

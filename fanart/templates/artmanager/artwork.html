@@ -660,6 +660,7 @@ Sort by:
 		<div class="picadmininfo pictureiconstatus" id="pictureiconstatus_{{ picture.id }}">
                 {% if picture == user.example_pic %}
 		<c:if test="{{ picture == artist.example_pic }">
+                This picture is your icon, shown along with your name in all artist listings. <a href="javascript:nop()" onClick="setExamplePic(0)">clear</a>
 		<jsp:include page="ajax_setexamplepic.jsp?pictureid=${picture.pictureid}" />
 		</c:if>
                 {% endif %}
