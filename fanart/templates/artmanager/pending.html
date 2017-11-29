@@ -43,12 +43,6 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         {% include "includes/pending.html" %}
     </div>
 
-    <script type="text/javascript">
-    $('#actions_{{ pending.id }}').popupmenu({
-        target: "#actions_{{ pending.id }}_popup",
-        time: 300 });  
-    </script>
-
 {% endfor %}
 
 {% endblock %}

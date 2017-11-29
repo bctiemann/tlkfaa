@@ -768,10 +768,6 @@ function editPending(pendingid,pendingform) {
       characters: characters
     },function(data) {
       $('#pending_'+pendingid).html(data);
-      $('#actions_'+pendingid).popupmenu({
-        target: "#actions_" + pendingid + "_popup",
-        time: 300,
-      });
       $('#pending_'+pendingid+' .actions_menu a').mouseenter(function() {
         $(this).addClass('ui-state-hover');
       });

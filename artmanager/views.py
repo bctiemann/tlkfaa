@@ -304,12 +304,15 @@ class PendingUpdateView(UpdateView):
     template_name = 'artmanager/pending_form.html'
 
     def get_object(self):
+        logger.info(self.request.POST)
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
     def form_valid(self, form):
-        response = super(PendingUpdateView, self).form_valid(form)
-
         logger.info(self.request.POST)
+
+        self.object.folder = models.Folder.objects.filter(pk=self.request.POST.get('folder'), user=self.request.user).first()
+
+        response = super(PendingUpdateView, self).form_valid(form)
 
         self.object.picturecharacter_set.all().delete()
         for character_id in (self.request.POST.get('characters')).split(','):
