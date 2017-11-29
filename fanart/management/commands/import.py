@@ -22,14 +22,14 @@ class Command(BaseCommand):
     do_coloringbase = False
     do_coloringpics = False
     do_characters = False
-    do_favorites = True
+    do_favorites = False
     do_offers = False
     do_claims = False
     do_picturecharacters = False
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = False
+    do_requests = True
     do_imclients = False
     do_imids = False
     do_newpics = False
@@ -612,7 +612,7 @@ class Command(BaseCommand):
                     pass
 
         if self.do_requests:
-            c.execute("""SELECT * FROM requests""")
+            c.execute("""SELECT * FROM requests where requestid>129616""")
             for a in c.fetchall():
                 print a
                 try:
@@ -635,7 +635,7 @@ class Command(BaseCommand):
                     filename = a['filename'] if a['filename'] else '',
                     message = a['sendmsg'],
                     is_active = a['active'],
-                    date_sent = a['sent'],
+#                    date_sent = a['sent'],
                     date_accepted = a['accepted'],
                     hash = a['hash'][1:] if a['hash'] else None,
                 )

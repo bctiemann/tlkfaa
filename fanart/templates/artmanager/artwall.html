@@ -129,8 +129,6 @@ LIMIT ${offset},${thispage}
 
 <%= Pages.get("pages") %>
 
-{{ pages_link.pages_nav|safe }}
-
 <div class="globalactions actions-container">
 	<a href="javascript:nop()"><div class="actions_hover" id="actions_global">All Selected</div></a>
 	<div class="actions_menu" id="actions_global_popup">
@@ -141,18 +139,11 @@ LIMIT ${offset},${thispage}
 
 <div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
 
-<%-- Put pager here --%>
-<div class="pageslink"></div>
+<div class="pageslink">
+{{ pages_link.pages_nav|safe }}
+</div>
 
 {% for gift_picture in gift_pictures %}
-
-	<sql:query var="qryRequestRecpts">
-	SELECT * FROM requests
-	WHERE pictureid=?
-	AND recptid!=?
-	<sql:param value="${request.pictureid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
 
 	<div class="picture editpicture">
 	<form name="editrequest_{{ gift_picture.id }}" method="post">
@@ -172,7 +163,7 @@ LIMIT ${offset},${thispage}
 	<div class="actions_menu" id="actions_{{ gift_picture.id }}_popup">
 	<h3>Actions</h3>
         {% if not gift_picture.is_active %}
-	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="approveRequest(1,document.requestform,{{ gift_picture.id }})">Accept</a>
+	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="approveRequest({{ gift_picture.id }})">Accept</a>
         {% endif %}
 	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="removeRequest({{ gift_picture.id }})">Remove</a>
 	</div>
@@ -187,12 +178,12 @@ LIMIT ${offset},${thispage}
 	</div>
 
         {% if not gift_picture.is_active %}
-	<div class="picadmininfo"><img src="{% static "images/warning.png" %}" /> You have not yet accepted this item. <a href="javascript:nop()" onClick="approveRequest(1,document.requestform,{{ gift_picture.id }})">accept</a></div>
+	<div class="picadmininfo"><img src="{% static "images/warning.png" %}" /> You have not yet accepted this item. <a href="javascript:nop()" onClick="approveRequest({{ gift_picture.id }})">accept</a></div>
         {% endif %}
 
-	<c:if test="${qryRequestRecpts.rowCount > 0}">
-	<div class="picadmininfo">(sent to ${qryRequestRecpts.rowCount} other recipients)</div>
-	</c:if>
+        {% if gift_picture.total_recipients > 1 %}
+	<div class="picadmininfo">(sent to {{ gift_picture.total_recipients }} recipient{{ gift_picture.total_recipients|pluralize }})</div>
+        {% endif %}
 
 	</div>
 	</td>
@@ -201,14 +192,9 @@ LIMIT ${offset},${thispage}
 	</form>
 	</div>
 
-{% comment %}
 	<script type="text/javascript">
 	selitems.push({{ gift_picture.id }});
-	$('#actions_{{ gift_picture.id }}').popupmenu({
-	    target: "#actions_{{ gift_picture.id }}_popup",
-	    time: 300 });
 	</script>
-{% endcomment %}
 
 {% endfor %}
 

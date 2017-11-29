@@ -539,7 +539,7 @@ class PictureBulkDeleteView(APIView):
             try:
                 picture = models.Picture.objects.get(pk=picture_id, artist=request.user)
             except models.Picture.DoesNotExist:
-                pass
+                continue
 
             logger.info(picture)
             picture.set_deleted()
@@ -572,7 +572,7 @@ class PictureBulkMoveView(APIView):
                 if picture.folder:
                     folders_to_refresh.append(picture.folder)
             except models.Picture.DoesNotExist:
-                pass
+                continue
 
             logger.info(picture)
             picture.folder = folder
@@ -620,7 +620,7 @@ class ColoringPictureBulkDeleteView(APIView):
             try:
                 coloring_picture = models.ColoringPicture.objects.get(pk=coloring_picture_id, artist=self.request.user)
             except models.ColoringPicture.DoesNotExist:
-                pass
+                continue
 
             logger.info(coloring_picture)
             coloring_picture.delete()
@@ -870,6 +870,50 @@ class ArtWallView(TemplateView):
         context['pages_link'] = utils.PagesLink(len(gift_pictures), settings.GIFT_PICTURES_PER_PAGE_ARTMANAGER, gift_pictures_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
+
+
+class GiftPictureAcceptView(APIView):
+
+    def post(self, request, gift_picture_id):
+        response = {'success': False}
+
+        gift_picture = get_object_or_404(models.GiftPicture, pk=gift_picture_id, recipient=request.user)
+        gift_picture.is_active = True
+        gift_picture.date_accepted = timezone.now()
+        gift_picture.save()
+
+        response['success'] = True
+        return Response(response)
+
+
+class GiftPictureBulkDeleteView(APIView):
+
+    def post(self, request, gift_picture_ids):
+        response = {'success': False}
+
+        for gift_picture_id in self.kwargs['gift_picture_ids'].split(','):
+            try:
+                gift_picture = models.GiftPicture.objects.get(pk=gift_picture_id, recipient=self.request.user)
+            except models.GiftPicture.DoesNotExist:
+                continue
+
+            logger.info(gift_picture)
+            gift_picture.delete()
+
+        response['success'] = True
+        return Response(response)
+
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+
+        self.object.delete()
+
+        response['success'] = True
+
+        return JsonResponse(response)
 
 
 class CharactersView(TemplateView):

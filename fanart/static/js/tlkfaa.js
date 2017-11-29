@@ -911,12 +911,21 @@ console.log(data);
     }, 'json');
 }
 
-function approveRequest(approve,theform,requestid) {
-  theform.approve.value = approve;
-  if (requestid) {
-    theform.requestid.value=requestid;
-  }
-  theform.submit();
+//function approveRequest(approve,theform,requestid) {
+function approveRequest(requestid) {
+//  theform.approve.value = approve;
+//  if (requestid) {
+//    theform.requestid.value=requestid;
+//  }
+//  theform.submit();
+  var url = '/ArtManager/artwall/' + requestid + '/accept/';
+  $.post(url, function(data) {
+    if (data.success) {
+      window.location.reload();
+    } else {
+      alert(data.message);
+    }
+  });
 }
 
 function removeSentRequest(pictureid,requestid) {
@@ -1117,7 +1126,8 @@ function removeRequest(requestid) {
       buttons: {
         "Remove": function() {
 //          window.location.href = "/ArtManager.jsp?op=requests&fnc=remove&requestlist="+s.selectlist;
-          var url = '/ArtManager/artwork/picture/' + requestid + '/gift/delete/';
+//          var url = '/ArtManager/artwork/picture/' + requestid + '/gift/delete/';
+          var url = '/ArtManager/artwall/' + s.selectlist + '/delete/';
           $.post(url, function(data) {
             if (data.success) {
                 window.location.reload();
