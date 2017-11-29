@@ -3,73 +3,43 @@
 
 {% block am_content %}
 
-<%--
-inc_folders.jsp
-ArtManager component for managing your folders.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="folderid" value="${param.folderid}" integerOnly="true" />
-<fmt:parseNumber var="parent" value="${param.parent}" integerOnly="true" />
-<fmt:parseNumber var="moveto" value="${param.moveto}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${loggedin == 1}">
-
 <h2>Your Folders</h2>
 
 <div class="pageinfo">
+    <p>
+    Here you can set up folders to help organize your pictures. Each folder can have a name and a description, 
+    and folders can be placed inside other folders. Once you have created some folders, you can 
+    move pictures into them and upload new pictures directly into the folders where they should go.
+    </p>
 
-<p>Here you can set up folders to help organize your pictures. Each folder can have a name and a description, and folders can be placed inside other folders. Once you have created some folders, you can move pictures into them and upload new pictures directly into the folders where they should go.</p>
+    <p>
+    If you delete a folder, the pictures in it are <b>not</b> deleted&mdash;they are just moved up one level into the parent folder.
+    </p>
 
-<p>If you delete a folder, the pictures in it are <b>not</b> deleted&mdash;they are just moved up one level into the parent folder.</p>
-
-<sql:query var="qryMainFolderPics" scope="page">
-SELECT pictureid FROM pictures
-WHERE artistid=?
-AND folderid=?
-AND deleted IS NULL
-<sql:param value="${artist.artistid}" />
-<sql:param value="0" />
-</sql:query>
-
-<p>Pictures in Main Folder: ${qryMainFolderPics.rowCount}</p>
+    <p>Pictures in Main Folder: {{ user.pictures_in_main_folder }}</p>
 </div>
 
 <div class="editfolder">
-<form name="folder_new" id="folder_new" method="post" action="ArtManager.jsp">
+    <form name="folder_new" id="folder_new" method="post">
 
-<div class="folderactions"><button type="button" class="small" onClick="validateForm('folder_new','createFolder()')">Create</button></div>
+        <div class="folderactions"><button type="button" class="small" onClick="validateForm('folder_new','createFolder()')">Create</button></div>
 
-<table class="formtable" style="width: 500px;">
-<tr>
-<td class="label">Create New Folder</td>
-<td class="data"><input type="text" name="name" id="name_new" maxlength="64" validate="hasvalue" message="You must enter a name for the new folder." /></td>
-<td class="">inside</td>
-<td class="data"><select name="parent" id="parent_new" class="foldermenu">
-<option value="0">(Main Folder)</option>
-</select>
-</td>
-</tr>
-</table>
-<input type="hidden" name="op" value="folders" />
-<input type="hidden" name="fnc" value="create" />
-</form>
+        <table class="formtable" style="width: 500px;">
+            <tr>
+                <td class="label">Create New Folder</td>
+                <td class="data"><input type="text" name="name" id="name_new" maxlength="64" validate="hasvalue" message="You must enter a name for the new folder." /></td>
+                <td class="">inside</td>
+                <td class="data">
+                    <select name="parent" id="parent_new" class="foldermenu">
+                        <option value="0">(Main Folder)</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
 </div>
 
 <div id="folders_edit" artistid="{{ user.id }}" folderid="0"></div>
-
-</c:if>
 
 <input type="hidden" id="edit_artistid" value="{{ user.id }}" />
 
