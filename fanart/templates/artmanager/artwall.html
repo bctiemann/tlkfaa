@@ -1,4 +1,5 @@
 {% extends "artmanager/base.html" %}
+{% load static %}
 {% load bbcode_tags %}
 
 {% block am_content %}
@@ -128,6 +129,8 @@ LIMIT ${offset},${thispage}
 
 <%= Pages.get("pages") %>
 
+{{ pages_link.pages_nav|safe }}
+
 <div class="globalactions actions-container">
 	<a href="javascript:nop()"><div class="actions_hover" id="actions_global">All Selected</div></a>
 	<div class="actions_menu" id="actions_global_popup">
@@ -141,6 +144,7 @@ LIMIT ${offset},${thispage}
 <%-- Put pager here --%>
 <div class="pageslink"></div>
 
+{% for gift_picture in gift_pictures %}
 <c:forEach var="request" items="${qryRequests.rows}">
 
 	<sql:query var="qryRequestRecpts">
@@ -152,39 +156,38 @@ LIMIT ${offset},${thispage}
 	</sql:query>
 
 	<div class="picture editpicture">
-	<form name="editrequest_${request.requestid}" method="post" action="ArtManager.jsp">
+	<form name="editrequest_{{ gift_picture.id }}" method="post">
 	<table>
 	<tr>
 	<td class="thumb">
-	<input type="checkbox" id="select_${request.requestid}" /> Select<br />
-	<a href="/Artwork/Artists/${request.dirname}/${fanart:encodeURI(request.basename)}.${request.extension}?${request.pictureid}" rel="shadowbox[requests]"><img class="thumb" src="/Artwork/Artists/${request.dirname}/${fanart:encodeURI(request.basename)}.p.jpg" /></a>
+	<input type="checkbox" id="select_{{ gift_picture.id }}" /> Select<br />
+	<a href="{{ gift_picture.picture.url }}?{{ gift_picture.picture.id }}" rel="shadowbox[requests]"><img class="thumb" src="{{ gift_picture.picture.preview_url }}" /></a>
 	<div class="picturestats">
-	<fmt:formatDate value="${request.uploaded}" type="both" pattern="E M/d/yyyy" /><br />
+        {{ gift_picture.picture.date_uploaded|date }}<br />
 	</div>
 	</td>
 	<td class="fullwidth picturedetails">
 
-	<a href="javascript:nop()"><div class="actions_hover" id="actions_${request.requestid}">Actions</div></a>
-	<div class="actions_menu" id="actions_${request.requestid}_popup">
+	<a href="javascript:nop()"><div class="actions_hover" id="actions_{{ gift_picture.id }}">Actions</div></a>
+	<div class="actions_menu" id="actions_{{ gift_picture.id }}_popup">
 	<h3>Actions</h3>
-	<c:if test="${request.active == false}">
-	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="approveRequest(1,document.requestform,${request.requestid})">Accept</a>
-	</c:if>
-	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="removeRequest(${request.requestid})">Remove</a>
+        {% if not gift_picture.is_active %}
+	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="approveRequest(1,document.requestform,{{ gift_picture.id }})">Accept</a>
+        {% endif %}
+	<a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="removeRequest({{ gift_picture.id }})">Remove</a>
 	</div>
 
 	<div class="picturedetails">
 
-	<div class="picartist"><a href="/Artists/${request.dirname}/">${request.artistname}</a></div>
+	<div class="picartist"><a href="{% url "artist" dir_name=gift_picture.sender.dir_name %}">{{ gift_picture.sender.username }}</a></div>
 
-	<c:set var="title" value="${request.title}" />
 	<div class="pictitle">
-	<%= formatText((String)pageContext.getAttribute("title")) %>
+        {{ gift_picture.picture.title|bbcode|safe }}
 	</div>
 
-	<c:if test="${request.active == false}">
-	<div class="picadmininfo"><img src="/images/warning.png" /> You have not yet accepted this item. <a href="javascript:nop()" onClick="approveRequest(1,document.requestform,${request.requestid})">accept</a></div>
-	</c:if>
+        {% if not gift_picture.is_active %}
+	<div class="picadmininfo"><img src="{% static "images/warning.png" %}" /> You have not yet accepted this item. <a href="javascript:nop()" onClick="approveRequest(1,document.requestform,{{ gift_picture.id }})">accept</a></div>
+        {% endif %}
 
 	<c:if test="${qryRequestRecpts.rowCount > 0}">
 	<div class="picadmininfo">(sent to ${qryRequestRecpts.rowCount} other recipients)</div>
@@ -198,13 +201,14 @@ LIMIT ${offset},${thispage}
 	</div>
 
 	<script type="text/javascript">
-	selitems.push(${request.requestid});
-	$('#actions_${request.requestid}').popupmenu({
-	    target: "#actions_${request.requestid}_popup",
+	selitems.push({{ gift_picture.id }});
+	$('#actions_{{ gift_picture.id }}').popupmenu({
+	    target: "#actions_{{ gift_picture.id }}_popup",
 	    time: 300 });
 	</script>
 
 </c:forEach>
+{% endfor %}
 
 <form name="requestform" method="POST" action="/ArtManager.jsp?op=requests">
 <input type="hidden" name="op" value="requests" />

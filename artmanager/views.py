@@ -848,6 +848,26 @@ class ArtWallView(TemplateView):
         request.session['am_page'] = 'artwall'
         return super(ArtWallView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(ArtWallView, self).get_context_data(**kwargs)
+
+        gift_pictures = self.request.user.gifts_received.all().order_by('-picture__date_uploaded')
+
+        context['gift_pictures_paginator'] = Paginator(gift_pictures, settings.GIFT_PICTURES_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            gift_pictures_page = context['gift_pictures_paginator'].page(page)
+        except EmptyPage:
+            gift_pictures_page = context['gift_pictures_paginator'].page(1)
+
+        context['gift_pictures'] = gift_pictures_page
+        context['pages_link'] = utils.PagesLink(len(gift_pictures), settings.GIFT_PICTURES_PER_PAGE_ARTMANAGER, gift_pictures_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
+
 
 class CharactersView(TemplateView):
     template_name = 'artmanager/characters.html'

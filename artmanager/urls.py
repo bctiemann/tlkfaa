@@ -57,6 +57,8 @@ urlpatterns = [
     url(r'^folders/(?P<folder_id>[0-9]+)/delete/$', artmanager_views.FolderDeleteView.as_view(), name='folder-delete'),
 
     url(r'^artwall/$', artmanager_views.ArtWallView.as_view(), name='artwall'),
+    url(r'^artwall/(?P<gift_picture_id>[0-9]+)/accept/$', artmanager_views.GiftPictureAcceptView.as_view(), name='artwall-gift-picture-accept'),
+
     url(r'^characters/$', artmanager_views.CharactersView.as_view(), name='characters'),
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),
     url(r'^private_msgs/$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),

@@ -2643,7 +2643,8 @@ $(document).ready(function() {
         var pictureid = this.src.split('?')[1];
         if (pictureid) {
           Shadowbox.close();
-          window.parent.location.href='/Picture.jsp?pictureid=' + pictureid;
+//          window.parent.location.href='/Picture.jsp?pictureid=' + pictureid;
+          window.parent.location.href='/picture/' + pictureid;
         }
       });
     }
