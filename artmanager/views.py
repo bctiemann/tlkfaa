@@ -464,6 +464,8 @@ class PictureUpdateView(UpdateView):
 
         logger.info(self.request.POST)
 
+        self.original_folder = self.folder
+
         self.object.picturecharacter_set.all().delete()
         for character_id in (self.request.POST.get('characters')).split(','):
             if character_id:
@@ -575,6 +577,13 @@ class PictureBulkMoveView(APIView):
 
         for folder in set(folders_to_refresh):
             folder.refresh_num_pictures()
+            request.user.refresh_picture_ranks(refresh_folder=True, folder=folder)
+
+#        logger.info(self.folder, self.original_folder)
+#        if self.folder != self.original_folder:
+#            self.folder.refresh_picture_ranks(refresh_folder=True, folder=self.folder)
+#            self.folder.refresh_picture_ranks(refresh_folder=True, folder=self.original_folder)
+
 
         response['success'] = True
         return Response(response)
@@ -768,6 +777,27 @@ class FoldersView(TemplateView):
         return super(FoldersView, self).get(request, *args, **kwargs)
 
 
+class FolderCreateView(CreateView):
+    model = models.Folder
+    form_class = forms.FolderForm
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        response = {'success': False}
+
+        folder = form.save(commit=False)
+        folder.user = self.request.user
+        try:
+            folder.parent = models.Folder.objects.get(pk=self.request.POST.get('parent'), user=self.request.user)
+        except models.Folder.DoesNotExist:
+            folder.parent = None
+
+        folder.save()
+
+        response = {'success': True}
+        return JsonResponse(response)
+
+
 class FolderUpdateView(UpdateView):
     model = models.Folder
     form_class = forms.FolderForm
@@ -790,6 +820,24 @@ class FolderUpdateView(UpdateView):
         self.object.save()
 
         response = {'success': True}
+        return JsonResponse(response)
+
+
+class FolderDeleteView(DeleteView):
+    model = models.Folder
+
+    def get_object(self):
+        return get_object_or_404(models.Folder, pk=self.kwargs['folder_id'], user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+
+        self.object.delete()
+
+        response['success'] = True
+
         return JsonResponse(response)
 
 

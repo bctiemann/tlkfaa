@@ -154,7 +154,8 @@ function validateForm(selformid,successfnc) {
       }
     }
   });
-  if (valid || true) {
+//  if (valid || true) {
+  if (valid) {
     eval(successfnc);
   } else {
     $('#dialog_confirm_text').html('');
@@ -2232,7 +2233,8 @@ function getFolderSelect(folders, foldersKeyedById, folderid, isFlat, pruneChild
 }
 
 function createFolder() {
-    var url = '/api/createFolder.jsp';
+//    var url = '/api/createFolder.jsp';
+    var url = '/ArtManager/folders/create/';
     var params = {
         name: $('#name_new').val(),
         parent: $('#parent_new').val(),
@@ -2266,7 +2268,8 @@ function editFolder(folderid) {
 }
 
 function deleteFolder(folderid) {
-    var url = '/api/deleteFolder.jsp';
+//    var url = '/api/deleteFolder.jsp';
+    var url = '/ArtManager/folders/' + folderid + '/delete/';
     var params = {
         folderid: folderid,
         parent: $('#parent_' + folderid).val(),

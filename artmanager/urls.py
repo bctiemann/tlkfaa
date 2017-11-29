@@ -52,7 +52,9 @@ urlpatterns = [
     url(r'^artwork/tag_characters/(?P<obj>(new|[0-9]+))/$', artmanager_views.TagCharactersView.as_view(), name='tag-characters'),
 
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),
+    url(r'^folders/create/$', artmanager_views.FolderCreateView.as_view(), name='folder-create'),
     url(r'^folders/(?P<folder_id>[0-9]+)/update/$', artmanager_views.FolderUpdateView.as_view(), name='folder-update'),
+    url(r'^folders/(?P<folder_id>[0-9]+)/delete/$', artmanager_views.FolderDeleteView.as_view(), name='folder-delete'),
 
     url(r'^artwall/$', artmanager_views.ArtWallView.as_view(), name='artwall'),
     url(r'^characters/$', artmanager_views.CharactersView.as_view(), name='characters'),

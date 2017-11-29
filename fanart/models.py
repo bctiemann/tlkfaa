@@ -370,6 +370,7 @@ ORDER BY fanart_user.sort_name
         for i, picture in enumerate(pictures):
             if refresh_folder:
                 picture.rank_in_folder = i + 1
+                logger.info(picture, picture.rank_in_folder)
             else:
                 picture.rank_in_artist = i + 1
             picture.save()
@@ -547,6 +548,7 @@ class Picture(models.Model):
 
         if self.folder:
             self.folder.refresh_num_pictures()
+#            self.folder.refresh_latest_picture()
 
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
 
@@ -562,8 +564,8 @@ class Folder(models.Model):
     parent = models.ForeignKey('Folder', null=True, blank=True)
 #    parent_folder_id = models.IntegerField(null=True, blank=True)
     num_pictures = models.IntegerField(default=0)
-    latest_picture = models.ForeignKey('Picture', null=True, blank=True, related_name='latest_folder')
-    latest_picture_date = models.DateTimeField(null=True, blank=True)
+#    latest_picture = models.ForeignKey('Picture', null=True, blank=True, related_name='latest_folder')
+#    latest_picture_date = models.DateTimeField(null=True, blank=True)
 
     @property
     def latest_picture(self):
@@ -574,8 +576,33 @@ class Folder(models.Model):
         self.num_pictures = self.picture_set.count()
         self.save()
 
+#    def refresh_latest_picture(self):
+#        latest_picture = self.picture_set.order_by('-date_uploaded').first()
+#        logger.info(latest_picture)
+#        self.latest_picture = latest_picture
+#        self.latest_picture_date = latest_picture.date_uploaded
+#        self.save
+
     def get_absolute_url(self):
         return reverse('artist-gallery', kwargs={'dir_name': self.user.dir_name})
+
+    def delete(self, *args, **kwargs):
+        for picture in self.picture_set.all():
+            picture.folder = self.parent
+            picture.save()
+        for folder in self.folder_set.all():
+            folder.parent = self.parent
+            folder.save()
+        if self.parent:
+            logger.info(self.parent)
+#            self.parent.refresh_latest_picture()
+            self.parent.user.refresh_picture_ranks(refresh_folder=True, folder=self.parent)
+        super(Folder, self).delete(*args, **kwargs)
+
+#move pictures to parent
+#move subfolders to parent
+#set latest pic on parent
+#refresh ranks on parent
 
     def __unicode__(self):
         return '{0} {1}'.format(self.id, self.name)
