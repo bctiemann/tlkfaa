@@ -11,6 +11,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.exceptions import ValidationError
@@ -42,7 +44,7 @@ class BaseRedirectView(RedirectView):
         return reverse('artmanager:dashboard')
 
 
-class ArtManagerPaneView(UserPaneMixin, TemplateView):
+class ArtManagerPaneView(LoginRequiredMixin, UserPaneMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArtManagerPaneView, self).get_context_data(**kwargs)
@@ -73,7 +75,7 @@ class DashboardView(ArtManagerPaneView):
         return context
 
 
-class PrefsView(DetailView):
+class PrefsView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/prefs.html'
     model = models.User
 
@@ -92,7 +94,7 @@ class PrefsView(DetailView):
         return context
 
 
-class PrefsUpdateView(AjaxableResponseMixin, UpdateView):
+class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
     model = models.User
     form_class = forms.PrefsForm
 
@@ -163,7 +165,7 @@ class PrefsUpdateProfileView(PrefsUpdateView):
     form_class = forms.ProfilePrefsForm
 
 
-class UserModeView(AjaxableResponseMixin, UpdateView):
+class UserModeView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
     model = models.User
     form_class = forms.UserModeForm
 
@@ -171,7 +173,7 @@ class UserModeView(AjaxableResponseMixin, UpdateView):
         return self.request.user
 
 
-class UploadView(TemplateView):
+class UploadView(ArtManagerPaneView):
     template_name = 'artmanager/upload.html'
 
     def get(self, request, *args, **kwargs):
@@ -199,11 +201,11 @@ class UploadView(TemplateView):
         return context
 
 
-class UploadFormView(TemplateView):
+class UploadFormView(LoginRequiredMixin, TemplateView):
     template_name = 'artmanager/upload_form.html'
 
 
-class UploadFileView(CreateView):
+class UploadFileView(LoginRequiredMixin, CreateView):
     model = models.Pending
     form_class = forms.UploadFileForm
 #    template_name = 'includes/colored_pictures.html'
@@ -248,7 +250,7 @@ class UploadFileView(CreateView):
         return context
 
 
-class UploadSuccessView(DetailView):
+class UploadSuccessView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/upload_success.html'
 
     def get_object(self, queryset=None):
@@ -267,7 +269,7 @@ class PendingStatusView(APIView):
         return Response(response)
 
 
-class PendingView(TemplateView):
+class PendingView(ArtManagerPaneView):
     template_name = 'artmanager/pending.html'
 
     def get(self, request, *args, **kwargs):
@@ -275,14 +277,14 @@ class PendingView(TemplateView):
         return super(PendingView, self).get(request, *args, **kwargs)
 
 
-class PendingDetailView(DetailView):
+class PendingDetailView(LoginRequiredMixin, DetailView):
     template_name = 'includes/pending.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
 
-class PendingFormView(DetailView):
+class PendingFormView(LoginRequiredMixin, DetailView):
     model = models.Pending
     template_name = 'artmanager/pending_form.html'
 
@@ -298,7 +300,7 @@ class PendingFormView(DetailView):
 
         return context
 
-class PendingUpdateView(UpdateView):
+class PendingUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Pending
     form_class = forms.PendingForm
     template_name = 'artmanager/pending_form.html'
@@ -327,7 +329,7 @@ class PendingUpdateView(UpdateView):
 
         return response
 
-class PendingDeleteView(DeleteView):
+class PendingDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Pending
 
     def get_object(self):
@@ -347,7 +349,7 @@ class PendingDeleteView(DeleteView):
         return JsonResponse(response)
 
 
-class ArtworkView(TemplateView):
+class ArtworkView(ArtManagerPaneView):
     template_name = 'artmanager/artwork.html'
 
     def get(self, request, *args, **kwargs):
@@ -403,14 +405,14 @@ class ArtworkView(TemplateView):
 
         return context
 
-class PictureDetailView(DetailView):
+class PictureDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/picture.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
 
 
-class ColoringPictureDetailView(DetailView):
+class ColoringPictureDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/coloring_picture.html'
 
     def get_object(self, queryset=None):
@@ -424,7 +426,7 @@ class ColoringPictureDetailView(DetailView):
         return context
 
 
-class PictureFormView(DetailView):
+class PictureFormView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/picture_form.html'
 
     def get_object(self, queryset=None):
@@ -440,7 +442,7 @@ class PictureFormView(DetailView):
         return context
 
 
-class ColoringPictureFormView(DetailView):
+class ColoringPictureFormView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/coloring_picture_form.html'
 
     def get_object(self, queryset=None):
@@ -454,7 +456,7 @@ class ColoringPictureFormView(DetailView):
         return context
 
 
-class PictureUpdateView(UpdateView):
+class PictureUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Picture
     form_class = forms.PictureForm
     template_name = 'artmanager/picture_form.html'
@@ -492,7 +494,7 @@ class PictureUpdateView(UpdateView):
         return response
 
 
-class ColoringPictureUpdateView(UpdateView):
+class ColoringPictureUpdateView(LoginRequiredMixin, UpdateView):
     model = models.ColoringPicture
     form_class = forms.ColoringPictureForm
     template_name = 'artmanager/coloring_picture_form.html'
@@ -511,7 +513,7 @@ class ColoringPictureUpdateView(UpdateView):
         return reverse('artmanager:artwork-coloring-picture-detail', kwargs={'coloring_picture_id': self.object.id})
 
 
-class PictureDeleteView(DeleteView):
+class PictureDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Picture
 
     def get_object(self):
@@ -592,7 +594,7 @@ class PictureBulkMoveView(APIView):
         return Response(response)
 
 
-class ColoringPictureDeleteView(DeleteView):
+class ColoringPictureDeleteView(LoginRequiredMixin, DeleteView):
     model = models.ColoringPicture
 
     def get_object(self):
@@ -641,7 +643,7 @@ class ColoringStatusView(APIView):
         return Response(response)
 
 
-class GiftPictureListView(DetailView):
+class GiftPictureListView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/picture_gift_list.html'
 
     def get_object(self, queryset=None):
@@ -655,7 +657,7 @@ class GiftPictureListView(DetailView):
         return context
 
 
-class GiftPictureFormView(DetailView):
+class GiftPictureFormView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/picture_gift_form.html'
 
     def get_object(self, queryset=None):
@@ -719,7 +721,7 @@ class GiftPictureSendView(APIView):
         return Response(response)
 
 
-class GiftPictureDeleteView(DeleteView):
+class GiftPictureDeleteView(LoginRequiredMixin, DeleteView):
     model = models.GiftPicture
 
     def get_object(self):
@@ -753,7 +755,7 @@ class SetExamplePictureView(APIView):
         return Response(response)
 
 
-class TagCharactersView(TemplateView):
+class TagCharactersView(LoginRequiredMixin, TemplateView):
     template_name = 'artmanager/tag_characters.html'
 
     def get(self, request, *args, **kwargs):
@@ -772,7 +774,7 @@ class TagCharactersView(TemplateView):
         return context
 
 
-class FoldersView(TemplateView):
+class FoldersView(ArtManagerPaneView):
     template_name = 'artmanager/folders.html'
 
     def get(self, request, *args, **kwargs):
@@ -780,7 +782,7 @@ class FoldersView(TemplateView):
         return super(FoldersView, self).get(request, *args, **kwargs)
 
 
-class FolderCreateView(CreateView):
+class FolderCreateView(LoginRequiredMixin, CreateView):
     model = models.Folder
     form_class = forms.FolderForm
 
@@ -801,7 +803,7 @@ class FolderCreateView(CreateView):
         return JsonResponse(response)
 
 
-class FolderUpdateView(UpdateView):
+class FolderUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Folder
     form_class = forms.FolderForm
     template_name = 'artmanager/folders.html'
@@ -826,7 +828,7 @@ class FolderUpdateView(UpdateView):
         return JsonResponse(response)
 
 
-class FolderDeleteView(DeleteView):
+class FolderDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Folder
 
     def get_object(self):
@@ -844,7 +846,7 @@ class FolderDeleteView(DeleteView):
         return JsonResponse(response)
 
 
-class ArtWallView(TemplateView):
+class ArtWallView(ArtManagerPaneView):
     template_name = 'artmanager/artwall.html'
 
     def get(self, request, *args, **kwargs):
@@ -916,7 +918,7 @@ class GiftPictureBulkDeleteView(APIView):
         return JsonResponse(response)
 
 
-class CharactersView(TemplateView):
+class CharactersView(ArtManagerPaneView):
     template_name = 'artmanager/characters.html'
 
     def get(self, request, *args, **kwargs):
@@ -944,7 +946,7 @@ class CharactersView(TemplateView):
         return context
 
 
-class CharacterDetailView(DetailView):
+class CharacterDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/character.html'
 
     def get_object(self, queryset=None):
@@ -958,7 +960,7 @@ class CharacterDetailView(DetailView):
         return context
 
 
-class CharacterFormView(DetailView):
+class CharacterFormView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/character_form.html'
 
     def get_object(self, queryset=None):
@@ -970,7 +972,7 @@ class CharacterFormView(DetailView):
         return context
 
 
-class CharacterCreateView(CreateView):
+class CharacterCreateView(LoginRequiredMixin, CreateView):
     model = models.Character
     form_class = forms.CharacterForm
 
@@ -990,7 +992,7 @@ class CharacterCreateView(CreateView):
         return reverse('artmanager:characters')
 
 
-class CharacterUpdateView(UpdateView):
+class CharacterUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Character
     form_class = forms.CharacterForm
     template_name = 'artmanager/character_form.html'
@@ -1032,7 +1034,7 @@ class CharacterSetPictureView(APIView):
         return Response(response)
 
 
-class CharacterDeleteView(DeleteView):
+class CharacterDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Character
 
     def get_object(self):
@@ -1051,7 +1053,7 @@ class CharacterDeleteView(DeleteView):
         return JsonResponse(response)
 
 
-class CustomizeView(TemplateView):
+class CustomizeView(ArtManagerPaneView):
     template_name = 'artmanager/customize.html'
 
     def get(self, request, *args, **kwargs):
@@ -1075,7 +1077,7 @@ class PrivateMessagesView(ArtManagerPaneView):
         return context
 
 
-class TradingTreeView(TemplateView):
+class TradingTreeView(ArtManagerPaneView):
     template_name = 'artmanager/trading_tree.html'
 
     def get(self, request, *args, **kwargs):
@@ -1083,7 +1085,7 @@ class TradingTreeView(TemplateView):
         return super(TradingTreeView, self).get(request, *args, **kwargs)
 
 
-class ColoringCaveView(TemplateView):
+class ColoringCaveView(ArtManagerPaneView):
     template_name = 'artmanager/coloring_cave.html'
 
     def get(self, request, *args, **kwargs):
@@ -1091,7 +1093,7 @@ class ColoringCaveView(TemplateView):
         return super(ColoringCaveView, self).get(request, *args, **kwargs)
 
 
-class ContestsView(TemplateView):
+class ContestsView(ArtManagerPaneView):
     template_name = 'artmanager/contests.html'
 
     def get(self, request, *args, **kwargs):
@@ -1099,7 +1101,7 @@ class ContestsView(TemplateView):
         return super(ContestsView, self).get(request, *args, **kwargs)
 
 
-class BulletinsView(TemplateView):
+class BulletinsView(ArtManagerPaneView):
     template_name = 'artmanager/bulletins.html'
 
     def get(self, request, *args, **kwargs):
@@ -1107,7 +1109,7 @@ class BulletinsView(TemplateView):
         return super(BulletinsView, self).get(request, *args, **kwargs)
 
 
-class UploadHistoryView(TemplateView):
+class UploadHistoryView(ArtManagerPaneView):
     template_name = 'artmanager/upload_history.html'
 
     def get(self, request, *args, **kwargs):
@@ -1115,7 +1117,7 @@ class UploadHistoryView(TemplateView):
         return super(UploadHistoryView, self).get(request, *args, **kwargs)
 
 
-class CommentsView(TemplateView):
+class CommentsView(ArtManagerPaneView):
     template_name = 'artmanager/comments.html'
 
     def get(self, request, *args, **kwargs):
@@ -1123,7 +1125,7 @@ class CommentsView(TemplateView):
         return super(CommentsView, self).get(request, *args, **kwargs)
 
 
-class ShoutsView(TemplateView):
+class ShoutsView(ArtManagerPaneView):
     template_name = 'artmanager/shouts.html'
 
     def get(self, request, *args, **kwargs):
@@ -1131,7 +1133,7 @@ class ShoutsView(TemplateView):
         return super(ShoutsView, self).get(request, *args, **kwargs)
 
 
-class FansView(TemplateView):
+class FansView(ArtManagerPaneView):
     template_name = 'artmanager/fans.html'
 
     def get(self, request, *args, **kwargs):
@@ -1139,7 +1141,7 @@ class FansView(TemplateView):
         return super(FansView, self).get(request, *args, **kwargs)
 
 
-class BlocksView(TemplateView):
+class BlocksView(ArtManagerPaneView):
     template_name = 'artmanager/blocks.html'
 
     def get(self, request, *args, **kwargs):
