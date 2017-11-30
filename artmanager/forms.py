@@ -80,3 +80,10 @@ class CharacterForm(forms.ModelForm):
     class Meta:
         model = models.Character
         fields = ['name', 'description', 'species', 'sex', 'story_title', 'story_url']
+
+
+class CustomizeForm(forms.ModelForm):
+
+    class Meta:
+        model = models.User
+        fields = ['banner_text', 'banner_text_min']

@@ -90,7 +90,7 @@ ArtManager component for managing the appearance of your gallery page.
 
 	<div class="pageinfo">
 
-	<p>The announcement box appears below the banner, and is normally hidden (it can be expanded and viewed by clicking the tab). You can specify a "preview" line of text to appear when the banner is hidden.</p>
+	<p>The announcement box appears below the banner, and is normally hidden (it can be expanded and viewed by clicking the tab). You can specify a "minimized" line of text to appear when the banner is hidden.</p>
 
 	</div>
 
@@ -99,15 +99,15 @@ ArtManager component for managing the appearance of your gallery page.
 	<c:set var="bannertext_min" value="${fn:replace(artist.bannertext_min,'<','&lt;')}" />
 	<c:set var="bannertext_min" value="${fn:replace(bannertext_min,'>','&gt;')}" />
 
-	<form name="bannertextform" id="bannertextform" method="POST" action="ArtManager.jsp">
+	<form name="bannertextform" id="bannertextform" method="POST" action="{% url "artmanager:customize" %}">
 	<table class="formtable">
 	<tr>
-	<td class="label">Preview Text</td>
-	<td class="data"><input class="std" name="bannertext_min" maxlength="80" value="${fn:replace(bannertext_min,'\"','&quot;')}" /></td>
+	<td class="label">Minimized Text</td>
+	<td class="data"><input class="std" name="banner_text_min" maxlength="80" value="{{ user.banner_text_min }}" /></td>
 	</tr>
 	<tr>
 	<td class="label">Announcements</td>
-	<td class="data"><textarea name="bannertext">${bannertext}</textarea></td>
+	<td class="data"><textarea name="banner_text">{{ user.banner_text }}</textarea></td>
 	</tr>
 	<tr>
 	<td colspan="3" class="buttons">
@@ -118,12 +118,13 @@ ArtManager component for managing the appearance of your gallery page.
 	</table>
 	<input type="hidden" name="op" value="customize" />
 	<input type="hidden" name="fnc" value="commit" />
+        {% csrf_token %}
 	</form>
 
 	Preview:
 	<c:set var="bannertext" value="${artist.bannertext}" />
 	<div class="bannertextpreview" id="bannertextpreview">
-	<%= formatText((String)pageContext.getAttribute("bannertext")) %>
+        {{ user.banner_text|bbcode|safe }}
 	</div>
 
 </c:otherwise>

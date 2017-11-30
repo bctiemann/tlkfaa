@@ -1053,12 +1053,28 @@ class CharacterDeleteView(LoginRequiredMixin, DeleteView):
         return JsonResponse(response)
 
 
-class CustomizeView(ArtManagerPaneView):
+class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
+    form_class = forms.CustomizeForm
     template_name = 'artmanager/customize.html'
 
-    def get(self, request, *args, **kwargs):
-        request.session['am_page'] = 'customize'
-        return super(CustomizeView, self).get(request, *args, **kwargs)
+#    def get(self, request, *args, **kwargs):
+#        request.session['am_page'] = 'customize'
+#        return super(CustomizeView, self).get(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomizeView, self).get_context_data(**kwargs)
+
+        context['community_art_data'] = self.get_community_art_data()
+        context['contests_data'] = self.get_contests_data()
+        context['sketcher_users'] = range(12)
+
+        return context
+
+    def get_success_url(self):
+        return reverse('artmanager:customize')
 
 
 class PrivateMessagesView(ArtManagerPaneView):

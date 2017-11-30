@@ -1347,7 +1347,7 @@ console.log('foo');
 }
 
 function refreshBannerPreview(selform) {
-  var bannertext = selform.bannertext.value;
+  var bannertext = selform.banner_text.value;
   bannertext = bannertext.replace(/\n/g,"<br />");
 //  bannertext = bannertext.replace(/(?!<![=\"])(https?|ftp|file)(:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/%=~_|])/gi,"<a href=\"$1$2\">$1$2</a>");
 //  bannertext = bannertext.replace(/(https?|ftp|file)(:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/%=~_|])/gi,"<a href=\"$1$2\">$1$2</a>");
