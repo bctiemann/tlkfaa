@@ -960,7 +960,11 @@ class CharacterCreateView(CreateView):
         character.owner = self.request.user
         character.creator = self.request.user
 
-        return super(CharacterCreateView, self).form_valid(form)
+        response = super(CharacterCreateView, self).form_valid(form)
+
+        self.request.user.refresh_num_characters()
+
+        return response
 
     def get_success_url(self):
         return reverse('artmanager:characters')
@@ -1006,6 +1010,25 @@ class CharacterSetPictureView(APIView):
 
         response['success'] = True
         return Response(response)
+
+
+class CharacterDeleteView(DeleteView):
+    model = models.Character
+
+    def get_object(self):
+        return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+        logger.info(self.object)
+
+        self.object.set_deleted()
+
+        response['success'] = True
+
+        return JsonResponse(response)
 
 
 class CustomizeView(TemplateView):

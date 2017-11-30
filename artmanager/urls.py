@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^characters/(?P<character_id>[0-9]+)/$', artmanager_views.CharacterDetailView.as_view(), name='character-detail'),
     url(r'^characters/(?P<character_id>[0-9]+)/form/$', artmanager_views.CharacterFormView.as_view(), name='character-form'),
     url(r'^characters/(?P<character_id>[0-9]+)/update/$', artmanager_views.CharacterUpdateView.as_view(), name='character-update'),
+    url(r'^characters/(?P<character_id>[0-9]+)/delete/$', artmanager_views.CharacterDeleteView.as_view(), name='character-delete'),
     url(r'^characters/(?P<character_id>[0-9]+)/set_picture/$', artmanager_views.CharacterSetPictureView.as_view(), name='character-set-picture'),
 
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),

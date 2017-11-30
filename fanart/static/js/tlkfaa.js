@@ -1261,8 +1261,14 @@ function deleteCharacter(characterid) {
     modal: true,
     buttons: {
       "Delete": function() {
-        var url = "/ArtManager.jsp?op=characters&fnc=delete&characterid=" + characterid;
-        window.location.href = url;
+//        var url = "/ArtManager.jsp?op=characters&fnc=delete&characterid=" + characterid;
+        var url = '/ArtManager/characters/' + characterid + '/delete/';
+//        window.location.href = url;
+        $.post(url, function(data) {
+          if (data.success) {
+            window.location.reload();
+          }
+        });
       },
       Cancel: function() {
         $(this).dialog('close');

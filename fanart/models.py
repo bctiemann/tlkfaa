@@ -379,6 +379,10 @@ ORDER BY fanart_user.sort_name
                 picture.rank_in_artist = i + 1
             picture.save()
 
+    def refresh_num_characters(self):
+        self.num_characters = self.character_set.count()
+        self.save()
+
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(User, self).save(*args, **kwargs)
@@ -718,6 +722,20 @@ class Character(models.Model):
     @property
     def adoption_offer(self):
         return self.tradingoffer_set.filter(is_active=True, is_visible=True).first()
+
+    def set_deleted(self):
+
+        for offer in self.tradingoffer_set.all():
+            offer.is_active = False
+            offer.is_visible = False
+            offer.save
+
+        self.date_deleted = timezone.now()
+        self.save()
+
+        self.owner.refresh_num_characters()
+
+        logger.info('Character {0} by {1} was deleted.'.format(self, self.owner))
 
     def __unicode__(self):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
