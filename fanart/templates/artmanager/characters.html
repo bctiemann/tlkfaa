@@ -231,7 +231,7 @@ LIMIT ${offset},${thispage}
 	<table>
 	<tr>
 	<td>
-	<a href="pop_pickpicture.jsp?op=character&characterid=${character.characterid}&folderid=0" onClick="document.pickpictureform.itemid.value=${character.characterid}" rel="shadowbox;width=500;height=600"><div id="pickpicture_${character.characterid}">
+	<a href="{% url "picture-picker" target="character" %}" onClick="document.pickpictureform.itemid.value={{ character.id }}" rel="shadowbox;width=500;height=600"><div id="pickpicture_{{ character.id }}">
 
 		<img class="thumb characterpic" src="{{ character.preview_url }}" />
 

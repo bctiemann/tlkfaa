@@ -1276,13 +1276,25 @@ function selectPicture(pictureid,picturetype) {
   var pickpictureitem = window.parent.pickpictureform.item.value;
   var pickpictureitemid = window.parent.pickpictureform.itemid.value;
 console.log($('#picker_image_' + pictureid).attr('src'));
-  var url = "/ajax_setpicture.jsp?pictureid="+pictureid+"&picturetype="+picturetype+"&item="+pickpictureitem+"&itemid="+pickpictureitemid;
-
   $('#pickpicture_'+pickpictureitemid,window.parent.document).empty().append($('<img>', {
     src: $('#picker_image_' + pictureid).attr('src'),
     class: 'thumb',
   })).closest('form').find('input[name=picture]').val(pictureid);
-  window.parent.Shadowbox.close();
+
+  if (pickpictureitem == 'character') {
+//    var url = "/ajax_setpicture.jsp?pictureid="+pictureid+"&picturetype="+picturetype+"&item="+pickpictureitem+"&itemid="+pickpictureitemid;
+    var url = '/ArtManager/characters/' + pickpictureitemid + '/set_picture/';
+    var params = {
+      picture_type: picturetype,
+      picture_id: pictureid,
+    };
+    $.post(url, params, function(data) {
+console.log(data);
+      window.parent.Shadowbox.close();
+    });
+  } else {
+    window.parent.Shadowbox.close();
+  }
 
 //  $('#pickpicture_'+pickpictureitemid,window.parent.document).load(url,function() {
 //    window.parent.Shadowbox.close();

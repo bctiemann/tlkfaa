@@ -6,6 +6,9 @@
     <title>The Lion King Fan-Art Archive{% block page_title %}{% endblock %}</title>
     <link title="TLKFAA" rel="stylesheet" href="{% static "css/style.css" %}" />
 
+    {% include "includes/head_statics.html" %}
+
+{% comment %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
     <link href="{% static "jquery-ui-1.12.0.custom/jquery-ui.css" %}" rel="stylesheet" type="text/css"/>
@@ -40,6 +43,7 @@
     <!--[if lt IE 8]>
         <link rel="stylesheet" href="{% static "css/ie7fix.css" %}" />
     <![endif]-->
+{% endcomment %}
 </head>
 <body>
 

@@ -952,6 +952,35 @@ class CharacterCreateView(CreateView):
         return reverse('artmanager:characters')
 
 
+class CharacterSetPictureView(APIView):
+
+    def post(self, request, character_id):
+        response = {'success': False}
+
+        character = get_object_or_404(models.Character, pk=character_id, owner=request.user)
+
+        if request.POST.get('picture_type') == 'coloring_picture':
+            picture_model = models.ColoringPicture
+        elif request.POST.get('picture_type') == 'picture':
+            picture_model = models.Picture
+
+        try:
+            picture = picture_model.objects.get(pk=request.POST.get('picture_id'), artist=request.user)
+        except picture_model.DoesNotExist:
+            return Response(response)
+
+        if picture_model == models.ColoringPicture:
+            character.profile_coloring_picture = picture
+            character.profile_picture = None
+        elif picture_model == models.Picture:
+            character.profile_picture = picture
+            character.profile_coloring_picture = None
+        character.save()
+
+        response['success'] = True
+        return Response(response)
+
+
 class CustomizeView(TemplateView):
     template_name = 'artmanager/customize.html'
 

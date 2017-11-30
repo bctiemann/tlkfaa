@@ -8,14 +8,15 @@
 Folder:
 <select name="switchfolder" class="foldermenu" onChange="switchParam(this, 'folder_id')">
     {% if target == "character" %}
-        <option value="-1" <c:if test="${folderid == -1}">selected</c:if>>(Coloring Cave)</option>
+        <option value="cc" {% if coloring_cave %}selected{% endif %}>(Coloring Cave)</option>
     {% endif %}
-    <option value="0" {% if selected_folder == None %}selected{% endif %}>(Main)</option>
+    <option value="0" {% if not coloring_cave and selected_folder == None %}selected{% endif %}>(Main)</option>
     {% for folder in folders %}
         <option value="{{ folder.id }}" {% if selected_folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
     {% endfor %}
 </select>
 
+{% if not coloring_cave %}
 Sort by:
 <select name="sortby" onChange="switchParam(this, 'sort_by')">
     <option {% if sort_by == "newest" %}selected{% endif %} value="newest">Newest</option>
@@ -23,42 +24,36 @@ Sort by:
     <option {% if sort_by == "popularity" %}selected{% endif %} value="popularity">Popularity</option>
     <option {% if sort_by == "comments" %}selected{% endif %} value="comments">Comments</option>
 </select>
+{% endif %}
 </form>
 
-{% if target == "character" %}
-<c:choose>
-<c:when test="${folderid == -1 && param.op == 'character'}">
+{% if target == "character" and coloring_cave %}
 
-	<sql:query var="qryCCPics">
-	SELECT * FROM coloring_base,coloring_pics
-	WHERE coloring_pics.basepic=coloring_base.coloring_baseid
-	AND coloring_pics.artistid=?
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
+    {% for picture in pictures %}
+        <div class="picture">
 
-	<c:forEach var="ccpic" items="${qryCCPics.rows}">
-	<div class="picture">
+            <table>
+                <tr>
+                    <td class="thumb">
+                        <a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'coloring_picture')">
+                            <img class="thumb claimthumb" id="picker_image_{{ picture.id }}" src="{{ picture.thumbnail_url }}" />
+                        </a>
+                    </td>
+                    <td class="fullwidth picturedetails">
+                        <div class="picturedetails">
+                            <div class="picdate">{{ picture.date_posted|date }}</div>
+                            <div class="pictitle">
+                                {{ picture.comment|bbcode|safe }}
+                            </div>
 
-	<table>
-	<tr>
-	<td class="thumb"><a href="javascript:nop()" onClick="selectPicture(${ccpic.coloring_picid},'ccpic')"><img class="thumb claimthumb" src="/Artwork/coloring/${ccpic.coloring_picid}.p.jpg" /></a></td>
-	<td class="fullwidth picturedetails">
-	<div class="picturedetails">
+                        </div>
 
-	<c:set var="comment" value="${ccpic.comment}" />
-	<div class="picdate">${ccpic.posted}</div>
-	<div class="pictitle">
-	<%= formatText((String)pageContext.getAttribute("comment")) %>
-	</div>
+                    </td>
+                </tr>
+            </table>
 
-	</div>
-
-	</td>
-	</tr>
-	</table>
-
-	</div>
-	</c:forEach>
+        </div>
+    {% endfor %}
 
 {% else %}
 
@@ -67,7 +62,11 @@ Sort by:
 
             <table>
                 <tr>   
-                    <td class="thumb"><a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'picture')"><img class="thumb" id="picker_image_{{ picture.id }}" height="{{ picture.thumb_height_x2 }}" src="{{ picture.preview_url }}" /></a></td>
+                    <td class="thumb">
+                        <a href="javascript:nop()" onClick="selectPicture({{ picture.id }},'picture')">
+                            <img class="thumb" id="picker_image_{{ picture.id }}" height="{{ picture.thumb_height_x2 }}" src="{{ picture.preview_url }}" />
+                        </a>
+                    </td>
                     <td class="fullwidth picturedetails">
                         <div class="picturedetails">
                             <div class="picdate">{{ picture.date_uploaded|date }}</div>
