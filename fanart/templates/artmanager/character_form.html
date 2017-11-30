@@ -59,7 +59,7 @@ WHERE characterid=?
 <c:choose>
 <c:when test="${param.op == 'form'}">
 
-	<form name="editcharacter_${characterid}" id="editcharacter_${characterid}" onSubmit="return false;">
+	<form name="editcharacter_{{ character.id }}" id="editcharacter_{{ character.id }}" onSubmit="return false;">
 	<table class="formtable">
 	<tr>
 	<td class="label">Name</td>
@@ -79,9 +79,9 @@ WHERE characterid=?
 	<td class="label">Sex</td>
 	<td class="data">
 	<select name="sex">
-	<option {% if character.sex == "male" %}selected{% endif %} value="1">Male</option>
-	<option {% if character.sex == "female" %}selected{% endif %} value="2">Female</option>
-	<option {% if character.sex == "" %}selected{% endif %} value="0">Neither</option>
+	<option {% if character.sex == "male" %}selected{% endif %} value="male">Male</option>
+	<option {% if character.sex == "female" %}selected{% endif %} value="female">Female</option>
+	<option {% if character.sex == "" %}selected{% endif %} value="">Neither</option>
 	</select>
 	</td>
 	</tr>
@@ -104,35 +104,6 @@ WHERE characterid=?
 	</form>
 
 </c:when>
-<c:otherwise>
-
-	<c:set var="charname" value="${character.charactername}" />
-	<c:set var="chardesc" value="${character.description}" />
-
-	<div class="characterdate"><fmt:formatDate value="${character.created}" type="both" pattern="M/d/yyyy" /></div>
-	<div class="charactername"><a href="/Characters/?characterid=${character.characterid}"><%= formatText((String)pageContext.getAttribute("charname")) %></a></div>
-	<div class="characterspecies">
-	<c:choose>
-	<c:when test="${character.sex == 1}">Male</c:when>
-	<c:when test="${character.sex == 2}">Female</c:when>
-	</c:choose>
-	${character.species}</div>
-	<div class="characterdesc"><%= formatText((String)pageContext.getAttribute("chardesc")) %></div>
-	<div class="characterstory">
-	<c:if test="${character.storyname != ''}">
-	<c:choose>
-	<c:when test="${character.storyurl != ''}">
-	Source: <a target="_blank" href="${character.storyurl}">${character.storyname}</a>
-	</c:when>
-	<c:otherwise>
-	Source: ${character.storyname}
-	</c:otherwise>
-	</c:choose>
-	</c:if>
-	</div>
-
-</c:otherwise>
-</c:choose>
 
 </c:forEach>
 

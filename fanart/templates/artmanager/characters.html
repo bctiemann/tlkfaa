@@ -241,16 +241,19 @@ LIMIT ${offset},${thispage}
 	<div class="characteredit">
 	<a href="javascript:nop()" onClick="setupEditCharacter({{ character.id }})">edit</a>
 	<a href="javascript:nop()" onClick="deleteCharacter({{ character.id }})">delete</a>
+        {% if character.adoption_offer %}
 	<c:choose>
 	<c:when test="${qryAdoptedOut.rowCount > 0}">
 		<c:forEach var="adoptable" items="${qryAdoptedOut.rows}">
 			<a href="/ArtManager.jsp?op=tradingtree&offertype=adoptable&offerid=${adoptable.offerid}">Up for adoption</a>
 		</c:forEach>
 	</c:when>
+        {% else %}
 	<c:otherwise>
 		<a href="/ArtManager.jsp?op=tradingtree&offertype=adoptable&characterid=${character.characterid}">adopt out</a>
 	</c:otherwise>
 	</c:choose>
+        {% endif %}
 	</div>
 
 	<div id="editcharacter_{{ character.id }}">

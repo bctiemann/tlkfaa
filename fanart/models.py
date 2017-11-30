@@ -715,6 +715,10 @@ class Character(models.Model):
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
+    @property
+    def adoption_offer(self):
+        return self.tradingoffer_set.filter(is_active=True, is_visible=True).first()
+
     def __unicode__(self):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
 

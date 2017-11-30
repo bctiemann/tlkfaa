@@ -735,15 +735,16 @@ function editCharacter(characterid,charform) {
   var sex = charform.sex.options[charform.sex.selectedIndex].value;
   var storyname = charform.storyname.value;
   var storyurl = charform.storyurl.value;
-  $.post("/ajax_editcharacter.jsp",{
+//  $.post("/ajax_editcharacter.jsp",{
+  $.post('/ArtManager/characters/' + characterid + '/update/', {
       op: "edit",
       characterid: characterid,
-      charactername: charactername,
+      name: charactername,
       description: description,
       species: species,
       sex: sex,
-      storyname: storyname,
-      storyurl: storyurl
+      story_title: storyname,
+      story_url: storyurl
     },function(data) {
     $('#editcharacter_'+characterid).html(data);
   });

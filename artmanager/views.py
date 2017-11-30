@@ -924,6 +924,20 @@ class CharactersView(TemplateView):
         return super(CharactersView, self).get(request, *args, **kwargs)
 
 
+class CharacterDetailView(DetailView):
+    template_name = 'artmanager/character.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(CharacterDetailView, self).get_context_data(**kwargs)
+
+        context['character'] = self.object
+
+        return context
+
+
 class CharacterFormView(DetailView):
     template_name = 'artmanager/character_form.html'
 
@@ -950,6 +964,19 @@ class CharacterCreateView(CreateView):
 
     def get_success_url(self):
         return reverse('artmanager:characters')
+
+
+class CharacterUpdateView(UpdateView):
+    model = models.Character
+    form_class = forms.CharacterForm
+    template_name = 'artmanager/character_form.html'
+
+    def get_object(self):
+        logger.info(self.request.POST)
+        return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+
+    def get_success_url(self):
+        return reverse('artmanager:character-detail', kwargs={'character_id': self.object.id})
 
 
 class CharacterSetPictureView(APIView):
