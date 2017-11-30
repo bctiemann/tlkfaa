@@ -89,7 +89,7 @@ class User(AbstractUser):
     GENDER_CHOICES = (
         ('male', 'Male'),
         ('female', 'Female'),
-        ('neither', '(No response)'),
+        ('', '(No response)'),
     )
 
     username = models.CharField(

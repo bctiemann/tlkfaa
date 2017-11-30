@@ -1,0 +1,141 @@
+<%--
+AJAX helper for editing a character, invoked from inc_characters.jsp.
+--%>
+
+<%@ include file="inc_root/inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:catch var="catchException">
+<fmt:parseNumber var="characterid" value="${param.characterid}" integerOnly="true" />
+<fmt:parseNumber var="sex" value="${param.sex}" integerOnly="true" />
+</c:catch>
+<c:if test="${sex > 2 || sex < 0}"><c:set var="sex" value="0" /></c:if>
+
+<c:if test="${loggedin == 1 && characterid > 0}">
+
+<c:if test="${param.op == 'edit'}">
+
+	<c:if test="${param.charactername != ''}">
+
+		<sql:update var="updCharacter">
+		UPDATE characters SET
+		charactername=?,
+		description=?,
+		species=?,
+		sex=?,
+		storyname=?,
+		storyurl=?
+		WHERE characterid=?
+		AND artistid=?
+		<sql:param value="${fn:substring(param.charactername,0,64)}" />
+		<sql:param value="${param.description}" />
+		<sql:param value="${fn:substring(param.species,0,64)}" />
+		<sql:param value="${sex}" />
+		<sql:param value="${fn:substring(param.storyname,0,100)}" />
+		<sql:param value="${fn:substring(param.storyurl,0,100)}" />
+		<sql:param value="${characterid}" />
+		<sql:param value="${artist.artistid}" />
+		</sql:update>
+
+	</c:if>
+
+</c:if>
+
+<sql:query var="qryCharacter">
+SELECT * FROM characters
+WHERE characterid=?
+<sql:param value="${characterid}" />
+</sql:query>
+
+<c:forEach var="character" items="${qryCharacter.rows}">
+
+<c:choose>
+<c:when test="${param.op == 'form'}">
+
+	<form name="editcharacter_${characterid}" id="editcharacter_${characterid}" onSubmit="return false;">
+	<table class="formtable">
+	<tr>
+	<td class="label">Name</td>
+	<c:set var="charname" value="${character.charactername}" />
+	<td class="data"><input type="text" class="std" name="charactername" maxlength="64" value="{{ character.name }}" validate="hasvalue" message="The character name cannot be blank." /></td>
+	</tr>
+	<tr>
+	<td class="label">Description</td>
+	<td class="data"><textarea name="description">{{ character.description }}</textarea></td>
+	</tr>
+	<tr>
+	<td class="label">Species</td>  
+	<c:set var="species" value="${character.species}" />
+	<td class="data"><input type="text" class="std" name="species" maxlength="64" value="{{ character.species }}" /></td>
+	</tr>
+	<tr>
+	<td class="label">Sex</td>
+	<td class="data">
+	<select name="sex">
+	<option <c:if test="${character.sex == '1'}">selected</c:if> value="1">Male</option>
+	<option <c:if test="${character.sex == '2'}">selected</c:if> value="2">Female</option>
+	<option <c:if test="${character.sex == '0'}">selected</c:if> value="0">Neither</option>
+	</select>
+	</td>
+	</tr>
+	<tr>
+	<td class="label">Source Story</td>
+	<c:set var="storyname" value="${character.storyname}" />
+	<td class="data"><input type="text" class="std" name="storyname" maxlength="100" value="{{ character.story_title }}" /></td>
+	</tr>
+	<tr>
+	<td class="label">Story URL</td>
+	<c:set var="storyurl" value="${character.storyurl}" />
+	<td class="data"><input type="text" class="std" name="storyurl" maxlength="100" value="{{ character.story_url }}" /></td>
+	</tr>
+	<tr>
+	<td colspan="2" class="buttons">
+	<button type="button" onClick="validateForm('editcharacter_${characterid}','editCharacter(${character.characterid},document.editcharacter_${characterid})')">Save Changes</button>
+	</td>
+	</tr>
+	</table>
+	<input type="hidden" name="characterid" value="${character.characterid}" />
+	<input type="hidden" name="op" value="edit" />
+	</form>
+
+</c:when>
+<c:otherwise>
+
+	<c:set var="charname" value="${character.charactername}" />
+	<c:set var="chardesc" value="${character.description}" />
+
+	<div class="characterdate"><fmt:formatDate value="${character.created}" type="both" pattern="M/d/yyyy" /></div>
+	<div class="charactername"><a href="/Characters/?characterid=${character.characterid}"><%= formatText((String)pageContext.getAttribute("charname")) %></a></div>
+	<div class="characterspecies">
+	<c:choose>
+	<c:when test="${character.sex == 1}">Male</c:when>
+	<c:when test="${character.sex == 2}">Female</c:when>
+	</c:choose>
+	${character.species}</div>
+	<div class="characterdesc"><%= formatText((String)pageContext.getAttribute("chardesc")) %></div>
+	<div class="characterstory">
+	<c:if test="${character.storyname != ''}">
+	<c:choose>
+	<c:when test="${character.storyurl != ''}">
+	Source: <a target="_blank" href="${character.storyurl}">${character.storyname}</a>
+	</c:when>
+	<c:otherwise>
+	Source: ${character.storyname}
+	</c:otherwise>
+	</c:choose>
+	</c:if>
+	</div>
+
+</c:otherwise>
+</c:choose>
+
+</c:forEach>
+
+</c:if>

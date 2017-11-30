@@ -1,0 +1,16 @@
+{% load bbcode_tags %}
+
+<div class="characterdate">{{ character.date_created|date:"m/d/Y" }}</div>
+<div class="charactername"><a href="{% url "character" character_id=character.id %}">{{ character.name }}</a></div>
+<div class="characterspecies">{{ character.gender|capfirst }} {{ character.species }}</div>
+<div class="characterdesc">{{ character.description|bbcode|safe }}</div>
+<div class="characterstory">
+    {% if character.story_title %}
+        {% if character.story_url %}
+            Source: <a target="_blank" href="{{ character.story_url }}">{{ character.story_title }}</a>
+        {% else %}
+            Source: {{ character.story_title }}
+        {% endif %}
+    {% endif %}
+</div>
+

@@ -212,6 +212,7 @@ LIMIT ${offset},${thispage}
 
 <%= Pages.get("pages") %>
 
+{% for character in user.character_set.all %}
 <c:forEach var="character" items="${qryCharacters.rows}">
 
 	<sql:query var="qryAdoptedOut">
@@ -230,17 +231,9 @@ LIMIT ${offset},${thispage}
 	<tr>
 	<td>
 	<a href="pop_pickpicture.jsp?op=character&characterid=${character.characterid}&folderid=0" onClick="document.pickpictureform.itemid.value=${character.characterid}" rel="shadowbox;width=500;height=600"><div id="pickpicture_${character.characterid}">
-	<c:choose>
-	<c:when test="${character.profilepic > 0}">
-		<img class="thumb characterpic" src="/Artwork/Artists/${artist.dirname}/${fanart:encodeURI(character.basename)}.p.jpg" />
-	</c:when>
-	<c:when test="${character.profilepic_c > 0}">
-		<img class="thumb characterpic" src="/Artwork/coloring/${character.profilepic_c}.p.jpg" />
-	</c:when>
-	<c:otherwise>
-		<img class="thumb characterpic" src="/images/ClickForPic.gif" />
-	</c:otherwise>
-	</c:choose>
+
+		<img class="thumb characterpic" src="{{ character.preview_url }}" />
+
 	</div></a>
 	</td>
 	<td class="characterinfo">
@@ -260,6 +253,7 @@ LIMIT ${offset},${thispage}
 	</div>
 
 	<div id="editcharacter_${character.characterid}">
+                {% include "artmanager/character.html" %}
 		<jsp:include page="/ajax_editcharacter.jsp?characterid=${character.characterid}" />
 	</div>
 
@@ -269,6 +263,7 @@ LIMIT ${offset},${thispage}
 	</div>
 
 </c:forEach>
+{% endfor %}
 
 <form name="pickpictureform">
 <input type="hidden" name="item" value="character" />
