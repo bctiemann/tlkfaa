@@ -640,11 +640,17 @@ class Shout(BaseComment):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
 
 
+class CharacterManager(models.Manager):
+
+    def get_queryset(self):
+        return super(CharacterManager, self).get_queryset().exclude(date_deleted__isnull=False)
+
+
 class Character(models.Model):
-    GENDER_CHOICES = (
+    SEX_CHOICES = (
         ('male', 'Male'),
         ('female', 'Female'),
-        ('neither', 'Neither'),
+        ('', 'Neither'),
     )
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
@@ -657,15 +663,17 @@ class Character(models.Model):
     profile_coloring_picture = models.ForeignKey('ColoringPicture', null=True, blank=True)
     description = models.TextField(blank=True)
     species = models.CharField(max_length=64, blank=True)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True)
     story_title = models.CharField(max_length=100, blank=True)
     story_url = models.CharField(max_length=100, blank=True)
-    date_created = models.DateTimeField(null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     date_modified = models.DateTimeField(null=True, blank=True)
     date_adopted = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
     date_tagged = models.DateTimeField(null=True, blank=True)
     num_pictures = models.IntegerField(null=True, blank=True)
+
+    objects = CharacterManager()
 
     @property
     def last_tagged(self):

@@ -73,3 +73,10 @@ class FolderForm(forms.ModelForm):
     class Meta:
         model = models.Folder
         fields = ['name', 'description']
+
+
+class CharacterForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Character
+        fields = ['name', 'description', 'species', 'sex', 'story_title', 'story_url']

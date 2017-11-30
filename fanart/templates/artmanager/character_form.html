@@ -79,25 +79,23 @@ WHERE characterid=?
 	<td class="label">Sex</td>
 	<td class="data">
 	<select name="sex">
-	<option <c:if test="${character.sex == '1'}">selected</c:if> value="1">Male</option>
-	<option <c:if test="${character.sex == '2'}">selected</c:if> value="2">Female</option>
-	<option <c:if test="${character.sex == '0'}">selected</c:if> value="0">Neither</option>
+	<option {% if character.sex == "male" %}selected{% endif %} value="1">Male</option>
+	<option {% if character.sex == "female" %}selected{% endif %} value="2">Female</option>
+	<option {% if character.sex == "" %}selected{% endif %} value="0">Neither</option>
 	</select>
 	</td>
 	</tr>
 	<tr>
 	<td class="label">Source Story</td>
-	<c:set var="storyname" value="${character.storyname}" />
 	<td class="data"><input type="text" class="std" name="storyname" maxlength="100" value="{{ character.story_title }}" /></td>
 	</tr>
 	<tr>
 	<td class="label">Story URL</td>
-	<c:set var="storyurl" value="${character.storyurl}" />
 	<td class="data"><input type="text" class="std" name="storyurl" maxlength="100" value="{{ character.story_url }}" /></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('editcharacter_${characterid}','editCharacter(${character.characterid},document.editcharacter_${characterid})')">Save Changes</button>
+	<button type="button" onClick="validateForm('editcharacter_{{ character.id }}','editCharacter({{ character.id }},document.editcharacter_{{ character.id }})')">Save Changes</button>
 	</td>
 	</tr>
 	</table>

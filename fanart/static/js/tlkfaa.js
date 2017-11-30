@@ -670,7 +670,8 @@ function movePicture(pictureid,sel) {
 }
 
 function setupEditCharacter(characterid) {
-  var url = "/ajax_editcharacter.jsp?op=form&characterid="+characterid;
+//  var url = "/ajax_editcharacter.jsp?op=form&characterid="+characterid;
+  var url = '/ArtManager/characters/' + characterid + '/form/';
   $('#editcharacter_'+characterid).load(url);
 }
 

@@ -425,13 +425,14 @@ class Command(BaseCommand):
                     gender = self.GENDERS[ch['sex']],
                     story_title = ch['storyname'] if ch['storyname'] else '',
                     story_url = ch['storyurl'] if ch['storyurl'] else '',
-                    date_created = ch['created'],
                     date_modified = ch['lastmod'],
                     date_adopted = ch['adopted'],
                     date_deleted = ch['deleted'],
                     profile_picture = profile_picture,
                     profile_coloring_picture = profile_coloring_picture,
                 )
+                f.date_created = ch['created']
+                f.save()
 #                f.id = f.id_orig
 #                f.save()
 

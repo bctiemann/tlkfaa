@@ -924,6 +924,34 @@ class CharactersView(TemplateView):
         return super(CharactersView, self).get(request, *args, **kwargs)
 
 
+class CharacterFormView(DetailView):
+    template_name = 'artmanager/character_form.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(CharacterFormView, self).get_context_data(**kwargs)
+
+        return context
+
+
+class CharacterCreateView(CreateView):
+    model = models.Character
+    form_class = forms.CharacterForm
+
+    def form_valid(self, form):
+
+        character = form.save(commit=False)
+        character.owner = self.request.user
+        character.creator = self.request.user
+
+        return super(CharacterCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('artmanager:characters')
+
+
 class CustomizeView(TemplateView):
     template_name = 'artmanager/customize.html'
 

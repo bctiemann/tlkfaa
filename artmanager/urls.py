@@ -61,6 +61,9 @@ urlpatterns = [
     url(r'^artwall/(?P<gift_picture_ids>[0-9,]+)/delete/$', artmanager_views.GiftPictureBulkDeleteView.as_view(), name='artwall-gift-picture-bulk-delete'),
 
     url(r'^characters/$', artmanager_views.CharactersView.as_view(), name='characters'),
+    url(r'^characters/create/$', artmanager_views.CharacterCreateView.as_view(), name='character-create'),
+    url(r'^characters/(?P<character_id>[0-9]+)/form/$', artmanager_views.CharacterFormView.as_view(), name='character-form'),
+
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),
     url(r'^private_msgs/$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
     url(r'^trading_tree/$', artmanager_views.TradingTreeView.as_view(), name='trading-tree'),

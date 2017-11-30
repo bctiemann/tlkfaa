@@ -167,11 +167,11 @@ LIMIT ${offset},${thispage}
 <sql:param value="${artist.artistid}" />
 </sql:query>
 
-<form name="characterform" id="characterform" method="POST" action="ArtManager.jsp">
+<form name="characterform" id="characterform" method="POST" action="{% url "artmanager:character-create" %}">
 <table class="formtable">
 <tr>
 <td class="label">Name</td>
-<td class="data"><input type="text" class="std" name="charactername" maxlength="64" validate="hasvalue" message="You must enter a name for the character." /></td>
+<td class="data"><input type="text" class="std" name="name" maxlength="64" validate="hasvalue" message="You must enter a name for the character." /></td>
 </tr>
 <tr>
 <td class="label">Description</td>
@@ -185,19 +185,19 @@ LIMIT ${offset},${thispage}
 <td class="label">Sex</td>
 <td class="data">
 <select name="sex">
-<option value="1">Male</option>
-<option value="2">Female</option>
-<option value="0">Neither</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="neither">Neither</option>
 </select>
 </td>
 </tr>
 <tr>
 <td class="label">Origin Story Title</td>
-<td class="data"><input type="text" class="std" name="storyname" maxlength="100" /></td>
+<td class="data"><input type="text" class="std" name="story_title" maxlength="100" /></td>
 </tr>
 <tr>
 <td class="label">Story URL</td>
-<td class="data"><input type="text" class="std" name="storyurl" maxlength="100" /></td>
+<td class="data"><input type="text" class="std" name="story_url" maxlength="100" /></td>
 </tr>
 <tr>
 <td colspan="2" class="buttons">
@@ -207,6 +207,7 @@ LIMIT ${offset},${thispage}
 </table>
 <input type="hidden" name="op" value="characters" />
 <input type="hidden" name="fnc" value="create" />
+{% csrf_token %}
 </form>
 
 
@@ -238,8 +239,8 @@ LIMIT ${offset},${thispage}
 	</td>
 	<td class="characterinfo">
 	<div class="characteredit">
-	<a href="javascript:nop()" onClick="setupEditCharacter(${character.characterid})">edit</a>
-	<a href="javascript:nop()" onClick="deleteCharacter(${character.characterid})">delete</a>
+	<a href="javascript:nop()" onClick="setupEditCharacter({{ character.id }})">edit</a>
+	<a href="javascript:nop()" onClick="deleteCharacter({{ character.id }})">delete</a>
 	<c:choose>
 	<c:when test="${qryAdoptedOut.rowCount > 0}">
 		<c:forEach var="adoptable" items="${qryAdoptedOut.rows}">
@@ -252,7 +253,7 @@ LIMIT ${offset},${thispage}
 	</c:choose>
 	</div>
 
-	<div id="editcharacter_${character.characterid}">
+	<div id="editcharacter_{{ character.id }}">
                 {% include "artmanager/character.html" %}
 		<jsp:include page="/ajax_editcharacter.jsp?characterid=${character.characterid}" />
 	</div>
