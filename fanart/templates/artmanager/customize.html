@@ -66,25 +66,17 @@ ArtManager component for managing the appearance of your gallery page.
 	<div class="pageinfo">
 	</div>
 
-	<sql:query var="qryCustomIcons">
-	SELECT icon,ext,type
-	FROM customicons
-	WHERE artistid=?
-	ORDER BY type
-	<sql:param value="${artistid_temp}" />
-	</sql:query>
-
-	<c:if test="${qryCustomIcons.rowCount > 0}">
+        {% if user.customicon_set.exists %}
 
 		<h3 class="sectionheader">Custom Icons (legacy)</h3>
 
 		<p>These icons appeared on your gallery page in the old site. They're shown here for your convenience.</p>
 
-		<c:forEach var="icon" items="${qryCustomIcons.rows}">
-			<img src="/Artwork/Artists/icons/${icon.icon}.${icon.ext}" />
-		</c:forEach>
+                {% for icon in user.customicon_set.all %}
+			<img src="{{ icon.icon_url }}" />
+                {% endfor %}
 
-	</c:if>
+        {% endif %}
 
 	<h3 class="sectionheader">Announcement Box</h3>
 

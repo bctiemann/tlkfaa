@@ -29,7 +29,7 @@ class Command(BaseCommand):
     do_tags = False
     do_approvers = False
     do_sketcheradmins = False
-    do_requests = True
+    do_requests = False
     do_imclients = False
     do_imids = False
     do_newpics = False
@@ -44,6 +44,7 @@ class Command(BaseCommand):
     do_pms = False
     do_specials = False
     do_votes = False
+    do_customicons = True
 
     GENDERS = {
         0: 'neither',
@@ -867,4 +868,19 @@ class Command(BaseCommand):
                 f = fanart_models.Vote.objects.create(
                     voter = voter,
                     artist = artist,
+                )
+
+        if self.do_customicons:
+            c.execute("""SELECT * FROM customicons""")
+            for a in c.fetchall():
+                print a
+                try:
+                    user = fanart_models.User.objects.get(artist_id_orig=a['artistid'])
+                except fanart_models.User.DoesNotExist:
+                    user = None
+                f = fanart_models.CustomIcon.objects.create(
+                    user = user,
+                    icon_id = a['icon'],
+                    extension = a['ext'],
+                    type = a['type'],
                 )

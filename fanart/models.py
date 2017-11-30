@@ -1308,3 +1308,17 @@ class SpecialFeature(models.Model):
 class Vote(models.Model):
     voter = models.ForeignKey('User', null=True, blank=True, related_name='votes_cast')
     artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received')
+
+
+class CustomIcon(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True)
+    icon_id = models.IntegerField(null=True, blank=True)
+    extension = models.CharField(max_length=3, blank=True)
+    type = models.IntegerField(null=True, blank=True)
+
+    @property
+    def icon_url(self):
+        return '{0}Artwork/Artists/icons/{1}.{2}'.format(settings.MEDIA_URL, self.icon_id, self.extension)
+
+    class Meta:
+        ordering = ['type']
