@@ -923,6 +923,26 @@ class CharactersView(TemplateView):
         request.session['am_page'] = 'characters'
         return super(CharactersView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(CharactersView, self).get_context_data(**kwargs)
+
+        characters = self.request.user.character_set.all().order_by('name')
+
+        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            characters_page = context['characters_paginator'].page(page)
+        except EmptyPage:
+            characters_page = context['characters_paginator'].page(1)
+
+        context['characters'] = characters_page
+        context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE_ARTMANAGER, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
+
 
 class CharacterDetailView(DetailView):
     template_name = 'artmanager/character.html'

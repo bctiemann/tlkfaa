@@ -1,110 +1,39 @@
-<%--
-AJAX helper for editing a character, invoked from inc_characters.jsp.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="characterid" value="${param.characterid}" integerOnly="true" />
-<fmt:parseNumber var="sex" value="${param.sex}" integerOnly="true" />
-</c:catch>
-<c:if test="${sex > 2 || sex < 0}"><c:set var="sex" value="0" /></c:if>
-
-<c:if test="${loggedin == 1 && characterid > 0}">
-
-<c:if test="${param.op == 'edit'}">
-
-	<c:if test="${param.charactername != ''}">
-
-		<sql:update var="updCharacter">
-		UPDATE characters SET
-		charactername=?,
-		description=?,
-		species=?,
-		sex=?,
-		storyname=?,
-		storyurl=?
-		WHERE characterid=?
-		AND artistid=?
-		<sql:param value="${fn:substring(param.charactername,0,64)}" />
-		<sql:param value="${param.description}" />
-		<sql:param value="${fn:substring(param.species,0,64)}" />
-		<sql:param value="${sex}" />
-		<sql:param value="${fn:substring(param.storyname,0,100)}" />
-		<sql:param value="${fn:substring(param.storyurl,0,100)}" />
-		<sql:param value="${characterid}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:update>
-
-	</c:if>
-
-</c:if>
-
-<sql:query var="qryCharacter">
-SELECT * FROM characters
-WHERE characterid=?
-<sql:param value="${characterid}" />
-</sql:query>
-
-<c:forEach var="character" items="${qryCharacter.rows}">
-
-<c:choose>
-<c:when test="${param.op == 'form'}">
-
-	<form name="editcharacter_{{ character.id }}" id="editcharacter_{{ character.id }}" onSubmit="return false;">
-	<table class="formtable">
-	<tr>
-	<td class="label">Name</td>
-	<c:set var="charname" value="${character.charactername}" />
-	<td class="data"><input type="text" class="std" name="charactername" maxlength="64" value="{{ character.name }}" validate="hasvalue" message="The character name cannot be blank." /></td>
-	</tr>
-	<tr>
-	<td class="label">Description</td>
-	<td class="data"><textarea name="description">{{ character.description }}</textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Species</td>  
-	<c:set var="species" value="${character.species}" />
-	<td class="data"><input type="text" class="std" name="species" maxlength="64" value="{{ character.species }}" /></td>
-	</tr>
-	<tr>
-	<td class="label">Sex</td>
-	<td class="data">
-	<select name="sex">
-	<option {% if character.sex == "male" %}selected{% endif %} value="male">Male</option>
-	<option {% if character.sex == "female" %}selected{% endif %} value="female">Female</option>
-	<option {% if character.sex == "" %}selected{% endif %} value="">Neither</option>
-	</select>
-	</td>
-	</tr>
-	<tr>
-	<td class="label">Source Story</td>
-	<td class="data"><input type="text" class="std" name="storyname" maxlength="100" value="{{ character.story_title }}" /></td>
-	</tr>
-	<tr>
-	<td class="label">Story URL</td>
-	<td class="data"><input type="text" class="std" name="storyurl" maxlength="100" value="{{ character.story_url }}" /></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('editcharacter_{{ character.id }}','editCharacter({{ character.id }},document.editcharacter_{{ character.id }})')">Save Changes</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="characterid" value="${character.characterid}" />
-	<input type="hidden" name="op" value="edit" />
-	</form>
-
-</c:when>
-
-</c:forEach>
-
-</c:if>
+<form name="editcharacter_{{ character.id }}" id="editcharacter_{{ character.id }}" onSubmit="return false;">
+    <table class="formtable">
+        <tr>
+            <td class="label">Name</td>
+            <td class="data"><input type="text" class="std" name="charactername" maxlength="64" value="{{ character.name }}" validate="hasvalue" message="The character name cannot be blank." /></td>
+        </tr>
+        <tr>
+            <td class="label">Description</td>
+            <td class="data"><textarea name="description">{{ character.description }}</textarea></td>
+        </tr>
+        <tr>
+            <td class="label">Species</td>  
+            <td class="data"><input type="text" class="std" name="species" maxlength="64" value="{{ character.species }}" /></td>
+        </tr>
+        <tr>
+            <td class="label">Sex</td>
+            <td class="data">
+                <select name="sex">
+                    <option {% if character.sex == "male" %}selected{% endif %} value="male">Male</option>
+                    <option {% if character.sex == "female" %}selected{% endif %} value="female">Female</option>
+                    <option {% if character.sex == "" %}selected{% endif %} value="">Neither</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Source Story</td>
+            <td class="data"><input type="text" class="std" name="storyname" maxlength="100" value="{{ character.story_title }}" /></td>
+        </tr>
+        <tr>
+            <td class="label">Story URL</td>
+            <td class="data"><input type="text" class="std" name="storyurl" maxlength="100" value="{{ character.story_url }}" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="buttons">
+                <button type="button" onClick="validateForm('editcharacter_{{ character.id }}','editCharacter({{ character.id }},document.editcharacter_{{ character.id }})')">Save Changes</button>
+            </td>
+        </tr>
+    </table>
+</form>
