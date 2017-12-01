@@ -219,8 +219,8 @@ class Command(BaseCommand):
                 u.commissions_open = artist['commissions'] if artist['commissions'] != None else True
                 u.profile_pic_id = artist['profilepic']
                 u.profile_pic_ext = artist['profilepic_ext'] if artist['profilepic_ext'] else ''
-                u.banner_id = artist['banner']
-                u.banner_ext = artist['banner_ext'] if artist['banner_ext'] else ''
+                u.old_banner_id = artist['banner']
+                u.old_banner_ext = artist['banner_ext'] if artist['banner_ext'] else ''
                 u.suspension_message = artist['suspmessage'] if artist['suspmessage'] else ''
                 u.auto_approve = artist['autoapprove']
                 u.allow_sketcher = artist['allowsketcher']

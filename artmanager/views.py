@@ -1057,10 +1057,6 @@ class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
     form_class = forms.CustomizeForm
     template_name = 'artmanager/customize.html'
 
-#    def get(self, request, *args, **kwargs):
-#        request.session['am_page'] = 'customize'
-#        return super(CustomizeView, self).get(request, *args, **kwargs)
-
     def get_object(self, queryset=None):
         return self.request.user
 
@@ -1072,6 +1068,11 @@ class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
         context['sketcher_users'] = range(12)
 
         return context
+
+    def form_valid(self, form):
+        self.object.banner_text_updated = timezone.now()
+        response = super(CustomizeView, self).form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse('artmanager:customize')

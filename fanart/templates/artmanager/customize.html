@@ -63,6 +63,35 @@ ArtManager component for managing the appearance of your gallery page.
 	<input type="hidden" name="uploadop" value="banner" />
 	</form>
 
+                    <input id="fileupload" type="file" name="picture" data-url="{% url "upload-banner" %}">
+                    <div id="progress">
+                        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+                    </div>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        dropZone: null,
+        done: function (e, data) {
+console.log(data);
+            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            ).css(
+                'border-width',
+                '1px'
+            );
+        },
+    });
+});
+</script>
+
+
 	<div class="pageinfo">
 	</div>
 

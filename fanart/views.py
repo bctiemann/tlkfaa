@@ -1720,3 +1720,85 @@ class RemoveProfilePicView(UpdateView):
         self.object.save()
 
         return JsonResponse(response)
+
+
+class UploadBannerView(CreateView):
+    model = models.Banner
+    form_class = forms.UploadBannerForm
+
+#    def get_object(self):
+#        user = self.request.user
+#        self.old_banner_id = user.banner_id
+#        return user
+
+    def form_invalid(self, form):
+        response = {'success': False}
+        return JsonResponse(response)
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.FILES)
+
+#        try:
+#            if self.old_profile_picture:
+#                os.remove(self.old_profile_picture.path)
+#            if self.old_profile_pic_thumbnail_path:
+#                os.remove(self.old_profile_pic_thumbnail_path)
+#        except OSError:
+#            pass
+
+#        if self.object.profile_pic_id:
+#            self.object.profile_pic_id = None
+#            self.object.profile_pic_ext = ''
+
+        banner = form.save()
+        logger.info(banner)
+        self.request.user.banner = banner
+        self.request.user.save()
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UploadBannerView, self).get_context_data(*args, **kwargs)
+        return context
+
+
+class BannerStatusView(APIView):
+
+    def get(self, request, offer_id=None):
+        response = {}
+        if request.user.profile_picture:
+            response = {
+                'url': request.user.profile_pic_url,
+                'thumbnail_url': request.user.profile_pic_thumbnail_url,
+                'thumbnail_done': request.user.profile_pic_thumbnail_created,
+            }
+        return Response(response)
+
+
+class RemoveBannerView(UpdateView):
+    model = models.User
+    form_class = forms.RemoveBannerForm
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = {'success': True}
+
+        logger.info(self.object.profile_picture.name)
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_picture.name))
+            os.remove(self.object.profile_pic_thumbnail_path)
+        except OSError:
+            pass
+
+        self.object.profile_picture = None
+        self.object.profile_width = None
+        self.object.profile_height = None
+        self.object.save()
+
+        return JsonResponse(response)
+
+

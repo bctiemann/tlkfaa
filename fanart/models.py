@@ -47,6 +47,11 @@ def get_profile_path(instance, filename):
     filename = '{0}.{1}'.format(uuid.uuid4(), extension)
     return 'profiles/{0}'.format(filename)
 
+def get_banner_path(instance, filename):
+    extension = filename.split('.')[-1].lower()
+    filename = '{0}.{1}'.format(uuid.uuid4(), extension)
+    return 'banners/{0}'.format(filename)
+
 def get_pending_path(instance, filename):
     return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
 
@@ -159,8 +164,9 @@ class User(AbstractUser):
 
     profile_pic_id = models.IntegerField(null=True, blank=True)
     profile_pic_ext = models.CharField(max_length=5, blank=True)
-    banner_id = models.IntegerField(null=True, blank=True)
-    banner_ext = models.CharField(max_length=5, blank=True)
+    banner = models.ForeignKey('Banner', null=True, blank=True)
+    old_banner_id = models.IntegerField(null=True, blank=True)
+    old_banner_ext = models.CharField(max_length=5, blank=True)
     example_pic = models.ForeignKey('Picture', null=True, blank=True)
     suspension_message = models.TextField(blank=True)
     auto_approve = models.BooleanField(default=False)
@@ -1322,3 +1328,10 @@ class CustomIcon(models.Model):
 
     class Meta:
         ordering = ['type']
+
+
+class Banner(models.Model):
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_banner_path, null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
