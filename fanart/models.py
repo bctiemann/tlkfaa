@@ -277,7 +277,9 @@ ORDER BY fanart_user.sort_name
 
     @property
     def banner_url(self):
-        return '{0}Artwork/banners/{1}.{2}'.format(settings.MEDIA_URL, self.banner_id, self.banner_ext)
+        if self.banner:
+            return self.banner.picture.url
+        return '{0}Artwork/banners/{1}.{2}'.format(settings.MEDIA_URL, self.old_banner_id, self.old_banner_ext)
 
     @property
     def profile_pic_url(self):

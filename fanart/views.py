@@ -1709,7 +1709,7 @@ class RemoveProfilePicView(UpdateView):
 
         logger.info(self.object.profile_picture.name)
         try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_picture.name))
+            os.remove(self.object.profile_picture.path)
             os.remove(self.object.profile_pic_thumbnail_path)
         except OSError:
             pass

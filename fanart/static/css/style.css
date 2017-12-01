@@ -2091,11 +2091,19 @@ div.selector_commentview div.selector {
 	margin-right: 30px;
 }
 
+div.banner-preview {
+	margin: 0px auto;
+	width: 602px;
+}
 div.bannerwrap {
 	margin: 0px auto 10px auto;
 	width: 602px;
 	overflow: hidden;
 	text-align: left;
+}
+div.bannerwrap .imgwrap {
+	max-height: 200px;
+	overflow: hidden;
 }
 div.bannerwrap a:hover {
 	text-decoration: none;
@@ -2103,6 +2111,7 @@ div.bannerwrap a:hover {
 img.banner {
 /*	border: 1px solid #000;*/
 	display: block;
+	width: 100%;
 }
 div.bannertextpreview {
 	border: 1px solid #000;
