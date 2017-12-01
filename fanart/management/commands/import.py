@@ -14,7 +14,7 @@ from fanart import models as fanart_models
 
 class Command(BaseCommand):
 
-    do_users = False
+    do_users = True
     do_folders = False
     do_pictures = False
     do_comments = False
@@ -44,7 +44,7 @@ class Command(BaseCommand):
     do_pms = False
     do_specials = False
     do_votes = False
-    do_customicons = True
+    do_customicons = False
 
     GENDERS = {
         0: 'neither',
@@ -145,8 +145,8 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
-#            c.execute("""SELECT * FROM users where userid=1484""")
-            c.execute("""SELECT * FROM users""")
+            c.execute("""SELECT * FROM users where userid=1""")
+#            c.execute("""SELECT * FROM users""")
             for user in c.fetchall():
                 print user
                 u = fanart_models.User.objects.create_user(

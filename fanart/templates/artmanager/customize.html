@@ -58,7 +58,13 @@ ArtManager component for managing the appearance of your gallery page.
 	</div>
 
 	<form name="bannerform" id="bannerform">
-	<div id="banner"><jsp:include page="/api/upload_success.jsp?uploadop=banner" /></div>
+	<div id="banner">
+            {% if user.banner %}
+                <img class="banner" src="{{ user.banner.picture.url }}" />
+                <a href="javascript:nop()" onClick="removeBanner()">remove</a>
+            {% endif %}
+<jsp:include page="/api/upload_success.jsp?uploadop=banner" />
+        </div>
 	<input type="file" name="uploadfile" id="picture_upload"><button type="button" onClick="uploadPicture('bannerform','picture_upload','banner')">Upload</button>
 	<input type="hidden" name="uploadop" value="banner" />
 	</form>
@@ -75,7 +81,7 @@ $(function () {
         dropZone: null,
         done: function (e, data) {
 console.log(data);
-            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+            window.location.reload();
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);

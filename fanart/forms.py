@@ -186,13 +186,6 @@ class UploadBannerForm(forms.ModelForm):
         fields = ['picture']
 
 
-class RemoveBannerForm(forms.ModelForm):
-
-    class Meta:
-        model = models.Banner
-        fields = []
-
-
 class GiftPictureForm(forms.ModelForm):
 
     class Meta:

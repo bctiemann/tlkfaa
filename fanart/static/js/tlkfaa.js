@@ -423,8 +423,14 @@ function removeProfilePic() {
 }
 
 function removeBanner() {
-  var url = "/ajax_upload.jsp?uploadop=removebanner";
-  $('#banner').load(url);
+//  var url = "/ajax_upload.jsp?uploadop=removebanner";
+  var url = '/banner/remove/';
+//  $('#banner').load(url);
+  $.post(url, function(data) {
+    if (data.success) {
+      window.location.reload();
+    }
+  });
 }
 
 function acceptClaim(claimid) {

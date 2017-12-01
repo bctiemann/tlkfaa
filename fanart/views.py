@@ -1726,11 +1726,6 @@ class UploadBannerView(CreateView):
     model = models.Banner
     form_class = forms.UploadBannerForm
 
-#    def get_object(self):
-#        user = self.request.user
-#        self.old_banner_id = user.banner_id
-#        return user
-
     def form_invalid(self, form):
         response = {'success': False}
         return JsonResponse(response)
@@ -1740,17 +1735,11 @@ class UploadBannerView(CreateView):
 
         logger.info(self.request.FILES)
 
-#        try:
-#            if self.old_profile_picture:
-#                os.remove(self.old_profile_picture.path)
-#            if self.old_profile_pic_thumbnail_path:
-#                os.remove(self.old_profile_pic_thumbnail_path)
-#        except OSError:
-#            pass
-
-#        if self.object.profile_pic_id:
-#            self.object.profile_pic_id = None
-#            self.object.profile_pic_ext = ''
+        try:
+            if self.request.user.banner:
+                os.remove(self.request.user.banner.picture.path)
+        except OSError:
+            pass
 
         banner = form.save()
         logger.info(banner)
@@ -1777,28 +1766,25 @@ class BannerStatusView(APIView):
         return Response(response)
 
 
-class RemoveBannerView(UpdateView):
-    model = models.User
-    form_class = forms.RemoveBannerForm
+class RemoveBannerView(DeleteView):
+    model = models.Banner
 
     def get_object(self):
-        return self.request.user
+        return self.request.user.banner
 
-    def form_valid(self, form):
+    def delete(self, request, *args, **kwargs):
         response = {'success': True}
 
-        logger.info(self.object.profile_picture.name)
+        self.object = self.get_object()
+
+        logger.info(self.object.picture.name)
         try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.profile_picture.name))
-            os.remove(self.object.profile_pic_thumbnail_path)
+            os.remove(self.object.picture.path)
         except OSError:
             pass
 
-        self.object.profile_picture = None
-        self.object.profile_width = None
-        self.object.profile_height = None
-        self.object.save()
+        self.request.user.banner = None
+        self.request.user.save()
+        self.object.delete()
 
         return JsonResponse(response)
-
-
