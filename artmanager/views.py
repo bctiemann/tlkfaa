@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth import update_session_auth_hash
@@ -1076,6 +1076,16 @@ class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('artmanager:customize')
+
+
+class BannerPreviewView(FormView):
+    form_class = forms.BannerPreviewForm
+    template_name = 'artmanager/banner_preview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BannerPreviewView, self).get_context_data(**kwargs)
+        context['preview_text'] = self.request.POST.get('banner_text')
+        return context
 
 
 class PrivateMessagesView(ArtManagerPaneView):

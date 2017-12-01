@@ -69,6 +69,8 @@ urlpatterns = [
     url(r'^characters/(?P<character_id>[0-9]+)/set_picture/$', artmanager_views.CharacterSetPictureView.as_view(), name='character-set-picture'),
 
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),
+    url(r'^customize/banner_preview/$', artmanager_views.BannerPreviewView.as_view(), name='customize-banner-preview'),
+
     url(r'^private_msgs/$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
     url(r'^trading_tree/$', artmanager_views.TradingTreeView.as_view(), name='trading-tree'),
 

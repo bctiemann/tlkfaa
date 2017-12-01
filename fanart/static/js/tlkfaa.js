@@ -1353,6 +1353,14 @@ console.log('foo');
 }
 
 function refreshBannerPreview(selform) {
+  var url = '/ArtManager/customize/banner_preview/';
+  var params = {
+    banner_text: selform.banner_text.value,
+  };
+  $.post(url, params, function(data) {
+    $('#bannertextpreview').html(data);
+  });
+/*
   var bannertext = selform.banner_text.value;
   bannertext = bannertext.replace(/\n/g,"<br />");
 //  bannertext = bannertext.replace(/(?!<![=\"])(https?|ftp|file)(:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/%=~_|])/gi,"<a href=\"$1$2\">$1$2</a>");
@@ -1360,6 +1368,7 @@ function refreshBannerPreview(selform) {
 //  bannertext = bannertext.replace(/(^|[^">])(https?|ftp|file)(:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/%=~_|])/gm, "<a href=\"$1$2\">$1$2</a>");
   bannertext = parseBBCode(bannertext);
   $('#bannertextpreview').html(bannertext);
+*/
 }
 
 function parseBBCode(intext) {

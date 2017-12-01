@@ -87,3 +87,7 @@ class CustomizeForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ['banner_text', 'banner_text_min']
+
+
+class BannerPreviewForm(forms.Form):
+    preview_text = forms.CharField()

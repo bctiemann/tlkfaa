@@ -2102,7 +2102,7 @@ div.bannerwrap {
 	text-align: left;
 }
 div.bannerwrap .imgwrap {
-	max-height: 200px;
+	max-height: 120px;
 	overflow: hidden;
 }
 div.bannerwrap a:hover {
