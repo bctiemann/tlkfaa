@@ -297,7 +297,9 @@ ORDER BY fanart_user.sort_name
             return '{0}profiles/{1}'.format(settings.MEDIA_URL, self.profile_pic_thumbnail)
         elif self.profile_pic_id:
             return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        elif self.profile_picture:
+            return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return None
 
     @property
     def profile_pic_thumbnail_created(self):

@@ -14,7 +14,7 @@ from fanart import models as fanart_models
 
 class Command(BaseCommand):
 
-    do_users = True
+    do_users = False
     do_folders = False
     do_pictures = False
     do_comments = False
@@ -33,24 +33,24 @@ class Command(BaseCommand):
     do_imclients = False
     do_imids = False
     do_newpics = False
-    do_approval_access = False
-    do_adminblog = False
-    do_artistnames = False
-    do_blocks = False
-    do_bulletins = False
-    do_contests = False
-    do_contestpics = False
-    do_contestvotes = False
-    do_pms = False
-    do_specials = False
-    do_votes = False
-    do_customicons = False
+    do_approval_access = True
+    do_adminblog = True
+    do_artistnames = True
+    do_blocks = True
+    do_bulletins = True
+    do_contests = True
+    do_contestpics = True
+    do_contestvotes = True
+    do_pms = True
+    do_specials = True
+    do_votes = True
+    do_customicons = True
 
     GENDERS = {
-        0: 'neither',
+        0: '',
         1: 'male',
         2: 'female',
-        3: 'neither',
+        3: '',
     }
 
     def add_arguments(self, parser):
@@ -145,9 +145,10 @@ class Command(BaseCommand):
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if self.do_users:
-            c.execute("""SELECT * FROM users where userid=1""")
-#            c.execute("""SELECT * FROM users""")
-            for user in c.fetchall():
+#            c.execute("""SELECT * FROM users where userid=1""")
+            c.execute("""SELECT * FROM users""")
+#            for user in c.fetchall():
+            for user in []:
                 print user
                 u = fanart_models.User.objects.create_user(
                     id_orig = user['userid'],
@@ -423,7 +424,7 @@ class Command(BaseCommand):
                     name = ch['charactername'],
                     description = ch['description'],
                     species = ch['species'] if ch['species'] else '',
-                    gender = self.GENDERS[ch['sex']],
+                    sex = self.GENDERS[ch['sex']],
                     story_title = ch['storyname'] if ch['storyname'] else '',
                     story_url = ch['storyurl'] if ch['storyurl'] else '',
                     date_modified = ch['lastmod'],
@@ -536,8 +537,8 @@ class Command(BaseCommand):
                     reference_url = claim['refurl'] if claim['refurl'] else '',
                     date_fulfilled = claim['fulfilled'],
                     filename = claim['filename'] if claim['filename'] else '',
-                    basename = claim['basename'] if claim['basename'] else '',
-                    extension = claim['extension'] if claim['extension'] else '',
+#                    basename = claim['basename'] if claim['basename'] else '',
+#                    extension = claim['extension'] if claim['extension'] else '',
                     date_uploaded = claim['picdate'],
                 )
 

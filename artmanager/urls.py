@@ -80,7 +80,9 @@ urlpatterns = [
     url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
     url(r'^comments/$', artmanager_views.CommentsView.as_view(), name='comments'),
-    url(r'^shouts/$', artmanager_views.ShoutsView.as_view(), name='shouts'),
+
+    url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', artmanager_views.ShoutsView.as_view(), name='shouts'),
+
     url(r'^fans/$', artmanager_views.FansView.as_view(), name='fans'),
     url(r'^blocks/$', artmanager_views.BlocksView.as_view(), name='blocks'),
 ]

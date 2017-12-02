@@ -486,7 +486,6 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
         for keyword in (self.request.POST.get('keywords')).split(','):
             if keyword:
                 tag, is_created = models.Tag.objects.get_or_create(tag=keyword)
-                print tag, is_created
                 picture_tags.append(tag)
         self.object.tags = picture_tags
         self.object.save()
@@ -1058,6 +1057,7 @@ class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
     template_name = 'artmanager/customize.html'
 
     def get_object(self, queryset=None):
+        self.request.session['am_page'] = 'customize'
         return self.request.user
 
     def get_context_data(self, **kwargs):
@@ -1158,6 +1158,43 @@ class ShoutsView(ArtManagerPaneView):
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'shouts'
         return super(ShoutsView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ShoutsView, self).get_context_data(**kwargs)
+
+        shout_type = kwargs.get('shout_type')
+        if shout_type == None:
+            if self.request.user.is_artist:
+                shout_type = 'received'
+            else:
+                shout_type = 'sent'
+
+        if shout_type == 'received':
+            shouts = self.request.user.shouts_received.all().order_by('-date_posted')
+            show_all = False
+            if self.request.GET.get('show_all') == '1':
+                show_all = True
+            if not show_all:
+                shouts = shouts.filter(is_received=False)
+            context['show_all'] = show_all
+        elif shout_type == 'sent':
+            shouts = self.request.user.shout_set.all().order_by('-date_posted')
+
+        context['shouts_paginator'] = Paginator(shouts, settings.SHOUTS_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            shouts_page = context['shouts_paginator'].page(page)
+        except EmptyPage:
+            shouts_page = context['shouts_paginator'].page(1)
+
+        context['shouts'] = shouts_page
+        context['shout_type'] = shout_type
+        context['pages_link'] = utils.PagesLink(len(shouts), settings.SHOUTS_PER_PAGE_ARTMANAGER, shouts_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
 
 
 class FansView(ArtManagerPaneView):
