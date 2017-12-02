@@ -286,6 +286,18 @@ ORDER BY fanart_user.sort_name
         return TradingClaim.objects.filter(offer__type='adoptable', user=self).order_by('-date_posted')
 
     @property
+    def active_offers(self):
+        return self.tradingoffer_set.filter(is_active=True, is_visible=True).order_by('-date_posted')
+
+    @property
+    def active_icon_offers(self):
+        return self.active_offers.filter(type='icon')
+
+    @property
+    def active_adoptable_offers(self):
+        return self.active_offers.filter(type='adoptable')
+
+    @property
     def banner_url(self):
         if self.banner:
             return self.banner.picture.url

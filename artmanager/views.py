@@ -1118,6 +1118,11 @@ class TradingTreeView(ArtManagerPaneView):
         if not offer_type:
             offer_type = 'icon'
 
+        if offer_type == 'icon':
+            context['offers'] = self.request.user.active_icon_offers
+        elif offer_type == 'adoptable':
+            context['offers'] = self.request.user.active_adoptable_offers
+
         context['offer_type'] = offer_type
 
         return context

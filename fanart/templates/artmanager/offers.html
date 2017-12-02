@@ -1,0 +1,26 @@
+{% if offers.count == 0 %}
+    <div class="noentries">
+        No offers.
+    </div> 
+{% endif %}
+
+{% for offer in offers %}
+
+    <div class="offertile">
+        <a href="{% url "artmanager:trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="120" height="{{ offer.thumb_height }}" /></a><br />
+        <a href="{% url "artmanager:trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}">{{ offer.title }}</a><br />
+        {{ offer.date_posted|date }}<br />
+
+        {% if offer.type == "icon" %}
+            {{ offer.tradingclaim_set.count }} request{{ offer.tradingclaim_set.count|pluralize }}, {{ offer.open_claims.count }} open
+        {% elif offer.type == "adoptable" %}
+            {% if not offer.completed_claims.exists %}
+                {{ offer.tradingclaim_set.count }} applying
+            {% else %}
+                Adopted.
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+{% endfor %}
