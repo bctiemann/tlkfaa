@@ -298,6 +298,11 @@ ORDER BY fanart_user.sort_name
         return self.active_offers.filter(type='adoptable')
 
     @property
+    def inactive_offers(self):
+        return self.tradingoffer_set.exclude(is_active=True, is_visible=True).order_by('-date_posted')
+
+
+    @property
     def banner_url(self):
         if self.banner:
             return self.banner.picture.url

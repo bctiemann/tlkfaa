@@ -22,6 +22,8 @@
 
 {% if offer %}
 
+    {% if offer.is_active and offer.is_visible %}
+
 <script type="text/javascript">
 var refreshThumbsInterval = null;
 var thumbsGenerated = true;
@@ -43,13 +45,19 @@ var checkThumbs = function() {
 };
 </script>
 
-    {% include "includes/tradingtree.html" %}
+        {% include "includes/tradingtree.html" %}
 
 <script type="text/javascript">
 if (thumbsGenerated == false) {
     refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 }
 </script>
+
+    {% else %}
+
+        This offer is no longer available.
+
+    {% endif %}
 
 {% else %}
 

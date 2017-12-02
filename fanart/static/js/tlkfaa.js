@@ -1249,8 +1249,14 @@ function removeOffer(offerid,offertype) {
     modal: true,
     buttons: {
       "Remove": function() {
-        var url = "/ArtManager.jsp?op=tradingtree&fnc=remove&offerid=" + offerid + "&offertype=" + offertype;
-        window.location.href = url;
+//        var url = "/ArtManager.jsp?op=tradingtree&fnc=remove&offerid=" + offerid + "&offertype=" + offertype;
+        var url = '/offer/' + offerid + '/remove/';
+        $.post(url, function(data) {
+          if (data.success) {
+            window.location.reload();
+          }
+        });
+//        window.location.href = url;
       },
       Cancel: function() {
         $(this).dialog('close');

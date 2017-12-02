@@ -16,6 +16,7 @@
             <td class="fullwidth">
                 {% if offer.artist == user %}
                     <a href="javascript:nop()" onClick="setupEditOffer({{ offer.id }})">edit</a>
+                    <a href="javascript:nop()" onClick="removeOffer({{ offer.id }})">remove</a>
                 {% endif %}
                 <div id="editoffer_{{ offer.id }}">
                     {% with offer as object %}

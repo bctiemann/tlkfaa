@@ -351,7 +351,13 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 	<c:choose>
 	<c:when test="${offerid > 0 && qryOffer.rowCount > 0}">
 
+            {% if offer.is_active and offer.is_visible %}
+{#                {% include "artmanager/offer.html" %}#}
+                {% include "includes/tradingtree.html" %}
 		<jsp:include page="/ajax_edittradingtree.jsp?offerid=${offerid}" />
+            {% else %}
+                This offer is no longer active.
+            {% endif %}
 
 	</c:when>
         {% else %}

@@ -115,6 +115,13 @@ class OfferForm(forms.ModelForm):
         fields = ['title', 'comment']
 
 
+class RemoveOfferForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingOffer
+        fields = []
+
+
 class UploadClaimForm(forms.ModelForm):
 
     class Meta:

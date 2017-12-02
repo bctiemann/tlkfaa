@@ -1266,6 +1266,26 @@ class EditOfferView(UpdateView):
         return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
 
 
+class RemoveOfferView(UpdateView):
+    models = models.TradingOffer
+    form_class = forms.RemoveOfferForm
+    template_name = 'includes/edit_offer.html'
+
+    def get_object(self):
+        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        self.object.is_active = False
+        self.object.is_visible = False
+        self.object.save()
+
+        response['success'] = True
+
+        return JsonResponse(response)
+
+
 class OfferStatusView(APIView):
 
     def get(self, request, offer_id=None):
