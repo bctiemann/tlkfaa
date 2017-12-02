@@ -3,52 +3,31 @@
 
 {% block am_content %}
 
-<c:if test="${param.fnc == 'markread'}">
-        
-	<c:forEach var="markshout" items="${fn:split(param.itemlist, ',')}">
-		<c:set var="shout" value="0" />
-		<c:catch var="catchException">
-		<fmt:parseNumber var="shout" value="${markshout}" integerOnly="true" />
-		</c:catch>
-		<c:if test="${shout > 0}">
-		<sql:update var="updShout">
-		UPDATE shouts SET
-		viewed=true
-		WHERE shoutid=?
-		AND artistid=?
-		<sql:param value="${shout}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:update>
-		</c:if>
-	</c:forEach>
-        
-</c:if>   
-
-
 <h2>Your Roars</h2>
 
 {% if user.is_artist %}
-<div class="selector_commentview">
-<div class="selector">
-<a class="{% if shout_type == "sent" %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type="sent" %}">posted</a>
-<a class="{% if shout_type == "received" %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type="received" %}">received</a>
-</div>
-{% if shout_type == "received" %}
-	<div class="selector">
-	View: <a class="{% if not show_all %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type=shout_type %}?show_all=0">unread</a>
-	<a class="{% if show_all %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type=shout_type %}?show_all=1">all</a>
-	</div>
-<br clear="left" />
+    <div class="selector_commentview">
+        <div class="selector">
+            <a class="{% if shout_type == "sent" %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type="sent" %}">posted</a>
+            <a class="{% if shout_type == "received" %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type="received" %}">received</a>
+        </div>
 
-	<div class="globalactionslink">
-	<a href="javascript:nop()" onClick="markRead('shout','${showall}')">Mark all selected as read</a>
-	</div>
+        {% if shout_type == "received" %}
+        <div class="selector">
+            View: <a class="{% if not show_all %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type=shout_type %}?show_all=0">unread</a>
+            <a class="{% if show_all %}selected{% endif %}" href="{% url "artmanager:shouts" shout_type=shout_type %}?show_all=1">all</a>
+        </div>
+        <br clear="left" />
+
+        <div class="globalactionslink">
+            <a href="javascript:nop()" onClick="markRead('shout',null)">Mark all selected as read</a>
+        </div>
         
-	<div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
+        <div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
+        {% endif %}
 
-{% endif %}
-<br clear="left" />
-</div>
+        <br clear="left" />
+    </div>
 {% endif %}
 
 {{ pages_link.pages_nav|safe }}
@@ -56,69 +35,66 @@
 {% for shout in shouts %}
     {% if shout_type == "sent" %}
 
-		<form name="editcomment_{{ shout.id }}">
-		<div class="comment" id="shout_{{ shout.id }}">
-		<div class="commentname">
-			<div class="commentdate">{{ shout.date_posted|date }}</div>
-			Roared to <a href="{% url "artist" shout.artist.dir_name %}">{{ shout.artist.username }}</a>
-		</div>
-		<div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
-			<c:set var="shouttext" value="${shout.comment}" />
-			<table><tr><td>
+        <form name="editcomment_{{ shout.id }}">
+            <div class="comment" id="shout_{{ shout.id }}">
+                <div class="commentname">
+                    <div class="commentdate">{{ shout.date_posted|date }}</div>
+                    Roared to <a href="{% url "artist" shout.artist.dir_name %}">{{ shout.artist.username }}</a>
+                </div>
+                <div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
+                    <table><tr><td>
                         {{ shout.comment|bbcode|safe }}
-			</td></tr></table>
-			<div class="commentbuttons">
-			{% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-			</div>
-			<br clear="all" />
-		</div>
-		</div>
-		</form>
+                    </td></tr></table>
+                    <div class="commentbuttons">
+                        {% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
+                    </div>
+                    <br clear="all" />
+                </div>
+            </div>
+        </form>
 
     {% elif shout_type == "received" %}
 
-		<form name="editcomment_{{ shout.id }}">
-		<div class="comment" id="shout_{{ shout.id }}">
-		<div class="commentname">
-			<div class="commentdate">{{ shout.date_posted|date }}</div>
-			{% if not shout.is_received %}<input type="checkbox" name="select_{{ shout.id }}" id="select_{{ shout.id }}" value="1" />{% endif %}
+        <form name="editcomment_{{ shout.id }}">
+            <div class="comment" id="shout_{{ shout.id }}">
+                <div class="commentname">
+                    <div class="commentdate">{{ shout.date_posted|date }}</div>
+                        {% if not shout.is_received %}<input type="checkbox" name="select_{{ shout.id }}" id="select_{{ shout.id }}" value="1" />{% endif %}
                         {% if shout.user.is_artist %}
-			<a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
+                            <a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
                         {% else %}
-			{{ shout.user.username }}
+                            {{ shout.user.username }}
                         {% endif %}
-			</div>
-		<div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
-			<div class="commentprofilepic">
+                    </div>
+                <div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
+                    <div class="commentprofilepic">
                         {% if shout.user.profile_pic_thumbnail_url %}
-                                {% if shout.user.is_artist %}
-				<a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
-                                {% else %}
-				<img src="{{ shout.user.profile_pic_thumbnail_url }}" />
-                                {% endif %}
+                            {% if shout.user.is_artist %}
+                                <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
+                            {% else %}
+                                <img src="{{ shout.user.profile_pic_thumbnail_url }}" />
+                            {% endif %}
                         {% endif %}
-			</div>
-			<table><tr><td>
+                    </div>
+                    <table><tr><td>
                         {{ shout.comment|bbcode|safe }}
-			</td></tr></table>
-			<div class="commentbuttons">
-			<button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
-			{% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-			</div>
-			<br clear="all" />
-		</div>
-		</div>
-		</form>
+                    </td></tr></table>
+                    <div class="commentbuttons">
+                        <button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
+                        {% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
+                    </div>
+                    <br clear="all" />
+                </div>
+            </div>
+        </form>
 
-                {% if not shout.is_received %}
-		<script type="text/javascript">
-		selitems.push({{ shout.id }});
-		</script>
-                {% endif %}
+        {% if not shout.is_received %}
+            <script type="text/javascript">
+            selitems.push({{ shout.id }});
+            </script>
+        {% endif %}
 
     {% endif %}
 {% endfor %}
-
-</c:if>
 
 {% endblock %}
