@@ -1145,7 +1145,7 @@ class UploadClaimView(UpdateView):
         return context
 
 
-class RemoveUploadClaimView(UpdateView):
+class RemoveClaimUploadView(UpdateView):
     model = models.TradingClaim
     form_class = forms.UploadClaimForm
     template_name = 'includes/claim.html'
@@ -1158,14 +1158,14 @@ class RemoveUploadClaimView(UpdateView):
         self.object.date_fulfilled = None
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.thumbnail_path))
+            os.remove(os.path.join(self.object.thumbnail_path))
         except OSError:
             pass
         self.object.picture = None
-        return super(RemoveUploadClaimView, self).form_valid(form)
+        return super(RemoveClaimUploadView, self).form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
-        context = super(RemoveUploadClaimView, self).get_context_data(*args, **kwargs)
+        context = super(RemoveClaimUploadView, self).get_context_data(*args, **kwargs)
         context['claim'] = self.object
         return context
 

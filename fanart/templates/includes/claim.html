@@ -64,8 +64,8 @@ $(function () {
     });
 });
 
-{% if not claim.thumbnail_created %}
-refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+{% if claim.picture and not claim.thumbnail_created %}
+thumbsGenerated = false;
 {% endif %}
 </script>
                             </div>

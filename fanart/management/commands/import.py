@@ -14,37 +14,39 @@ from fanart import models as fanart_models
 
 class Command(BaseCommand):
 
-    do_users = False
-    do_folders = False
-    do_pictures = False
-    do_comments = False
-    do_shouts = False
-    do_coloringbase = False
-    do_coloringpics = False
-    do_characters = False
-    do_favorites = False
-    do_offers = False
-    do_claims = False
-    do_picturecharacters = False
-    do_tags = False
-    do_approvers = False
-    do_sketcheradmins = False
-    do_requests = False
-    do_imclients = False
-    do_imids = False
-    do_newpics = False
-    do_approval_access = True
-    do_adminblog = True
-    do_artistnames = True
-    do_blocks = True
-    do_bulletins = True
-    do_contests = True
-    do_contestpics = True
-    do_contestvotes = True
-    do_pms = True
-    do_specials = True
-    do_votes = True
-    do_customicons = True
+    enabled = {
+#        'do_users': True,
+#        'do_folders': True,
+#        'do_pictures': True,
+#        'do_comments': True,
+#        'do_shouts': True,
+#        'do_coloringbase': True,
+#        'do_coloringpics': True,
+#        'do_characters': True,
+#        'do_favorites': True,
+#        'do_offers': True,
+        'do_claims': True,
+#        'do_picturecharacters': True,
+#        'do_tags': True,
+#        'do_approvers': True,
+#        'do_sketcheradmins': True,
+#        'do_requests': True,
+#        'do_imclients': True,
+#        'do_imids': True,
+#        'do_newpics': True,
+#        'do_approval_access': True,
+#        'do_adminblog': True,
+#        'do_artistnames': True,
+#        'do_blocks': True,
+#        'do_bulletins': True,
+#        'do_contests': True,
+#        'do_contestpics': True,
+#        'do_contestvotes': True,
+#        'do_pms': True,
+#        'do_specials': True,
+#        'do_votes': True,
+#        'do_customicons': True,
+    }
 
     GENDERS = {
         0: '',
@@ -144,7 +146,7 @@ class Command(BaseCommand):
         db = MySQLdb.connect(passwd='28DcBPP2G6ckhnmXybFR8R25', db='fanart', host='10.0.0.2', user='fadbuser', charset='utf8mb4')
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
-        if self.do_users:
+        if 'do_users' in self.enabled:
 #            c.execute("""SELECT * FROM users where userid=1""")
             c.execute("""SELECT * FROM users""")
 #            for user in c.fetchall():
@@ -234,10 +236,10 @@ class Command(BaseCommand):
                     u.date_joined = artist['created']
                     u.save()
 
-        if self.do_folders:
+        if 'do_folders' in self.enabled:
             self.get_child_folders(c, None, None)
 
-        if self.do_pictures:
+        if 'do_pictures' in self.enabled:
             c.execute("""SELECT * FROM pictures""")
             for picture in c.fetchall():
                 print picture
@@ -297,10 +299,10 @@ class Command(BaseCommand):
                     pass
                     print 'No artist'
 
-        if self.do_comments:
+        if 'do_comments' in self.enabled:
             self.get_child_comments(c, None, None)
 
-        if self.do_shouts:
+        if 'do_shouts' in self.enabled:
             c.execute("""SELECT * FROM shouts""")
             for comment in c.fetchall():
                 print comment
@@ -326,7 +328,7 @@ class Command(BaseCommand):
                 except fanart_models.User.DoesNotExist:
                     pass
 
-        if self.do_coloringbase:
+        if 'do_coloringbase' in self.enabled:
 #            c.execute("""SELECT * FROM coloring_base where coloring_baseid = 2655""")
             c.execute("""SELECT * FROM coloring_base""")
             for cb in c.fetchall():
@@ -353,7 +355,7 @@ class Command(BaseCommand):
                     print 'Picture not found'
                     pass
 
-        if self.do_coloringpics:
+        if 'do_coloringpics' in self.enabled:
             c.execute("""SELECT * FROM coloring_pics""")
             for cp in c.fetchall():
                 print cp
@@ -383,7 +385,7 @@ class Command(BaseCommand):
                     print 'ColoringBase not found'
                     pass
 
-        if self.do_characters:
+        if 'do_characters' in self.enabled:
             c.execute("""SELECT * FROM characters""")
             for ch in c.fetchall():
                 print ch
@@ -438,7 +440,7 @@ class Command(BaseCommand):
 #                f.id = f.id_orig
 #                f.save()
 
-        if self.do_favorites:
+        if 'do_favorites' in self.enabled:
             c.execute("""SELECT * FROM favorites""")
             for fave in c.fetchall():
                 print fave
@@ -479,7 +481,7 @@ class Command(BaseCommand):
                     date_added = fave['added'],
                 )
 
-        if self.do_offers:
+        if 'do_offers' in self.enabled:
             c.execute("""SELECT * FROM offers""")
             for offer in c.fetchall():
                 print offer
@@ -502,7 +504,7 @@ class Command(BaseCommand):
                     id = offer['offerid'],
                     artist = artist,
                     type = offer['type'],
-                    date_posted = offer['posted'],
+#                    date_posted = offer['posted'],
                     title = offer['title'],
                     comment = offer['comment'],
                     filename = offer['filename'] if offer['filename'] else '',
@@ -514,8 +516,10 @@ class Command(BaseCommand):
                     is_active = offer['active'],
                     is_visible = offer['visible'],
                 )
+                f.date_posted = offer['posted']
+                f.save()
 
-        if self.do_claims:
+        if 'do_claims' in self.enabled:
             c.execute("""SELECT * FROM claims""")
             for claim in c.fetchall():
                 print claim
@@ -542,7 +546,7 @@ class Command(BaseCommand):
                     date_uploaded = claim['picdate'],
                 )
 
-        if self.do_picturecharacters:
+        if 'do_picturecharacters' in self.enabled:
             c.execute("""SELECT * FROM picturecharacters""")
             for pc in c.fetchall():
                 print pc
@@ -572,7 +576,7 @@ class Command(BaseCommand):
                     character.date_tagged = f.date_tagged
                     character.save()
 
-        if self.do_tags:
+        if 'do_tags' in self.enabled:
             c.execute("""SELECT * FROM tags""")
             for tag in c.fetchall():
                 print tag
@@ -595,7 +599,7 @@ class Command(BaseCommand):
                 except fanart_models.Tag.DoesNotExist:
                     pass
 
-        if self.do_approvers:
+        if 'do_approvers' in self.enabled:
             c.execute("""SELECT * FROM approvers""")
             for a in c.fetchall():
                 print a
@@ -603,7 +607,7 @@ class Command(BaseCommand):
                 u.is_approver = True
                 u.save()
 
-        if self.do_sketcheradmins:
+        if 'do_sketcheradmins' in self.enabled:
             c.execute("""SELECT * FROM sketcheradmins""")
             for a in c.fetchall():
                 print a
@@ -614,8 +618,8 @@ class Command(BaseCommand):
                 except fanart_models.User.DoesNotExist:
                     pass
 
-        if self.do_requests:
-            c.execute("""SELECT * FROM requests where requestid>129616""")
+        if 'do_requests' in self.enabled:
+            c.execute("""SELECT * FROM requests""")
             for a in c.fetchall():
                 print a
                 try:
@@ -645,7 +649,7 @@ class Command(BaseCommand):
                 f.date_sent = a['sent']
                 f.save()
 
-        if self.do_imclients:
+        if 'do_imclients' in self.enabled:
             c.execute("""SELECT * FROM imclients""")
             for a in c.fetchall():
                 print a
@@ -655,7 +659,7 @@ class Command(BaseCommand):
                     name = a['imclient'],
                 )
 
-        if self.do_imids:
+        if 'do_imids' in self.enabled:
             c.execute("""SELECT * FROM imids""")
             for a in c.fetchall():
                 print a
@@ -673,7 +677,7 @@ class Command(BaseCommand):
                     identity = a['imid'],
                 )
 
-        if self.do_newpics:
+        if 'do_newpics' in self.enabled:
             c.execute("""SELECT * FROM newpics""")
             for a in c.fetchall():
                 try:
@@ -691,7 +695,7 @@ class Command(BaseCommand):
                 f.date_added = a['added']
                 f.save()
 
-        if self.do_approval_access:
+        if 'do_approval_access' in self.enabled:
             c.execute("""SELECT * FROM approval_access""")
             for a in c.fetchall():
                 try:
@@ -704,7 +708,7 @@ class Command(BaseCommand):
                     logout = a['logout'],
                 )
 
-        if self.do_adminblog:
+        if 'do_adminblog' in self.enabled:
             c.execute("""SELECT * FROM adminblog""")
             for a in c.fetchall():
                 try:
@@ -718,7 +722,7 @@ class Command(BaseCommand):
                 f.date_posted = a['posted']
                 f.save()
 
-        if self.do_artistnames:
+        if 'do_artistnames' in self.enabled:
             c.execute("""SELECT * FROM artistnames""")
             for a in c.fetchall():
                 try:
@@ -732,7 +736,7 @@ class Command(BaseCommand):
                 f.date_changed = a['changedon']
                 f.save()
 
-        if self.do_blocks:
+        if 'do_blocks' in self.enabled:
             c.execute("""SELECT * FROM blocks""")
             for a in c.fetchall():
                 try:
@@ -750,7 +754,7 @@ class Command(BaseCommand):
                 f.date_blocked = a['blockedon']
                 f.save()
 
-        if self.do_bulletins:
+        if 'do_bulletins' in self.enabled:
             c.execute("""SELECT * FROM bulletins""")
             for a in c.fetchall():
                 print a
@@ -772,7 +776,7 @@ class Command(BaseCommand):
                 f.date_posted = a['posted']
                 f.save()
 
-        if self.do_contests:
+        if 'do_contests' in self.enabled:
             c.execute("""SELECT * FROM contests""")
             for a in c.fetchall():
                 print a
@@ -799,7 +803,7 @@ class Command(BaseCommand):
                 f.date_created = a['created']
                 f.save()
 
-        if self.do_contestpics:
+        if 'do_contestpics' in self.enabled:
             c.execute("""SELECT * FROM contestpics""")
             for a in c.fetchall():
                 print a
@@ -822,7 +826,7 @@ class Command(BaseCommand):
                 f.date_entered = a['entered']
                 f.save()
 
-        if self.do_contestvotes:
+        if 'do_contestvotes' in self.enabled:
             c.execute("""SELECT * FROM contestvotes""")
             for a in c.fetchall():
                 print a
@@ -840,10 +844,10 @@ class Command(BaseCommand):
                     date_voted = a['voted'],
                 )
 
-        if self.do_pms:
+        if 'do_pms' in self.enabled:
             self.get_child_pms(c, 0, None)
 
-        if self.do_specials:
+        if 'do_specials' in self.enabled:
             c.execute("""SELECT * FROM specials""")
             for a in c.fetchall():
                 print a
@@ -854,7 +858,7 @@ class Command(BaseCommand):
                     is_visible = a['visible'],
                 )
 
-        if self.do_votes:
+        if 'do_votes' in self.enabled:
             c.execute("""SELECT * FROM votes""")
             for a in c.fetchall():
                 print a
@@ -871,7 +875,7 @@ class Command(BaseCommand):
                     artist = artist,
                 )
 
-        if self.do_customicons:
+        if 'do_customicons' in self.enabled:
             c.execute("""SELECT * FROM customicons""")
             for a in c.fetchall():
                 print a

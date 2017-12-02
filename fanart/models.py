@@ -1058,10 +1058,14 @@ class TradingClaim(models.Model):
 
     @property
     def thumbnail_path(self):
-        if not self.picture:
-            return None
-        path = ('/').join(self.picture.path.split('/')[:-1])
-        return '{0}/{1}.s.jpg'.format(path, self.id)
+        if self.picture:
+            path = ('/').join(self.picture.path.split('/')[:-1])
+            return '{0}/{1}.s.jpg'.format(path, self.id)
+#        path = ('/').join(self.picture.path.split('/')[:-1])
+        return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.s.jpg'.format(self.id))
+#        return '{0}/{1}.s.jpg'.format(path, self.id)
+#            return None
+#        if self.picture:
 
     @property
     def thumbnail_url(self):
@@ -1080,15 +1084,16 @@ class TradingClaim(models.Model):
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(TradingClaim, self).save(*args, **kwargs)
-        logger.info(self.picture)
         if update_thumbs:
             process_images.apply_async(('TradingClaim', self.id, 'small'), countdown=20)
 
     def delete(self, *args, **kwargs):
         if self.offer.type == 'icon':
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
+            os.remove(self.thumbnail_path)
             try:
-                os.remove(os.path.join(settings.MEDIA_ROOT, self.picture.name))
                 os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
+                os.remove(self.thumbnail_path)
             except OSError:
                 pass
         return super(TradingClaim, self).delete(*args, **kwargs)
