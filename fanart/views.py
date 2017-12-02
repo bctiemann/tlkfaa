@@ -1202,8 +1202,8 @@ class AcceptClaimView(UpdateView):
             self.object.offer.adopted_by = self.request.user
             self.object.offer.save()
 
-            self.object.offer.artist.num_characters = self.object.offer.artist.character_set.count()
-            self.request.user.num_characters = self.request.user.character_set.count()
+            self.object.offer.artist.refresh_num_characters()
+            self.request.user.refresh_num_characters()
 
 #                                Accepting this adoptable into your Characters section...
 

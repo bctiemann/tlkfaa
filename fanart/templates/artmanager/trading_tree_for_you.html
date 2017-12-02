@@ -1,0 +1,23 @@
+{% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block am_content %}
+
+{% if user.is_artist %}
+    <div class="am_altpagelink"><a class="button" href="{% url "artmanager:trading-tree" %}">Offer Art</a></div>
+{% endif %}
+
+<h2>For You from the Trading Tree</h2>
+
+<div class="selector">
+    <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "artmanager:trading-tree-for-you" offer_type="icon" %}">icons</a>
+    <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "artmanager:trading-tree-for-you" offer_type="adoptable" %}">adoptables</a>
+</div>
+
+{% for claim in claims_for_you %}
+    <div class="offer" id="claim_{{ claim.id }}">
+        {% include "includes/tradingtree_foryou.html" %}
+    </div>
+{% endfor %}
+
+{% endblock %}

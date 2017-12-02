@@ -265,15 +265,25 @@ ORDER BY fanart_user.sort_name
 
     @property
     def icon_claims_ready(self):
-        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True, date_fulfilled__isnull=True).exclude(filename='').order_by('-date_posted')
+        return self.icon_claims_received.filter(date_fulfilled__isnull=True)
+#        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True, date_fulfilled__isnull=True).exclude(filename='').order_by('-date_posted')
 
     @property
     def adoptable_claims_ready(self):
-        return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
+        return self.adoptable_claims_received.filter(offer__is_visible=True, date_fulfilled__isnull=False)
+#        return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
 
     @property
     def claims_ready(self):
         return self.icon_claims_ready.union(self.adoptable_claims_ready)
+
+    @property
+    def icon_claims_received(self):
+        return TradingClaim.objects.filter(offer__type='icon', user=self, offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+
+    @property
+    def adoptable_claims_received(self):
+        return TradingClaim.objects.filter(offer__type='adoptable', user=self).order_by('-date_posted')
 
     @property
     def banner_url(self):
@@ -1046,7 +1056,7 @@ class TradingClaim(models.Model):
 
     @property
     def is_ready(self):
-        return (self.offer.type == 'adoptable' and self.date_fulfilled != None) or (self.offer.type == 'icon' and not self.date_fulfilled and self.filename)
+        return (self.offer.type == 'adoptable' and self.date_fulfilled != None and self.offer.is_active) or (self.offer.type == 'icon' and not self.date_fulfilled and self.filename)
 
     @property
     def basename(self):

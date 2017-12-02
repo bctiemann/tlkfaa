@@ -1111,6 +1111,41 @@ class TradingTreeView(ArtManagerPaneView):
         request.session['am_page'] = 'trading-tree'
         return super(TradingTreeView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(TradingTreeView, self).get_context_data(**kwargs)
+
+        offer_type = kwargs.get('offer_type')
+        if not offer_type:
+            offer_type = 'icon'
+
+        context['offer_type'] = offer_type
+
+        return context
+
+
+class TradingTreeForYouView(ArtManagerPaneView):
+    template_name = 'artmanager/trading_tree_for_you.html'
+
+    def get(self, request, *args, **kwargs):
+        request.session['am_page'] = 'trading-tree'
+        return super(TradingTreeForYouView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(TradingTreeForYouView, self).get_context_data(**kwargs)
+
+        offer_type = kwargs.get('offer_type')
+        if not offer_type:
+            offer_type = 'icon'
+
+        if offer_type == 'icon':
+            context['claims_for_you'] = self.request.user.icon_claims_received.all()
+        elif offer_type == 'adoptable':
+            context['claims_for_you'] = self.request.user.adoptable_claims_received.all()
+
+        context['offer_type'] = offer_type
+
+        return context
+
 
 class ColoringCaveView(ArtManagerPaneView):
     template_name = 'artmanager/coloring_cave.html'
