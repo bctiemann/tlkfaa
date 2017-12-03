@@ -293,6 +293,7 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 <c:otherwise>
 {% endcomment %}
 
+
 	<div class="am_altpagelink"><a class="button" href="{% url "artmanager:trading-tree-for-you" %}">For You</a></div>
 
 	<h2>Offer Art on the Trading Tree</h2>
@@ -351,6 +352,31 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 	<c:choose>
 	<c:when test="${offerid > 0 && qryOffer.rowCount > 0}">
 
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+
+var checkThumbs = function() {
+    var url = '{% url "artmanager:offer-status" offer_id=offer.id %}';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (offer_id in data) {
+            $('img#offerthumb_' + offer_id).attr('src', data[offer_id].thumbnail_url);
+            if (!data[offer_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+console.log(refreshThumbsInterval);
+        }
+    });
+};
+
+refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+</script>
+
+
+
             {% if offer.is_active and offer.is_visible %}
 {#                {% include "artmanager/offer.html" %}#}
                 {% include "includes/tradingtree.html" %}
@@ -385,6 +411,7 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 		<c:choose>
 		<c:when test="${offertype == 'icon'}">
 		<input type="file" name="uploadfile" id="uploadfile" validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." />
+<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-offer" %}">
 		</c:when>
                 {% elif offer_type == "adoptable" %}
 		<c:when test="${offertype == 'adoptable'}">
@@ -414,6 +441,7 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 		<c:choose>
 		<c:when test="${offertype == 'icon'}">
 		<button type="button" onClick="validateForm('offerform_new','uploadPicture(\'offerform_new\',\'uploadfile\',\'offerslayout\',null,true)')">Post Icon Offer</button>
+<button type="button" id="up_btn" class="start">Upload</button>
 		</c:when>
                 {% elif offer_type == "adoptable" %}
 		<c:when test="${offertype == 'adoptable'}">
@@ -430,6 +458,10 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 		<input type="hidden" name="offertype" value="{{ offer_type }}" />
 		</form>
 
+    <div id="progress">
+        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+    </div>
+
 		<div id="offerslayout">
 
                 {% include "artmanager/offers.html" %}
@@ -437,6 +469,34 @@ Previous owner's reference picture: http://${servername}/ColoringCave.jsp?ccpid=
 		<br clear="left" />
 
 		</div>
+
+
+    <script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        dropZone: null,
+//        autoUpload: false,
+        done: function (e, data) {
+            window.location.href = '/ArtManager/trading_tree/icon/?offer_id=' + data.result.offer_id;
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+        add: function (e, data) {
+            $("#up_btn").off('click').on('click', function () {
+console.log(data);
+                data.submit();
+            });
+        },
+    });
+});
+    </script>
+
 
 	</c:otherwise>
 	</c:choose>

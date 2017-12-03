@@ -10,7 +10,7 @@
                 {% elif offer.type == "adoptable" %}
                     <a href="{% url "character" character_id=offer.character.id %}">
                 {% endif %}
-                <img class="thumb offerthumb" src="{{ offer.thumbnail_url }}" /></a>
+                <img class="thumb offerthumb" id="offerthumb_{{ offer.id }}" src="{{ offer.thumbnail_url }}" /></a>
             </td>
 
             <td class="fullwidth">

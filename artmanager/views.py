@@ -1156,6 +1156,46 @@ class TradingTreeForYouView(ArtManagerPaneView):
         return context
 
 
+class UploadOfferView(LoginRequiredMixin, CreateView):
+    model = models.TradingOffer
+    form_class = forms.UploadOfferForm
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.POST)
+        logger.info(self.request.FILES)
+
+        offer = form.save(commit=False)
+        offer.artist = self.request.user
+        offer.type = 'icon'
+        offer.save(update_thumbs=False)
+
+        offer.picture = self.request.FILES['picture']
+        offer.filename = self.request.FILES['picture'].name
+        offer.save(update_thumbs=True)
+
+        super(UploadOfferView, self).form_valid(form)
+
+        response['success'] = True
+        response['offer_id'] = offer.id
+
+        return JsonResponse(response)
+
+
+class OfferStatusView(APIView):
+
+    def get(self, request, offer_id=None):
+        response = {}
+        offer = get_object_or_404(models.TradingOffer, pk=offer_id)
+        if offer.picture:
+            response[offer.id] = {
+                'thumbnail_url': offer.thumbnail_url,
+                'thumbnail_done': offer.thumbnail_created,
+            }
+        return Response(response)
+
+
 class ColoringCaveView(ArtManagerPaneView):
     template_name = 'artmanager/coloring_cave.html'
 

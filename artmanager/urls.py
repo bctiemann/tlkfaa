@@ -75,6 +75,8 @@ urlpatterns = [
 
     url(r'^trading_tree/(?:(?P<offer_type>(icon|adoptable))/)?$', artmanager_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^trading_tree/for_you/(?:(?P<offer_type>(icon|adoptable))/)?', artmanager_views.TradingTreeForYouView.as_view(), name='trading-tree-for-you'),
+    url(r'^trading_tree/upload/$', artmanager_views.UploadOfferView.as_view(), name='upload-offer'),
+    url(r'^trading_tree/(?P<offer_id>[0-9]+)/status/$', artmanager_views.OfferStatusView.as_view(), name='offer-status'),
 
     url(r'^coloring_cave/(?:(?P<picture_id>[0-9]+)/)?$', artmanager_views.ColoringCaveView.as_view(), name='coloring-cave'),
 

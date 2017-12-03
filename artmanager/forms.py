@@ -91,3 +91,12 @@ class CustomizeForm(forms.ModelForm):
 
 class BannerPreviewForm(forms.Form):
     preview_text = forms.CharField()
+
+
+class UploadOfferForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingOffer
+        fields = ['title', 'comment']
+
+

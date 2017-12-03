@@ -30,6 +30,12 @@ THREE = 90
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
 
+def get_offers_path(instance, filename):
+    return 'Artwork/offers/{0}.{1}'.format(instance.id, instance.extension)
+
+def get_offers_thumb_path(instance, filename):
+    return 'Artwork/offers/{0}.s.jpg'.format(instance.id)
+
 def get_claims_path(instance, filename):
     return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
 
@@ -977,7 +983,6 @@ class ColoringPicture(models.Model):
     def preview_height(self):
         return int(self.height * settings.THUMB_SIZE['large'] / self.width)
 
-
     @property
     def thumb_width(self):
         return settings.THUMB_SIZE['small']
@@ -1029,9 +1034,12 @@ class TradingOffer(models.Model):
     title = models.CharField(max_length=64, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)
-    basename = models.CharField(max_length=100, blank=True)
-    extension = models.CharField(max_length=5, blank=True)
-    thumb_height = models.IntegerField(blank=True)
+#    basename = models.CharField(max_length=100, blank=True)
+#    extension = models.CharField(max_length=5, blank=True)
+#    thumb_height = models.IntegerField(blank=True)
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_offers_path, null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
     character = models.ForeignKey('Character', null=True, blank=True)
     adopted_by = models.ForeignKey('User', null=True, blank=True, related_name='trades_offered')
     is_active = models.BooleanField(default=True)
@@ -1046,15 +1054,63 @@ class TradingOffer(models.Model):
         return self.tradingclaim_set.filter(date_fulfilled__isnull=False)
 
     @property
-    def url(self):
-        return '{0}Artwork/offers/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
+    def basename(self):
+        return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def extension(self):
+        return self.filename.split('.')[-1].lower()
+
+    @property
+    def thumbnail_path(self):
+        if self.picture:
+            path = ('/').join(self.picture.path.split('/')[:-1])
+            return '{0}/{1}.s.jpg'.format(path, self.id)
+        return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.s.jpg'.format(self.id))
 
     @property
     def thumbnail_url(self):
-        return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+        if os.path.exists(self.thumbnail_path):
+            return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def thumbnail_created(self):
+        return os.path.exists(self.thumbnail_path)
+
+    @property
+    def url(self):
+        return '{0}Artwork/offers/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
+
+#    @property
+#    def thumbnail_url(self):
+#        return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+
+    @property
+    def thumb_width(self):
+        return settings.THUMB_SIZE['offer']
+
+    @property
+    def thumb_height(self):
+        if self.height and self.width:
+            return int(self.height * settings.THUMB_SIZE['offer'] / self.width)
+        return 0
+
+    @property
+    def thumb_height_x2(self):
+        return self.thumb_height * 2
+
+    def save(self, update_thumbs=True, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(TradingOffer, self).save(*args, **kwargs)
+        if update_thumbs:
+            process_images.apply_async(('TradingOffer', self.id, 'offer'), countdown=20)
 
     def get_absolute_url(self):
         return reverse('offer', kwargs={'offer_id': self.id})
+
+    def __unicode__(self):
+        return '{0}'.format(self.id)
 
 
 class TradingClaim(models.Model):
@@ -1088,11 +1144,7 @@ class TradingClaim(models.Model):
         if self.picture:
             path = ('/').join(self.picture.path.split('/')[:-1])
             return '{0}/{1}.s.jpg'.format(path, self.id)
-#        path = ('/').join(self.picture.path.split('/')[:-1])
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.s.jpg'.format(self.id))
-#        return '{0}/{1}.s.jpg'.format(path, self.id)
-#            return None
-#        if self.picture:
 
     @property
     def thumbnail_url(self):

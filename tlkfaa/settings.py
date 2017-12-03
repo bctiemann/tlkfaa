@@ -310,6 +310,7 @@ THUMB_SIZE = {
     'small': 60,
     'large': 240,
     'profile': 200,
+    'offer': 120,
 }
 
 CONTENT_TYPE = {
