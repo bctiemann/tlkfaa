@@ -1130,6 +1130,10 @@ class TradingTreeView(ArtManagerPaneView):
         if offer_id:
             context['offer'] = get_object_or_404(models.TradingOffer, pk=offer_id, artist=self.request.user)
 
+        character_id = self.request.GET.get('character_id', None)
+        if character_id:
+            context['character'] = get_object_or_404(models.Character, pk=character_id, owner=self.request.user)
+
         return context
 
 
