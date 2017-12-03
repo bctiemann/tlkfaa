@@ -1424,6 +1424,17 @@ class PicturePickerView(TemplateView):
         return context
 
 
+class CharacterPickerView(TemplateView):
+    template_name = 'includes/pick_character.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CharacterPickerView, self).get_context_data(*args, **kwargs)
+        logger.info('a')
+        context['characters'] = self.request.user.character_set.filter(date_deleted__isnull=True)
+        logger.info('b')
+        return context
+
+
 class PMsView(TemplateView):
     template_name = 'includes/private_messages.html'
 

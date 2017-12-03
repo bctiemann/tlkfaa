@@ -421,7 +421,9 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 				{{ character.name }}
 			</c:if>
                         {% endif %}
-		</span><input type="hidden" name="characterid" value="{% if character %}{{ character.id }}{% endif %}" validate="hasvalue" message="You must select a character to put up for adoption." /><a href="pop_pickcharacter.jsp?op=tradingtree" rel="shadowbox;width=500;height=600">select character</a>
+		</span>
+                <input type="hidden" name="characterid" value="{% if character %}{{ character.id }}{% endif %}" validate="hasvalue" message="You must select a character to put up for adoption." />
+                <a href="{% url "character-picker" %}" rel="shadowbox;width=500;height=600">select character</a>
 		</c:when>
 		</c:choose>
                 {% endif %}

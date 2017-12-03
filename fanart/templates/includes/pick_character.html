@@ -1,0 +1,43 @@
+{% extends "fanart/base_popup.html" %}
+{% load bbcode_tags %}
+{% load util_tags %}
+
+{% block content %}
+
+{% for character in characters %}
+
+    <div class="editcharacter">
+        <table>
+            <tr>
+                <td>
+                    <a href="javascript:nop()" onClick="selectCharacter({{ character.id }})">
+                        <img class="thumb characterpic" src="{{ character.preview_url }}" />
+                    </a>
+                </td>
+                <td class="characterinfo">
+                    <div id="editcharacter_{{ character.id }}">
+                        <div class="characterdate">{{ character.date_created|date:"m/d/Y" }}</div>
+                        <div class="charactername" id="charactername_{{ character.id }}">{{ character.name }}</div>
+                        <div class="characteredit"><a href="javascript:nop()" onClick="setupEditCharacter({{ character.id }})">edit</a></div>
+                        <div class="characterspecies">
+                            {{ character.sex|capfirst }} {{ character.species }}
+                        </div>
+                        <div class="characterdescr">{{ character.description|bbcode|safe }}</div>
+                        <div class="characterstory">
+                            {% if character.story_title %}
+                                {% if character.story_url %}
+                                    Source: <a target="_blank" href="{{ character.story_url }}">{{ character.story_title }}</a>
+                                {% else %}
+                                    Source: {{ character.story_title }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+{% endfor %}
+
+{% endblock %}

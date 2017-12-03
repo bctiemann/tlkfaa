@@ -785,6 +785,9 @@ class Character(models.Model):
     def __unicode__(self):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
 
+    class Meta:
+        ordering = ['name']
+
 
 class FavoriteManager(models.Manager):
 

@@ -927,7 +927,7 @@ class CharactersView(ArtManagerPaneView):
     def get_context_data(self, **kwargs):
         context = super(CharactersView, self).get_context_data(**kwargs)
 
-        characters = self.request.user.character_set.all().order_by('name')
+        characters = self.request.user.character_set.filter(date_deleted__isnull=True)
 
         context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE_ARTMANAGER)
         try:
