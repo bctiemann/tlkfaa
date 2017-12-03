@@ -93,10 +93,17 @@ class BannerPreviewForm(forms.Form):
     preview_text = forms.CharField()
 
 
-class UploadOfferForm(forms.ModelForm):
+class UploadIconOfferForm(forms.ModelForm):
 
     class Meta:
         model = models.TradingOffer
         fields = ['title', 'comment']
+
+
+class CreateAdoptableOfferForm(forms.ModelForm):
+
+    class Meta:
+        model = models.TradingOffer
+        fields = ['title', 'comment', 'character']
 
 

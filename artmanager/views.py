@@ -31,6 +31,7 @@ import json
 import hashlib
 import os
 import shutil
+from PIL import Image
 
 import logging
 logger = logging.getLogger(__name__)
@@ -1156,9 +1157,9 @@ class TradingTreeForYouView(ArtManagerPaneView):
         return context
 
 
-class UploadOfferView(LoginRequiredMixin, CreateView):
+class UploadIconOfferView(LoginRequiredMixin, CreateView):
     model = models.TradingOffer
-    form_class = forms.UploadOfferForm
+    form_class = forms.UploadIconOfferForm
 
     def form_valid(self, form):
         response = {'success': False}
@@ -1175,7 +1176,7 @@ class UploadOfferView(LoginRequiredMixin, CreateView):
         offer.filename = self.request.FILES['picture'].name
         offer.save(update_thumbs=True)
 
-        super(UploadOfferView, self).form_valid(form)
+        super(UploadIconOfferView, self).form_valid(form)
 
         response['success'] = True
         response['offer_id'] = offer.id
@@ -1194,6 +1195,37 @@ class OfferStatusView(APIView):
                 'thumbnail_done': offer.thumbnail_created,
             }
         return Response(response)
+
+
+class CreateAdoptableOfferView(LoginRequiredMixin, CreateView):
+    model = models.TradingOffer
+    form_class = forms.CreateAdoptableOfferForm
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.POST)
+        logger.info(self.request.FILES)
+
+        offer = form.save(commit=False)
+        offer.artist = self.request.user
+        offer.type = 'adoptable'
+        offer.save(update_thumbs=False)
+
+        if offer.character.profile_picture:
+            shutil.copyfile(offer.character.profile_picture.preview_path, offer.thumbnail_path)
+        elif offer.character.profile_coloring_picture:
+            shutil.copyfile(offer.character.profile_coloring_picture.preview_path, offer.thumbnail_path)
+        im = Image.open(offer.thumbnail_path)
+        offer.width = im.width
+        offer.height = im.height
+
+        super(CreateAdoptableOfferView, self).form_valid(form)
+
+        response['success'] = True
+        response['offer_id'] = offer.id
+
+        return JsonResponse(response)
 
 
 class ColoringCaveView(ArtManagerPaneView):

@@ -1429,9 +1429,7 @@ class CharacterPickerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(CharacterPickerView, self).get_context_data(*args, **kwargs)
-        logger.info('a')
         context['characters'] = self.request.user.character_set.filter(date_deleted__isnull=True)
-        logger.info('b')
         return context
 
 

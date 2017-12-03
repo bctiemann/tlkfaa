@@ -856,6 +856,21 @@ function chooseAdoptable(offerid,claimid,op) {
   });
 }
 
+function postAdoptableOffer() {
+    var offerform = $('#offerform_new')[0];
+    var url = '/ArtManager/trading_tree/adoptable/create/';
+    var params = {
+        title: offerform.title.value,
+        comment: offerform.comment.value,
+        character: offerform.characterid.value,
+    };
+    $.post(url, params, function(data) {
+        if (data.success) {
+            window.location.href = '/ArtManager/trading_tree/adoptable/?offer_id=' + data.offer_id;
+        }
+    });
+}
+
 function submitClaim(offerid,claimform) {
   var offertype = claimform.offertype.value;
   if (offertype == 'icon') {
