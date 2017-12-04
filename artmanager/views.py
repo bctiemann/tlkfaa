@@ -1239,6 +1239,79 @@ class ColoringCaveView(ArtManagerPaneView):
         request.session['am_page'] = 'coloring-cave'
         return super(ColoringCaveView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(ColoringCaveView, self).get_context_data(**kwargs)
+
+        coloring_base_id = self.kwargs.get('coloring_base_id')
+        if coloring_base_id:
+            context['coloring_base'] = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+
+        context['coloring_bases'] = self.request.user.coloringbase_set.filter(is_visible=True).order_by('-date_posted')
+
+        picture_id = self.request.GET.get('picture_id', None)
+        if picture_id:
+            context['picture'] = get_object_or_404(models.Picture, pk=picture_id, artist=self.request.user)
+
+        return context
+
+
+class ColoringBasePostView(LoginRequiredMixin, CreateView):
+    model = models.ColoringBase
+    form_class = forms.PostColoringBaseForm
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        logger.info(self.request.POST)
+
+        picture = get_object_or_404(models.Picture, pk=self.kwargs.get('picture_id'), artist=self.request.user)
+        if picture.coloringbase_set.filter(is_active=True).exists():
+            response['message'] = 'This picture has already been posted into the Coloring Cave.'
+            return JsonResponse(response)
+
+        coloring_base = form.save(commit=False)
+        coloring_base.creator = self.request.user
+        coloring_base.picture = picture
+        coloring_base.save()
+
+        super(ColoringBasePostView, self).form_valid(form)
+
+        response['success'] = True
+        response['coloring_base_id'] = coloring_base.id
+
+        return JsonResponse(response)
+
+
+class ColoringBaseRemoveView(APIView):
+
+    def post(self, request, coloring_base_id):
+        response = {'success': False}
+
+        coloring_base = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+
+        if coloring_base.coloringpicture_set.exists():
+            coloring_base.is_active = False
+            coloring_base.save()
+        else:
+            coloring_base.delete()
+
+        response['success'] = True
+        return Response(response)
+
+
+class ColoringBaseRestoreView(APIView):
+
+    def post(self, request, coloring_base_id):
+        response = {'success': False}
+
+        coloring_base = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+
+        coloring_base.is_active = True
+        coloring_base.save()
+
+        response['success'] = True
+        return Response(response)
+
 
 class ContestsView(ArtManagerPaneView):
     template_name = 'artmanager/contests.html'

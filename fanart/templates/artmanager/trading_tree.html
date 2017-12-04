@@ -70,7 +70,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="data" id="offerselect">
                     {% if offer_type == "icon" %}
                         <input type="file" name="uploadfile" id="uploadfile" validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." />
-<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-offer" %}">
+<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-icon-offer" %}">
                     {% elif offer_type == "adoptable" %}
                         <span id="charactername">
                             {% if character %}

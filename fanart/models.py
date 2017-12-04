@@ -928,18 +928,40 @@ class ColoringBase(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     creator = models.ForeignKey('User', null=True, blank=True)
     picture = models.ForeignKey('Picture', null=True, blank=True)
-    date_posted = models.DateTimeField(null=True, blank=True)
-    is_active = models.BooleanField(default=False)
+    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
-    num_colored = models.IntegerField(null=True, blank=True)
+#    num_colored = models.IntegerField(null=True, blank=True, default=0)
+
+    @property
+    def num_colored(self):
+        return self.coloringpicture_set.count()
 
     @property
     def thumbnail_url(self):
         return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.picture.artist.dir_name, self.picture.basename)
 
+    @property
+    def thumb_width(self):
+        return settings.THUMB_SIZE['small']
+
+    @property
+    def thumb_height(self):
+        if self.picture:
+            return self.picture.thumb_height
+#            return int(self.picture.height * settings.THUMB_SIZE['small'] / self.width)
+        return 0
+
+    @property
+    def thumb_height_x2(self):
+        return self.thumb_height * 2
+
     def refresh_num_colored(self):
         self.num_colored = self.coloringpicture_set.count()
         self.save()
+
+    def get_absolute_url(self):
+        return reverse('coloring-cave', kwargs={'coloring_base_id': self.id})
 
 
 class ColoringPicture(models.Model):

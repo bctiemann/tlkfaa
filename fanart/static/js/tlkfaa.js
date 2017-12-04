@@ -1355,8 +1355,17 @@ function setupTagCharacters(pictureid,obj) {
 }
 
 function postSelectedPic(picform) {
-  if (typeof picform.picture !== "undefined") {
-    picform.submit();
+//  if (typeof picform.picture !== "undefined") {
+  if (picform.picture.value) {
+    var url = '/ArtManager/coloring_cave/' + picform.picture.value + '/post/';
+    $.post(url, function(data) {
+      if (data.success) {
+        window.location.href = '/ArtManager/coloring_cave/' + data.coloring_base_id + '/';
+      } else {
+        alert(data.message);
+      }
+    });
+//    picform.submit();
   } else {
 console.log('foo');
     $('#dialog_confirm_text').html('You must select one of your pictures to post into the Coloring Cave.');
@@ -1371,6 +1380,24 @@ console.log('foo');
       }
     });
   }
+}
+
+function removeColoringBase(coloringbaseid) {
+  var url = '/ArtManager/coloring_cave/' + coloringbaseid + '/remove/';
+  $.post(url, function(data) {
+    if (data.success) {
+      window.location.href = '/ArtManager/coloring_cave/';
+    }
+  });
+}
+
+function restoreColoringBase(coloringbaseid) {
+  var url = '/ArtManager/coloring_cave/' + coloringbaseid + '/restore/';
+  $.post(url, function(data) {
+    if (data.success) {
+      window.location.href = '/ArtManager/coloring_cave/' + coloringbaseid + '/';
+    }
+  });
 }
 
 function refreshBannerPreview(selform) {
@@ -2721,7 +2748,7 @@ $(document).ready(function() {
     if ($('#folders_edit').length > 0) {
         getFolderTree($('#folders_edit').attr('artistid'), $('#folders_edit').attr('folderid'), true, false, displayFoldersEditable);
     }
-    if ($('select.foldermenu').length > 0) {
+    if ($('select.foldermenu').length > 0 && $('#edit_artistid').length) {
         getFolderTree($('#edit_artistid').val(), null, true, false, getFolderSelect);
     }
 

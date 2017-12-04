@@ -3,269 +3,78 @@
 
 {% block am_content %}
 
-<%--
-inc_coloringcave.jsp
-ArtManager component for managing your Coloring Cave base pictures.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
-<fmt:parseNumber var="coloring_baseid" value="${param.coloring_baseid}" integerOnly="true" />
-<fmt:parseNumber var="ccid" value="${param.ccid}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${loggedin == 1}">
-
-<c:choose>
-<c:when test="${artist.ispaid == false}">
-<jsp:include page="inc_notpaidfeature.jsp" />
-</c:when>
-<c:otherwise>
-
-<c:choose>
-<c:when test="${param.fnc == 'postnew'}">
-
-	<sql:query var="qryPicture">
-	SELECT * FROM pictures 
-	WHERE pictureid=?
-	AND artistid=?
-	AND deleted IS NULL
-	<sql:param value="${pictureid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-	<sql:query var="qryCC">
-	SELECT * FROM coloring_base
-	WHERE pictureid=?
-	AND artistid=?
-	AND visible=true
-	<sql:param value="${pictureid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-	<c:if test="${qryPicture.rowCount > 0 && qryCC.rowCount == 0}">
-		<sql:transaction>
-		<sql:update var="updCC">
-		INSERT INTO coloring_base (artistid,pictureid,posted,active,visible)
-		VALUES (?,?,NOW(),1,1);
-		<sql:param value="${artist.artistid}" />
-		<sql:param value="${pictureid}" />
-		</sql:update>
-		<c:set var="pictureid" value="0" />
-		<sql:query var="qryInsCC" scope="session">
-		SELECT last_insert_id() AS coloring_baseid FROM coloring_base
-		LIMIT 1
-		</sql:query>
-		<c:forEach var="row" items="${qryInsCC.rows}">
-			<c:set var="coloring_baseid" value="${row.coloring_baseid}" scope="page" />
-		</c:forEach>
-		</sql:transaction>
-
-		<c:set var="artistid" value="${artist.artistid}" scope="page" />
-		<%
-		    String artistid = (String)pageContext.getAttribute("artistid").toString();
-		    String coloring_baseid = (String)pageContext.getAttribute("coloring_baseid").toString();
-		    printLog("Artist " + artistid + " posted Coloring Cave base id " + coloring_baseid + ".");
-		%>
-	</c:if>
-
-</c:when>
-<c:when test="${param.fnc == 'remove' && ccid > 0}">
-
-	<sql:query var="qryCCPics">
-	SELECT * FROM coloring_pics
-	WHERE basepic=?
-	<sql:param value="${ccid}" />
-	</sql:query>
-	<c:choose>
-	<c:when test="${qryCCPics.rowCount > 0}">
-		<sql:update var="updCCBase">
-		UPDATE coloring_base SET active=false
-		WHERE coloring_baseid=?
-		AND artistid=?
-		<sql:param value="${ccid}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:update>
-	</c:when>
-	<c:otherwise>
-		<sql:update var="updCCBase">
-		DELETE FROM coloring_base
-		WHERE coloring_baseid=?
-		AND artistid=?
-		<sql:param value="${ccid}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:update>
-	</c:otherwise>
-	</c:choose>
-
-</c:when>
-<c:when test="${param.fnc == 'restore' && ccid > 0}">
-
-	<sql:update var="updCCBase">
-	UPDATE coloring_base SET active=true
-	WHERE coloring_baseid=?
-	AND artistid=?
-	<sql:param value="${ccid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-</c:when>
-</c:choose>
-
 <h2>Offer Line-Art in the Coloring Cave</h2>
 
-<c:choose>
-<c:when test="${coloring_baseid > 0}">
+{% if coloring_base %}
 
-	<div class="pageinfo">
+    <div class="pageinfo">
+        <p>Review other artists' colored versions of your posted line-art here. You can remove any colored picture that you consider inappropriate.</p>
+    </div>
 
-	<p>Review other artists' colored versions of your posted line-art here. You can remove any colored picture that you consider inappropriate.</p>
+    <form name="ccform_{{ coloring_base.id }}" method="POST">
+        <button type="button" onClick="removeColoringBase({{ coloring_base.id }})">Remove</button>
+    </form>
 
-	</div>
+    <a href="{% url "coloring-cave" coloring_base_id=coloring_base.id %}">View in Coloring Cave</a>
 
-	<form name="ccform_${coloring_baseid}" method="POST" action="ArtManager.jsp">
-	<button type="submit">Remove</button>
-	<input type="hidden" name="op" value="coloringcave" />
-	<input type="hidden" name="fnc" value="remove" />
-	<input type="hidden" name="ccid" value="${coloring_baseid}" />
-	</form>
+    {% with picture=coloring_base.picture show_colored_pictures=True hide_cc_link=True %}
+        {% include "includes/picture.html" %}
+    {% endwith %}
 
-	<a href="/ColoringCave.jsp?ccid=${coloring_baseid}">View in Coloring Cave</a>
+{% else %}
 
-	<sql:query var="qryCCBase">
-	SELECT * FROM coloring_base,pictures
-	WHERE coloring_base.artistid=?
-	AND coloring_baseid=?
-	AND coloring_base.pictureid=pictures.pictureid
-	AND visible=true
-	<sql:param value="${artist.artistid}" />
-	<sql:param value="${coloring_baseid}" />
-	</sql:query>
-	<c:forEach var="basepic" items="${qryCCBase.rows}">
+    <form name="ccform_new" id="ccform_new" method="POST">
+        <table class="formtable">
+            <tr>
+                <td class="label">Line-Art From Gallery</td>
+                <td class="data" id="offerselect">
+                    <div id="pickpicture_new">
+                        {% if picture %}
+                            <img class="thumb" src="{{ picture.preview_url }}" />
+                        {% endif %}
+                    </div>
+                    <a href="{% url "picture-picker" target="coloring_cave" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="buttons">
+                    <button type="button" onClick="postSelectedPic(this.form)">Post Line-Art</button>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="picture" value="{{ picture.id }}" />
+    </form>
 
-		<c:set var="title" value="${basepic.title}" />
-		<tags:printPicture
-			picnumber=""
-			pictureid="${basepic.pictureid}"
-			basename="${basepic.basename}"
-			extension="${basepic.extension}"
-			type="${basepic.type}"
-			title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-			dirname="${artist.dirname}"
-			width="${basepic.width}"
-			height="${basepic.height}"
-			thumbheight="${basepic.thumbheight}"
-			allowcomments="${basepic.allowcomments_p && artist.allowcomments}"
-			numcomments="${basepic.numcomments}"
-			numpicfaves="${basepic.numpicfaves}"
-			folder="${basepic.folderid}"
-			cc_base="${basepic.coloring_baseid}"
-			showcolored="1"
-			>
-			<jsp:attribute name="uploaded">
-				<fmt:formatDate value="${basepic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-			</jsp:attribute>  
-			<jsp:attribute name="filesize">
-				<fmt:formatNumber value="${basepic.filesize / 1024}" type="number" pattern="###" />
-			</jsp:attribute>
-		</tags:printPicture>
+    <form name="pickpictureform">
+        <input type="hidden" name="item" value="coloringpic" />
+        <input type="hidden" name="itemid" value="new" />
+        <input type="hidden" name="picture" value="" />
+    </form>
 
-	</c:forEach>
+    <div id="offerslayout">
 
-</c:when>
-<c:otherwise>
+        {% if coloring_bases.count == 0 %}
+            <div class="noentries">
+                No coloring pictures.
+            </div>
+        {% endif %}
 
-	<c:if test="${pictureid > 0}">
-	<sql:query var="qryPreloadPicture">
-	SELECT * FROM pictures
-	WHERE pictureid=?
-	AND artistid=?
-	AND deleted IS NULL
-	<sql:param value="${pictureid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-	<c:forEach var="picture" items="${qryPreloadPicture.rows}">
-		<c:set var="preloadpicture" value="${picture}" />
-	</c:forEach>
-	</c:if>
+        {% for coloring_base in coloring_bases %}
+            <div class="offertile cctile">
+                <a href="{% url "artmanager:coloring-cave" coloring_base_id=coloring_base.id %}">
+                    <img class="" src="{{ coloring_base.picture.preview_url }}" width="60" height="{{ coloring_base.thumb_height }}" />
+                </a>
+                {{ coloring_base.date_posted|date:"m/d/Y" }}<br />
+                {{ coloring_base.num_colored }} colored
+                {% if not coloring_base.is_active %}(inactive)<br /><a class="button smallbutton" onClick="restoreColoringBase({{ coloring_base.id }})">restore</a>{% endif %}
+            </div>
 
-	<form name="ccform_new" id="ccform_new" method="POST" action="ArtManager.jsp">
-	<table class="formtable">
-	<tr>
-	<td class="label">Line-Art From Gallery</td>
-	<td class="data" id="offerselect">
-	<div id="pickpicture_new">
-	<c:if test="${qryPreloadPicture.rowCount > 0}">
-		<img class="thumb" src="/Artists/${artist.dirname}/${fanart:encodeURI(preloadpicture.basename)}.p.jpg" />
-		<input type="hidden" name="pictureid" value="${preloadpicture.pictureid}" />
-	</c:if>
-	</div>
-	<a href="pop_pickpicture.jsp?op=coloringcave&folderid=0" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
-	</td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="postSelectedPic(this.form)">Post Line-Art</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="op" value="coloringcave" />
-	<input type="hidden" name="fnc" value="postnew" />
-	</form>
+        {% endfor %}
 
-	<form name="pickpictureform">
-	<input type="hidden" name="item" value="coloringpic" />
-	<input type="hidden" name="itemid" value="new" />
-	<input type="hidden" name="pictureid" value="" />
-	</form>
+        <br clear="left" />
 
-	<sql:query var="qryCC">
-	SELECT * FROM coloring_base,pictures
-	WHERE coloring_base.artistid=?
-	AND coloring_base.pictureid=pictures.pictureid
-	AND visible=true
-	ORDER BY coloring_base.posted DESC
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
+    </div>
 
-	<div id="offerslayout-foo">
-
-	<c:if test="${qryCC.rowCount == 0}">
-	<div class="noentries">
-	No coloring pictures.
-	</div>
-	</c:if>
-
-	<c:forEach var="ccbase" items="${qryCC.rows}">
-
-	<div class="offertile cctile">
-	<a href="/ArtManager.jsp?op=coloringcave&coloring_baseid=${ccbase.coloring_baseid}"><img class="" src="/Artists/${artist.dirname}/${fanart:encodeURI(ccbase.basename)}.p.jpg" width="60" height="${ccbase.thumbheight}" /></a>
-	<fmt:formatDate value="${ccbase.posted}" type="date" pattern="M/d/yyyy" /><br />
-	${ccbase.numcolored} colored
-	<c:if test="${ccbase.active == false}">(inactive)<br /><a class="button smallbutton" href="/ArtManager.jsp?op=coloringcave&fnc=restore&ccid=${ccbase.coloring_baseid}">restore</a></c:if>
-	</div>
-
-	</c:forEach>
-
-	<br clear="left" />
-
-	</div>
-
-</c:otherwise>
-</c:choose>
-
-</c:otherwise>
-</c:choose>
-
-</c:if>
+{% endif %}
 
 {% endblock %}

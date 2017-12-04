@@ -343,11 +343,13 @@ class Command(BaseCommand):
                         id = cb['coloring_baseid'],
                         creator = creator,
                         picture = picture,
-                        date_posted = cb['posted'],
+#                        date_posted = cb['posted'],
                         is_active = cb['active'],
                         is_visible = cb['visible'],
-                        num_colored = cb['numcolored'],
+#                        num_colored = cb['numcolored'],
                     )
+                    f.date_posted = cb['posted']
+                    f.save()
                 except fanart_models.User.DoesNotExist:
                     print 'Artist not found'
                     pass

@@ -79,7 +79,10 @@ urlpatterns = [
     url(r'^trading_tree/adoptable/create/$', artmanager_views.CreateAdoptableOfferView.as_view(), name='create-adoptable-offer'),
     url(r'^trading_tree/(?P<offer_id>[0-9]+)/status/$', artmanager_views.OfferStatusView.as_view(), name='offer-status'),
 
-    url(r'^coloring_cave/(?:(?P<picture_id>[0-9]+)/)?$', artmanager_views.ColoringCaveView.as_view(), name='coloring-cave'),
+    url(r'^coloring_cave/(?:(?P<coloring_base_id>[0-9]+)/)?$', artmanager_views.ColoringCaveView.as_view(), name='coloring-cave'),
+    url(r'^coloring_cave/(?P<picture_id>[0-9]+)/post/$', artmanager_views.ColoringBasePostView.as_view(), name='coloring-base-post'),
+    url(r'^coloring_cave/(?P<coloring_base_id>[0-9]+)/remove/$', artmanager_views.ColoringBaseRemoveView.as_view(), name='coloring-base-remove'),
+    url(r'^coloring_cave/(?P<coloring_base_id>[0-9]+)/restore/$', artmanager_views.ColoringBaseRestoreView.as_view(), name='coloring-base-restore'),
 
     url(r'^contests/$', artmanager_views.ContestsView.as_view(), name='contests'),
     url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),

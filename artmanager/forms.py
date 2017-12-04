@@ -107,3 +107,8 @@ class CreateAdoptableOfferForm(forms.ModelForm):
         fields = ['title', 'comment', 'character']
 
 
+class PostColoringBaseForm(forms.ModelForm):
+
+    class Meta:
+        model = models.ColoringBase
+        fields = []
