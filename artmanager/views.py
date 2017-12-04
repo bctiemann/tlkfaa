@@ -1320,6 +1320,16 @@ class ContestsView(ArtManagerPaneView):
         request.session['am_page'] = 'contests'
         return super(ContestsView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(ContestsView, self).get_context_data(**kwargs)
+
+#        contests = self.request.user.contest_set.filter(type='personal').order_by('-date_created')
+        contests = self.request.user.contest_set.all().order_by('-date_created')
+        context['unpublished_contests'] = contests.filter(is_active=False, is_cancelled=False)[0:20]
+        context['published_contests'] = contests.filter(is_active=True)[0:20]
+
+        return context
+
 
 class BulletinsView(ArtManagerPaneView):
     template_name = 'artmanager/bulletins.html'

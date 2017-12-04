@@ -251,6 +251,7 @@ ArtManager component for managing your contests.
 	<sql:param value="personal" />
 	</sql:query>
 
+        {% for contest in unpublished_contests %}
 	<c:forEach var="contest" items="${qryContestsUnPub.rows}">
 
 	<div class="contest">
@@ -297,6 +298,7 @@ ArtManager component for managing your contests.
 	</script>
 
 	</c:forEach>
+        {% endfor %}
 
 
 	<h3 class="sectionheader">Published Contests</h3>
@@ -311,7 +313,8 @@ ArtManager component for managing your contests.
 	<sql:param value="${artist.artistid}" />
 	<sql:param value="personal" />
 	</sql:query>
-	
+
+        {% for contest in published_contests %}	
 	<c:forEach var="contest" items="${qryContestsPub.rows}">
 
 		<c:set var="description" value="${contest.description}" />
@@ -323,12 +326,12 @@ ArtManager component for managing your contests.
 		<table class="formtable">
 		<tr>
 		<td class="label">Contest Title</td>
-		<td class="data"><a href="/Contests.jsp?contestid=${contest.contestid}">${contest.title}</a></td>
+		<td class="data"><a href="/Contests.jsp?contestid=${contest.contestid}">{{ contest.title }}</a></td>
 		</tr>
 		<tr>
 		<td class="label">Deadline</td>
 		<td class="data">
-		<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
+		{{ contest.date_end|date:"m/d/Y" }}<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
 		</td>
 		</tr>
 		<tr>
@@ -346,11 +349,11 @@ ArtManager component for managing your contests.
 		</tr>
 		<tr>
 		<td class="label">Theme/Description</td>
-		<td class="data"><%= formatText((String)pageContext.getAttribute("description")) %></td>
+		<td class="data">{{ contest.description|bbcode|safe }}</td>
 		</tr>
 		<tr>
 		<td class="label">Rules</td>
-		<td class="data"><%= formatText((String)pageContext.getAttribute("rules")) %></td>
+		<td class="data">{{ contest.rules|bbcode|safe }}</td>
 		</tr>
 		<tr>
 		<td colspan="2" class="buttons">
@@ -373,50 +376,18 @@ ArtManager component for managing your contests.
 		</form>
 		</div>
 
-		<sql:query var="qryContestPics">
-		SELECT * FROM contestpics,pictures,artists
-		WHERE contestpics.pictureid=pictures.pictureid
-		AND pictures.artistid=artists.artistid
-		AND contestpics.contestid=?
-		ORDER BY entered
-		<sql:param value="${contest.contestid}" />
-		</sql:query>
-
+                {% for entry in contest.contestentry_set.all %}
 		<c:forEach var="contestpic" items="${qryContestPics.rows}">
 
-			<c:set var="title" value="${contestpic.title}" />
-			<tags:printPicture
-				picnumber=""
-				pictureid="${contestpic.pictureid}"
-				basename="${contestpic.basename}"
-				extension="${contestpic.extension}"
-				type="${contestpic.type}"
-				title="<%= formatText((String)pageContext.getAttribute(\"title\")) %>"
-				artistname="${contestpic.artistname}"
-				dirname="${contestpic.dirname}"
-				width="${contestpic.width}"
-				height="${contestpic.height}"
-				thumbheight="${contestpic.thumbheight}"
-				allowcomments="${contestpic.allowcomments_p && contestpic.allowcomments}"
-				numcomments="${contestpic.numcomments}"
-				numpicfaves="${contestpic.numpicfaves}"
-				gallery="contest-${contest.contestid}"
-				folder="${contestpic.folderid}"
-				contest="${contest.contestid}"
-				contestform="document.contest_${contest.contestid}"
-				contestremove="1"
-				>
-				<jsp:attribute name="uploaded">
-					<fmt:formatDate value="${contestpic.uploaded}" type="both" pattern="HH:mm E M/d/yyyy" />
-				</jsp:attribute>  
-				<jsp:attribute name="filesize">
-					<fmt:formatNumber value="${contestpic.filesize / 1024}" type="number" pattern="###" />
-				</jsp:attribute>
-			</tags:printPicture>
+                        {% with picture=entry.picture %}
+                            {% include "includes/picture.html" %}
+                        {% endwith %}
 
 		</c:forEach>
+                {% endfor %}
 
 	</c:forEach>
+        {% endfor %}
 
 </c:otherwise>
 </c:choose>
