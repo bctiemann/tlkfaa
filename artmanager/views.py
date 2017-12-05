@@ -26,6 +26,7 @@ from fanart import models, utils, tasks
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
+from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
 
 import json
@@ -1129,7 +1130,7 @@ class TradingTreeView(ArtManagerPaneView):
 
         offer_id = self.request.GET.get('offer_id', None)
         if offer_id:
-            context['offer'] = get_object_or_404(models.TradingOffer, pk=offer_id, artist=self.request.user)
+            context['offer'] = get_object_or_404(Offer, pk=offer_id, artist=self.request.user)
 
         character_id = self.request.GET.get('character_id', None)
         if character_id:
@@ -1163,7 +1164,7 @@ class TradingTreeForYouView(ArtManagerPaneView):
 
 
 class UploadIconOfferView(LoginRequiredMixin, CreateView):
-    model = models.TradingOffer
+    model = Offer
     form_class = forms.UploadIconOfferForm
 
     def form_valid(self, form):
@@ -1193,7 +1194,7 @@ class OfferStatusView(APIView):
 
     def get(self, request, offer_id=None):
         response = {}
-        offer = get_object_or_404(models.TradingOffer, pk=offer_id)
+        offer = get_object_or_404(Offer, pk=offer_id)
         if offer.picture:
             response[offer.id] = {
                 'thumbnail_url': offer.thumbnail_url,
@@ -1203,7 +1204,7 @@ class OfferStatusView(APIView):
 
 
 class CreateAdoptableOfferView(LoginRequiredMixin, CreateView):
-    model = models.TradingOffer
+    model = Offer
     form_class = forms.CreateAdoptableOfferForm
 
     def form_valid(self, form):

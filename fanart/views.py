@@ -19,6 +19,7 @@ from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks
 from coloring_cave.models import Base, ColoringPicture
+from trading_tree.models import Offer, Claim
 
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
@@ -48,14 +49,14 @@ class UserPaneMixin(object):
         icons_publish_start_date = timezone.now() - timedelta(weeks=3)
         adoptables_publish_start_date = timezone.now() - timedelta(days=30*6)
         adoptables_mine_start_date = timezone.now() - timedelta(days=30)
-        community_art_data['icons'] = models.TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
-        community_art_data['icons_today'] = models.TradingOffer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
+        community_art_data['icons'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
+        community_art_data['icons_today'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
         if self.request.user.is_authenticated:
-            community_art_data['icons_mine'] = models.TradingClaim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
-        community_art_data['adoptables'] = models.TradingOffer.objects.filter(type='adoptable', is_active=True, is_visible=True, date_posted__gt=adoptables_publish_start_date)
+            community_art_data['icons_mine'] = Claim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
+        community_art_data['adoptables'] = Offer.objects.filter(type='adoptable', is_active=True, is_visible=True, date_posted__gt=adoptables_publish_start_date)
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
         if self.request.user.is_authenticated:
-            community_art_data['adoptables_mine'] = models.TradingClaim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
+            community_art_data['adoptables_mine'] = Claim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
         community_art_data['coloring_bases'] = Base.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 
@@ -326,12 +327,12 @@ class TradingTreeView(UserPaneMixin, TemplateView):
 
         offer_id = self.request.GET.get('offer_id', None)
         if offer_id:
-            context['offer'] = get_object_or_404(models.TradingOffer, pk=offer_id)
+            context['offer'] = get_object_or_404(Offer, pk=offer_id)
             if self.request.user.is_authenticated():
-                context['my_claims_for_offer'] = context['offer'].tradingclaim_set.filter(user=self.request.user)
+                context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
 
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
-        context['offers'] = models.TradingOffer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
+        context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
 
         if self.request.user.is_authenticated() and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
             context['show_for_you'] = True
@@ -1055,203 +1056,6 @@ class ArtistsAutocompleteView(APIView):
                 'dirname': artist.dir_name,
             })
 
-        return Response(response)
-
-
-class PostClaimView(CreateView):
-    model = models.TradingClaim
-    form_class = forms.ClaimForm
-    template_name = 'includes/tradingtree.html'
-
-    def form_valid(self, form):
-        logger.info(self.request.POST)
-        response = {'success': False}
-        offer = models.TradingOffer.objects.get(pk=self.request.POST.get('offer', None))
-
-        claim = form.save(commit=False)
-        claim.offer = offer
-        claim.user = self.request.user
-        claim.save()
-
-        return JsonResponse(response)
-
-
-class UploadClaimView(UpdateView):
-    model = models.TradingClaim
-    form_class = forms.UploadClaimForm
-    template_name = 'includes/claim.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
-
-    def form_valid(self, form):
-        response = {'success': False}
-
-        self.object.picture = self.request.FILES['picture']
-        self.object.filename = self.request.FILES['picture'].name
-        self.object.date_uploaded = timezone.now()
-        super(UploadClaimView, self).form_valid(form)
-
-        return JsonResponse(response)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(UploadClaimView, self).get_context_data(*args, **kwargs)
-        context['claim'] = self.object
-        return context
-
-
-class RemoveClaimUploadView(UpdateView):
-    model = models.TradingClaim
-    form_class = forms.UploadClaimForm
-    template_name = 'includes/claim.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
-
-    def form_valid(self, form):
-        self.object.filename = ''
-        self.object.date_fulfilled = None
-        try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
-            os.remove(os.path.join(self.object.thumbnail_path))
-        except OSError:
-            pass
-        self.object.picture = None
-        return super(RemoveClaimUploadView, self).form_valid(form)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(RemoveClaimUploadView, self).get_context_data(*args, **kwargs)
-        context['claim'] = self.object
-        return context
-
-
-class AcceptClaimView(UpdateView):
-    model = models.TradingClaim
-    form_class = forms.AcceptClaimForm
-    template_name = 'includes/tradingtree_foryou.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], user=self.request.user)
-
-    def form_valid(self, form):
-        if self.object.offer.type == 'icon':
-            self.object.date_fulfilled = timezone.now()
-        elif self.object.offer.type == 'adoptable':
-
-            comment_append = ''
-            if self.object.offer.character.profile_picture:
-                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
-            elif self.object.offer.character.profile_coloring_picture:
-                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/ColoringCave/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_coloring_picture.id)
-
-            self.object.offer.character.owner = self.request.user
-            self.object.offer.character.profile_picture = None
-            self.object.offer.character.profile_coloring_picture = None
-            self.object.offer.character.date_adopted = timezone.now()
-            self.object.offer.character.adopted_from = self.object.offer.artist
-            self.object.offer.character.description += comment_append
-            self.object.offer.character.save()
-
-            self.object.offer.is_active = False
-            self.object.offer.is_visible = False
-            self.object.offer.adopted_by = self.request.user
-            self.object.offer.save()
-
-            self.object.offer.artist.refresh_num_characters()
-            self.request.user.refresh_num_characters()
-
-#                                Accepting this adoptable into your Characters section...
-
-        return super(AcceptClaimView, self).form_valid(form)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(AcceptClaimView, self).get_context_data(*args, **kwargs)
-        context['claim'] = self.object
-        return context
-
-    def get_success_url(self):
-        return reverse('accept-claim', kwargs={'claim_id': self.object.id})
-
-
-class ChooseAdopterView(UpdateView):
-    model = models.TradingClaim
-    form_class = forms.AcceptClaimForm
-
-    def get_object(self):
-        return get_object_or_404(models.TradingClaim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
-
-    def form_valid(self, form):
-        logger.info(self.object.date_fulfilled)
-        if self.object.date_fulfilled:
-            self.object.date_fulfilled = None
-        else:
-            self.object.date_fulfilled = timezone.now()
-        return super(ChooseAdopterView, self).form_valid(form)
-
-
-class RemoveClaimView(DeleteView):
-    model = models.TradingClaim
-
-    def get_object(self):
-        return get_object_or_404(models.TradingClaim, (Q(user=self.request.user) | Q(offer__artist=self.request.user)), pk=self.kwargs['claim_id'])
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        logger.info(self.object.picture.name)
-        return super(RemoveClaimView, self).delete(self, request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse('offer', kwargs={'offer_id': self.object.offer.id})
-
-
-class OfferView(DetailView):
-    models = models.TradingOffer
-    template_name = 'includes/offer.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'])
-
-
-class EditOfferView(UpdateView):
-    models = models.TradingOffer
-    form_class = forms.OfferForm
-    template_name = 'includes/edit_offer.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
-
-
-class RemoveOfferView(UpdateView):
-    models = models.TradingOffer
-    form_class = forms.RemoveOfferForm
-    template_name = 'includes/edit_offer.html'
-
-    def get_object(self):
-        return get_object_or_404(models.TradingOffer, pk=self.kwargs['offer_id'], artist=self.request.user)
-
-    def form_valid(self, form):
-        response = {'success': False}
-
-        self.object.is_active = False
-        self.object.is_visible = False
-        self.object.save()
-
-        response['success'] = True
-
-        return JsonResponse(response)
-
-
-class OfferStatusView(APIView):
-
-    def get(self, request, offer_id=None):
-        response = {}
-        offer = get_object_or_404(models.TradingOffer, pk=offer_id)
-        for claim in offer.tradingclaim_set.all():
-            if claim.picture:
-                response[claim.id] = {
-                    'thumbnail_url': claim.thumbnail_url,
-                    'thumbnail_done': claim.thumbnail_created,
-                }
         return Response(response)
 
 

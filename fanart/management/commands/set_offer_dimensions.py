@@ -9,13 +9,13 @@ import unicodedata, re
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart import models
+from trading_tree.models import Offer
 
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        offers = models.TradingOffer.objects.filter(picture__isnull=True)
+        offers = Offer.objects.filter(picture='')
         for i, offer in enumerate(offers):
             print i, offer
             path = os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.{1}'.format(offer.id, offer.extension))

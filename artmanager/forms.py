@@ -7,6 +7,7 @@ from django.contrib.auth import (
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden
 
 from fanart import models
+from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
 
 import json
@@ -97,14 +98,14 @@ class BannerPreviewForm(forms.Form):
 class UploadIconOfferForm(forms.ModelForm):
 
     class Meta:
-        model = models.TradingOffer
+        model = Offer
         fields = ['title', 'comment']
 
 
 class CreateAdoptableOfferForm(forms.ModelForm):
 
     class Meta:
-        model = models.TradingOffer
+        model = Offer
         fields = ['title', 'comment', 'character']
 
 

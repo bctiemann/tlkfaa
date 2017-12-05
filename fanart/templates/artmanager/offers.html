@@ -12,10 +12,10 @@
         {{ offer.date_posted|date }}<br />
 
         {% if offer.type == "icon" %}
-            {{ offer.tradingclaim_set.count }} request{{ offer.tradingclaim_set.count|pluralize }}, {{ offer.open_claims.count }} open
+            {{ offer.claim_set.count }} request{{ offer.claim_set.count|pluralize }}, {{ offer.open_claims.count }} open
         {% elif offer.type == "adoptable" %}
             {% if not offer.completed_claims.exists %}
-                {{ offer.tradingclaim_set.count }} applying
+                {{ offer.claim_set.count }} applying
             {% else %}
                 Adopted.
             {% endif %}

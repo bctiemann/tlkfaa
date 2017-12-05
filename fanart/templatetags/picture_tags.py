@@ -1,7 +1,8 @@
 from django import template
 from django.template.defaultfilters import stringfilter
 
-from fanart.models import UnviewedPicture, Favorite, TradingOffer, TradingClaim
+from fanart.models import UnviewedPicture, Favorite
+from trading_tree.models import Offer, Claim
 
 import logging
 logger = logging.getLogger(__name__)
@@ -89,7 +90,7 @@ class IsAppliedOfferNode(template.Node):
         offer = self.offer.resolve(context)
         user = self.user.resolve(context)
 
-        return 'offer_applied' if TradingClaim.objects.filter(offer=offer, user=user).exists() else ''
+        return 'offer_applied' if Claim.objects.filter(offer=offer, user=user).exists() else ''
 
 
 @register.tag(name='view_picture')

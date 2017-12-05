@@ -32,7 +32,7 @@
 
 	<div id="iconrequests_{{ offer.id }}">
 
-            {% for claim in offer.tradingclaim_set.all %}
+            {% for claim in offer.claim_set.all %}
                 <div class="claim" id="claim_{{ claim.id }}">
                     {% include "includes/claim.html" %}
                 </div>
@@ -69,7 +69,7 @@
 
         <div id="adoptableclaims_{{ offer.id }}">
 
-            {% for claim in offer.tradingclaim_set.all %}
+            {% for claim in offer.claim_set.all %}
 
                 <div class="claim" id="claim_{{ claim.id }}">
                     {% include "includes/claim.html" %}

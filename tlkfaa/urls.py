@@ -4,6 +4,7 @@ from django.conf import settings
 
 from django.contrib.auth import views as auth_views
 from fanart import views as fanart_views
+from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
 
 urlpatterns = [
@@ -21,7 +22,7 @@ urlpatterns = [
     url(r'^Artwork/(?:(?P<list>[a-z]+)/)?$', fanart_views.ArtworkView.as_view(), name='artwork'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<mode>[a-z]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
-    url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
+    url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/(?:(?P<special_id>[0-9]+)/)?$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
     url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
@@ -74,16 +75,16 @@ urlpatterns = [
     url(r'^artists-ac/(?P<term>.+)/$', fanart_views.ArtistsAutocompleteView.as_view(), name='artists-autocomplete'),
     url(r'^check-name/$', fanart_views.CheckNameView.as_view(), name='check-name'),
 
-    url(r'^offer/(?P<offer_id>[0-9]+)/$', fanart_views.OfferView.as_view(), name='offer'),
-    url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', fanart_views.EditOfferView.as_view(), name='edit-offer'),
-    url(r'^offer/(?P<offer_id>[0-9]+)/remove/$', fanart_views.RemoveOfferView.as_view(), name='remove-offer'),
-    url(r'^offer/(?P<offer_id>[0-9]+)/status/$', fanart_views.OfferStatusView.as_view(), name='offer-status'),
-    url(r'^claim/post/$', fanart_views.PostClaimView.as_view(), name='post-claim'),
-    url(r'^claim/(?P<claim_id>[0-9]+)/upload/$', fanart_views.UploadClaimView.as_view(), name='upload-claim'),
-    url(r'^claim/(?P<claim_id>[0-9]+)/upload/remove/$', fanart_views.RemoveClaimUploadView.as_view(), name='remove-claim-upload'),
-    url(r'^claim/(?P<claim_id>[0-9]+)/accept/$', fanart_views.AcceptClaimView.as_view(), name='accept-claim'),
-    url(r'^claim/(?P<claim_id>[0-9]+)/choose/$', fanart_views.ChooseAdopterView.as_view(), name='choose-adopter'),
-    url(r'^claim/(?P<claim_id>[0-9]+)/remove/$', fanart_views.RemoveClaimView.as_view(), name='remove-claim'),
+    url(r'^offer/(?P<offer_id>[0-9]+)/$', trading_tree_views.OfferView.as_view(), name='offer'),
+    url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', trading_tree_views.EditOfferView.as_view(), name='edit-offer'),
+    url(r'^offer/(?P<offer_id>[0-9]+)/remove/$', trading_tree_views.RemoveOfferView.as_view(), name='remove-offer'),
+    url(r'^offer/(?P<offer_id>[0-9]+)/status/$', trading_tree_views.OfferStatusView.as_view(), name='offer-status'),
+    url(r'^claim/post/$', trading_tree_views.PostClaimView.as_view(), name='post-claim'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/upload/$', trading_tree_views.UploadClaimView.as_view(), name='upload-claim'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/upload/remove/$', trading_tree_views.RemoveClaimUploadView.as_view(), name='remove-claim-upload'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/accept/$', trading_tree_views.AcceptClaimView.as_view(), name='accept-claim'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/choose/$', trading_tree_views.ChooseAdopterView.as_view(), name='choose-adopter'),
+    url(r'^claim/(?P<claim_id>[0-9]+)/remove/$', trading_tree_views.RemoveClaimView.as_view(), name='remove-claim'),
 
     url(r'^coloring/(?P<coloring_base_id>[0-9]+)/$', coloring_cave_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
     url(r'^coloring/(?P<coloring_base_id>[0-9]+)/upload/$', coloring_cave_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),

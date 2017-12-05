@@ -10,6 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from fanart import models as fanart_models
+from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
 
 
@@ -21,12 +22,12 @@ class Command(BaseCommand):
 #        'do_pictures': True,
 #        'do_comments': True,
 #        'do_shouts': True,
-        'do_coloringbase': True,
-        'do_coloringpics': True,
+#        'do_coloringbase': True,
+#        'do_coloringpics': True,
 #        'do_characters': True,
 #        'do_favorites': True,
-#        'do_offers': True,
-#        'do_claims': True,
+        'do_offers': True,
+        'do_claims': True,
 #        'do_picturecharacters': True,
 #        'do_tags': True,
 #        'do_approvers': True,
@@ -504,7 +505,7 @@ class Command(BaseCommand):
                         adopted_by = fanart_models.User.objects.get(artist_id_orig=offer['adoptedby'])
                     except fanart_models.User.DoesNotExist:
                         adopted_by = None
-                f = fanart_models.TradingOffer.objects.create(
+                f = Offer.objects.create(
                     id_orig = offer['offerid'],
                     id = offer['offerid'],
                     artist = artist,
@@ -529,14 +530,14 @@ class Command(BaseCommand):
             for claim in c.fetchall():
                 print claim
                 try:
-                    offer = fanart_models.TradingOffer.objects.get(id_orig=claim['offerid'])
-                except fanart_models.TradingOffer.DoesNotExist:
+                    offer = Offer.objects.get(id_orig=claim['offerid'])
+                except Offer.DoesNotExist:
                     offer = None
                 try:
                     user = fanart_models.User.objects.get(id_orig=claim['userid'])
                 except fanart_models.User.DoesNotExist:
                     user = None
-                f = fanart_models.TradingClaim.objects.create(
+                f = Claim.objects.create(
                     id_orig = claim['claimid'],
                     id = claim['claimid'],
                     offer = offer,
