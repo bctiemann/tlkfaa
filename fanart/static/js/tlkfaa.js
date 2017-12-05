@@ -2560,13 +2560,29 @@ function removeContestPic(selform,entryid) {
   });
 }
 
+function createContest() {
+    var url = '/ArtManager/contests/create/';
+    var params = {
+        title: $('#title_new').val(),
+        description: $('#description_new').val(),
+        rules: $('#rules_new').val(),
+        date_end: $('#deadline_pick_new').val(),
+        allow_voting: $('#allow_voting_new').checked,
+    };
+    $.post(url, params, function(data) {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
+
 function applyContest(selform,contestid,fnc) {
   var c = false;
   if (fnc == 'delete') {
     $('#dialog_confirm_text').html("Are you sure you want to delete this contest?");
     c = true;
   } else if (fnc == 'cancel') {
-    $('#dialog_confirm_text').html("Are you sure you want cancel and delete this contest?");
+    $('#dialog_confirm_text').html("Are you sure you want to cancel and delete this contest?");
     c = true;
   } else if (fnc == 'publish') {
     $('#dialog_confirm_text').html("Are you sure you are ready to publish this contest?");

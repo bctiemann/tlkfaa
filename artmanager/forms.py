@@ -114,3 +114,10 @@ class PostColoringBaseForm(forms.ModelForm):
     class Meta:
         model = Base
         fields = []
+
+
+class ContestForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Contest
+        fields = ['title', 'description', 'rules', 'date_end', 'allow_voting']

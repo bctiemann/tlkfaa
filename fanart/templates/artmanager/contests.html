@@ -200,11 +200,11 @@ ArtManager component for managing your contests.
 	<h3 class="sectionheader">Create New Contest</h3>
 	<div class="bulletin">
 
-	<form name="contest_new" id="contest_new" method="POST" action="ArtManager.jsp">
+	<form name="contest_new" id="contest_new" method="POST">
 	<table class="formtable">
 	<tr>
 	<td class="label">Contest Title</td>
-	<td class="data"><input type="text" class="std" name="title" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
+	<td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
 	</tr>
 	<tr>
 	<td class="label">Deadline</td>
@@ -212,19 +212,19 @@ ArtManager component for managing your contests.
 	</tr>
 	<tr>
 	<td class="label">Allow Voting</td>
-	<td class="data"><input type="checkbox" name="allowvoting" value="1" /></td>
+	<td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
 	</tr>
 	<tr>
 	<td class="label">Theme/Description</td>
-	<td class="data"><textarea name="description"></textarea></td>
+	<td class="data"><textarea name="description" id="description_new"></textarea></td>
 	</tr>
 	<tr>
 	<td class="label">Rules</td>
-	<td class="data"><textarea name="rules"></textarea></td>
+	<td class="data"><textarea name="rules" id="rules_new"></textarea></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('contest_new','document.contest_new.submit()')">Create Contest</button>   
+	<button type="button" onClick="validateForm('contest_new','createContest()')">Create Contest</button>   
 	</td>
 	</tr>
 	</table>
@@ -255,34 +255,34 @@ ArtManager component for managing your contests.
 	<c:forEach var="contest" items="${qryContestsUnPub.rows}">
 
 	<div class="contest">
-	<form name="contest_${contest.contestid}" id="contest_${contest.contestid}" method="POST" action="ArtManager.jsp">
+	<form name="contest_{{ contest.id }}" id="contest_{{ contest.id }}" method="POST">
 	<table class="formtable">
 	<tr>
 	<td class="label">Contest Title</td>
 	<c:set var="contesttitle" value="${contest.title}" />
-	<td class="data"><input type="text" class="std" name="title" maxlength="64" value="<%= sanitizeHTML((String)pageContext.getAttribute("contesttitle"),64) %>" validate="hasvalue" message="The contest title cannot be blank." /></td>
+	<td class="data"><input type="text" class="std" name="title" id="title_{{ contest.id }}" maxlength="64" value="{{ contest.title }}" validate="hasvalue" message="The contest title cannot be blank." /></td>
 	</tr>
 	<tr>
 	<td class="label">Deadline</td>
-	<td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_${contest.contestid}" maxlength="255" value="<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
+	<td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_{{ contest.id }}" maxlength="255" value="{{ contest.date_end|date:"m/d/Y" }}" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
 	</tr>
 	<tr>
 	<td class="label">Allow Voting</td>
-	<td class="data"><input type="checkbox" name="allowvoting" value="1" <c:if test="${contest.allowvoting == true}">checked</c:if> /></td>
+	<td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
 	</tr>
 	<tr>
 	<td class="label">Theme/Description</td>
-	<td class="data"><textarea name="description">${contest.description}</textarea></td>
+	<td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
 	</tr>
 	<tr>
 	<td class="label">Rules</td>
-	<td class="data"><textarea name="rules">${contest.rules}</textarea></td>
+	<td class="data"><textarea name="rules" id="rules_{{ contest.id }}">{{ contest.rules }}</textarea></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('contest_${contest.contestid}','document.contest_${contest.contestid}.submit()')">Apply Changes</button>
-	<button type="button" onClick="validateForm('contest_${contest.contestid}','applyContest(document.contest_${contest.contestid},${contest.contestid},\'publish\')')">Publish and Begin Contest</button>
-	<button type="button" onClick="applyContest(form,${contest.contestid},'delete')">Delete Contest</button>
+	<button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'update\')')">Apply Changes</button>
+	<button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'publish\')')">Publish and Begin Contest</button>
+	<button type="button" onClick="applyContest(form,{{ contest.id }},'delete')">Delete Contest</button>
 	</td>
 	</tr>
 	</table>
@@ -293,8 +293,8 @@ ArtManager component for managing your contests.
 	</div>
 
 	<script type="text/javascript">
-		$('#deadline_pick_${contest.contestid}').datepicker();
-		$('#deadline_pick_${contest.contestid}').datepicker("option", "dateFormat", "m/d/yy");
+		$('#deadline_pick_{{ contest.id }}').datepicker();
+		$('#deadline_pick_{{ contest.id }}').datepicker("option", "dateFormat", "m/d/yy");
 	</script>
 
 	</c:forEach>
@@ -321,12 +321,12 @@ ArtManager component for managing your contests.
 		<c:set var="rules" value="${contest.rules}" />
 
 		<div class="contest">
-		<form name="contest_${contest.contestid}" method="POST" action="ArtManager.jsp">
+		<form name="contest_{{ contest.id }}" method="POST" action="ArtManager.jsp">
 
 		<table class="formtable">
 		<tr>
 		<td class="label">Contest Title</td>
-		<td class="data"><a href="/Contests.jsp?contestid=${contest.contestid}">{{ contest.title }}</a></td>
+		<td class="data"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></td>
 		</tr>
 		<tr>
 		<td class="label">Deadline</td>
@@ -337,14 +337,17 @@ ArtManager component for managing your contests.
 		<tr>
 		<td class="label">Voting</td>
 		<td class="data">
+                {% if contest.allow_voting %}
 		<c:choose>
 		<c:when test="${contest.allowvoting == true}">
 		Allowed
 		</c:when>
+                {% else %}
 		<c:when test="${contest.allowvoting == false}">
 		Not Allowed
 		</c:when>
 		</c:choose>
+                {% endif %}
 		</td>
 		</tr>
 		<tr>
@@ -357,15 +360,18 @@ ArtManager component for managing your contests.
 		</tr>
 		<tr>
 		<td colspan="2" class="buttons">
+                        {% if contest.is_cancelled %}
 			<c:choose>
 			<c:when test="${contest.cancelled}">
 				(Cancelled)
 			</c:when>
+                        {% else %}
 			<c:otherwise>
-				<button type="button" onClick="applyContest(form,${contest.contestid},'unpublish')">Unpublish and Edit Contest</button>
-				<button type="button" onClick="applyContest(form,${contest.contestid},'cancel')">Cancel Contest</button>
+				<button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
+				<button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
 			</c:otherwise>
 			</c:choose>
+                        {% endif %}
 		</td>
 		</tr>
 		</table>
