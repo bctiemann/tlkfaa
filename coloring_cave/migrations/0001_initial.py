@@ -6,6 +6,7 @@ import coloring_cave.models
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+import fanart.models
 
 
 class Migration(migrations.Migration):
@@ -39,7 +40,7 @@ class Migration(migrations.Migration):
                 ('date_posted', models.DateTimeField(auto_now_add=True, null=True)),
                 ('comment', models.TextField(blank=True)),
                 ('filename', models.CharField(blank=True, max_length=100)),
-                ('picture', models.ImageField(blank=True, height_field='height', max_length=255, null=True, storage=coloring_cave.models.OverwriteStorage(), upload_to=coloring_cave.models.get_coloring_path, width_field='width')),
+                ('picture', models.ImageField(blank=True, height_field='height', max_length=255, null=True, storage=fanart.models.OverwriteStorage(), upload_to=coloring_cave.models.get_coloring_path, width_field='width')),
                 ('width', models.IntegerField(blank=True, null=True)),
                 ('height', models.IntegerField(blank=True, null=True)),
                 ('artist', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),

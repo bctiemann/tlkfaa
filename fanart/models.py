@@ -55,6 +55,12 @@ def get_banner_path(instance, filename):
 def get_pending_path(instance, filename):
     return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
 
+#def get_coloring_path(instance, filename):
+#    return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
+
+#def get_coloring_thumb_path(instance, filename):
+#    return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
+
 #def get_image_thumb_small_path(instance, filename):
 #    return '{0}/thumb_small/{1}'.format(instance.id, filename)
 #

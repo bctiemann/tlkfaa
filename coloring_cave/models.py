@@ -35,10 +35,17 @@ def get_coloring_thumb_path(instance, filename):
     return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
 
 
-class ColoringBase(models.Model):
+#class OverwriteStorage(FileSystemStorage):
+#
+#    def get_available_name(self, name, max_length=None):
+#        self.delete(name)
+#        return name
+
+
+class Base(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    creator = models.ForeignKey('fanart.User', null=True, blank=True)
-    picture = models.ForeignKey('fanart.Picture', null=True, blank=True)
+    creator = models.ForeignKey('fanart.User', null=True, blank=True, related_name='coloringbase_set')
+    picture = models.ForeignKey('fanart.Picture', null=True, blank=True, related_name='coloringbase_set')
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
@@ -78,7 +85,7 @@ class ColoringBase(models.Model):
 class ColoringPicture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('fanart.User', null=True, blank=True)
-    base = models.ForeignKey('ColoringBase', null=True, blank=True)
+    base = models.ForeignKey('Base', null=True, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)

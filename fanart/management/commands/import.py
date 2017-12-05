@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from fanart import models as fanart_models
-from coloring_cave.models import ColoringBase, ColoringPicture
+from coloring_cave.models import Base, ColoringPicture
 
 
 class Command(BaseCommand):
@@ -21,7 +21,7 @@ class Command(BaseCommand):
 #        'do_pictures': True,
 #        'do_comments': True,
 #        'do_shouts': True,
-#        'do_coloringbase': True,
+        'do_coloringbase': True,
         'do_coloringpics': True,
 #        'do_characters': True,
 #        'do_favorites': True,
@@ -339,7 +339,7 @@ class Command(BaseCommand):
                     print creator
                     picture = fanart_models.Picture.objects.get(id_orig=cb['pictureid'])
                     print picture
-                    f = ColoringBase.objects.create(
+                    f = Base.objects.create(
                         id_orig = cb['coloring_baseid'],
                         id = cb['coloring_baseid'],
                         creator = creator,
@@ -365,7 +365,7 @@ class Command(BaseCommand):
                 try:
                     artist = fanart_models.User.objects.get(artist_id_orig=cp['artistid'])
                     print artist
-                    base = ColoringBase.objects.get(id_orig=cp['basepic'])
+                    base = Base.objects.get(id_orig=cp['basepic'])
                     print base
                     f = ColoringPicture.objects.create(
                         id_orig = cp['coloring_picid'],
@@ -386,8 +386,8 @@ class Command(BaseCommand):
                 except fanart_models.User.DoesNotExist:
                     print 'Artist not found'
                     pass
-                except ColoringBase.DoesNotExist:
-                    print 'ColoringBase not found'
+                except Base.DoesNotExist:
+                    print 'Base not found'
                     pass
 
         if 'do_characters' in self.enabled:

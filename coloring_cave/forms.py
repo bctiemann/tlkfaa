@@ -7,7 +7,7 @@ from django.contrib.auth import (
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden
 
 from fanart import models
-from coloring_cave.models import ColoringBase, ColoringPicture
+from coloring_cave.models import Base, ColoringPicture
 
 import json
 import hashlib

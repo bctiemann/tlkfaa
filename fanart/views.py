@@ -18,7 +18,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks
-from coloring_cave.models import ColoringBase, ColoringPicture
+from coloring_cave.models import Base, ColoringPicture
 
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
@@ -56,7 +56,7 @@ class UserPaneMixin(object):
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
         if self.request.user.is_authenticated:
             community_art_data['adoptables_mine'] = models.TradingClaim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
-        community_art_data['coloring_bases'] = ColoringBase.objects.filter(is_active=True, is_visible=True)
+        community_art_data['coloring_bases'] = Base.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 
     def get_contests_data(self):

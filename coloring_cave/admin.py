@@ -6,12 +6,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ColoringBaseAdmin(admin.ModelAdmin):
+class BaseAdmin(admin.ModelAdmin):
     list_display = ('creator', 'date_posted',)
     list_filter = ()
     readonly_fields = ('creator', 'picture',)
     user_id_for_formfield = None
-admin.site.register(coloring_cave_models.ColoringBase, ColoringBaseAdmin)
+admin.site.register(coloring_cave_models.Base, BaseAdmin)
 
 class ColoringPictureAdmin(admin.ModelAdmin):
     list_display = ('artist', 'date_posted',)

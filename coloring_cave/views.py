@@ -20,7 +20,7 @@ from rest_framework.response import Response
 from fanart import models
 from fanart import views as fanart_views
 from coloring_cave import forms
-from coloring_cave.models import ColoringBase, ColoringPicture
+from coloring_cave.models import Base, ColoringPicture
 
 from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
@@ -52,9 +52,9 @@ class ColoringCaveView(fanart_views.UserPaneMixin, TemplateView):
 
         coloring_base_id = kwargs.get('coloring_base_id', None)
         if coloring_base_id:
-            context['coloring_base'] = get_object_or_404(ColoringBase, pk=coloring_base_id)
+            context['coloring_base'] = get_object_or_404(Base, pk=coloring_base_id)
         else:
-            coloring_bases = ColoringBase.objects.filter(is_visible=True)
+            coloring_bases = Base.objects.filter(is_visible=True)
             if sort_by == 'popularity':
                 coloring_bases = coloring_bases.order_by('-num_colored')
             elif sort_by == 'date':
@@ -82,11 +82,11 @@ class ColoringCavePictureView(fanart_views.UserPaneMixin, TemplateView):
         return context
 
 class ColoringPicturesView(DetailView):
-    model = ColoringBase
+    model = Base
     template_name = 'includes/colored_pictures.html'
 
     def get_object(self):
-        return get_object_or_404(ColoringBase, pk=self.kwargs['coloring_base_id'])
+        return get_object_or_404(Base, pk=self.kwargs['coloring_base_id'])
 
     def get_context_data(self, *args, **kwargs):
         context = super(ColoringPicturesView, self).get_context_data(*args, **kwargs)
@@ -105,7 +105,7 @@ class UploadColoringPictureView(CreateView):
     def form_valid(self, form):
         response = {'success': False}
 
-        coloring_base = get_object_or_404(ColoringBase, pk=self.kwargs['coloring_base_id'])
+        coloring_base = get_object_or_404(Base, pk=self.kwargs['coloring_base_id'])
 
         coloring_picture = form.save(commit=False)
         coloring_picture.artist = self.request.user
@@ -135,7 +135,7 @@ class ColoringPictureStatusView(APIView):
 
     def get(self, request, coloring_base_id=None):
         response = {}
-        offer = get_object_or_404(ColoringBase, pk=coloring_base_id)
+        offer = get_object_or_404(Base, pk=coloring_base_id)
         for coloring_picture in offer.coloringpicture_set.all():
             if coloring_picture.picture and coloring_picture.filename:
                 response[coloring_picture.id] = {

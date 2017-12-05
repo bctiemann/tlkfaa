@@ -26,7 +26,7 @@ from fanart import models, utils, tasks
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
-from coloring_cave.models import ColoringBase, ColoringPicture
+from coloring_cave.models import Base, ColoringPicture
 
 import json
 import hashlib
@@ -1245,7 +1245,7 @@ class ColoringCaveView(ArtManagerPaneView):
 
         coloring_base_id = self.kwargs.get('coloring_base_id')
         if coloring_base_id:
-            context['coloring_base'] = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
+            context['coloring_base'] = get_object_or_404(Base, pk=coloring_base_id, creator=self.request.user)
 
         context['coloring_bases'] = self.request.user.coloringbase_set.filter(is_visible=True).order_by('-date_posted')
 
@@ -1257,7 +1257,7 @@ class ColoringCaveView(ArtManagerPaneView):
 
 
 class ColoringBasePostView(LoginRequiredMixin, CreateView):
-    model = ColoringBase
+    model = Base
     form_class = forms.PostColoringBaseForm
 
     def form_valid(self, form):
@@ -1288,7 +1288,7 @@ class ColoringBaseRemoveView(APIView):
     def post(self, request, coloring_base_id):
         response = {'success': False}
 
-        coloring_base = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
+        coloring_base = get_object_or_404(Base, pk=coloring_base_id, creator=self.request.user)
 
         if coloring_base.coloringpicture_set.exists():
             coloring_base.is_active = False
@@ -1305,7 +1305,7 @@ class ColoringBaseRestoreView(APIView):
     def post(self, request, coloring_base_id):
         response = {'success': False}
 
-        coloring_base = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
+        coloring_base = get_object_or_404(Base, pk=coloring_base_id, creator=self.request.user)
 
         coloring_base.is_active = True
         coloring_base.save()
