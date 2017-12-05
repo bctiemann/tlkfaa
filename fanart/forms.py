@@ -136,14 +136,6 @@ class AcceptClaimForm(forms.ModelForm):
         fields = []
 
 
-class UploadColoringPictureForm(forms.ModelForm):
-
-    class Meta:
-        model = models.ColoringPicture
-        fields = ['comment']
-
-
-
 class ContestEntryForm(forms.ModelForm):
 
     class Meta:

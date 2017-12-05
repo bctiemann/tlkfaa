@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'precise_bbcode',
 
     'fanart',
+    'coloring_cave',
     'artmanager',
 ]
 

@@ -4,6 +4,7 @@ from django.conf import settings
 
 from django.contrib.auth import views as auth_views
 from fanart import views as fanart_views
+from coloring_cave import views as coloring_cave_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -21,7 +22,7 @@ urlpatterns = [
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<mode>[a-z]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', fanart_views.TradingTreeView.as_view(), name='trading-tree'),
-    url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', fanart_views.ColoringCaveView.as_view(), name='coloring-cave'),
+    url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^Special/(?:(?P<special_id>[0-9]+)/)?$', fanart_views.SpecialFeaturesView.as_view(), name='special'),
     url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
@@ -84,10 +85,10 @@ urlpatterns = [
     url(r'^claim/(?P<claim_id>[0-9]+)/choose/$', fanart_views.ChooseAdopterView.as_view(), name='choose-adopter'),
     url(r'^claim/(?P<claim_id>[0-9]+)/remove/$', fanart_views.RemoveClaimView.as_view(), name='remove-claim'),
 
-    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/$', fanart_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
-    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/upload/$', fanart_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),
-    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/status/$', fanart_views.ColoringPictureStatusView.as_view(), name='coloring-picture-status'),
-    url(r'^coloring/(?P<coloring_picture_id>[0-9]+)/remove/$', fanart_views.RemoveColoringPictureView.as_view(), name='remove-coloring-picture'),
+    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/$', coloring_cave_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
+    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/upload/$', coloring_cave_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),
+    url(r'^coloring/(?P<coloring_base_id>[0-9]+)/status/$', coloring_cave_views.ColoringPictureStatusView.as_view(), name='coloring-picture-status'),
+    url(r'^coloring/(?P<coloring_picture_id>[0-9]+)/remove/$', coloring_cave_views.RemoveColoringPictureView.as_view(), name='remove-coloring-picture'),
 
 #    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 

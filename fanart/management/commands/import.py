@@ -20,12 +20,12 @@ class Command(BaseCommand):
 #        'do_pictures': True,
 #        'do_comments': True,
 #        'do_shouts': True,
-#        'do_coloringbase': True,
-#        'do_coloringpics': True,
+        'do_coloringbase': True,
+        'do_coloringpics': True,
 #        'do_characters': True,
 #        'do_favorites': True,
 #        'do_offers': True,
-        'do_claims': True,
+#        'do_claims': True,
 #        'do_picturecharacters': True,
 #        'do_tags': True,
 #        'do_approvers': True,
@@ -346,7 +346,7 @@ class Command(BaseCommand):
 #                        date_posted = cb['posted'],
                         is_active = cb['active'],
                         is_visible = cb['visible'],
-#                        num_colored = cb['numcolored'],
+                        num_colored = cb['numcolored'],
                     )
                     f.date_posted = cb['posted']
                     f.save()

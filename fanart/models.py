@@ -931,11 +931,11 @@ class ColoringBase(models.Model):
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
-#    num_colored = models.IntegerField(null=True, blank=True, default=0)
+    num_colored = models.IntegerField(null=True, blank=True, default=0)
 
-    @property
-    def num_colored(self):
-        return self.coloringpicture_set.count()
+#    @property
+#    def num_colored(self):
+#        return self.coloringpicture_set.count()
 
     @property
     def thumbnail_url(self):
