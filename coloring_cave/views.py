@@ -115,6 +115,8 @@ class UploadColoringPictureView(CreateView):
         coloring_picture.filename = self.request.FILES['picture'].name
         coloring_picture.save()
 
+        coloring_base.refresh_num_colored()
+
 #        self.object.filename = self.request.FILES['picture'].name
 #        self.object.date_uploaded = timezone.now()
         super(UploadColoringPictureView, self).form_valid(form)
@@ -151,7 +153,9 @@ class RemoveColoringPictureView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         logger.info(self.object.picture.name)
-        return super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)
+        result = super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)
+        self.object.base.refresh_num_colored()
+        return result
 
     def get_success_url(self):
         return reverse('coloring-pictures', kwargs={'coloring_base_id': self.object.base.id})
