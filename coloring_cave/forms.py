@@ -7,6 +7,7 @@ from django.contrib.auth import (
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden
 
 from fanart import models
+from coloring_cave.models import ColoringBase, ColoringPicture
 
 import json
 import hashlib
@@ -18,6 +19,6 @@ logger = logging.getLogger(__name__)
 class UploadColoringPictureForm(forms.ModelForm):
 
     class Meta:
-        model = models.ColoringPicture
+        model = ColoringPicture
         fields = ['comment']
 

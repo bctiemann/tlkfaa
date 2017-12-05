@@ -146,7 +146,7 @@ Sort by:
                                 {% endif %}
                                 <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePicture({{ picture.id }})">Delete</a>
                                 <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupRequest({{ picture.id }})">ArtWall</a>
-                                <a class="ui-state-default ui-corner-all" href="{% url "artmanager:coloring-cave" picture_id=picture.id %}">Coloring Cave</a>
+                                <a class="ui-state-default ui-corner-all" href="{% url "artmanager:coloring-cave" %}?picture_id={{ picture.id }}">Coloring Cave</a>
                                 <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setExamplePic({{ picture.id }})">Set as Icon</a>
                                 <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="setupMove({{ picture.id }})" id="movetofolderlink_{{ picture.id }}">Move to Folder<div class="movetofolder" id="movetofolder_{{ picture.id }}"></div></a>
                             </div>

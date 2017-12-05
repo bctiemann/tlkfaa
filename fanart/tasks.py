@@ -8,6 +8,7 @@ from celery.utils.log import get_task_logger
 
 from PIL import Image
 import os
+import importlib
 
 
 import logging
@@ -105,8 +106,10 @@ def resize_image(model, picture_object, thumb_size):
     return None, None
 
 @shared_task
-def process_images(model, object_id, thumb_size='small'):
-    from fanart import models
+def process_images(model_class_path, model, object_id, thumb_size='small'):
+    models = importlib.import_module(model_class_path)
+#    model_class = getattr(importlib.import_module(model_class_path), model)
+#    from model_app import models
     model_class = getattr(models, model)
 
     try:

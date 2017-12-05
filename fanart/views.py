@@ -18,6 +18,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks
+from coloring_cave.models import ColoringBase, ColoringPicture
 
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
@@ -55,7 +56,7 @@ class UserPaneMixin(object):
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
         if self.request.user.is_authenticated:
             community_art_data['adoptables_mine'] = models.TradingClaim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
-        community_art_data['coloring_bases'] = models.ColoringBase.objects.filter(is_active=True, is_visible=True)
+        community_art_data['coloring_bases'] = ColoringBase.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 
     def get_contests_data(self):
@@ -825,7 +826,7 @@ class ColoringPictureTooltipView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ColoringPictureTooltipView, self).get_context_data(**kwargs)
-        coloring_picture = get_object_or_404(models.ColoringPicture, pk=kwargs['coloring_picture_id'])
+        coloring_picture = get_object_or_404(ColoringPicture, pk=kwargs['coloring_picture_id'])
         context['coloring_picture'] = coloring_picture
         return context
 

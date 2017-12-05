@@ -26,6 +26,7 @@ from fanart import models, utils, tasks
 from fanart.views import UserPaneMixin
 from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
+from coloring_cave.models import ColoringBase, ColoringPicture
 
 import json
 import hashlib
@@ -417,7 +418,7 @@ class ColoringPictureDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/coloring_picture.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+        return get_object_or_404(ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(ColoringPictureDetailView, self).get_context_data(**kwargs)
@@ -447,7 +448,7 @@ class ColoringPictureFormView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/coloring_picture_form.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+        return get_object_or_404(ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(ColoringPictureFormView, self).get_context_data(**kwargs)
@@ -495,12 +496,12 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ColoringPictureUpdateView(LoginRequiredMixin, UpdateView):
-    model = models.ColoringPicture
+    model = ColoringPicture
     form_class = forms.ColoringPictureForm
     template_name = 'artmanager/coloring_picture_form.html'
 
     def get_object(self):
-        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+        return get_object_or_404(ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
 
     def form_valid(self, form):
         response = super(ColoringPictureUpdateView, self).form_valid(form)
@@ -595,10 +596,10 @@ class PictureBulkMoveView(APIView):
 
 
 class ColoringPictureDeleteView(LoginRequiredMixin, DeleteView):
-    model = models.ColoringPicture
+    model = ColoringPicture
 
     def get_object(self):
-        return get_object_or_404(models.ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
+        return get_object_or_404(ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         response = {'success': False}
@@ -620,8 +621,8 @@ class ColoringPictureBulkDeleteView(APIView):
 
         for coloring_picture_id in self.kwargs['coloring_picture_ids'].split(','):
             try:
-                coloring_picture = models.ColoringPicture.objects.get(pk=coloring_picture_id, artist=self.request.user)
-            except models.ColoringPicture.DoesNotExist:
+                coloring_picture = ColoringPicture.objects.get(pk=coloring_picture_id, artist=self.request.user)
+            except ColoringPicture.DoesNotExist:
                 continue
 
             logger.info(coloring_picture)
@@ -1013,7 +1014,7 @@ class CharacterSetPictureView(APIView):
         character = get_object_or_404(models.Character, pk=character_id, owner=request.user)
 
         if request.POST.get('picture_type') == 'coloring_picture':
-            picture_model = models.ColoringPicture
+            picture_model = ColoringPicture
         elif request.POST.get('picture_type') == 'picture':
             picture_model = models.Picture
 
@@ -1022,7 +1023,7 @@ class CharacterSetPictureView(APIView):
         except picture_model.DoesNotExist:
             return Response(response)
 
-        if picture_model == models.ColoringPicture:
+        if picture_model == ColoringPicture:
             character.profile_coloring_picture = picture
             character.profile_picture = None
         elif picture_model == models.Picture:
@@ -1244,7 +1245,7 @@ class ColoringCaveView(ArtManagerPaneView):
 
         coloring_base_id = self.kwargs.get('coloring_base_id')
         if coloring_base_id:
-            context['coloring_base'] = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+            context['coloring_base'] = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
 
         context['coloring_bases'] = self.request.user.coloringbase_set.filter(is_visible=True).order_by('-date_posted')
 
@@ -1256,7 +1257,7 @@ class ColoringCaveView(ArtManagerPaneView):
 
 
 class ColoringBasePostView(LoginRequiredMixin, CreateView):
-    model = models.ColoringBase
+    model = ColoringBase
     form_class = forms.PostColoringBaseForm
 
     def form_valid(self, form):
@@ -1287,7 +1288,7 @@ class ColoringBaseRemoveView(APIView):
     def post(self, request, coloring_base_id):
         response = {'success': False}
 
-        coloring_base = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+        coloring_base = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
 
         if coloring_base.coloringpicture_set.exists():
             coloring_base.is_active = False
@@ -1304,7 +1305,7 @@ class ColoringBaseRestoreView(APIView):
     def post(self, request, coloring_base_id):
         response = {'success': False}
 
-        coloring_base = get_object_or_404(models.ColoringBase, pk=coloring_base_id, creator=self.request.user)
+        coloring_base = get_object_or_404(ColoringBase, pk=coloring_base_id, creator=self.request.user)
 
         coloring_base.is_active = True
         coloring_base.save()

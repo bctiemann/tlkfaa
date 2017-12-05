@@ -433,9 +433,9 @@ ORDER BY fanart_user.sort_name
         super(User, self).save(*args, **kwargs)
         logger.info(self.profile_picture)
         if update_thumbs:
-            process_images.apply_async(('User', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart', 'User', self.id, 'small'), countdown=20)
             if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
-                process_images.apply_async(('User', self.id, 'profile'), countdown=20)
+                process_images.apply_async(('fanart', 'User', self.id, 'profile'), countdown=20)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
@@ -721,7 +721,7 @@ class Character(models.Model):
     adopted_from = models.ForeignKey('User', null=True, blank=True, related_name='characters_adopted_out')
     name = models.CharField(max_length=64, blank=True)
     profile_picture = models.ForeignKey('Picture', null=True, blank=True)
-    profile_coloring_picture = models.ForeignKey('ColoringPicture', null=True, blank=True)
+    profile_coloring_picture = models.ForeignKey('coloring_cave.ColoringPicture', null=True, blank=True)
     description = models.TextField(blank=True)
     species = models.CharField(max_length=64, blank=True)
     sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True)
@@ -918,144 +918,10 @@ class Pending(models.Model):
         super(Pending, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
-            process_images.apply_async(('Pending', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart', 'Pending', self.id, 'small'), countdown=20)
 
     class Meta:
         ordering = ['date_uploaded']
-
-
-class ColoringBase(models.Model):
-    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    creator = models.ForeignKey('User', null=True, blank=True)
-    picture = models.ForeignKey('Picture', null=True, blank=True)
-    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_visible = models.BooleanField(default=True)
-    num_colored = models.IntegerField(null=True, blank=True, default=0)
-
-#    @property
-#    def num_colored(self):
-#        return self.coloringpicture_set.count()
-
-    @property
-    def thumbnail_url(self):
-        return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.picture.artist.dir_name, self.picture.basename)
-
-    @property
-    def thumb_width(self):
-        return settings.THUMB_SIZE['small']
-
-    @property
-    def thumb_height(self):
-        if self.picture:
-            return self.picture.thumb_height
-#            return int(self.picture.height * settings.THUMB_SIZE['small'] / self.width)
-        return 0
-
-    @property
-    def thumb_height_x2(self):
-        return self.thumb_height * 2
-
-    def refresh_num_colored(self):
-        self.num_colored = self.coloringpicture_set.count()
-        self.save()
-
-    def get_absolute_url(self):
-        return reverse('coloring-cave', kwargs={'coloring_base_id': self.id})
-
-
-class ColoringPicture(models.Model):
-    id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    artist = models.ForeignKey('User', null=True, blank=True)
-    base = models.ForeignKey('ColoringBase', null=True, blank=True)
-    date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    comment = models.TextField(blank=True)
-    filename = models.CharField(max_length=100, blank=True)
-    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_coloring_path, null=True, blank=True)
-    width = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-
-    @property
-    def basename(self):
-        return '.'.join(self.filename.split('.')[:-1])
-
-    @property
-    def extension(self):
-        if self.filename:
-            return self.filename.split('.')[-1].lower()
-        return self.picture.name.split('.')[-1].lower()
-
-    @property
-    def thumbnail_path(self):
-        if not self.picture:
-            return None
-        path = ('/').join(self.picture.path.split('/')[:-1])
-        return '{0}/{1}.s.jpg'.format(path, self.id)
-
-    @property
-    def thumbnail_url(self):
-        if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
-
-    @property
-    def preview_url(self):
-        if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
-
-    @property
-    def thumbnail_created(self):
-        return os.path.exists(self.thumbnail_path)
-
-    @property
-    def url(self):
-        return '{0}Artwork/coloring/{1}.{2}'.format(settings.MEDIA_URL, self.id, self.extension)
-
-    @property
-    def preview_width(self):
-        return settings.THUMB_SIZE['large']
-
-    @property
-    def preview_height(self):
-        return int(self.height * settings.THUMB_SIZE['large'] / self.width)
-
-    @property
-    def thumb_width(self):
-        return settings.THUMB_SIZE['small']
-
-    @property
-    def thumb_height(self):
-        return int(self.height * settings.THUMB_SIZE['small'] / self.width)
-
-    @property
-    def thumb_height_x2(self):
-        return self.thumb_height * 2
-
-    def get_absolute_url(self):
-        return reverse('coloring-pictures', kwargs={'coloring_base_id': self.base.id})
-
-    def save(self, update_thumbs=True, *args, **kwargs):
-        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
-        super(ColoringPicture, self).save(*args, **kwargs)
-        logger.info(self.picture)
-        if update_thumbs:
-            process_images.apply_async(('ColoringPicture', self.id, 'small'), countdown=20)
-
-    def delete(self, *args, **kwargs):
-        try:
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.picture.name))
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
-        except OSError:
-            pass
-
-        for character in Character.objects.filter(profile_coloring_picture=self):
-            character.profile_coloring_picture = None
-            character.save()
-
-        self.base.refresh_num_colored()
-
-        super(ColoringPicture, self).delete(*args, **kwargs)
 
 
 class TradingOffer(models.Model):
@@ -1141,7 +1007,7 @@ class TradingOffer(models.Model):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(TradingOffer, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('TradingOffer', self.id, 'offer'), countdown=20)
+            process_images.apply_async(('fanart.models', 'TradingOffer', self.id, 'offer'), countdown=20)
 
     def get_absolute_url(self):
         return reverse('offer', kwargs={'offer_id': self.id})
@@ -1201,7 +1067,7 @@ class TradingClaim(models.Model):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(TradingClaim, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('TradingClaim', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart.models', 'TradingClaim', self.id, 'small'), countdown=20)
 
     def delete(self, *args, **kwargs):
         if self.offer.type == 'icon':

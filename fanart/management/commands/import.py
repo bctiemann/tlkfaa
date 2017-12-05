@@ -10,6 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from fanart import models as fanart_models
+from coloring_cave.models import ColoringBase, ColoringPicture
 
 
 class Command(BaseCommand):
@@ -20,7 +21,7 @@ class Command(BaseCommand):
 #        'do_pictures': True,
 #        'do_comments': True,
 #        'do_shouts': True,
-        'do_coloringbase': True,
+#        'do_coloringbase': True,
         'do_coloringpics': True,
 #        'do_characters': True,
 #        'do_favorites': True,
@@ -338,7 +339,7 @@ class Command(BaseCommand):
                     print creator
                     picture = fanart_models.Picture.objects.get(id_orig=cb['pictureid'])
                     print picture
-                    f = fanart_models.ColoringBase.objects.create(
+                    f = ColoringBase.objects.create(
                         id_orig = cb['coloring_baseid'],
                         id = cb['coloring_baseid'],
                         creator = creator,
@@ -364,14 +365,14 @@ class Command(BaseCommand):
                 try:
                     artist = fanart_models.User.objects.get(artist_id_orig=cp['artistid'])
                     print artist
-                    base = fanart_models.ColoringBase.objects.get(id_orig=cp['basepic'])
+                    base = ColoringBase.objects.get(id_orig=cp['basepic'])
                     print base
-                    f = fanart_models.ColoringPicture.objects.create(
+                    f = ColoringPicture.objects.create(
                         id_orig = cp['coloring_picid'],
                         id = cp['coloring_picid'],
                         artist = artist,
                         base = base,
-                        date_posted = cp['posted'],
+#                        date_posted = cp['posted'],
                         comment = cp['comment'],
                         filename = cp['filename'] if cp['filename'] else '',
                         picture = 'Artwork/coloring/{0}.{1}'.format(cp['coloring_picid'], cp['extension']),
@@ -380,10 +381,12 @@ class Command(BaseCommand):
                         height = cp['height'],
 #                        thumb_height = cp['thumbheight'],
                     )
+                    f.date_posted = cp['posted']
+                    f.save()
                 except fanart_models.User.DoesNotExist:
                     print 'Artist not found'
                     pass
-                except fanart_models.ColoringBase.DoesNotExist:
+                except ColoringBase.DoesNotExist:
                     print 'ColoringBase not found'
                     pass
 
@@ -415,8 +418,8 @@ class Command(BaseCommand):
                 except fanart_models.Picture.DoesNotExist:
                     profile_picture = None
                 try:
-                    profile_coloring_picture = fanart_models.ColoringPicture.objects.get(id_orig=ch['profilepic_c'])
-                except fanart_models.ColoringPicture.DoesNotExist:
+                    profile_coloring_picture = ColoringPicture.objects.get(id_orig=ch['profilepic_c'])
+                except ColoringPicture.DoesNotExist:
                     profile_coloring_picture = None
                 f = fanart_models.Character.objects.create(
                     id_orig = ch['characterid'],
