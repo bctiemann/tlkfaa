@@ -28,52 +28,11 @@ logger = logging.getLogger(__name__)
 THREE = 90
 
 
-def get_media_path(instance, filename):
-    return '{0}/{1}'.format(instance.id, filename)
-
-def get_offers_path(instance, filename):
-    return 'Artwork/offers/{0}.{1}'.format(instance.id, instance.extension)
-
-def get_offers_thumb_path(instance, filename):
-    return 'Artwork/offers/{0}.s.jpg'.format(instance.id)
-
-def get_claims_path(instance, filename):
-    return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
-
-def get_claims_thumb_path(instance, filename):
-    return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
-
 def get_coloring_path(instance, filename):
     return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
 
 def get_coloring_thumb_path(instance, filename):
     return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
-
-def get_profile_path(instance, filename):
-    extension = filename.split('.')[-1].lower()
-    filename = '{0}.{1}'.format(uuid.uuid4(), extension)
-    return 'profiles/{0}'.format(filename)
-
-def get_banner_path(instance, filename):
-    extension = filename.split('.')[-1].lower()
-    filename = '{0}.{1}'.format(uuid.uuid4(), extension)
-    return 'banners/{0}'.format(filename)
-
-def get_pending_path(instance, filename):
-    return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
-
-#def get_image_thumb_small_path(instance, filename):
-#    return '{0}/thumb_small/{1}'.format(instance.id, filename)
-#
-#def get_image_thumb_large_path(instance, filename):
-#    return '{0}/thumb_large/{1}'.format(instance.id, filename)
-
-
-class OverwriteStorage(FileSystemStorage):
-
-    def get_available_name(self, name, max_length=None):
-        self.delete(name)
-        return name
 
 
 class ColoringBase(models.Model):
@@ -123,7 +82,7 @@ class ColoringPicture(models.Model):
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)
-    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_coloring_path, null=True, blank=True)
+    picture = models.ImageField(max_length=255, storage=fanart_models.OverwriteStorage(), height_field='height', width_field='width', upload_to=get_coloring_path, null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
 

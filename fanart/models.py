@@ -42,12 +42,6 @@ def get_claims_path(instance, filename):
 def get_claims_thumb_path(instance, filename):
     return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
 
-def get_coloring_path(instance, filename):
-    return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
-
-def get_coloring_thumb_path(instance, filename):
-    return 'Artwork/coloring/{0}.s.jpg'.format(instance.id)
-
 def get_profile_path(instance, filename):
     extension = filename.split('.')[-1].lower()
     filename = '{0}.{1}'.format(uuid.uuid4(), extension)
