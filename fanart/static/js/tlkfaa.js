@@ -2578,6 +2578,7 @@ function createContest() {
 
 function applyContest(selform,contestid,fnc) {
   var c = false;
+  var params = {};
   if (fnc == 'delete') {
     $('#dialog_confirm_text').html("Are you sure you want to delete this contest?");
     c = true;
@@ -2587,13 +2588,24 @@ function applyContest(selform,contestid,fnc) {
   } else if (fnc == 'publish') {
     $('#dialog_confirm_text').html("Are you sure you are ready to publish this contest?");
     c = true;
+    params = {
+      is_active: true,
+    };
   } else if (fnc == 'unpublish') {
     $('#dialog_confirm_text').html("Are you sure you want to unpublish this contest?");
     c = true;
-  } else {
-    selform.contestid=contestid;
-    selform.fnc.value=fnc;
-    selform.submit();
+    params = {
+      is_active: false,
+    };
+  } else if (fnc == 'update') {
+    params = {
+        title: $('#title_' + contestid).val(),
+        description: $('#description_' + contestid).val(),
+        rules: $('#rules_' + contestid).val(),
+        date_end: $('#deadline_pick_' + contestid).val(),
+        allow_voting: $('#allowvoting_' + contestid).prop('checked'),
+    };
+    updateContest(contestid, fnc, params);
   }
   if (c) {
     $('#dialog_confirm').dialog({
@@ -2601,9 +2613,7 @@ function applyContest(selform,contestid,fnc) {
       modal: true,
       buttons: {
         "OK": function() {
-          selform.contestid=contestid;
-          selform.fnc.value=fnc;
-          selform.submit();
+          updateContest(contestid, fnc, params);
         },
         Cancel: function() {
           $(this).dialog('close');
@@ -2611,6 +2621,15 @@ function applyContest(selform,contestid,fnc) {
       }
     });
   }
+}
+
+function updateContest(contestid, fnc, params) {
+    var url = '/ArtManager/contests/' + contestid + '/' + fnc + '/';
+    $.post(url, params, function(data) {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
 }
 
 function refreshPMBox(pmbox,page,viewmode,showpages,showstatus,w) {

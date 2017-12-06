@@ -87,12 +87,12 @@ urlpatterns = [
 
     url(r'^contests/$', contests_views.ContestsView.as_view(), name='contests'),
     url(r'^contests/create/$', contests_views.ContestCreateView.as_view(), name='contest-create'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/update/$', artmanager_views.ContestUpdateView.as_view(), name='contest-update'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/publish/$', artmanager_views.ContestPublishView.as_view(), name='contest-publish'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/unpublish/$', artmanager_views.ContestUnpublishView.as_view(), name='contest-unpublish'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/delete/$', artmanager_views.ContestDeleteView.as_view(), name='contest-delete'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/cancel/$', artmanager_views.ContestCancelView.as_view(), name='contest-cancel'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/remove_picture/(?P<picture_id>[0-9]+)/$', artmanager_views.ContestRemovePictureView.as_view(), name='contest-remove-picture'),
+    url(r'^contests/(?P<contest_id>[0-9]+)/update/$', contests_views.ContestUpdateView.as_view(), name='contest-update'),
+    url(r'^contests/(?P<contest_id>[0-9]+)/publish/$', contests_views.ContestPublishView.as_view(), name='contest-publish'),
+    url(r'^contests/(?P<contest_id>[0-9]+)/unpublish/$', contests_views.ContestPublishView.as_view(), name='contest-unpublish'),
+#    url(r'^contests/(?P<contest_id>[0-9]+)/delete/$', contests_views.ContestDeleteView.as_view(), name='contest-delete'),
+#    url(r'^contests/(?P<contest_id>[0-9]+)/cancel/$', contests_views.ContestCancelView.as_view(), name='contest-cancel'),
+#    url(r'^contests/(?P<contest_id>[0-9]+)/remove_picture/(?P<picture_id>[0-9]+)/$', contests_views.ContestRemovePictureView.as_view(), name='contest-remove-picture'),
 
     url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),

@@ -75,3 +75,18 @@ class ContestCreateView(LoginRequiredMixin, CreateView):
         response = {'success': True}
         return JsonResponse(response)
 
+
+class ContestUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
+    model = models.Contest
+    form_class = forms.ContestForm
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
+
+
+class ContestPublishView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
+    model = models.Contest
+    form_class = forms.ContestPublishForm
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
