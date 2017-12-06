@@ -5,148 +5,148 @@
 
 <h2>Manage Your Art Contests</h2>
 
-    <h3 class="sectionheader">Create New Contest</h3>
-    <div class="bulletin">
+<h3 class="sectionheader">Create New Contest</h3>
+<div class="bulletin">
 
-        <form name="contest_new" id="contest_new" method="POST">
+    <form name="contest_new" id="contest_new" method="POST">
+        <table class="formtable">
+            <tr>
+                <td class="label">Contest Title</td>
+                <td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
+            </tr>
+            <tr>
+                <td class="label">Deadline</td>
+                <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_new" maxlength="255" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
+            </tr>
+            <tr>
+                <td class="label">Allow Voting</td>
+                <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
+            </tr>
+            <tr>
+                <td class="label">Theme/Description</td>
+                <td class="data"><textarea name="description" id="description_new"></textarea></td>
+            </tr>
+            <tr>
+                <td class="label">Rules</td>
+                <td class="data"><textarea name="rules" id="rules_new"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="buttons">
+                    <button type="button" onClick="validateForm('contest_new','createContest()')">Create Contest</button>   
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="op" value="contests" />
+        <input type="hidden" name="fnc" value="create" />
+    </form>
+</div>
+
+<script type="text/javascript">
+$('#deadline_pick_new').datepicker();
+$('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
+</script>
+
+<h3 class="sectionheader">Unpublished Contests</h3>
+
+{% for contest in unpublished_contests %}
+
+    <div class="contest">
+        <form name="contest_{{ contest.id }}" id="contest_{{ contest.id }}" method="POST">
             <table class="formtable">
                 <tr>
                     <td class="label">Contest Title</td>
-                    <td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
+                    <td class="data"><input type="text" class="std" name="title" id="title_{{ contest.id }}" maxlength="64" value="{{ contest.title }}" validate="hasvalue" message="The contest title cannot be blank." /></td>
                 </tr>
                 <tr>
                     <td class="label">Deadline</td>
-                    <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_new" maxlength="255" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
+                    <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_{{ contest.id }}" maxlength="255" value="{{ contest.date_end|date:"m/d/Y" }}" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
                 </tr>
                 <tr>
                     <td class="label">Allow Voting</td>
-                    <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
+                    <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
                 </tr>
                 <tr>
                     <td class="label">Theme/Description</td>
-                    <td class="data"><textarea name="description" id="description_new"></textarea></td>
+                    <td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
                 </tr>
                 <tr>
                     <td class="label">Rules</td>
-                    <td class="data"><textarea name="rules" id="rules_new"></textarea></td>
+                    <td class="data"><textarea name="rules" id="rules_{{ contest.id }}">{{ contest.rules }}</textarea></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="buttons">
-                        <button type="button" onClick="validateForm('contest_new','createContest()')">Create Contest</button>   
+                        <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'update\')')">Apply Changes</button>
+                        <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'publish\')')">Publish and Begin Contest</button>
+                        <button type="button" onClick="applyContest(form,{{ contest.id }},'delete')">Delete Contest</button>
                     </td>
                 </tr>
             </table>
-            <input type="hidden" name="op" value="contests" />
-            <input type="hidden" name="fnc" value="create" />
         </form>
     </div>
 
     <script type="text/javascript">
-    $('#deadline_pick_new').datepicker();
-    $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
+    $('#deadline_pick_{{ contest.id }}').datepicker();
+    $('#deadline_pick_{{ contest.id }}').datepicker("option", "dateFormat", "m/d/yy");
     </script>
 
-    <h3 class="sectionheader">Unpublished Contests</h3>
+{% endfor %}
 
-    {% for contest in unpublished_contests %}
+<h3 class="sectionheader">Published Contests</h3>
 
-        <div class="contest">
-            <form name="contest_{{ contest.id }}" id="contest_{{ contest.id }}" method="POST">
-                <table class="formtable">
-                    <tr>
-                        <td class="label">Contest Title</td>
-                        <td class="data"><input type="text" class="std" name="title" id="title_{{ contest.id }}" maxlength="64" value="{{ contest.title }}" validate="hasvalue" message="The contest title cannot be blank." /></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Deadline</td>
-                        <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_{{ contest.id }}" maxlength="255" value="{{ contest.date_end|date:"m/d/Y" }}" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Allow Voting</td>
-                        <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Theme/Description</td>
-                        <td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Rules</td>
-                        <td class="data"><textarea name="rules" id="rules_{{ contest.id }}">{{ contest.rules }}</textarea></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="buttons">
-                            <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'update\')')">Apply Changes</button>
-                            <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'publish\')')">Publish and Begin Contest</button>
-                            <button type="button" onClick="applyContest(form,{{ contest.id }},'delete')">Delete Contest</button>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+{% for contest in published_contests %}	
 
-        <script type="text/javascript">
-        $('#deadline_pick_{{ contest.id }}').datepicker();
-        $('#deadline_pick_{{ contest.id }}').datepicker("option", "dateFormat", "m/d/yy");
-        </script>
+    <div class="contest">
+        <form name="contest_{{ contest.id }}" method="POST">
 
+            <table class="formtable">
+                <tr>
+                    <td class="label">Contest Title</td>
+                    <td class="data"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></td>
+                </tr>
+                <tr>
+                    <td class="label">Deadline</td>
+                    <td class="data">
+                        {{ contest.date_end|date:"m/d/Y" }}<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Voting</td>
+                    <td class="data">
+                        {% if contest.allow_voting %}
+                            Allowed
+                        {% else %}
+                            Not Allowed
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Theme/Description</td>
+                    <td class="data">{{ contest.description|bbcode|safe }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Rules</td>
+                    <td class="data">{{ contest.rules|bbcode|safe }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="buttons">
+                        {% if contest.is_cancelled %}
+                            (Cancelled)
+                        {% else %}
+                            <button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
+                            <button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    {% for entry in contest.contestentry_set.all %}
+        {% with picture=entry.picture %}
+            {% include "includes/picture.html" %}
+        {% endwith %}
     {% endfor %}
 
-    <h3 class="sectionheader">Published Contests</h3>
-
-    {% for contest in published_contests %}	
-
-        <div class="contest">
-            <form name="contest_{{ contest.id }}" method="POST">
-
-                <table class="formtable">
-                    <tr>
-                        <td class="label">Contest Title</td>
-                        <td class="data"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Deadline</td>
-                        <td class="data">
-                            {{ contest.date_end|date:"m/d/Y" }}<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">Voting</td>
-                        <td class="data">
-                            {% if contest.allow_voting %}
-                                Allowed
-                            {% else %}
-                                Not Allowed
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">Theme/Description</td>
-                        <td class="data">{{ contest.description|bbcode|safe }}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Rules</td>
-                        <td class="data">{{ contest.rules|bbcode|safe }}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="buttons">
-                            {% if contest.is_cancelled %}
-				(Cancelled)
-                            {% else %}
-                                <button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
-                                <button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-
-        {% for entry in contest.contestentry_set.all %}
-            {% with picture=entry.picture %}
-                {% include "includes/picture.html" %}
-            {% endwith %}
-        {% endfor %}
-
-    {% endfor %}
+{% endfor %}
 
 {% endblock %}
