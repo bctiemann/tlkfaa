@@ -402,7 +402,7 @@ class ContestsView(UserPaneMixin, TemplateView):
 
         contest_id = kwargs.get('contest_id', None)
         if contest_id:
-            context['contest'] = get_object_or_404(models.Contest, pk=contest_id)
+            context['contest'] = get_object_or_404(models.Contest, pk=contest_id, is_active=True)
         else:
             contest_type = kwargs.get('contest_type', None)
             if not contest_type:
@@ -433,7 +433,7 @@ class ContestView(UserPaneMixin, DetailView):
     template_name = 'fanart/contest.html'
 
     def get_object(self):
-        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'])
+        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], is_active=True)
 
     def get_context_data(self, **kwargs):
         context = super(ContestView, self).get_context_data(**kwargs)

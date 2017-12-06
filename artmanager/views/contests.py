@@ -87,6 +87,17 @@ class ContestUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
 class ContestPublishView(ContestUpdateView):
     form_class = forms.ContestPublishForm
 
+    def form_valid(self, form):
+        response = {'success': False}
+
+        contest = form.save(commit=False)
+        if contest.is_active:
+            contest.date_start = timezone.now()
+        contest.save()
+
+        response = {'success': True}
+        return JsonResponse(response)
+
 
 class ContestCancelView(ContestUpdateView):
     form_class = forms.ContestCancelForm

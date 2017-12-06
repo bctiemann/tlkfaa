@@ -3,401 +3,150 @@
 
 {% block am_content %}
 
-<%--
-inc_contests.jsp
-ArtManager component for managing your contests.
---%>
+<h2>Manage Your Art Contests</h2>
 
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+    <h3 class="sectionheader">Create New Contest</h3>
+    <div class="bulletin">
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+        <form name="contest_new" id="contest_new" method="POST">
+            <table class="formtable">
+                <tr>
+                    <td class="label">Contest Title</td>
+                    <td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
+                </tr>
+                <tr>
+                    <td class="label">Deadline</td>
+                    <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_new" maxlength="255" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
+                </tr>
+                <tr>
+                    <td class="label">Allow Voting</td>
+                    <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
+                </tr>
+                <tr>
+                    <td class="label">Theme/Description</td>
+                    <td class="data"><textarea name="description" id="description_new"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="label">Rules</td>
+                    <td class="data"><textarea name="rules" id="rules_new"></textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="buttons">
+                        <button type="button" onClick="validateForm('contest_new','createContest()')">Create Contest</button>   
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="op" value="contests" />
+            <input type="hidden" name="fnc" value="create" />
+        </form>
+    </div>
 
-<sql:setDataSource dataSource="jdbc/Fanart"   />
+    <script type="text/javascript">
+    $('#deadline_pick_new').datepicker();
+    $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
+    </script>
 
-<c:catch var="catchException">
-<fmt:parseNumber var="contestid" value="${param.contestid}" integerOnly="true" />
-<fmt:parseNumber var="pictureid" value="${param.pictureid}" integerOnly="true" />
-<fmt:parseNumber var="allowvoting" value="${param.allowvoting}" integerOnly="true" />
-</c:catch>
-<c:if test="${allowvoting != 1}"><c:set var="allowvoting" value="0" /></c:if>
+    <h3 class="sectionheader">Unpublished Contests</h3>
 
-<c:if test="${loggedin == 1}">
+    {% for contest in unpublished_contests %}
 
-<c:choose>
-<c:when test="${artist.ispaid == false}">
-<jsp:include page="inc_notpaidfeature.jsp" />
-</c:when>
-<c:otherwise>
+        <div class="contest">
+            <form name="contest_{{ contest.id }}" id="contest_{{ contest.id }}" method="POST">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Contest Title</td>
+                        <td class="data"><input type="text" class="std" name="title" id="title_{{ contest.id }}" maxlength="64" value="{{ contest.title }}" validate="hasvalue" message="The contest title cannot be blank." /></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Deadline</td>
+                        <td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_{{ contest.id }}" maxlength="255" value="{{ contest.date_end|date:"m/d/Y" }}" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Allow Voting</td>
+                        <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Theme/Description</td>
+                        <td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Rules</td>
+                        <td class="data"><textarea name="rules" id="rules_{{ contest.id }}">{{ contest.rules }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'update\')')">Apply Changes</button>
+                            <button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'publish\')')">Publish and Begin Contest</button>
+                            <button type="button" onClick="applyContest(form,{{ contest.id }},'delete')">Delete Contest</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
 
-<c:if test="${param.deadline_pick != null}">
-	<%
-	  String deadline_raw = request.getParameter("deadline_pick");
-	  if (deadline_raw.length() > 0) {
-	    String[] deadline = deadline_raw.split("/");
-	    if (deadline.length == 3) {   
-	      pageContext.setAttribute("deadline_year",deadline[2]);
-	      pageContext.setAttribute("deadline_month",deadline[0]);
-	      pageContext.setAttribute("deadline_day",deadline[1]);
-	    }
-	  }
-	%>
-	<c:if test="${deadline_year != null && deadline_month != null && deadline_day != null}">
-		<c:set var="deadline" value="${deadline_year}-${deadline_month}-${deadline_day}" />
-	</c:if>
-</c:if>
+        <script type="text/javascript">
+        $('#deadline_pick_{{ contest.id }}').datepicker();
+        $('#deadline_pick_{{ contest.id }}').datepicker("option", "dateFormat", "m/d/yy");
+        </script>
 
-<c:choose>
-<c:when test="${param.fnc == 'create'}">
+    {% endfor %}
 
-	<c:catch var="deadlineException">
-		<sql:update var="updContest">
-		INSERT INTO contests (type,artistid,title,description,rules,created,deadline,active,allowvoting)
-		VALUES (?,?,?,?,?,NOW(),?,false,?)
-		<sql:param value="personal" />
-		<sql:param value="${artist.artistid}" />
-		<sql:param value="${fn:substring(param.title,0,64)}" />
-		<sql:param value="${param.description}" />
-		<sql:param value="${param.rules}" />
-		<sql:param value="${deadline}" />
-		<sql:param value="${allowvoting}" />
-		</sql:update>
-	</c:catch>
-	<c:if test="${deadlineException != null && deadline != null}">
-		Invalid deadline.
-	</c:if>
+    <h3 class="sectionheader">Published Contests</h3>
 
-</c:when>
-<c:when test="${param.fnc == 'edit' || param.fnc == 'publish'}">
+    {% for contest in published_contests %}	
 
-	<c:catch var="deadlineException">
-		<sql:update var="updContest">
-		UPDATE contests SET 
-		title=?,
-		description=?,
-		rules=?,
-		<c:if test="${param.fnc == 'publish'}">
-		startdate=NOW(),
-		active=true,
-		</c:if>
-		deadline=?,
-		allowvoting=?
-		WHERE contestid=?
-		AND artistid=?
-		AND active=false
-		<sql:param value="${fn:substring(param.title,0,64)}" />
-		<sql:param value="${param.description}" />
-		<sql:param value="${param.rules}" />
-		<sql:param value="${deadline}"/>
-		<sql:param value="${allowvoting}" />
-		<sql:param value="${contestid}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:update>
-	</c:catch>
-	<c:if test="${deadlineException != null && deadline != null}">
-		Invalid deadline.
-	</c:if>
+        <div class="contest">
+            <form name="contest_{{ contest.id }}" method="POST">
 
-</c:when>
-<c:when test="${param.fnc == 'unpublish'}">
-
-	<sql:update var="updContest">
-	UPDATE contests SET 
-	active=false
-	WHERE contestid=?
-	AND artistid=?
-	<sql:param value="${contestid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-</c:when>
-<c:when test="${param.fnc == 'cancel'}">
-
-	<sql:update var="updContest">
-	UPDATE contests SET 
-	cancelled=true,
-	active=false
-	WHERE contestid=?
-	AND artistid=?
-	<sql:param value="${contestid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-</c:when>
-<c:when test="${param.fnc == 'delete'}">
-
-	<sql:query var="qryContest">
-	SELECT * FROM contests
-	WHERE contestid=?
-	AND artistid=?
-	<sql:param value="${contestid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
-	<c:if test="${qryContest.rowCount > 0}">
-		<sql:update var="updContestPics">
-		DELETE FROM contestpics
-		WHERE contestid=?
-		<sql:param value="${contestid}" />
-		</sql:update>
-
-		<sql:update var="updContestVotes">
-		DELETE FROM contestvotes
-		WHERE contestid=?
-		<sql:param value="${contestid}" />
-		</sql:update>
-	</c:if>
-
-	<sql:update var="updContest">
-	DELETE FROM contests
-	WHERE contestid=?
-	AND artistid=?
-	<sql:param value="${contestid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:update>
-
-</c:when>
-<c:when test="${param.fnc == 'removepicture'}">
-
-	<sql:query var="qryContest">
-	SELECT * FROM contests
-	WHERE contestid=?
-	AND artistid=?
-	<sql:param value="${contestid}" />
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
-	<c:if test="${qryContest.rowCount > 0}">
-		<sql:update var="updContestPic">
-		DELETE FROM contestpics
-		WHERE contestid=?
-		AND pictureid=?
-		<sql:param value="${contestid}" />
-		<sql:param value="${pictureid}" />	
-		</sql:update>
-
-		<sql:update var="updContestPicVotes">
-		DELETE FROM contestvotes
-		WHERE contestid=?
-		AND pictureid=?
-		<sql:param value="${contestid}" />
-		<sql:param value="${pictureid}" />	
-		</sql:update>
-	</c:if>
-
-</c:when>
-<c:otherwise>
-</c:otherwise>
-</c:choose>
-
-
-	<h2>Manage Your Art Contests</h2>
-
-	<h3 class="sectionheader">Create New Contest</h3>
-	<div class="bulletin">
-
-	<form name="contest_new" id="contest_new" method="POST">
-	<table class="formtable">
-	<tr>
-	<td class="label">Contest Title</td>
-	<td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="64" validate="hasvalue" message="You must enter a title for the contest." /></td>
-	</tr>
-	<tr>
-	<td class="label">Deadline</td>
-	<td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_new" maxlength="255" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
-	</tr>
-	<tr>
-	<td class="label">Allow Voting</td>
-	<td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
-	</tr>
-	<tr>
-	<td class="label">Theme/Description</td>
-	<td class="data"><textarea name="description" id="description_new"></textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Rules</td>
-	<td class="data"><textarea name="rules" id="rules_new"></textarea></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('contest_new','createContest()')">Create Contest</button>   
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="op" value="contests" />
-	<input type="hidden" name="fnc" value="create" />
-	</form>
-	</div>
-
-	<script type="text/javascript">
-		$('#deadline_pick_new').datepicker();
-		$('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
-	</script>
-
-	<h3 class="sectionheader">Unpublished Contests</h3>
-
-	<sql:query var="qryContestsUnPub">
-	SELECT * FROM contests
-	WHERE artistid=?
-	AND type=?
-	AND active=false
-	AND cancelled=false
-	ORDER BY created DESC
-	<sql:param value="${artist.artistid}" />
-	<sql:param value="personal" />
-	</sql:query>
-
-        {% for contest in unpublished_contests %}
-	<c:forEach var="contest" items="${qryContestsUnPub.rows}">
-
-	<div class="contest">
-	<form name="contest_{{ contest.id }}" id="contest_{{ contest.id }}" method="POST">
-	<table class="formtable">
-	<tr>
-	<td class="label">Contest Title</td>
-	<c:set var="contesttitle" value="${contest.title}" />
-	<td class="data"><input type="text" class="std" name="title" id="title_{{ contest.id }}" maxlength="64" value="{{ contest.title }}" validate="hasvalue" message="The contest title cannot be blank." /></td>
-	</tr>
-	<tr>
-	<td class="label">Deadline</td>
-	<td class="data"><input type="text" class="std" name="deadline_pick" id="deadline_pick_{{ contest.id }}" maxlength="255" value="{{ contest.date_end|date:"m/d/Y" }}" validate="pattern" pattern="^[0-9]{1,2}/[0-9]{1,2}/[0-9]{1,4}$" message="You must specify the deadline for the contest in MM/DD/YYYY format." /></td>
-	</tr>
-	<tr>
-	<td class="label">Allow Voting</td>
-	<td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
-	</tr>
-	<tr>
-	<td class="label">Theme/Description</td>
-	<td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
-	</tr>
-	<tr>
-	<td class="label">Rules</td>
-	<td class="data"><textarea name="rules" id="rules_{{ contest.id }}">{{ contest.rules }}</textarea></td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'update\')')">Apply Changes</button>
-	<button type="button" onClick="validateForm('contest_{{ contest.id }}','applyContest(document.contest_{{ contest.id }},{{ contest.id }},\'publish\')')">Publish and Begin Contest</button>
-	<button type="button" onClick="applyContest(form,{{ contest.id }},'delete')">Delete Contest</button>
-	</td>
-	</tr>
-	</table>
-	<input type="hidden" name="op" value="contests" />
-	<input type="hidden" name="fnc" value="edit" />
-	<input type="hidden" name="contestid" value="${contest.contestid}" />
-	</form>
-	</div>
-
-	<script type="text/javascript">
-		$('#deadline_pick_{{ contest.id }}').datepicker();
-		$('#deadline_pick_{{ contest.id }}').datepicker("option", "dateFormat", "m/d/yy");
-	</script>
-
-	</c:forEach>
-        {% endfor %}
-
-
-	<h3 class="sectionheader">Published Contests</h3>
-
-	<sql:query var="qryContestsPub">
-	SELECT * FROM contests
-	WHERE artistid=?
-	AND type=?
-	AND active=true
-	ORDER BY created DESC
-	LIMIT 20
-	<sql:param value="${artist.artistid}" />
-	<sql:param value="personal" />
-	</sql:query>
-
-        {% for contest in published_contests %}	
-	<c:forEach var="contest" items="${qryContestsPub.rows}">
-
-		<c:set var="description" value="${contest.description}" />
-		<c:set var="rules" value="${contest.rules}" />
-
-		<div class="contest">
-		<form name="contest_{{ contest.id }}" method="POST" action="ArtManager.jsp">
-
-		<table class="formtable">
-		<tr>
-		<td class="label">Contest Title</td>
-		<td class="data"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></td>
-		</tr>
-		<tr>
-		<td class="label">Deadline</td>
-		<td class="data">
-		{{ contest.date_end|date:"m/d/Y" }}<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
-		</td>
-		</tr>
-		<tr>
-		<td class="label">Voting</td>
-		<td class="data">
-                {% if contest.allow_voting %}
-		<c:choose>
-		<c:when test="${contest.allowvoting == true}">
-		Allowed
-		</c:when>
-                {% else %}
-		<c:when test="${contest.allowvoting == false}">
-		Not Allowed
-		</c:when>
-		</c:choose>
-                {% endif %}
-		</td>
-		</tr>
-		<tr>
-		<td class="label">Theme/Description</td>
-		<td class="data">{{ contest.description|bbcode|safe }}</td>
-		</tr>
-		<tr>
-		<td class="label">Rules</td>
-		<td class="data">{{ contest.rules|bbcode|safe }}</td>
-		</tr>
-		<tr>
-		<td colspan="2" class="buttons">
-                        {% if contest.is_cancelled %}
-			<c:choose>
-			<c:when test="${contest.cancelled}">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Contest Title</td>
+                        <td class="data"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Deadline</td>
+                        <td class="data">
+                            {{ contest.date_end|date:"m/d/Y" }}<fmt:formatDate value="${contest.deadline}" type="date" pattern="M/d/yyyy" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Voting</td>
+                        <td class="data">
+                            {% if contest.allow_voting %}
+                                Allowed
+                            {% else %}
+                                Not Allowed
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Theme/Description</td>
+                        <td class="data">{{ contest.description|bbcode|safe }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Rules</td>
+                        <td class="data">{{ contest.rules|bbcode|safe }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            {% if contest.is_cancelled %}
 				(Cancelled)
-			</c:when>
-                        {% else %}
-			<c:otherwise>
-				<button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
-				<button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
-			</c:otherwise>
-			</c:choose>
-                        {% endif %}
-		</td>
-		</tr>
-		</table>
-		<input type="hidden" name="op" value="contests" />
-		<input type="hidden" name="fnc" value="" />
-		<input type="hidden" name="contestid" value="${contest.contestid}" />
-		<input type="hidden" name="pictureid" value="" />
-		</form>
-		</div>
+                            {% else %}
+                                <button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
+                                <button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
 
-                {% for entry in contest.contestentry_set.all %}
-		<c:forEach var="contestpic" items="${qryContestPics.rows}">
-
-                        {% with picture=entry.picture %}
-                            {% include "includes/picture.html" %}
-                        {% endwith %}
-
-		</c:forEach>
-                {% endfor %}
-
-	</c:forEach>
+        {% for entry in contest.contestentry_set.all %}
+            {% with picture=entry.picture %}
+                {% include "includes/picture.html" %}
+            {% endwith %}
         {% endfor %}
 
-</c:otherwise>
-</c:choose>
-
-</c:if>
+    {% endfor %}
 
 {% endblock %}
