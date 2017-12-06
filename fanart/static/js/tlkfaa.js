@@ -1400,6 +1400,20 @@ function restoreColoringBase(coloringbaseid) {
   });
 }
 
+/*
+function enterContestPic(contestid, pictureid) {
+  var url = '/contests/' + contestid + '/entry/create/';
+  var params = {
+    picture = pictureid,
+  };
+  $.post(url, params, function(data) {
+    if (data.success) {
+      window.location.reload();
+    }
+  });
+}
+*/
+
 function refreshBannerPreview(selform) {
   var url = '/ArtManager/customize/banner_preview/';
   var params = {
@@ -2585,6 +2599,10 @@ function applyContest(selform,contestid,fnc) {
   } else if (fnc == 'cancel') {
     $('#dialog_confirm_text').html("Are you sure you want to cancel and delete this contest?");
     c = true;
+    params = {
+      is_active: false,
+      is_cancelled: true,
+    };
   } else if (fnc == 'publish') {
     $('#dialog_confirm_text').html("Are you sure you are ready to publish this contest?");
     c = true;

@@ -128,3 +128,10 @@ class ContestPublishForm(forms.ModelForm):
     class Meta:
         model = models.Contest
         fields = ['is_active']
+
+
+class ContestCancelForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Contest
+        fields = ['is_active', 'is_cancelled']

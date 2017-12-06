@@ -84,9 +84,29 @@ class ContestUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
         return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
 
 
-class ContestPublishView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
-    model = models.Contest
+class ContestPublishView(ContestUpdateView):
     form_class = forms.ContestPublishForm
 
-    def get_object(self, queryset=None):
+
+class ContestCancelView(ContestUpdateView):
+    form_class = forms.ContestCancelForm
+
+
+class ContestDeleteView(LoginRequiredMixin, DeleteView):
+    model = models.Contest
+
+    def get_object(self):
         return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+        logger.info(self.object)
+
+        self.object.delete()
+
+        response['success'] = True
+
+        return JsonResponse(response)
+

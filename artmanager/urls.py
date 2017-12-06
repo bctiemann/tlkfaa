@@ -90,8 +90,8 @@ urlpatterns = [
     url(r'^contests/(?P<contest_id>[0-9]+)/update/$', contests_views.ContestUpdateView.as_view(), name='contest-update'),
     url(r'^contests/(?P<contest_id>[0-9]+)/publish/$', contests_views.ContestPublishView.as_view(), name='contest-publish'),
     url(r'^contests/(?P<contest_id>[0-9]+)/unpublish/$', contests_views.ContestPublishView.as_view(), name='contest-unpublish'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/delete/$', contests_views.ContestDeleteView.as_view(), name='contest-delete'),
-#    url(r'^contests/(?P<contest_id>[0-9]+)/cancel/$', contests_views.ContestCancelView.as_view(), name='contest-cancel'),
+    url(r'^contests/(?P<contest_id>[0-9]+)/delete/$', contests_views.ContestDeleteView.as_view(), name='contest-delete'),
+    url(r'^contests/(?P<contest_id>[0-9]+)/cancel/$', contests_views.ContestCancelView.as_view(), name='contest-cancel'),
 #    url(r'^contests/(?P<contest_id>[0-9]+)/remove_picture/(?P<picture_id>[0-9]+)/$', contests_views.ContestRemovePictureView.as_view(), name='contest-remove-picture'),
 
     url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),
