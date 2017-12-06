@@ -1330,6 +1330,43 @@ class CommentsView(ArtManagerPaneView):
         request.session['am_page'] = 'comments'
         return super(CommentsView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(CommentsView, self).get_context_data(**kwargs)
+
+        comment_type = kwargs.get('comment_type')
+        if comment_type == None:
+            if self.request.user.is_artist:
+                comment_type = 'received'
+            else:
+                comment_type = 'sent'
+
+        if comment_type == 'received':
+            comments = models.PictureComment.objects.filter(picture__artist=self.request.user).order_by('-date_posted')
+            show_all = False
+            if self.request.GET.get('show_all') == '1':
+                show_all = True
+            if not show_all:
+                comments = comments.filter(is_received=False)
+            context['show_all'] = show_all
+        elif comment_type == 'sent':
+            comments = self.request.user.picturecomment_set.all().order_by('-date_posted')
+
+        context['comments_paginator'] = Paginator(comments, settings.COMMENTS_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            comments_page = context['comments_paginator'].page(page)
+        except EmptyPage:
+            comments_page = context['comments_paginator'].page(1)
+
+        context['comments'] = comments_page
+        context['comment_type'] = comment_type
+        context['pages_link'] = utils.PagesLink(len(comments), settings.COMMENTS_PER_PAGE_ARTMANAGER, comments_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
+
 
 class ShoutsView(ArtManagerPaneView):
     template_name = 'artmanager/shouts.html'

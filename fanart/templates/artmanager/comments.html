@@ -76,22 +76,30 @@ ArtManager component for managing the comments you've received and posted.
 
 <h2>Your Comments</h2>
 
+{% if user.is_artist %}
 <c:if test="${artist.active == true}">
 <div class="selector_commentview">
 <div class="selector">
-<a class="<c:if test="${type == 'posted'}">selected</c:if>" href="/ArtManager.jsp?op=comments&type=posted">posted</a>
-<a class="<c:if test="${type == 'received'}">selected</c:if>" href="/ArtManager.jsp?op=comments&type=received">received</a>
+<a class="{% if comment_type == "sent" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="sent" %}">posted</a>
+<a class="{% if comment_type == "received" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="received" %}">received</a>
 </div>
+{% if comment_type == "received" %}
 <c:if test="${type == 'received'}">
 	<div class="selector">
-	View: <a class="<c:if test="${showall == 0}">selected</c:if>" href="/ArtManager.jsp?op=comments&type=${type}&showall=0">unread</a>
-	<a class="<c:if test="${showall == 1}">selected</c:if>" href="/ArtManager.jsp?op=comments&type=${type}&showall=1">all</a>
+	View: <a class="{% if not show_all %}selected{% endif %}" href="/ArtManager.jsp?op=comments&type=${type}&showall=0">unread</a>
+	<a class="{% if show_all %}selected{% endif %}" href="/ArtManager.jsp?op=comments&type=${type}&showall=1">all</a>
 	</div>
 </c:if>
+{% endif %}
 <br clear="left" />
 </div>
 </c:if>
+{% endif %}
 
+
+{% for comment in comments %}
+
+{% if comment_type == "sent" %}
 <c:choose>
 <c:when test="${type == 'posted'}">
 
@@ -167,6 +175,7 @@ ArtManager component for managing the comments you've received and posted.
 	</c:forEach>
 
 </c:when>
+{% elif comment_type == "received" %}
 <c:when test="${type == 'received'}">
 
 	<div class="globalactionslink">
@@ -280,6 +289,9 @@ ArtManager component for managing the comments you've received and posted.
 
 </c:when>
 </c:choose>
+{% endif %}
+
+{% endfor %}
 
 </c:if>
 

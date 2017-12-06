@@ -101,7 +101,8 @@ urlpatterns = [
     url(r'^bulletins/(?P<bulletin_id>[0-9]+)/delete/$', bulletins_views.BulletinDeleteView.as_view(), name='bulletin-delete'),
 
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
-    url(r'^comments/$', artmanager_views.CommentsView.as_view(), name='comments'),
+
+    url(r'^comments/(?:(?P<comment_type>(received|sent))/)?$', artmanager_views.CommentsView.as_view(), name='comments'),
 
     url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', artmanager_views.ShoutsView.as_view(), name='shouts'),
 
