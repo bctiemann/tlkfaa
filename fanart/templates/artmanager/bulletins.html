@@ -126,7 +126,7 @@ ArtManager component for managing your bulletins.
 	<h3 class="sectionheader">Post New Bulletin</h3>
 	<div class="bulletin">
 
-	<form name="bulletin_new" id="bulletin_new" method="POST" action="ArtManager.jsp">
+	<form name="bulletin_new" id="bulletin_new" method="POST">
 	<table class="formtable">
 	<tr>
 	<td class="label">Title</td>
@@ -150,14 +150,7 @@ ArtManager component for managing your bulletins.
 
 	<h3 class="sectionheader">Unpublished Bulletins</h3>
 
-	<sql:query var="qryBulletinsUnPub">
-	SELECT * FROM bulletins
-	WHERE artistid=?
-	AND published=false
-	ORDER BY posted DESC
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
+        {% for bulletin in unpublished_bulletins %}
 	<c:forEach var="bulletin" items="${qryBulletinsUnPub.rows}">
 
 		<div class="bulletin">
@@ -165,21 +158,21 @@ ArtManager component for managing your bulletins.
 		<table class="formtable">
 		<tr>
 		<td class="label">Posted</td>
-		<td class="data"><fmt:formatDate value="${bulletin.posted}" type="both" pattern="HH:mm E M/d/yyyy" /></td>
+		<td class="data">{{ bulletin.date_posted|date }}</td>
 		</tr>
 		<tr>
 		<td class="label">Title</td>
 		<c:set var="title" value="${bulletin.title}" />
-		<td class="data"><input type="text" class="std" name="title" maxlength="255" value="<%= sanitizeHTML((String)pageContext.getAttribute("title"),255) %>" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
+		<td class="data"><input type="text" class="std" name="title" maxlength="255" value="{{ bulletin.title }}" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
 		</tr>
 		<tr>
 		<td class="label">Bulletin</td>
-		<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty.">${bulletin.bulletin}</textarea></td>
+		<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
 		</tr>
 		<tr>
 		<td colspan="2" class="buttons">
-		<button type="button" onClick="validateForm('bulletin_${bulletin.bulletinid}','document.bulletin_${bulletin.bulletinid}.submit()')">Edit</button>
-		<button type="button" onClick="deleteBulletin(form,${bulletin.bulletinid})">Delete</button>
+		<button type="button" onClick="validateForm('bulletin_{{ bulletin.id }}','document.bulletin_{{ bulletin.id }}.submit()')">Edit</button>
+		<button type="button" onClick="deleteBulletin(form,{{ bulletin.id }})">Delete</button>
 		</td>
 		</tr>
 		</table>
@@ -190,40 +183,33 @@ ArtManager component for managing your bulletins.
 		</div>
 
 	</c:forEach>
+        {% endfor %}
 
 
 	<h3 class="sectionheader">Published Bulletins</h3>
 
-	<sql:query var="qryBulletinsPub">
-	SELECT * FROM bulletins
-	WHERE artistid=?
-	AND published=true
-	ORDER BY posted DESC
-	LIMIT 20
-	<sql:param value="${artist.artistid}" />
-	</sql:query>
-
+        {% for bulletin in published_bulletins %}
 	<c:forEach var="bulletin" items="${qryBulletinsPub.rows}">
 
 		<c:set var="bulletintext" value="${bulletin.bulletin}" />
 
 		<div class="bulletin">
-		<form name="bulletin_${bulletin.bulletinid}" method="POST" action="ArtManager.jsp">
+		<form name="bulletin_${bulletin.bulletinid}" method="POST">
 		<table class="formtable">
 		<tr>
 		<td class="label">Posted</td>
 		<td class="data">
 		<button class="rightbutton" type="button" onClick="deleteBulletin(form,${bulletin.bulletinid})">Delete</button>
-		<fmt:formatDate value="${bulletin.posted}" type="both" pattern="HH:mm E M/d/yyyy" />
+		{{ bulletin.date_posted|date }}
 		</td>
 		</tr>
 		<tr>
 		<td class="label">Title</td>
-		<td class="data">${bulletin.title}</td>
+		<td class="data">{{ bulletin.title }}</td>
 		</tr>
 		<tr>
 		<td class="label">Bulletin</td>
-		<td class="data"><%= formatText((String)pageContext.getAttribute("bulletintext")) %></td>
+		<td class="data">{{ bulletin.bulletin|bbcode|safe }}</td>
 		</tr>
 		</table>
 		<input type="hidden" name="op" value="bulletins" />
@@ -233,6 +219,7 @@ ArtManager component for managing your bulletins.
 		</div>
 
 	</c:forEach>
+        {% endfor %}
 
 </c:otherwise>
 </c:choose>

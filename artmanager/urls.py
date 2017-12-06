@@ -5,6 +5,7 @@ from django.views.generic.base import RedirectView
 
 from artmanager import views as artmanager_views
 from artmanager.views import contests as contests_views
+from artmanager.views import bulletins as bulletins_views
 
 urlpatterns = [
     url(r'^$', artmanager_views.BaseRedirectView.as_view(), name='home'),
@@ -94,7 +95,8 @@ urlpatterns = [
     url(r'^contests/(?P<contest_id>[0-9]+)/cancel/$', contests_views.ContestCancelView.as_view(), name='contest-cancel'),
 #    url(r'^contests/(?P<contest_id>[0-9]+)/remove_picture/(?P<picture_id>[0-9]+)/$', contests_views.ContestRemovePictureView.as_view(), name='contest-remove-picture'),
 
-    url(r'^bulletins/$', artmanager_views.BulletinsView.as_view(), name='bulletins'),
+    url(r'^bulletins/$', bulletins_views.BulletinsView.as_view(), name='bulletins'),
+
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
     url(r'^comments/$', artmanager_views.CommentsView.as_view(), name='comments'),
 

@@ -1333,14 +1333,6 @@ class ContestsView(ArtManagerPaneView):
         return context
 
 
-class BulletinsView(ArtManagerPaneView):
-    template_name = 'artmanager/bulletins.html'
-
-    def get(self, request, *args, **kwargs):
-        request.session['am_page'] = 'artwork'
-        return super(BulletinsView, self).get(request, *args, **kwargs)
-
-
 class UploadHistoryView(ArtManagerPaneView):
     template_name = 'artmanager/upload_history.html'
 
