@@ -2552,7 +2552,7 @@ function votePicture(contestid,entryid) {
   document.contestform.submit();
 }
 
-function removeContestPic(selform,entryid) {
+function removeContestPic(entryid) {
   $('#dialog_confirm_text').html("Are you sure you want to remove this picture from the contest?");
   $('#dialog_confirm').dialog({
     resizable: false,
