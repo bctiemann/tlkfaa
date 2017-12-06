@@ -96,6 +96,9 @@ urlpatterns = [
 #    url(r'^contests/(?P<contest_id>[0-9]+)/remove_picture/(?P<picture_id>[0-9]+)/$', contests_views.ContestRemovePictureView.as_view(), name='contest-remove-picture'),
 
     url(r'^bulletins/$', bulletins_views.BulletinsView.as_view(), name='bulletins'),
+    url(r'^bulletins/create/$', bulletins_views.BulletinCreateView.as_view(), name='bulletin-create'),
+    url(r'^bulletins/(?P<bulletin_id>[0-9]+)/update/$', bulletins_views.BulletinUpdateView.as_view(), name='bulletin-update'),
+    url(r'^bulletins/(?P<bulletin_id>[0-9]+)/delete/$', bulletins_views.BulletinDeleteView.as_view(), name='bulletin-delete'),
 
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
     url(r'^comments/$', artmanager_views.CommentsView.as_view(), name='comments'),

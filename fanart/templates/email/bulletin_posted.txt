@@ -1,0 +1,5 @@
+Bulletin {{ bulletin.id }} was posted by {{ user.username }}:
+
+{{ bulletin.title }}
+
+{{ bulletin.bulletin }}

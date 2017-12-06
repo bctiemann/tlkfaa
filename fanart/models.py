@@ -1021,6 +1021,9 @@ class Bulletin(models.Model):
     is_admin = models.BooleanField(default=False)
     show_email = models.BooleanField(default=False)
 
+    def get_absolute_url(self):
+        return reverse('bulletin', kwargs={'bulletin_id': self.id})
+
 
 class Contest(models.Model):
     TYPE_CHOICES = (

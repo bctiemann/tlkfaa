@@ -1604,7 +1604,55 @@ function filterCharacter(newcharacterid,fnc) {
   window.location=url;
 }
 
-function deleteBulletin(selform,bulletin) {
+function postBulletin() {
+    var url = '/ArtManager/bulletins/create/';
+    var params = {
+        title: $('#title_new').val(),
+        bulletin: $('#bulletin_new').val(),
+    };
+    $.post(url, params, function(data) {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
+
+function updateBulletin(bulletinid) {
+    var url = '/ArtManager/bulletins/' + bulletinid + '/update/';
+    var params = {
+        title: $('#title_' + bulletinid).val(),
+        bulletin: $('#bulletin_' + bulletinid).val(),
+    };
+    $.post(url, params, function(data) {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
+
+function deleteBulletin(bulletinid) {
+  $('#dialog_confirm_text').html("Are you sure you want to delete this bulletin?");
+  $('#dialog_confirm').dialog({
+    resizable: false,
+    modal: true,
+    buttons: {
+      "Delete": function() {
+        var url = '/ArtManager/bulletins/' + bulletinid + '/delete/';
+        var params = {};
+        $.post(url, params, function(data) {
+          if (data.success) {
+            window.location.reload();
+          }
+        });
+      },
+      Cancel: function() {
+        $(this).dialog('close');
+      }
+    }
+  });
+}
+
+function deleteBulletin_old(selform,bulletin) {
   $('#dialog_confirm_text').html("Are you sure you want to delete this bulletin?");
   $('#dialog_confirm').dialog({
     resizable: false,

@@ -135,3 +135,11 @@ class ContestCancelForm(forms.ModelForm):
     class Meta:
         model = models.Contest
         fields = ['is_active', 'is_cancelled']
+
+
+class BulletinForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Bulletin
+        fields = ['title', 'bulletin']
+

@@ -1500,3 +1500,8 @@ class RemoveBannerView(DeleteView):
         self.object.delete()
 
         return JsonResponse(response)
+
+
+class BulletinView(DetailView):
+    model = models.Bulletin
+    template_name = 'fanart/bulletin.html'

@@ -126,24 +126,22 @@ ArtManager component for managing your bulletins.
 	<h3 class="sectionheader">Post New Bulletin</h3>
 	<div class="bulletin">
 
-	<form name="bulletin_new" id="bulletin_new" method="POST">
+	<form name="bulletinform_new" id="bulletinform_new" method="POST">
 	<table class="formtable">
 	<tr>
 	<td class="label">Title</td>
-	<td class="data"><input type="text" class="std" name="title" maxlength="255" validate="hasvalue" message="You must enter a title." /></td>
+	<td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="255" validate="hasvalue" message="You must enter a title." /></td>
 	</tr>
 	<tr>
 	<td class="label">Bulletin</td>
-	<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
+	<td class="data"><textarea name="bulletin" id="bulletin_new" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
 	</tr>
 	<tr>
 	<td colspan="2" class="buttons">
-	<button type="button" onClick="validateForm('bulletin_new','document.bulletin_new.submit()')">Post</button>   
+	<button type="button" onClick="validateForm('bulletinform_new','postBulletin()')">Post</button>
 	</td>
 	</tr>
 	</table>
-	<input type="hidden" name="op" value="bulletins" />
-	<input type="hidden" name="fnc" value="post" />
 	</form>
 	</div>
 
@@ -154,7 +152,7 @@ ArtManager component for managing your bulletins.
 	<c:forEach var="bulletin" items="${qryBulletinsUnPub.rows}">
 
 		<div class="bulletin">
-		<form name="bulletin_${bulletin.bulletinid}" id="bulletin_${bulletin.bulletinid}" method="POST" action="ArtManager.jsp">
+		<form name="bulletinform_{{ bulletin.bulletinid }}" id="bulletin_${bulletin.bulletinid}" method="POST">
 		<table class="formtable">
 		<tr>
 		<td class="label">Posted</td>
@@ -163,22 +161,19 @@ ArtManager component for managing your bulletins.
 		<tr>
 		<td class="label">Title</td>
 		<c:set var="title" value="${bulletin.title}" />
-		<td class="data"><input type="text" class="std" name="title" maxlength="255" value="{{ bulletin.title }}" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
+		<td class="data"><input type="text" class="std" name="title" id="title_{{ bulletin.id }}" maxlength="255" value="{{ bulletin.title }}" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
 		</tr>
 		<tr>
 		<td class="label">Bulletin</td>
-		<td class="data"><textarea name="bulletin" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
+		<td class="data"><textarea name="bulletin" id="bulletin_{{ bulletin.id }}" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
 		</tr>
 		<tr>
 		<td colspan="2" class="buttons">
-		<button type="button" onClick="validateForm('bulletin_{{ bulletin.id }}','document.bulletin_{{ bulletin.id }}.submit()')">Edit</button>
-		<button type="button" onClick="deleteBulletin(form,{{ bulletin.id }})">Delete</button>
+		<button type="button" onClick="validateForm('bulletin_{{ bulletin.id }}','updateBulletin({{ bulletin.id }})')">Edit</button>
+		<button type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
 		</td>
 		</tr>
 		</table>
-		<input type="hidden" name="op" value="bulletins" />
-		<input type="hidden" name="fnc" value="edit" />
-		<input type="hidden" name="bulletinid" value="${bulletin.bulletinid}" />
 		</form>
 		</div>
 
@@ -194,12 +189,12 @@ ArtManager component for managing your bulletins.
 		<c:set var="bulletintext" value="${bulletin.bulletin}" />
 
 		<div class="bulletin">
-		<form name="bulletin_${bulletin.bulletinid}" method="POST">
+		<form name="bulletinform_{{ bulletin.id }}" method="POST">
 		<table class="formtable">
 		<tr>
 		<td class="label">Posted</td>
 		<td class="data">
-		<button class="rightbutton" type="button" onClick="deleteBulletin(form,${bulletin.bulletinid})">Delete</button>
+		<button class="rightbutton" type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
 		{{ bulletin.date_posted|date }}
 		</td>
 		</tr>
@@ -212,9 +207,6 @@ ArtManager component for managing your bulletins.
 		<td class="data">{{ bulletin.bulletin|bbcode|safe }}</td>
 		</tr>
 		</table>
-		<input type="hidden" name="op" value="bulletins" />
-		<input type="hidden" name="fnc" value="edit" />
-		<input type="hidden" name="bulletinid" value="${bulletin.bulletinid}" />
 		</form>
 		</div>
 

@@ -112,7 +112,8 @@ urlpatterns = [
     url(r'^pm/success/(?P<pm_id>[0-9]+)/$', fanart_views.PMSuccessView.as_view(), name='pm-success'),
 
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
-    url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='admin-announcements'),
+    url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='bulletins'),
+    url(r'^bulletin/(?P<bulletin_id>[0-9]+)/$', fanart_views.BulletinView.as_view(), name='bulletin'),
 
     url(r'^social_media/identities/$', fanart_views.SocialMediaIdentitiesView.as_view(), name='social-media-identities'),
     url(r'^social_media/add/$', fanart_views.AddSocialMediaIdentityView.as_view(), name='add-social-media-identity'),

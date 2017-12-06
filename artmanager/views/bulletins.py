@@ -44,7 +44,7 @@ class BulletinsView(ArtManagerPaneView):
     template_name = 'artmanager/bulletins.html'
 
     def get(self, request, *args, **kwargs):
-        request.session['am_page'] = 'artwork'
+        request.session['am_page'] = 'bulletins'
         return super(BulletinsView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -55,4 +55,58 @@ class BulletinsView(ArtManagerPaneView):
         context['published_bulletins'] = bulletins.filter(is_published=True)[0:20]
 
         return context
+
+
+class BulletinCreateView(LoginRequiredMixin, CreateView):
+    model = models.Bulletin
+    form_class = forms.BulletinForm
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        response = {'success': False}
+
+        bulletin = form.save(commit=False)
+        bulletin.user = self.request.user
+        bulletin.is_published = False
+        bulletin.save()
+
+        email_context = {'user': self.request.user, 'bulletin': bulletin}
+        tasks.send_email.delay(
+            recipients=[settings.ADMIN_EMAIL],
+            subject='TLKFAA: New Bulletin Posted',
+            context=email_context,
+            text_template='email/bulletin_posted.txt',
+            html_template='email/bulletin_posted.html',
+            bcc=[settings.DEBUG_EMAIL]
+        )
+
+        response = {'success': True}
+        return JsonResponse(response)
+
+
+class BulletinUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
+    model = models.Bulletin
+    form_class = forms.BulletinForm
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], user=self.request.user)
+
+
+class BulletinDeleteView(LoginRequiredMixin, DeleteView):
+    model = models.Bulletin
+
+    def get_object(self):
+        return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        response = {'success': False}
+
+        self.object = self.get_object()
+        logger.info(self.object)
+
+        self.object.delete()
+
+        response['success'] = True
+
+        return JsonResponse(response)
 

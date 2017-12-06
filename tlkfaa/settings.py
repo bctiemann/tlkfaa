@@ -303,6 +303,7 @@ CELERY_ACCEPT_CONTENT = ['pickle']
 
 SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
+ADMIN_EMAIL = 'btman@mac.com'
 
 USE_L10N = False
 DATE_FORMAT = 'H:i D n/j/Y'
