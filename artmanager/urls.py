@@ -105,6 +105,8 @@ urlpatterns = [
     url(r'^comments/(?:(?P<comment_type>(received|sent))/)?$', artmanager_views.CommentsView.as_view(), name='comments'),
 
     url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', artmanager_views.ShoutsView.as_view(), name='shouts'),
+    url(r'^shouts/(?P<shout_id>[0-9]+)/$', artmanager_views.ShoutDetailView.as_view(), name='shout-detail'),
+    url(r'^shouts/(?P<shout_id>[0-9]+)/delete/$', artmanager_views.ShoutDeleteView.as_view(), name='shout-delete'),
 
     url(r'^fans/$', artmanager_views.FansView.as_view(), name='fans'),
     url(r'^blocks/$', artmanager_views.BlocksView.as_view(), name='blocks'),

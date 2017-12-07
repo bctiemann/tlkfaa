@@ -14,6 +14,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
@@ -1411,6 +1412,34 @@ class ShoutsView(ArtManagerPaneView):
         context['pages_link'] = utils.PagesLink(len(shouts), settings.SHOUTS_PER_PAGE_ARTMANAGER, shouts_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
+
+
+class ShoutDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'artmanager/shout.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.Shout, (Q(artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['shout_id'])
+
+
+class ShoutDeleteView(LoginRequiredMixin, UpdateView):
+    model = models.Shout
+    form_class = forms.DeleteShoutForm
+    template_name = 'artmanager/shout.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Shout, (Q(artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['shout_id'])
+
+    def form_valid(self, form):
+        self.object.is_deleted = True
+#        self.object.save()
+        response = super(ShoutDeleteView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        return response
+
+    def get_success_url(self):
+        return reverse('artmanager:shout-detail', kwargs={'shout_id': self.object.id})
 
 
 class FansView(ArtManagerPaneView):

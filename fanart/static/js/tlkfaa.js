@@ -1844,7 +1844,7 @@ function deleteComment(pictureid,commentid) {
   });
 }
 
-function deleteShout(shoutid) {
+function deleteShout(shoutid, artmanagerview) {
   $('#dialog_confirm_text').html("Are you sure you want to delete this roar?");
   $('#dialog_confirm').dialog({
     resizable: false,
@@ -1853,14 +1853,22 @@ function deleteShout(shoutid) {
       "Delete": function() {
         $(this).dialog('close');
 //        var url = "/ajax_shouts.jsp?op=delete&shoutid="+shoutid;
-        var url = '/shout/' + shoutid + '/delete/';
+        if (artmanagerview) {
+          var url = '/ArtManager/shouts/' + shoutid + '/delete/';
+        } else {
+          var url = '/shout/' + shoutid + '/delete/';
+        }
         params = {};
         $.post(url,params,function(data) {
-            var refreshurl = '/shouts/' + data.artist_id + '/?shoutid=' + shoutid;
-            $.get(refreshurl, function(html) {
-                $('#shout_' + shoutid).empty().html($(html).find('#shout_' + shoutid).children());
-            });
-        }, 'json');
+            if (artmanagerview) {
+                $('#shout_' + shoutid).html(data);
+            } else {
+                var refreshurl = '/shouts/' + data.artist_id + '/?shoutid=' + shoutid;
+                $.get(refreshurl, function(html) {
+                    $('#shout_' + shoutid).empty().html($(html).find('#shout_' + shoutid).children());
+                });
+            }
+        });
       },
       Cancel: function() {
         $(this).dialog('close');

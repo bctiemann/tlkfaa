@@ -33,60 +33,11 @@
 {{ pages_link.pages_nav|safe }}
 
 {% for shout in shouts %}
-    {% if shout_type == "sent" %}
-
-        <form name="editcomment_{{ shout.id }}">
-            <div class="comment" id="shout_{{ shout.id }}">
-                <div class="commentname">
-                    <div class="commentdate">{{ shout.date_posted|date }}</div>
-                    Roared to <a href="{% url "artist" shout.artist.dir_name %}">{{ shout.artist.username }}</a>
-                </div>
-                <div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
-                    <table><tr><td>
-                        {{ shout.comment|bbcode|safe }}
-                    </td></tr></table>
-                    <div class="commentbuttons">
-                        {% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-                    </div>
-                    <br clear="all" />
-                </div>
-            </div>
-        </form>
-
-    {% elif shout_type == "received" %}
-
-        <form name="editcomment_{{ shout.id }}">
-            <div class="comment" id="shout_{{ shout.id }}">
-                <div class="commentname">
-                    <div class="commentdate">{{ shout.date_posted|date }}</div>
-                        {% if not shout.is_received %}<input type="checkbox" name="select_{{ shout.id }}" id="select_{{ shout.id }}" value="1" />{% endif %}
-                        {% if shout.user.is_artist %}
-                            <a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
-                        {% else %}
-                            {{ shout.user.username }}
-                        {% endif %}
-                    </div>
-                <div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
-                    <div class="commentprofilepic">
-                        {% if shout.user.profile_pic_thumbnail_url %}
-                            {% if shout.user.is_artist %}
-                                <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
-                            {% else %}
-                                <img src="{{ shout.user.profile_pic_thumbnail_url }}" />
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                    <table><tr><td>
-                        {{ shout.comment|bbcode|safe }}
-                    </td></tr></table>
-                    <div class="commentbuttons">
-                        <button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
-                        {% if not shout.is_deleted %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-                    </div>
-                    <br clear="all" />
-                </div>
-            </div>
-        </form>
+<form name="editcomment_{{ shout.id }}">
+    <div class="comment" id="shout_{{ shout.id }}">
+     {% include "artmanager/shout.html" %}
+    </div>
+</form>
 
         {% if not shout.is_received %}
             <script type="text/javascript">
@@ -94,7 +45,6 @@
             </script>
         {% endif %}
 
-    {% endif %}
 {% endfor %}
 
 {% endblock %}

@@ -143,3 +143,9 @@ class BulletinForm(forms.ModelForm):
         model = models.Bulletin
         fields = ['title', 'bulletin']
 
+
+class DeleteShoutForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Shout
+        fields = []
