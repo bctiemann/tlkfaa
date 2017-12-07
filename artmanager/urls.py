@@ -6,6 +6,8 @@ from django.views.generic.base import RedirectView
 from artmanager import views as artmanager_views
 from artmanager.views import contests as contests_views
 from artmanager.views import bulletins as bulletins_views
+from artmanager.views import shouts as shouts_views
+from artmanager.views import comments as comments_views
 
 urlpatterns = [
     url(r'^$', artmanager_views.BaseRedirectView.as_view(), name='home'),
@@ -102,15 +104,15 @@ urlpatterns = [
 
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
 
-    url(r'^comments/(?:(?P<comment_type>(received|sent))/)?$', artmanager_views.CommentsView.as_view(), name='comments'),
-    url(r'^comments/mark_read/$', artmanager_views.MarkCommentsReadView.as_view(), name='mark-comments-read'),
-    url(r'^comments/(?P<comment_id>[0-9]+)/$', artmanager_views.CommentDetailView.as_view(), name='comment-detail'),
-    url(r'^comments/(?P<comment_id>[0-9]+)/delete/$', artmanager_views.CommentDeleteView.as_view(), name='comment-delete'),
+    url(r'^comments/(?:(?P<comment_type>(received|sent))/)?$', comments_views.CommentsView.as_view(), name='comments'),
+    url(r'^comments/mark_read/$', comments_views.MarkCommentsReadView.as_view(), name='mark-comments-read'),
+    url(r'^comments/(?P<comment_id>[0-9]+)/$', comments_views.CommentDetailView.as_view(), name='comment-detail'),
+    url(r'^comments/(?P<comment_id>[0-9]+)/delete/$', comments_views.CommentDeleteView.as_view(), name='comment-delete'),
 
-    url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', artmanager_views.ShoutsView.as_view(), name='shouts'),
-    url(r'^shouts/mark_read/$', artmanager_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
-    url(r'^shouts/(?P<shout_id>[0-9]+)/$', artmanager_views.ShoutDetailView.as_view(), name='shout-detail'),
-    url(r'^shouts/(?P<shout_id>[0-9]+)/delete/$', artmanager_views.ShoutDeleteView.as_view(), name='shout-delete'),
+    url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', shouts_views.ShoutsView.as_view(), name='shouts'),
+    url(r'^shouts/mark_read/$', shouts_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
+    url(r'^shouts/(?P<shout_id>[0-9]+)/$', shouts_views.ShoutDetailView.as_view(), name='shout-detail'),
+    url(r'^shouts/(?P<shout_id>[0-9]+)/delete/$', shouts_views.ShoutDeleteView.as_view(), name='shout-delete'),
 
     url(r'^fans/$', artmanager_views.FansView.as_view(), name='fans'),
     url(r'^blocks/$', artmanager_views.BlocksView.as_view(), name='blocks'),
