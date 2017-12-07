@@ -1369,6 +1369,56 @@ class CommentsView(ArtManagerPaneView):
         return context
 
 
+class MarkCommentsReadView(APIView):
+
+    def post(self, request):
+        response = {'success': False}
+        for comment_id in (request.POST.get('comment_ids')).split(','):
+            if not comment_id:
+                continue
+            try:
+                comment = models.PictureComment.objects.get(pk=comment_id, picture__artist=request.user)
+                comment.is_received = True
+                comment.save()
+                logger.info(comment.id)
+            except models.PictureComment.DoesNotExist:
+                pass
+        response['success'] = True
+        return Response(response)
+
+
+class CommentDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'artmanager/comment.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(models.PictureComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+
+    def get_context_data(self, **kwargs):
+        context = super(CommentDetailView, self).get_context_data(**kwargs)
+        context['comment'] = self.object
+        return context
+
+
+class CommentDeleteView(LoginRequiredMixin, UpdateView):
+    model = models.PictureComment
+    form_class = forms.DeleteCommentForm
+    template_name = 'artmanager/comment.html'
+
+    def get_object(self):
+        return get_object_or_404(models.PictureComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+
+    def form_valid(self, form):
+        self.object.is_deleted = True
+        response = super(CommentDeleteView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        return response
+
+    def get_success_url(self):
+        return reverse('artmanager:comment-detail', kwargs={'comment_id': self.object.id})
+
+
 class ShoutsView(ArtManagerPaneView):
     template_name = 'artmanager/shouts.html'
 
@@ -1414,6 +1464,24 @@ class ShoutsView(ArtManagerPaneView):
         return context
 
 
+class MarkShoutsReadView(APIView):
+
+    def post(self, request):
+        response = {'success': False}
+        for shout_id in (request.POST.get('comment_ids')).split(','):
+            if not shout_id:
+                continue
+            try:
+                shout = models.Shout.objects.get(pk=shout_id, artist=request.user)
+                shout.is_received = True
+                shout.save()
+                logger.info(shout.id)
+            except models.Shout.DoesNotExist:
+                pass
+        response['success'] = True
+        return Response(response)
+
+
 class ShoutDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/shout.html'
 
@@ -1431,7 +1499,6 @@ class ShoutDeleteView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.is_deleted = True
-#        self.object.save()
         response = super(ShoutDeleteView, self).form_valid(form)
 
         logger.info(self.request.POST)

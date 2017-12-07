@@ -1182,7 +1182,7 @@ function markRead(type,showall,myselitems) {
       modal: true,
       buttons: {
         "Mark Read": function() {
-          var url = '/' + type + 's/mark_read/';
+          var url = '/ArtManager/' + type + 's/mark_read/';
           var params = {
               'comment_ids': s.selectlist,
           };
@@ -1819,7 +1819,7 @@ function editComment(pictureid,commentid) {
     });
 }
 
-function deleteComment(pictureid,commentid) {
+function deleteComment(pictureid,commentid,artmanagerview) {
   $('#dialog_confirm_text').html("Are you sure you want to delete this comment?");
   $('#dialog_confirm').dialog({
     resizable: false,
@@ -1828,13 +1828,22 @@ function deleteComment(pictureid,commentid) {
       "Delete": function() {
         $(this).dialog('close');
 //        var url = "/ajax_editcomment.jsp?op=delete&pictureid="+pictureid+"&commentid="+commentid;
-        var url = '/comment/' + commentid + '/delete/';
+        if (artmanagerview) {
+          var url = '/ArtManager/comments/' + commentid + '/delete/';
+        } else {
+          var url = '/comment/' + commentid + '/delete/';
+        }
         var params = {};
 //        $('#commenttext_'+commentid).load(url,function() {
 //          $('#commenttext_'+commentid).addClass('commentdeleted');
 //        });
           $.post(url, params, function(response_html) {
-              $('#comments_'+pictureid).html(response_html);
+              if (artmanagerview) {
+console.log(response_html);
+                  $('#comment_'+commentid).html(response_html);
+              } else {
+                  $('#comments_'+pictureid).html(response_html);
+              }
           });
       },
       Cancel: function() {

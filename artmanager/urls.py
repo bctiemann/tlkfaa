@@ -103,8 +103,12 @@ urlpatterns = [
     url(r'^upload_history/$', artmanager_views.UploadHistoryView.as_view(), name='upload-history'),
 
     url(r'^comments/(?:(?P<comment_type>(received|sent))/)?$', artmanager_views.CommentsView.as_view(), name='comments'),
+    url(r'^comments/mark_read/$', artmanager_views.MarkCommentsReadView.as_view(), name='mark-comments-read'),
+    url(r'^comments/(?P<comment_id>[0-9]+)/$', artmanager_views.CommentDetailView.as_view(), name='comment-detail'),
+    url(r'^comments/(?P<comment_id>[0-9]+)/delete/$', artmanager_views.CommentDeleteView.as_view(), name='comment-delete'),
 
     url(r'^shouts/(?:(?P<shout_type>(received|sent))/)?$', artmanager_views.ShoutsView.as_view(), name='shouts'),
+    url(r'^shouts/mark_read/$', artmanager_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
     url(r'^shouts/(?P<shout_id>[0-9]+)/$', artmanager_views.ShoutDetailView.as_view(), name='shout-detail'),
     url(r'^shouts/(?P<shout_id>[0-9]+)/delete/$', artmanager_views.ShoutDeleteView.as_view(), name='shout-delete'),
 

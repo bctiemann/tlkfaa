@@ -33,17 +33,17 @@
 {{ pages_link.pages_nav|safe }}
 
 {% for shout in shouts %}
-<form name="editcomment_{{ shout.id }}">
-    <div class="comment" id="shout_{{ shout.id }}">
-     {% include "artmanager/shout.html" %}
-    </div>
-</form>
+    <form name="editcomment_{{ shout.id }}">
+        <div class="comment" id="shout_{{ shout.id }}">
+            {% include "artmanager/shout.html" %}
+        </div>
+    </form>
 
-        {% if not shout.is_received %}
-            <script type="text/javascript">
-            selitems.push({{ shout.id }});
-            </script>
-        {% endif %}
+    {% if not shout.is_received %}
+        <script type="text/javascript">
+        selitems.push({{ shout.id }});
+        </script>
+    {% endif %}
 
 {% endfor %}
 

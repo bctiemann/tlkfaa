@@ -1268,42 +1268,6 @@ class PMsMoveView(APIView):
         return Response(response)
 
 
-class MarkCommentsReadView(APIView):
-
-    def post(self, request):
-        response = {'success': False}
-        for comment_id in (request.POST.get('comment_ids')).split(','):
-            if not comment_id:
-                continue
-            try:
-                comment = models.PictureComment.objects.get(pk=comment_id, picture__artist=request.user)
-                comment.is_received = True
-                comment.save()
-                logger.info(comment.id)
-            except models.PictureComment.DoesNotExist:
-                pass
-        response['success'] = True
-        return Response(response)
-
-
-class MarkShoutsReadView(APIView):
-
-    def post(self, request):
-        response = {'success': False}
-        for shout_id in (request.POST.get('comment_ids')).split(','):
-            if not shout_id:
-                continue
-            try:
-                shout = models.Shout.objects.get(pk=shout_id, artist=request.user)
-                shout.is_received = True
-                shout.save()
-                logger.info(shout.id)
-            except models.Shout.DoesNotExist:
-                pass
-        response['success'] = True
-        return Response(response)
-
-
 class CheckNameView(APIView):
 
     def get(self, request):

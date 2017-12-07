@@ -149,3 +149,10 @@ class DeleteShoutForm(forms.ModelForm):
     class Meta:
         model = models.Shout
         fields = []
+
+
+class DeleteCommentForm(forms.ModelForm):
+
+    class Meta:
+        model = models.PictureComment
+        fields = []

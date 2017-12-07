@@ -3,158 +3,49 @@
 
 {% block am_content %}
 
-<c:if test="${param.fnc == 'markread'}">
-
-	<c:forEach var="markcomment" items="${fn:split(param.itemlist, ',')}">
-		<c:set var="comment" value="0" />
-		<c:catch var="catchException">
-		<fmt:parseNumber var="comment" value="${markcomment}" integerOnly="true" />
-		</c:catch>
-		<c:if test="${comment > 0}">
-		<sql:query var="qryComment">
-		SELECT * FROM comments,pictures
-		WHERE comments.pictureid=pictures.pictureid
-		AND commentid=?
-		AND artistid=?
-		<sql:param value="${comment}" />
-		<sql:param value="${artist.artistid}" />
-		</sql:query>
-		<c:forEach var="comment" items="${qryComment.rows}">
-			<sql:update var="updComment">
-			UPDATE comments SET
-			viewed=true
-			WHERE commentid=?
-			<sql:param value="${comment.commentid}" />
-			</sql:update>
-		</c:forEach>
-		</c:if>
-	</c:forEach>
-
-</c:if>
-
-
 <h2>Your Comments</h2>
 
 {% if user.is_artist %}
-<c:if test="${artist.active == true}">
-<div class="selector_commentview">
-<div class="selector">
-<a class="{% if comment_type == "sent" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="sent" %}">posted</a>
-<a class="{% if comment_type == "received" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="received" %}">received</a>
-</div>
-{% if comment_type == "received" %}
-<c:if test="${type == 'received'}">
-	<div class="selector">
-	View: <a class="{% if not show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=0">unread</a>
-	<a class="{% if show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=1">all</a>
-	</div>
-<br clear="left" />
+    <div class="selector_commentview">
+        <div class="selector">
+            <a class="{% if comment_type == "sent" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="sent" %}">posted</a>
+            <a class="{% if comment_type == "received" %}selected{% endif %}" href="{% url "artmanager:comments" comment_type="received" %}">received</a>
+        </div>
 
-	<div class="globalactionslink">
-	<a href="javascript:nop()" onClick="markRead('comment','${showall}')">Mark all selected as read</a>
-	</div>
+        {% if comment_type == "received" %}
+        <div class="selector">
+            View: <a class="{% if not show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=0">unread</a>
+            <a class="{% if show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=1">all</a>
+        </div>
+        <br clear="left" />
 
-	<div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
+        <div class="globalactionslink">
+            <a href="javascript:nop()" onClick="markRead('comment','${showall}')">Mark all selected as read</a>
+        </div>
 
-</c:if>
-{% endif %}
-<br clear="left" />
-</div>
-</c:if>
+        <div class="selectall"><input type="checkbox" name="selectall" onClick="toggleSelectAll(this)" /> Select all</div>
+        {% endif %}
+
+        <br clear="left" />
+    </div>
 {% endif %}
 
 {{ pages_link.pages_nav|safe }}
 
 {% for comment in comments %}
 
-{% if comment_type == "sent" %}
-<c:choose>
-<c:when test="${type == 'posted'}">
+    <form name="editcomment_{{ comment.id }}">
+        <div class="comment" id="comment_{{ comment.id }}">
+            {% include "artmanager/comment.html" %}
+        </div>
+    </form>
 
-		<form name="editcomment_{{ comment.id }}">
-		<div class="comment" id="comment_{{ comment.id }}">
-		<div class="commentname">
-			<div class="commentdate">{{ comment.date_posted|date }}</div>
-			<a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a> by <a href="{% url "artist" dir_name=comment.picture.artist.dir_name %}">{{ comment.picture.artist.username }}</a>
-		</div>
-		<div class="commenttext {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
-			<c:set var="commenttext" value="${comment.comment}" />
-			<table><tr><td>
-                        {{ comment.comment|bbcode|safe }}
-			</td></tr></table>
-			<div class="commentbuttons">
-			{% if not comment.is_deleted %}<button type="button" class="small" onClick="deleteComment({{ comment.picture.id }},{{ comment.id }})">Delete</button>{% endif %}
-			</div>
-			<br clear="all" />
-		</div>
-		</div>
-		</form>
-
-</c:when>
-{% elif comment_type == "received" %}
-<c:when test="${type == 'received'}">
-
-		<form name="editcomment_{{ comment.id }}">
-		<div class="comment" id="comment_{{ comment.id }}">
-		<div class="commentname">
-			<div class="commentdate">{{ comment.date_posted|date }}</div>
-			{% if not comment.is_received %}<input type="checkbox" name="select_{{ comment.id }}" id="select_{{ comment.id }}" value="1" />{% endif %}
-                        {% if comment.user.is_artist %}
-			<c:choose>
-			<c:when test="${comment.active == true}">
-			<a href="{% url "artist" dir_name=comment.user.dir_name %}">{{ comment.user.username }}</a>
-			</c:when>
-                        {% else %}
-			<c:otherwise>
-			{{ comment.user.username }}
-			</c:otherwise>
-			</c:choose>
-                        {% endif %}
-			on <a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a></div>
-		<div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
-			<div class="commentprofilepic">
-                        {% if comment.user.profile_pic_thumbnail_url %}
-			<c:if test="${comment.profilepic > 0}">
-                                {% if comment.user.is_artist %}
-				<c:choose>
-				<c:when test="${comment.active == true}">
-				<a href="{% url "artist" dir_name=comment.user.dir_name %}"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
-				</c:when>
-                                {% else %}
-				<c:otherwise>
-				<img src="{{ comment.user.profile_pic_thumbnail_url }}" />
-				</c:otherwise>
-				</c:choose>
-                                {% endif %}
-			</c:if>
-                        {% endif %}
-			</div>
-			<c:set var="commenttext" value="${comment.comment}" />
-			<table><tr><td>
-                        {{ comment.comment|bbcode|safe }}
-			</td></tr></table>
-			<div class="commentbuttons">
-			{% if not comment.is_deleted %}<button type="button" class="small" onClick="deleteComment({{ comment.picture.id }},{{ comment.id }})">Delete</button>{% endif %}
-			</div>
-			<br clear="all" />
-		</div>
-		</div>
-		</form>
-
-                {% if not comment.is_received %}
-		<c:if test="${comment.viewed == false}">
-		<script type="text/javascript">
-		selitems.push({{ comment.id }});
-		</script>
-		</c:if>
-                {% endif %}
-
-</c:when>
-</c:choose>
-{% endif %}
+    {% if not comment.is_received %}
+        <script type="text/javascript">
+        selitems.push({{ comment.id }});
+        </script>
+    {% endif %}
 
 {% endfor %}
-
-</c:if>
 
 {% endblock %}
