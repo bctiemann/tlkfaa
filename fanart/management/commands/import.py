@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 from fanart import models as fanart_models
 from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
+from pms.models import PrivateMessage
 
 
 class Command(BaseCommand):
@@ -26,8 +27,8 @@ class Command(BaseCommand):
 #        'do_coloringpics': True,
 #        'do_characters': True,
 #        'do_favorites': True,
-        'do_offers': True,
-        'do_claims': True,
+#        'do_offers': True,
+#        'do_claims': True,
 #        'do_picturecharacters': True,
 #        'do_tags': True,
 #        'do_approvers': True,
@@ -44,7 +45,7 @@ class Command(BaseCommand):
 #        'do_contests': True,
 #        'do_contestpics': True,
 #        'do_contestvotes': True,
-#        'do_pms': True,
+        'do_pms': True,
 #        'do_specials': True,
 #        'do_votes': True,
 #        'do_customicons': True,
@@ -127,7 +128,7 @@ class Command(BaseCommand):
             try:
                 sender = fanart_models.User.objects.get(id_orig=pm['senderid'])
                 recipient = fanart_models.User.objects.get(id_orig=pm['recptid'])
-                f = fanart_models.PrivateMessage.objects.create(
+                f = PrivateMessage.objects.create(
                     sender = sender,
                     recipient = recipient,
                     date_sent = pm['sent'],

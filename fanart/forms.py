@@ -115,11 +115,11 @@ class ContestVoteForm(forms.ModelForm):
         fields = ['entry']
 
 
-class PMForm(forms.ModelForm):
+#class PMForm(forms.ModelForm):
 
-    class Meta:
-        model = models.PrivateMessage
-        fields = ['reply_to', 'subject', 'message', 'recipient']
+#    class Meta:
+#        model = models.PrivateMessage
+#        fields = ['reply_to', 'subject', 'message', 'recipient']
 
 
 class SocialMediaIdentityForm(forms.ModelForm):

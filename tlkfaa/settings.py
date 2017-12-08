@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'fanart',
     'trading_tree',
     'coloring_cave',
+    'pms',
     'artmanager',
 ]
 

@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from fanart import views as fanart_views
 from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
+from pms import views as pms_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -103,13 +104,13 @@ urlpatterns = [
     url(r'^pick/picture/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
     url(r'^pick/character/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
 
-    url(r'^pms/(?P<box>(in|out|trash))/$', fanart_views.PMsView.as_view(), name='pms'),
-    url(r'^pms/(?P<action>(delete|restore))/$', fanart_views.PMsMoveView.as_view(), name='pms-move'),
-    url(r'^pm/(?:(?P<pm_id>[0-9]+)/)?$', fanart_views.PMView.as_view(), name='pm'),
-    url(r'^pm/shout/(?P<shout_id>[0-9]+)/?$', fanart_views.PMShoutView.as_view(), name='pm-shout'),
-    url(r'^pm/user/(?:(?P<recipient_id>[0-9]+)/)?$', fanart_views.PMUserView.as_view(), name='pm-user'),
-    url(r'^pm/create/$', fanart_views.PMCreateView.as_view(), name='pm-create'),
-    url(r'^pm/success/(?P<pm_id>[0-9]+)/$', fanart_views.PMSuccessView.as_view(), name='pm-success'),
+    url(r'^pms/(?P<box>(in|out|trash))/$', pms_views.PMsView.as_view(), name='pms'),
+    url(r'^pms/(?P<action>(delete|restore))/$', pms_views.PMsMoveView.as_view(), name='pms-move'),
+    url(r'^pm/(?:(?P<pm_id>[0-9]+)/)?$', pms_views.PMView.as_view(), name='pm'),
+    url(r'^pm/shout/(?P<shout_id>[0-9]+)/?$', pms_views.PMShoutView.as_view(), name='pm-shout'),
+    url(r'^pm/user/(?:(?P<recipient_id>[0-9]+)/)?$', pms_views.PMUserView.as_view(), name='pm-user'),
+    url(r'^pm/create/$', pms_views.PMCreateView.as_view(), name='pm-create'),
+    url(r'^pm/success/(?P<pm_id>[0-9]+)/$', pms_views.PMSuccessView.as_view(), name='pm-success'),
 
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='bulletins'),
