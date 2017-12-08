@@ -136,10 +136,10 @@
 
 <div class="footer">
     <ul>
-        <li><a href="/pop_about.jsp" rel="shadowbox;width=500;height=600">About</a></li>
-        <li><a href="/pop_tos.jsp" rel="shadowbox;width=750;height=600">Terms of Use / Guidelines</a></li>
-        <li><a href="/pop_privacy.jsp" rel="shadowbox;width=500;height=600">Privacy Policy</a></li>
-        <li><a href="/pop_help.jsp" rel="shadowbox;width=500;height=600">Help</a></li>
+        <li><a href="{% url "about" %}" rel="shadowbox;width=500;height=600">About</a></li>
+        <li><a href="{% url "tos" %}" rel="shadowbox;width=750;height=600">Terms of Use / Guidelines</a></li>
+        <li><a href="{% url "privacy" %}" rel="shadowbox;width=500;height=600">Privacy Policy</a></li>
+        <li><a href="{% url "help" %}" rel="shadowbox;width=500;height=600">Help</a></li>
     </ul>
     <div class="footertext">
     <p>Web design &copy; 1995-{% now "Y" %} <a href="mailto:btman@lionking.org">Brian Tiemann</a></p>

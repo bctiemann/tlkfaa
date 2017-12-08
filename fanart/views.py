@@ -1321,3 +1321,20 @@ class BulletinView(DetailView):
 
     def get_object(self):
         return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], is_published=True)
+
+
+class AboutView(TemplateView):
+    template_name = 'fanart/about.html'
+
+
+class TermsOfServiceView(TemplateView):
+    template_name = 'fanart/terms_of_service.html'
+
+
+class PrivacyView(TemplateView):
+    template_name = 'fanart/privacy.html'
+
+
+class HelpView(TemplateView):
+    template_name = 'fanart/help.html'
+
