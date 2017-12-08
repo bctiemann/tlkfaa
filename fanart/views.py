@@ -589,6 +589,10 @@ class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
         return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
 
 
+class RegisterView(TemplateView):
+    template_name = 'fanart/register.html'
+
+
 class GuidelinesView(TemplateView):
     template_name = 'includes/guidelines.html'
 

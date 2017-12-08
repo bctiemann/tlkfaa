@@ -1,0 +1,138 @@
+{% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+
+<%--
+Register.jsp
+Registers a new artist profile.
+--%>
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.security.*,java.math.*,java.util.*,java.io.*,java.net.*,com.google.gson.*" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<c:set var="basepath" value="${basepath}" scope="page" />
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:choose>
+<c:when test="${loggedin == 0}">
+
+	<h1>Your Profile</h1>
+
+	<div class="am_panel">
+	<div class="am_tabs">
+	<a href="/Register.jsp" class="selected">Register</a>
+	</div>
+	<div class="am_content">
+
+	<h2>Register a Profile</h2>
+
+	<div class="pageinfo">
+
+	<p>Registering a profile on the TLKFAA allows you to post comments, mark favorite artists and pictures, send private messages, and much more.</p>
+
+	</div>
+
+	<form name="registerform" id="registerform" method="POST" action="Register.jsp">
+	<table class="formtable">
+	<tr>
+	<td class="label">Profile Name</td>
+	<td class="data"><input type="text" class="std" id="newname" name="newname" onKeyUp="checkAvail(this.value)" validate="artistname" message="You must enter a profile name. This name may not contain any special characters." /><br /><div id="newnameavailable"></div></td>
+	<td class="legend"></td>
+	</tr>
+	<tr>
+	<td class="label">Password</td>
+	<td class="data"><input type="password" class="std" id="passwd" name="passwd" id="passwd" validate="hasvalue" message="You must enter a password." /></td>
+	<td class="legend"></td>
+	</tr>
+	<tr>
+	<td class="label">Repeat Password</td>
+	<td class="data"><input type="password" class="std" id="passwd_repeat" name="passwd_repeat" validate="matchpasswd" message="You must enter the password a second time, and it must match the first password." /></td>
+	<td class="legend"></td>
+	</tr>
+	<tr>
+	<td class="label">Email</td>
+	<td class="data"><input type="text" class="std" id="email" name="email" validate="email" message="You must enter a valid email address." /></td>
+	<td class="legend"></td>
+	</tr>
+	</table>
+
+	<div class="pageinfo">
+
+	<p><b>Would you like to join as an Artist?</b> If you do, we will add an active public Artist page to your profile, and you will be able to upload and share your own 
+	creative work with other artists in the community. If not, you won't have an Artist page, and you can participate in the community as a fan of other 
+	artists. You can activate or deactivate your Artist account at any time, even if you don't turn it on now.</p>
+
+	</div>
+
+	<table class="formtable">
+	<tr>
+	<td class="label">Join as an Artist?</td>
+	<td class="data">
+	<select id="artistacctactive" name="artistacctactive">
+	<option value="1">Yes</option>
+	<option value="0" selected>No</option>
+	</select>
+	</td>
+	<td class="legend"></td>
+	</tr>
+	</table>
+
+	<div class="smallprint">
+	<h4>Terms of Use</h4>
+	<ul>
+	<li>You must maintain an active, working email address as a means of contact in your profile. This email address will not be displayed publicly on the TLKFAA without your permission.</li>
+	<li>You must be at least 13 years of age, or have obtained parental/guardian permission to maintain a profile on the TLKFAA using the <a target="_blank" href="PermissionForm.pdf">Under-13 Permission Form</a>.</li>
+	<li>You are responsible for any and all activity that occurs using your profile.</li>
+	<li>In submitting artwork to the TLKFAA, you must adhere to the <a href="Guidelines.html">Uploading Guidelines</a> which govern acceptable content for the site. In particular, you must not upload art that contains mature or "adult" subject matter, including violence, drug use, gore, and sexuality; you also must not upload any artwork that you did not create yourself.</li>
+	<li>In participating in the TLKFAA community, including (but not limited to) commenting on pictures, sending private messages to other users, using the Sketcher, and using the Trading Tree and other features, you must be respectful of the other members of the community and refrain from disruptive behavior that negatively affects the community or the operation of the TLKFAA site.</li>
+	<li>You must not decorate your Gallery page in a way that may be offensive or disturbing to visitors, particularly children.</li>
+	</ul>
+	<p>Failure to abide by these terms may result in the suspension or removal of your profile, at the discretion of the TLKFAA administration.</p>
+	</div>
+
+	<div class="g-recaptcha" style="margin: 30px 100px;" data-sitekey="6LeEQSYTAAAAAEct7Y59jbyLDZ-Oql-_7R6eEIx1"></div>
+
+	<div class="pageinfo">
+
+	<p>By clicking the "Register" button you state that you have read and will adhere to the above Terms of Use.<p>
+
+	</div>
+
+	<table class="formtable">
+	<tr>
+	<td colspan="3" class="buttons">
+<!--	<button type="button" onClick="validateForm('registerform','document.registerform.submit()')">Register</button>-->
+	<button type="button" onClick="validateForm('registerform','registerUser()')">Register</button>
+	</td>
+	</tr>
+	</table>
+	<input type="hidden" name="fnc" value="commit" />
+	</form>
+
+</div>
+</div>
+
+</c:when>
+<c:otherwise>
+
+	<div class="error">
+	<h3>An error occurred</h3>
+	You are already logged in.
+	</div>
+
+</c:otherwise>
+</c:choose>
+
+<jsp:include page="inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="inc_root/inc_footer.jsp" />
+
+{% endblock %}

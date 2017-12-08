@@ -34,6 +34,8 @@ urlpatterns = [
     url(r'^privacy/$', fanart_views.PrivacyView.as_view(), name='privacy'),
     url(r'^help/$', fanart_views.HelpView.as_view(), name='help'),
 
+    url(r'^Register/$', fanart_views.RegisterView.as_view(), name='register'),
+
     url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/$', fanart_views.ApproveRequestView.as_view(), name='approve-request'),
     url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/success/$', fanart_views.ApproveRequestSuccessView.as_view(), name='approve-request-success'),
 
