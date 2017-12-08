@@ -3,75 +3,46 @@
 
 {% block am_content %}
 
-<%--
-inc_blocks.jsp
-ArtManager component for managing your blocks on users for commenting/shouting/PMing.
---%>
-
-<%@ include file="inc_root/inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart"   />
-
-<c:catch var="catchException">
-<fmt:parseNumber var="page" value="${param.page}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${loggedin == 1}">
-
 <h2>Your Blocked Users</h2>
 
 <div id="blockstatus"></div>
 
-<sql:query var="qryBlocks">
-SELECT * FROM blocks,users,artists
-WHERE blocks.userid=users.userid
-AND artists.userid=users.userid
-AND blocks.artistid=?
-ORDER BY blockedon DESC
-<sql:param value="${artist.artistid}" />
-</sql:query>
-
-<form name="blockform" method="POST" action="ArtManager.jsp">
-<input name="blockuser" id="blockuser" /><button type="button" onClick="blockUser(null,'block','direct')" class="small">Block</button>
-<input type="hidden" id="blockuserid" value="" />
-<input type="hidden" name="op" value="blocks" />
+<form name="blockform" method="POST">
+    <input name="blockuser" id="blockuser" /><button type="button" onClick="blockUser(null,'block','direct')" class="small">Block</button>
+    <input type="hidden" id="blockuserid" value="" />
 </form>
 
 <table class="users">
-<c:forEach var="block" items="${qryBlocks.rows}">
+    {% for block in user.block_set.all %}
 
-	<tr>
-	<td class="profilepic">
-	<c:if test="${block.profilepic > 0}">
-		<c:choose>
-		<c:when test="${block.active == true}">
-		<a href="/Artists/${block.dirname}/"><img class="userprofilepic" src="/profiles/${block.profilepic}.s.${block.profilepic_ext}" /></a>
-		</c:when>
-		<c:otherwise>
-		<img src="/profiles/${block.profilepic}.s.${block.profilepic_ext}" />
-		</c:otherwise>
-		</c:choose>
-	</c:if>
-	</td>
-	<td><a href="/Artists/${block.dirname}/">${block.username}</a></td>
-	<td><fmt:formatDate value="${block.blockedon}" type="date" pattern="E M/d/yyyy" /></td>
-	<td><a href="javascript:nop()" onClick="blockUser(${block.userid},'unblock','direct')">unblock</a></td>
-	</tr>
+        <tr>
+            <td class="profilepic">
+                {% if block.blocked_user.profile_pic_thumbnail_url %}
+                    {% if block.blocked_user.is_artist %}
+                        <a href="{% url "artist" dir_name=block.blocked_user.dir_name %}"><img class="userprofilepic" src="{{ block.blocked_user.profile_pic_thumbnail_url }}" /></a>
+                    {% else %}
+                        <img src="{{ block.blocked_user.profile_pic_thumbnail_url }}" />
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td class="name">
+                {% if block.blocked_user.is_artist %}
+                    <a href="{% url "artist" dir_name=block.blocked_user.dir_name %}">{{ block.blocked_user.username }}</a>
+                {% else %}
+                    {{ block.blocked_user.username }}
+                {% endif %}
+            </td>
+            <td>{{ block.date_blocked|date:"m/d/Y" }}</td>
+            <td><a href="javascript:nop()" onClick="blockUser({{ block.blocked_user.id }},'unblock','direct')">unblock</a></td>
+        </tr>
 
-</c:forEach>
+    {% endfor %}
 </table>
 
-<c:if test="${qryBlocks.rowCount == 0}">
+{% if user.block_set.count == 0 %}
 
-	You have not blocked any users.
+    You have not blocked any users.
 
-</c:if>
-
-</c:if>
+{% endif %}
 
 {% endblock %}

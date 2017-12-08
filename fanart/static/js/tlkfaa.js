@@ -1367,7 +1367,6 @@ function postSelectedPic(picform) {
     });
 //    picform.submit();
   } else {
-console.log('foo');
     $('#dialog_confirm_text').html('You must select one of your pictures to post into the Coloring Cave.');
     $('#dialog_confirm').dialog({
       title: 'Alert',
@@ -1913,7 +1912,7 @@ console.log(data);
         } else if (type == 'pm') {
         } else if (type == 'direct') {
             if (data.success) {
-                window.location.href = "/ArtManager.jsp?op=blocks";
+                window.location.reload();
             } else {
                 alert(he.decode(data.message));
             }

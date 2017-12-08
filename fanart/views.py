@@ -791,6 +791,7 @@ class ToggleBlockView(APIView):
             is_blocked = False
         response['blocked_user_id'] = blocked_user.id
         response['is_blocked'] = is_blocked
+        response['success'] = True
         return Response(response)
 
 

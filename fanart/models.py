@@ -1010,9 +1010,12 @@ class ArtistName(models.Model):
 
 
 class Block(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by')
-    blocked_user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True)
+    blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocks_received')
     date_blocked = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-date_blocked']
 
 
 class Bulletin(models.Model):
