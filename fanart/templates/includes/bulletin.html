@@ -1,63 +1,16 @@
-<%--
-pop_bulletin.jsp
-Popup page for displaying bulletins.
---%>
+{% extends "fanart/base_popup.html" %}
+{% load bbcode_tags %}
 
-<%@ include file="inc_root/inc_functions.jsp" %>
-<jsp:include page="inc_root/inc_header_pop.jsp" />
+{% block content %}
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<h3>Bulletin posted by {{ bulletin.user.username }}:</h3>
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<div class="msgtitle">
+    {{ bulletin.title }}
+</div>
 
-<sql:setDataSource dataSource="jdbc/Fanart" />
+<div class="pm">
+    {{ bulletin.bulletin|bbcode|safe }}
+</div>
 
-<c:catch var="catchException">
-<fmt:parseNumber var="bulletin" value="${param.bulletin}" integerOnly="true" />
-</c:catch>
-
-<c:if test="${bulletin > 0}">
-
-	<sql:query var="qryBulletin">
-	SELECT *,artistname,dirname FROM bulletins,artists
-	WHERE bulletinid=?
-	AND bulletins.artistid=artists.artistid
-	<sql:param value="${bulletin}" />
-	</sql:query>
-
-	<c:choose>
-	<c:when test="${qryBulletin.rowCount > 0}">
-
-		<c:forEach var="bulletin" items="${qryBulletin.rows}">
-
-		<c:set var="bulletintext" value="${bulletin.bulletin}" />
-
-		<h3>Bulletin posted by ${bulletin.artistname}:</h3>
-
-		<div class="msgtitle">
-		${bulletin.title}
-		</div>
-
-		<div class="pm">
-		<%= formatText((String)pageContext.getAttribute("bulletintext")) %>
-		</div>
-
-		</c:forEach>
-
-	</c:when>
-	<c:otherwise>
-
-		<div class="error">
-		<h3>An error occurred</h3>
-		The specified bulletin ID is invalid.
-		</div>
-
-	</c:otherwise>
-	</c:choose>
-
-</c:if>
-
-</body>
-</html>
+{% endblock %}

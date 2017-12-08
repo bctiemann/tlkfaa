@@ -2,10 +2,9 @@
 {% for announcement in admin_announcements %}
 
 <div class="bulletinlink">
-<div class="bulletindate">{{ announcement.date_posted|date }}</div>
-<p class="bulletintitle"><a href="/pop_bulletin.jsp?bulletin=${bulletin.bulletinid}" rel="shadowbox[Bulletins];width=500;height=600">{{ announcement.title }}</a></p>
-{{ announcement.bulletin|bbcode|safe }}
-
+    <div class="bulletindate">{{ announcement.date_posted|date }}</div>
+    <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=announcement.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ announcement.title }}</a></p>
+    {{ announcement.bulletin|bbcode|safe }}
 </div>
 
 {% endfor %}

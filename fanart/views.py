@@ -1317,4 +1317,7 @@ class RemoveBannerView(DeleteView):
 
 class BulletinView(DetailView):
     model = models.Bulletin
-    template_name = 'fanart/bulletin.html'
+    template_name = 'includes/bulletin.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], is_published=True)
