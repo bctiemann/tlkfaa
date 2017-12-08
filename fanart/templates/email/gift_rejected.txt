@@ -1,0 +1,15 @@
+You recently submitted an Art Trade/Request to {{ giftpicture.recipient.username }}. This is to let you know that the recipient has not
+accepted the picture, and it will not appear on their ArtWall.
+
+{% if giftpicture.reply_message %}
+{{ giftpicture.recipient.username }} sent the following reply:
+----------------------------------------------------------------------------------------------------------
+{{ giftpicture.reply_message }}
+----------------------------------------------------------------------------------------------------------
+{% endif %}
+
+Thank you!
+
+--Brian Tiemann
+lionking.org administrator
+

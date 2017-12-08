@@ -1,0 +1,53 @@
+{% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+
+<h1>Approve ArtWall Submission</h1>
+
+<div class="am_panel">
+    <div class="am_tabs">
+        <a href="{% url "approve-request" hash=giftpicture.hash %}" class="selected">Approve</a>
+    </div>
+
+    <div class="am_content">
+
+        {% block am_content %}
+
+        <h2>ArtWall Submission</h2>
+
+        <div class="pageinfo">
+            <p>The artist <a href="{% url "artist" dir_name=giftpicture.sender.dir_name %}">{{ giftpicture.sender.username }}</a> would like to post the following picture on your ArtWall:</p>
+        </div>
+
+        {% with giftpicture.picture as picture %}
+            {% include "includes/picture.html" %}
+        {% endwith %}
+
+        <form name="requestform" method="POST" action="{% url "approve-request" hash=giftpicture.hash %}">
+            <table class="formtable">
+                <tr>
+                    <td class="label">Message from {{ giftpicture.sender.username }} to You</td>
+                    <td class="data">{{ giftpicture.message|bbcode|safe }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Message for {{ giftpicture.sender.username }}</td>
+                    <td class="data"><textarea name="reply_message"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="label">Accept Picture?</td>
+                    <td class="data">
+                        <button type="submit" name="approved" value="1">Yes</button>
+                        <button type="submit" name="declined" value="1">No</button>
+                    </td>
+                </tr>
+            </table>	
+            {% csrf_token %}
+        </form>
+
+        {% endblock %}
+
+    </div>
+</div>
+
+{% endblock %}

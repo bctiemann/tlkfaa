@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^help/$', fanart_views.HelpView.as_view(), name='help'),
 
     url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/$', fanart_views.ApproveRequestView.as_view(), name='approve-request'),
+    url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/success/$', fanart_views.ApproveRequestSuccessView.as_view(), name='approve-request-success'),
 
     url(r'^Guidelines/$', fanart_views.GuidelinesView.as_view(), name='guidelines'),
 

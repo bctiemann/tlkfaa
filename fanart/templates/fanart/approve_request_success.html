@@ -1,0 +1,21 @@
+{% extends "fanart/approve_request.html" %}
+
+{% block am_content %}
+
+<h2>ArtWall Submission</h2>
+
+{% if giftpicture.is_active %}
+
+    <div class="pageinfo">
+        The picture has been accepted into your <a href="{% url "artist-artwall" dir_name=user.dir_name %}">ArtWall</a>.
+    </div>
+
+{% else %}
+
+    <div class="pageinfo">
+        The picture has been declined and will not appear in your <a href="{% url "artist-artwall" dir_name=user.dir_name %}">ArtWall</a>.
+    </div>
+
+{% endif %}
+
+{% endblock %}

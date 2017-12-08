@@ -8,6 +8,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
@@ -531,10 +533,60 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         return context
 
 
-class ApproveRequestView(UpdateView):
+class ApproveRequestView(LoginRequiredMixin, UpdateView):
     model = models.GiftPicture
-    template = 'fanart/approve-request.html'
+    template_name = 'fanart/approve_request.html'
     form_class = forms.GiftPictureForm
+
+    def get_object(self):
+        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user, is_active=False, date_declined__isnull=True)
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        logger.info(form.cleaned_data)
+        response = super(ApproveRequestView, self).form_valid(form)
+        if self.request.POST.get('approved'):
+            self.object.is_active = True
+            self.object.date_accepted = timezone.now()
+            self.object.save()
+
+            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+            tasks.send_email.delay(
+                recipients=[self.object.sender.email],
+                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
+                context=email_context,
+                text_template='email/gift_accepted.txt',
+                html_template='email/gift_accepted.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        elif self.request.POST.get('declined'):
+            self.object.date_declined = timezone.now()
+            self.object.save()
+
+            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+            tasks.send_email.delay(
+                recipients=[self.object.sender.email],
+                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
+                context=email_context,
+                text_template='email/gift_rejected.txt',
+                html_template='email/gift_rejected.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        return response
+
+    def get_success_url(self):
+        return reverse('approve-request-success', kwargs={'hash': self.object.hash})
+
+
+class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
+    model = models.GiftPicture
+    template_name = 'fanart/approve_request_success.html'
+    form_class = forms.GiftPictureForm
+
+    def get_object(self):
+        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
 
 
 class GuidelinesView(TemplateView):
@@ -1337,4 +1389,5 @@ class PrivacyView(TemplateView):
 
 class HelpView(TemplateView):
     template_name = 'fanart/help.html'
+
 

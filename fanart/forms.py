@@ -154,4 +154,4 @@ class GiftPictureForm(forms.ModelForm):
 
     class Meta:
         model = models.GiftPicture
-        fields = []
+        fields = ['reply_message']
