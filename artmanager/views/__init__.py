@@ -1338,15 +1338,12 @@ class FansView(ArtManagerPaneView):
 
         sort_by = self.request.GET.get('sort_by', None)
         if not sort_by in ['name', 'date']:
-            sort_by = 'name'
+            sort_by = 'date'
 
         if sort_by == 'name':
             fans = fans.order_by('user__username')
         if sort_by == 'date':
             fans = fans.order_by('-date_added')
-
-        for fan in fans:
-            fan.latest_shout = fan.user.shout_set.filter(artist=self.request.user).order_by('-date_posted').first()
 
         context['fans_paginator'] = Paginator(fans, settings.FANS_PER_PAGE_ARTMANAGER)
         try:
@@ -1357,6 +1354,9 @@ class FansView(ArtManagerPaneView):
             fans_page = context['fans_paginator'].page(page)
         except EmptyPage:
             fans_page = context['fans_paginator'].page(1)
+
+        for fan in fans_page:
+            fan.latest_shout = fan.user.shout_set.filter(artist=self.request.user).order_by('-date_posted').first()
 
         context['fans'] = fans_page
         context['sort_by'] = sort_by
