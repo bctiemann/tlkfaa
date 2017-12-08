@@ -484,8 +484,10 @@ class Command(BaseCommand):
                 f = fanart_models.Favorite.objects.create(
                     user = user,
                     picture = picture,
-                    date_added = fave['added'],
+#                    date_added = fave['added'],
                 )
+                f.date_added = fave['added']
+                f.save()
 
         if 'do_offers' in self.enabled:
             c.execute("""SELECT * FROM offers""")

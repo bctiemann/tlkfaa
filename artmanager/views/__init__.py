@@ -1331,6 +1331,38 @@ class FansView(ArtManagerPaneView):
         request.session['am_page'] = 'fans'
         return super(FansView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(FansView, self).get_context_data(**kwargs)
+
+        fans = self.request.user.visible_fans.all()
+
+        sort_by = self.request.GET.get('sort_by', None)
+        if not sort_by in ['name', 'date']:
+            sort_by = 'name'
+
+        if sort_by == 'name':
+            fans = fans.order_by('user__username')
+        if sort_by == 'date':
+            fans = fans.order_by('-date_added')
+
+        for fan in fans:
+            fan.latest_shout = fan.user.shout_set.filter(artist=self.request.user).order_by('-date_posted').first()
+
+        context['fans_paginator'] = Paginator(fans, settings.FANS_PER_PAGE_ARTMANAGER)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            fans_page = context['fans_paginator'].page(page)
+        except EmptyPage:
+            fans_page = context['fans_paginator'].page(1)
+
+        context['fans'] = fans_page
+        context['sort_by'] = sort_by
+        context['pages_link'] = utils.PagesLink(len(fans), settings.FANS_PER_PAGE_ARTMANAGER, fans_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
 
 class BlocksView(ArtManagerPaneView):
     template_name = 'artmanager/blocks.html'

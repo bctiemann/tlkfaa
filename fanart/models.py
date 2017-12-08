@@ -212,6 +212,10 @@ class User(AbstractUser):
         return self.pms_received.filter(date_viewed__isnull=True).count()
 
     @property
+    def visible_fans(self):
+        return self.fans.filter(is_visible=True)
+
+    @property
     def favorite_artists(self):
 #        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
 
