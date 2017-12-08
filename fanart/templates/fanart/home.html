@@ -36,7 +36,7 @@
     {% if current_contest %}
     <div class="current-contest">
         <h3>Current Art Contest</h3>
-        <p class="contest-title"><a href="/Contests.jsp?contestid=${currentContest.contestid}">{{ current_contest.title }}</a></p>
+        <p class="contest-title"><a href="{% url "contest" contest_id=current_contest.id %}">{{ current_contest.title }}</a></p>
 	<div class="contest-theme">
                 {{ current_contest.description|bbcode|safe }}
 	</div>
