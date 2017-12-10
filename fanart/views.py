@@ -598,6 +598,11 @@ class RegisterView(FormView):
     form_class = forms.RegisterForm
     template_name = 'fanart/register.html'
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return redirect('home')
+        return super(RegisterView, self).get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(RegisterView, self).get_context_data(**kwargs)
         context['recaptcha_site_key'] = settings.RECAPTCHA_SITE_KEY
