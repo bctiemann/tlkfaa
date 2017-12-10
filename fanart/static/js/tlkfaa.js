@@ -181,21 +181,25 @@ function registerUser() {
     var params = {
         fnc: 'commit',
         username: $('#newname').val(),
-        passwd: $('#passwd').val(),
-        passwd_repeat: $('#passwd_repeat').val(),
+        password: $('#password').val(),
+        password_repeat: $('#password_repeat').val(),
         email: $('#email').val(),
-        artistacctactive: $('#artistacctactive').val(),
+        is_artist: $('#is_artist').val() == '1',
         'g-recaptcha-response': $('#g-recaptcha-response').val(),
     };
 console.log(params);
+console.log(params.is_artist);
     $.post(url, params, function(data) {
 console.log(data);
         if (data.success) {
 //            set_prefsname(data.storename, data.storepass);
 //            window.location.href = '/ArtManager.jsp';
-            window.location.href = '/ArtManager/';
+            window.location.href = '/ArtManager/prefs/';
         } else {
-            alert(data.message);
+            Object.keys(data.errors).forEach(function(key) {
+                alert(data.errors[key][0]);
+                console.log(key, data.errors[key][0]);
+            });
         }
     }, 'json');
 }

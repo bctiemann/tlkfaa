@@ -160,3 +160,6 @@ class GiftPictureForm(forms.ModelForm):
 class RegisterForm(forms.Form):
     username = forms.CharField(validators=[models.validate_unique_username])
     email = forms.EmailField(validators=[models.validate_unique_email])
+    password = forms.CharField(widget=forms.PasswordInput)
+    password_repeat = forms.CharField(widget=forms.PasswordInput)
+    is_artist = forms.BooleanField(required=False)

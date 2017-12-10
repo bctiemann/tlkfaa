@@ -7,6 +7,9 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
+from django.contrib.auth import (
+    login, authenticate, get_user_model, password_validation,
+)
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -602,6 +605,7 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         logger.warning(form.errors)
+        logger.warning(type(form.errors))
         response = super(RegisterView, self).form_invalid(form)
         if self.request.is_ajax():
             ajax_response = {
@@ -613,18 +617,57 @@ class RegisterView(FormView):
         else:
             return response
 
+    # The form validates username and email, including uniqueness. Failures there are handled by form_invalid.
+    # All other validations occur in form_valid.
     def form_valid(self, form):
         response = super(RegisterView, self).form_valid(form)
 
         logger.info(self.request.POST)
 
+        # Check ReCAPTCHA
         recaptcha_data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
             'response': self.request.POST.get('g-recaptcha-response')
         }
-        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
-        result = r.json()
-        logger.info(result)
+#        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
+#        result = r.json()
+#        logger.info(result)
+#        if not result['success']:
+#            ajax_response = {
+#                'success': False,
+#                'errors': {'recaptcha': ['ReCAPTCHA failure. Please click the "I\'m not a robot" box.']},
+#            }
+#            return HttpResponse(json.dumps(ajax_response))
+
+        # Check if entered passwords match
+#        password = self.request.POST.get('passwd')
+        password = form.cleaned_data['password']
+        password_repeat = form.cleaned_data['password_repeat']
+        if password != password_repeat:
+            ajax_response = {
+                'success': False,
+                'errors': {'password': ['The passwords you entered did not match']},
+            }
+            return HttpResponse(json.dumps(ajax_response))
+
+        # Check if password complexity requirements are met
+        try:
+            password_valid = password_validation.validate_password(password)
+        except password_validation.ValidationError, errors:
+            ajax_response = {
+                'success': False,
+                'errors': {'password': list(errors)},
+            }
+            return HttpResponse(json.dumps(ajax_response))
+
+        user = models.User.objects.create_user(
+            form.cleaned_data['username'],
+            password=password,
+            email=form.cleaned_data['email'],
+            is_artist=form.cleaned_data['is_artist']
+        )
+        login(self.request, user)
+
 
 #        user = form.save(commit=False)
 #        form.object = user
@@ -643,6 +686,8 @@ class RegisterView(FormView):
 #            new_dir_name = user.change_dir_name()
 
 #            models.ArtistName.objects.create(artist=user, name=new_username)
+
+        models.ArtistName.objects.create(artist=user, name=user.username)
 
         ajax_response = {
             'success': True,

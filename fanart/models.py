@@ -96,6 +96,16 @@ class FanartUserManager(UserManager):
     def recently_active(self):
         return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
 
+    def create_user(self, username, email=None, password=None, is_artist=True, **extra_fields):
+        user = super(FanartUserManager, self).create_user(username, email=email, password=password, **extra_fields)
+        new_dir_name = make_dir_name(user.username)
+        new_absolute_dir_name = '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, new_dir_name)
+        os.mkdir(new_absolute_dir_name)
+        user.dir_name = new_dir_name
+        user.sort_name = user.username
+        user.is_artist = is_artist
+        user.save()
+        return user
 
 class User(AbstractUser):
     GENDER_CHOICES = (
