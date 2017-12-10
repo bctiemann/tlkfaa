@@ -158,8 +158,8 @@ class GiftPictureForm(forms.ModelForm):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(validators=[models.validate_unique_username])
-    email = forms.EmailField(validators=[models.validate_unique_email])
-    password = forms.CharField(widget=forms.PasswordInput)
-    password_repeat = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(validators=[models.validate_unique_username], error_messages={'required': 'You must enter a profile name.'})
+    email = forms.EmailField(validators=[models.validate_unique_email], error_messages={'required': 'You must enter a valid email address.'})
+    password = forms.CharField(widget=forms.PasswordInput, error_messages={'required': 'You must enter a password.'})
+    password_repeat = forms.CharField(widget=forms.PasswordInput, error_messages={'required': 'You must enter the password a second time.'})
     is_artist = forms.BooleanField(required=False)

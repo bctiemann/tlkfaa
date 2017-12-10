@@ -196,10 +196,13 @@ console.log(data);
 //            window.location.href = '/ArtManager.jsp';
             window.location.href = '/ArtManager/prefs/';
         } else {
+            errorText = '';
             Object.keys(data.errors).forEach(function(key) {
-                alert(data.errors[key][0]);
+                errorText += data.errors[key][0] + '\n';
+//                alert(key + ':\n' + data.errors[key][0]);
                 console.log(key, data.errors[key][0]);
             });
+            alert(errorText);
         }
     }, 'json');
 }
