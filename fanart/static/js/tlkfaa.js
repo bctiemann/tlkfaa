@@ -2467,8 +2467,8 @@ function updatePrefs(fnc) {
         fnc: fnc,
         username: $('#newname').val(),
         sort_name: $('#sortname').val(),
-        passwd: $('#passwd').val(),
-        passwd_repeat: $('#passwd_repeat').val(),
+        password: $('#password').val(),
+        password_repeat: $('#password_repeat').val(),
         is_public: $('#is_public').val() == '1',
         email: $('#email').val(),
         show_email: $('#showemail').prop('checked'),
@@ -2497,10 +2497,12 @@ console.log(data);
 //            }
             window.location.reload();
         } else {
+            errorText = '';
             Object.keys(data.errors).forEach(function(key) {
-                alert(data.errors[key][0]);
+                errorText += data.errors[key][0] + '\n';
                 console.log(key, data.errors[key][0]);
             });
+            alert(errorText);
         }
     }, 'json');
 }

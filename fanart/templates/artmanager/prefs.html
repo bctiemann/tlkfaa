@@ -105,12 +105,12 @@ var checkThumbs = function() {
             </tr>
             <tr>
                 <td class="label">Password</td>
-                <td class="data"><input type="password" class="std" name="passwd" id="passwd" value="********" /></td>
+                <td class="data"><input type="password" class="std" name="password" id="password" value="********" /></td>
                 <td class="legend"></td>
             </tr>
             <tr>
                 <td class="label">Repeat Password</td>
-                <td class="data"><input type="password" class="std" name="passwd_repeat" id="passwd_repeat" value="********" /></td>
+                <td class="data"><input type="password" class="std" name="password_repeat" id="password_repeat" value="********" /></td>
                 <td class="legend"></td>
             </tr>
             <tr>
@@ -173,7 +173,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         <table class="formtable">
             <tr>
                 <td class="label">Email</td>
-                <td class="data"><input type="text" class="std" name="email" id="email" value="{{ user.email }}" validate="email" /></td>
+                <td class="data"><input type="text" class="std" name="email" id="email" value="{{ user.email }}" 1validate="email" /></td>
                 <td class="legend">Must be a real, working address</td>
             </tr>
             <tr>

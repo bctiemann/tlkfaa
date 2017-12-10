@@ -10,7 +10,9 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.shortcuts import render
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import (
+    login, authenticate, get_user_model, password_validation, update_session_auth_hash,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -108,8 +110,6 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
     def form_valid(self, form):
         response = super(PrefsUpdateView, self).form_valid(form)
 
-        logger.info(self.request.POST)
-
         user = form.save(commit=False)
         new_username = self.request.POST.get('username', None)
         if new_username and new_username != user.username:
@@ -131,18 +131,30 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
         if new_sort_name:
             user.sort_name = new_sort_name
 
-        passwd = self.request.POST.get('passwd', None)
-        passwd_repeat = self.request.POST.get('passwd_repeat', None)
-        if passwd != '********':
-            if passwd != passwd_repeat:
+#        passwd = self.request.POST.get('passwd', None)
+#        passwd_repeat = self.request.POST.get('passwd_repeat', None)
+        password = form.cleaned_data['password']
+        password_repeat = form.cleaned_data['password_repeat']
+        if password != '********':
+            if password != password_repeat:
                 ajax_response = {
                     'success': False,
                     'errors': {'password': ['The passwords you entered did not match']},
                 }
                 return HttpResponse(json.dumps(ajax_response))
 
+            # Check if password complexity requirements are met
+            try:
+                password_valid = password_validation.validate_password(password)
+            except password_validation.ValidationError, errors:
+                ajax_response = {
+                    'success': False,
+                    'errors': {'password': list(errors)},
+                }
+                return HttpResponse(json.dumps(ajax_response))
+
             m = hashlib.md5()
-            m.update(passwd)
+            m.update(password)
             password_hash = m.hexdigest()
             user.set_password(password_hash)
             update_session_auth_hash(self.request, user)

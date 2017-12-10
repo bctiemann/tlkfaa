@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class PrefsForm(forms.ModelForm):
-    email = forms.EmailField()
+    email = forms.EmailField(error_messages={'required': 'You must enter a valid email address.'})
+    password = forms.CharField(widget=forms.PasswordInput, error_messages={'required': 'You must enter a password.'})
+    password_repeat = forms.CharField(widget=forms.PasswordInput, error_messages={'required': 'You must enter the password a second time.'})
 
     class Meta:
         model = models.User
