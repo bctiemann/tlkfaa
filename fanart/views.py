@@ -609,8 +609,6 @@ class RegisterView(FormView):
         return context
 
     def form_invalid(self, form):
-        logger.warning(form.errors)
-        logger.warning(type(form.errors))
         response = super(RegisterView, self).form_invalid(form)
         if self.request.is_ajax():
             ajax_response = {
@@ -626,8 +624,6 @@ class RegisterView(FormView):
     # All other validations occur in form_valid.
     def form_valid(self, form):
         response = super(RegisterView, self).form_valid(form)
-
-        logger.info(self.request.POST)
 
         # Check ReCAPTCHA
         recaptcha_data = {

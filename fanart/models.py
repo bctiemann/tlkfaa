@@ -449,7 +449,6 @@ ORDER BY fanart_user.sort_name
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(User, self).save(*args, **kwargs)
-        logger.info(self.profile_picture)
         if update_thumbs:
             process_images.apply_async(('fanart', 'User', self.id, 'small'), countdown=20)
             if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
