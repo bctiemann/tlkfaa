@@ -155,3 +155,8 @@ class GiftPictureForm(forms.ModelForm):
     class Meta:
         model = models.GiftPicture
         fields = ['reply_message']
+
+
+class RegisterForm(forms.Form):
+    username = forms.CharField(validators=[models.validate_unique_username])
+    email = forms.EmailField(validators=[models.validate_unique_email])

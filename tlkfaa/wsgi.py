@@ -17,7 +17,14 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tlkfaa.settings")
 
 #application = get_wsgi_application()
 
-env_variables_to_pass = ['DB_PASS_TLKFAA', 'DJANGO_SETTINGS_MODULE']
+env_variables_to_pass = [
+    'DB_PASS_TLKFAA',
+    'DJANGO_SETTINGS_MODULE',
+    'SECRET_KEY',
+    'RECAPTCHA_SITE_KEY',
+    'RECAPTCHA_SECRET_KEY',
+]
+
 def application(environ, start_response):
     # pass the WSGI environment variables on through to os.environ
     for var in env_variables_to_pass:

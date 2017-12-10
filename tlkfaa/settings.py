@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o&yl_b#8o92ek0bxxe(3&8foqdpim6_k@9hcm9m7a*4vjyekot'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -295,8 +295,10 @@ MAX_UPLOAD_SIZE = 1048576
 MAX_UPLOAD_SIZE_HARD = 15000000
 MAX_DRAWPILE_USERS = 12
 
-RECAPTCHA_SITE_KEY = '6LeEQSYTAAAAAEct7Y59jbyLDZ-Oql-_7R6eEIx1'
-RECAPTCHA_SECRET_KEY = '6LeEQSYTAAAAANibIoKCRfK8gj-4gC-VNzNR9jhl'
+#RECAPTCHA_SITE_KEY = '6LeEQSYTAAAAAEct7Y59jbyLDZ-Oql-_7R6eEIx1'
+#RECAPTCHA_SECRET_KEY = '6LeEQSYTAAAAANibIoKCRfK8gj-4gC-VNzNR9jhl'
+RECAPTCHA_SITE_KEY = os.environ['RECAPTCHA_SITE_KEY']
+RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 
 # Celery
 CELERY_BROKER_URL = 'amqp://tlkfaa:5zPM}XLh^Zgm-cAM@localhost:5672/tlkfaa'

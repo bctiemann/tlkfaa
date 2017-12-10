@@ -18,7 +18,7 @@ import datetime
 import os
 import re
 
-from fanart.utils import dictfetchall
+from fanart.utils import dictfetchall, make_dir_name
 from fanart.tasks import process_images
 
 import logging
@@ -69,7 +69,8 @@ def get_pending_path(instance, filename):
 
 
 def validate_unique_username(value):
-    if User.objects.filter(username=value).exists():
+    dir_name = make_dir_name(value)
+    if User.objects.filter(Q(username=value) | Q(dir_name=dir_name)).exists():
         raise ValidationError(
             _('The name %(value)s is already in use.'),
             params={'value': value},
@@ -391,9 +392,10 @@ ORDER BY fanart_user.sort_name
         return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, self.dir_name)
 
     def change_dir_name(self):
-        new_dir_name = re.sub('&#[0-9]+;', 'x', self.username)
-        new_dir_name = re.sub("[\\']", '', new_dir_name)
-        new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
+        new_dir_name = make_dir_name(self.username)
+#        new_dir_name = re.sub('&#[0-9]+;', 'x', self.username)
+#        new_dir_name = re.sub("[\\']", '', new_dir_name)
+#        new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
 
         if new_dir_name == self.dir_name:
             return self.dir_name

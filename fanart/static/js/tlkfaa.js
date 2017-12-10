@@ -176,21 +176,24 @@ function validateForm(selformid,successfnc) {
 }
 
 function registerUser() {
-    var url = '/api/register.jsp';
+//    var url = '/api/register.jsp';
+    var url = '/Register/';
     var params = {
         fnc: 'commit',
-        newname: $('#newname').val(),
+        username: $('#newname').val(),
         passwd: $('#passwd').val(),
         passwd_repeat: $('#passwd_repeat').val(),
         email: $('#email').val(),
         artistacctactive: $('#artistacctactive').val(),
         'g-recaptcha-response': $('#g-recaptcha-response').val(),
     };
+console.log(params);
     $.post(url, params, function(data) {
 console.log(data);
         if (data.success) {
-            set_prefsname(data.storename, data.storepass);
-            window.location.href = '/ArtManager.jsp';
+//            set_prefsname(data.storename, data.storepass);
+//            window.location.href = '/ArtManager.jsp';
+            window.location.href = '/ArtManager/';
         } else {
             alert(data.message);
         }
@@ -307,15 +310,16 @@ function refreshNameSort(name,sortname,sel) {
 }
 
 function checkAvail(name) {
-  var newdirname = name;
-  newdirname = newdirname.replace(/&#[0-9]+;/g,"x");
-  newdirname = newdirname.replace(/[\\']/g,"");
-  newdirname = newdirname.replace(/[^a-zA-Z0-9]/g,"_");
-  newdirname = newdirname.toLowerCase();
+//  var newdirname = name;
+//  newdirname = newdirname.replace(/&#[0-9]+;/g,"x");
+//  newdirname = newdirname.replace(/[\\']/g,"");
+//  newdirname = newdirname.replace(/[^a-zA-Z0-9]/g,"_");
+//  newdirname = newdirname.toLowerCase();
 //  url="ajax_checkname.jsp?dirname="+newdirname+"&name="+name;
-  var url = '/check-name/?dir_name=' + newdirname + '&name=' + name;
+  var url = '/check-name/' + name + '/';
   $.getJSON(url, function(data) {
-    if (data.name_available) {
+console.log(data);
+    if (data.is_available) {
       $('#newnameavailable').html('Available');
     } else {
       $('#newnameavailable').html('Taken');

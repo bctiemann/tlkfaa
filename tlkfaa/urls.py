@@ -82,7 +82,7 @@ urlpatterns = [
     url(r'^characters-ac/(?P<term>.+)/$', fanart_views.CharactersAutocompleteView.as_view(), name='characters-autocomplete'),
     url(r'^species-ac/(?P<term>.+)/$', fanart_views.SpeciesAutocompleteView.as_view(), name='species-autocomplete'),
     url(r'^artists-ac/(?P<term>.+)/$', fanart_views.ArtistsAutocompleteView.as_view(), name='artists-autocomplete'),
-    url(r'^check-name/$', fanart_views.CheckNameView.as_view(), name='check-name'),
+    url(r'^check-name/(?P<username>.+)/$', fanart_views.CheckNameAvailabilityView.as_view(), name='check-name'),
 
     url(r'^offer/(?P<offer_id>[0-9]+)/$', trading_tree_views.OfferView.as_view(), name='offer'),
     url(r'^offer/(?P<offer_id>[0-9]+)/edit/$', trading_tree_views.EditOfferView.as_view(), name='edit-offer'),

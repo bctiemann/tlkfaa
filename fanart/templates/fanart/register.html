@@ -41,26 +41,26 @@ Registers a new artist profile.
 
 	</div>
 
-	<form name="registerform" id="registerform" method="POST" action="Register.jsp">
+	<form name="registerform" id="registerform" method="POST" action="{% url "register" %}">
 	<table class="formtable">
 	<tr>
 	<td class="label">Profile Name</td>
-	<td class="data"><input type="text" class="std" id="newname" name="newname" onKeyUp="checkAvail(this.value)" validate="artistname" message="You must enter a profile name. This name may not contain any special characters." /><br /><div id="newnameavailable"></div></td>
+	<td class="data"><input type="text" class="std" id="newname" name="newname" onKeyUp="checkAvail(this.value)" 1validate="artistname" message="You must enter a profile name. This name may not contain any special characters." /><br /><div id="newnameavailable"></div></td>
 	<td class="legend"></td>
 	</tr>
 	<tr>
 	<td class="label">Password</td>
-	<td class="data"><input type="password" class="std" id="passwd" name="passwd" id="passwd" validate="hasvalue" message="You must enter a password." /></td>
+	<td class="data"><input type="password" class="std" id="passwd" name="passwd" id="passwd" 1validate="hasvalue" message="You must enter a password." /></td>
 	<td class="legend"></td>
 	</tr>
 	<tr>
 	<td class="label">Repeat Password</td>
-	<td class="data"><input type="password" class="std" id="passwd_repeat" name="passwd_repeat" validate="matchpasswd" message="You must enter the password a second time, and it must match the first password." /></td>
+	<td class="data"><input type="password" class="std" id="passwd_repeat" name="passwd_repeat" 1validate="matchpasswd" message="You must enter the password a second time, and it must match the first password." /></td>
 	<td class="legend"></td>
 	</tr>
 	<tr>
 	<td class="label">Email</td>
-	<td class="data"><input type="text" class="std" id="email" name="email" validate="email" message="You must enter a valid email address." /></td>
+	<td class="data"><input type="text" class="std" id="email" name="email" 1validate="email" message="You must enter a valid email address." /></td>
 	<td class="legend"></td>
 	</tr>
 	</table>
@@ -99,7 +99,7 @@ Registers a new artist profile.
 	<p>Failure to abide by these terms may result in the suspension or removal of your profile, at the discretion of the TLKFAA administration.</p>
 	</div>
 
-	<div class="g-recaptcha" style="margin: 30px 100px;" data-sitekey="6LeEQSYTAAAAAEct7Y59jbyLDZ-Oql-_7R6eEIx1"></div>
+	<div class="g-recaptcha" style="margin: 30px 100px;" data-sitekey="{{ recaptcha_site_key }}"></div>
 
 	<div class="pageinfo">
 
@@ -116,6 +116,7 @@ Registers a new artist profile.
 	</tr>
 	</table>
 	<input type="hidden" name="fnc" value="commit" />
+        {% csrf_token %}
 	</form>
 
 </div>

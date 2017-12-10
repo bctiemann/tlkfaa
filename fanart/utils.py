@@ -1,3 +1,5 @@
+import re
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -149,3 +151,9 @@ class PagesLink(object):
 
         self.pages_nav = pages_nav
         self.items_per_page = items_per_page
+
+def make_dir_name(username):
+    new_dir_name = re.sub('&#[0-9]+;', 'x', username)
+    new_dir_name = re.sub("[\\']", '', new_dir_name)
+    new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
+    return new_dir_name

@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidd
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
@@ -20,6 +20,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks
+from fanart.forms import AjaxableResponseMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
 
@@ -32,6 +33,7 @@ import json
 import random
 import mimetypes
 import os
+import requests
 
 import logging
 logger = logging.getLogger(__name__)
@@ -589,8 +591,66 @@ class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
         return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
 
 
-class RegisterView(TemplateView):
+class RegisterView(FormView):
+    form_class = forms.RegisterForm
     template_name = 'fanart/register.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RegisterView, self).get_context_data(**kwargs)
+        context['recaptcha_site_key'] = settings.RECAPTCHA_SITE_KEY
+        return context
+
+    def form_invalid(self, form):
+        logger.warning(form.errors)
+        response = super(RegisterView, self).form_invalid(form)
+        if self.request.is_ajax():
+            ajax_response = {
+                'success': False,
+                'errors': form.errors,
+            }
+#            return HttpResponse(form.errors.as_json())
+            return HttpResponse(json.dumps(ajax_response))
+        else:
+            return response
+
+    def form_valid(self, form):
+        response = super(RegisterView, self).form_valid(form)
+
+        logger.info(self.request.POST)
+
+        recaptcha_data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': self.request.POST.get('g-recaptcha-response')
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
+        result = r.json()
+        logger.info(result)
+
+#        user = form.save(commit=False)
+#        form.object = user
+#        new_username = self.request.POST.get('username', None)
+#        if new_username and new_username != user.username:
+#            try:
+#                models.validate_unique_username(new_username)
+#            except ValidationError as e:
+#                ajax_response = {
+#                    'success': False,
+#                    'errors': {'username': e.messages},
+#                }
+#                return HttpResponse(json.dumps(ajax_response))
+
+#            user.username = new_username
+#            new_dir_name = user.change_dir_name()
+
+#            models.ArtistName.objects.create(artist=user, name=new_username)
+
+        ajax_response = {
+            'success': True,
+        }
+        return HttpResponse(json.dumps(ajax_response))
+
+    def get_success_url(self):
+        return reverse('artmanager:prefs')
 
 
 class GuidelinesView(TemplateView):
@@ -1173,14 +1233,14 @@ class CharacterPickerView(TemplateView):
         return context
 
 
-class CheckNameView(APIView):
+class CheckNameAvailabilityView(APIView):
+    permission_classes = ()
 
-    def get(self, request):
-        artist_name = request.GET.get('name')
-        dir_name = request.GET.get('dir_name')
-        response = {
-            'name_available': not models.User.objects.filter(Q(username=artist_name) | Q(dir_name=dir_name)).exists(),
-        }
+    def get(self, request, username=None):
+        response = {'is_available': True}
+        dir_name = utils.make_dir_name(username)
+        response['dir_name'] = dir_name
+        response['is_available'] = not models.User.objects.filter(dir_name=dir_name).exists()
         return Response(response)
 
 
