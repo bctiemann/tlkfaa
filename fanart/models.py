@@ -335,7 +335,9 @@ ORDER BY fanart_user.sort_name
     def profile_pic_url(self):
         if self.profile_picture:
             return self.profile_picture.url
-        return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+        if self.profile_pic_id and self.profile_pic_ext:
+            return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
+        return '{0}images/blankdot.gif'.format(settings.STATIC_URL)
 
     @property
     def profile_pic_thumbnail_url(self):
