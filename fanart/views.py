@@ -629,18 +629,17 @@ class RegisterView(FormView):
             'secret': settings.RECAPTCHA_SECRET_KEY,
             'response': self.request.POST.get('g-recaptcha-response')
         }
-#        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
-#        result = r.json()
-#        logger.info(result)
-#        if not result['success']:
-#            ajax_response = {
-#                'success': False,
-#                'errors': {'recaptcha': ['ReCAPTCHA failure. Please click the "I\'m not a robot" box.']},
-#            }
-#            return HttpResponse(json.dumps(ajax_response))
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
+        result = r.json()
+        if not result['success']:
+            logger.info('ReCAPTCHA failure for {0} ({1}), ip {2}'.format(form.cleaned_data['username'], form.cleaned_data['email'], self.request.META['REMOTE_ADDR']))
+            ajax_response = {
+                'success': False,
+                'errors': {'recaptcha': ['ReCAPTCHA failure. Please click the "I\'m not a robot" box.']},
+            }
+            return HttpResponse(json.dumps(ajax_response))
 
         # Check if entered passwords match
-#        password = self.request.POST.get('passwd')
         password = form.cleaned_data['password']
         password_repeat = form.cleaned_data['password_repeat']
         if password != password_repeat:
@@ -660,6 +659,7 @@ class RegisterView(FormView):
             }
             return HttpResponse(json.dumps(ajax_response))
 
+        # All tests pass; create the user
         user = models.User.objects.create_user(
             form.cleaned_data['username'],
             password=password,
@@ -668,25 +668,7 @@ class RegisterView(FormView):
         )
         login(self.request, user)
 
-
-#        user = form.save(commit=False)
-#        form.object = user
-#        new_username = self.request.POST.get('username', None)
-#        if new_username and new_username != user.username:
-#            try:
-#                models.validate_unique_username(new_username)
-#            except ValidationError as e:
-#                ajax_response = {
-#                    'success': False,
-#                    'errors': {'username': e.messages},
-#                }
-#                return HttpResponse(json.dumps(ajax_response))
-
-#            user.username = new_username
-#            new_dir_name = user.change_dir_name()
-
-#            models.ArtistName.objects.create(artist=user, name=new_username)
-
+        # Add a historical artist name entry
         models.ArtistName.objects.create(artist=user, name=user.username)
 
         ajax_response = {
