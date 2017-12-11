@@ -1,0 +1,377 @@
+{% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+
+<%--
+Recovery.jsp
+Allows the user to recover their account via their email address or profile name.
+--%>
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.security.*,java.math.*,java.util.*,java.io.*" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<c:set var="basepath" value="${basepath}" scope="page" />
+
+<sql:setDataSource dataSource="jdbc/Fanart"   />
+
+<c:choose>
+<c:when test="${loggedin == 0}">
+
+<h1>Password Recovery</h1>
+
+<div class="am_panel">
+<div class="am_tabs">
+<a href="/Recovery.jsp" class="selected">Password Recovery</a>
+</div>
+<div class="am_content">
+
+<h2>Recover Your Profile Name / Password</h2>
+
+{% comment %}
+<c:choose>
+<c:when test="${param.op == 'recover' && param.token != null}">
+
+	<sql:query var="qryTempPasswd">
+	SELECT * FROM temppasswd,artists
+	WHERE artists.artistid=temppasswd.artistid
+	AND hash=?
+	AND generated>DATE_SUB(NOW(),INTERVAL 1 DAY)
+	<sql:param value="${param.token}" />
+	</sql:query>
+
+	<c:choose>
+	<c:when test="${qryTempPasswd.rowCount > 0}">
+
+		<c:choose>
+		<c:when test="${param.passwd == param.passwd_repeat && param.passwd != null && param.passwd != ''}">
+
+			<%
+			  String passwd = request.getParameter("passwd");
+			  String passwd_repeat = request.getParameter("passwd_repeat");
+			  String newpasswd = (String)pageContext.getAttribute("passwd");
+			  if (passwd.equals(passwd_repeat) && passwd.equals("********") == false) {
+			    pageContext.setAttribute("clearpasswd",passwd);
+			    byte[] passwdBytes = passwd.getBytes();
+			    MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+			    digest.update(passwdBytes);
+			    byte[] passwdHash = digest.digest();
+			    BigInteger bigInt = new BigInteger(1,passwdHash);
+			    String hashtext = bigInt.toString(16);
+			    while(hashtext.length() < 32 ){
+			      hashtext = "0"+hashtext;
+			    }
+			    newpasswd = hashtext;
+			    pageContext.setAttribute("clearpasswd",newpasswd);
+
+			    passwd = newpasswd;
+			    passwdBytes = passwd.getBytes();
+			    digest = java.security.MessageDigest.getInstance("MD5");
+			    digest.update(passwdBytes);
+			    passwdHash = digest.digest();
+			    bigInt = new BigInteger(1,passwdHash);   
+			    hashtext = bigInt.toString(16);
+			    while(hashtext.length() < 32 ){
+			      hashtext = "0"+hashtext;
+			    }
+			    newpasswd = hashtext;
+			  }
+			  pageContext.setAttribute("newpasswd",newpasswd);
+			%>
+
+			<c:forEach var="recover" items="${qryTempPasswd.rows}">
+				<c:set var="artistEmail" value="${recover.email}" />
+
+				<sql:update var="updArtist">
+				UPDATE artists
+				SET passwd=?
+				WHERE artistid=?
+				<sql:param value="${newpasswd}" />
+				<sql:param value="${recover.artistid}" />
+				</sql:update>
+
+				<sql:update var="updUser">
+				UPDATE users
+				SET passwd=?
+				WHERE userid=?
+				<sql:param value="${newpasswd}" />
+				<sql:param value="${recover.userid}" />
+				</sql:update>
+
+				<c:set var="setcookie" value="1" />
+				<c:if test="${setcookie == 1}">
+				<script type="text/javascript">
+				set_prefsname('${recover.artistname}','${clearpasswd}');
+				</script> 
+				</c:if>
+
+				<sql:update var="updTempPasswd">
+				DELETE FROM temppasswd
+				WHERE hash=?
+				AND artistid=?
+				<sql:param value="${param.token}" />
+				<sql:param value="${recover.artistid}" />
+				</sql:update>
+
+				<div class="pageinfo">
+
+				<p>Your password has been reset. You can now proceed to the <a href="/ArtManager.jsp">ArtManager</a> area.</p>
+
+				</div>
+
+				<%
+				  String artistEmail = (String)pageContext.getAttribute("artistEmail");
+				  printLog("Artist " + artistEmail + " successfully reset their password.");
+				%>
+
+			</c:forEach>
+
+		</c:when>
+		<c:otherwise>
+
+			<div class="pageinfo">
+
+			<p>You will need to set a new password to regain access to your profile.</p>
+
+			</div>
+
+			<form name="recoverform" method="POST" action="/Recovery.jsp">
+			<table class="formtable">
+			<tr>
+			<td class="label">New Password</td>
+			<td class="data"><input type="password" class="std" name="passwd" value="" /></td>
+			</tr>
+			<tr>
+			<td class="label">Repeat Password</td>
+			<td class="data"><input type="password" class="std" name="passwd_repeat" value="" /></td>
+			</tr>
+			<tr>
+			<td colspan="2" class="buttons">
+			<button type="submit">Save Changes</button>
+			</td>
+			</tr>
+			</table>
+			<input type="hidden" name="op" value="recover" />
+			<input type="hidden" name="token" value="${param.token}" />
+			</form>
+
+		</c:otherwise>
+		</c:choose>
+
+	</c:when>
+	<c:otherwise>
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		<p>The password recovery token was not valid.</p>
+		</div>
+
+	</c:otherwise>
+	</c:choose>
+
+</c:when>
+<c:when test="${param.fnc == 'newpasswd'}">
+
+	<sql:query var="qryTempPasswd">
+	SELECT * FROM temppasswd
+	WHERE hash=?
+	AND generated>DATE_SUB(NOW(),INTERVAL 1 DAY)
+	<sql:param value="${param.token}" />
+	</sql:query>
+
+
+</c:when>
+<c:when test="${param.fnc == 'commit'}">
+
+	<c:choose>
+	<c:when test="${param.recovertype == 'name'}">
+		<sql:query var="qryArtist">
+		SELECT * FROM artists
+		WHERE email=?
+		<sql:param value="${param.email}" />
+		</sql:query>
+	</c:when>
+	<c:when test="${param.recovertype == 'password'}">
+		<sql:query var="qryArtist">
+		SELECT * FROM artists
+		WHERE (email=? AND email!='')
+		OR artistname=?
+		<sql:param value="${param.email}" />
+		<sql:param value="${param.artistname}" />
+		</sql:query>
+	</c:when>
+	</c:choose>
+
+	<c:choose>
+	<c:when test="${qryArtist.rowCount > 0}">
+
+		<c:forEach var="recovery" items="${qryArtist.rows}">
+		<c:if test="${recovery.email != ''}">
+
+		<c:set var="toemail" value="${recovery.email}" />
+		<%
+		  Random rand = new Random();
+		  int r = rand.nextInt();
+		  String randStr = Integer.toString(r);
+		  byte[] randBytes = randStr.toString().getBytes();
+		  MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+		  digest.update(randBytes);
+		  byte[] nowHash = digest.digest();
+		  BigInteger bigInt = new BigInteger(1,nowHash);
+		  String hashtext = bigInt.toString(16);
+		  while(hashtext.length() < 32 ){
+		    hashtext = "0"+hashtext;
+		  }
+		  pageContext.setAttribute("hash",hashtext);
+
+		  String from = "fanart@lionking.org";
+		  String to = (String)pageContext.getAttribute("toemail");
+		  String subject = "TLKFAA Password Recovery";
+		  String url = "http://" + request.getServerName();
+		  if (request.getServerPort() != 80) {
+		    url += ":" + request.getServerPort();
+		  }
+		  url += request.getRequestURI() + "?op=recover&token=" + hashtext;
+		  String message = "  Someone, possibly you, has requested that your artist password\nbe reset. To do this, go to the following URL:\n\n  " + url + "\n\n  You will be given the opportunity to change your password to something of\nyour choice, as well as your other account information.\n\n  Your password will not be changed until you visit the above URL. The\nauthorization URL will remain valid for one day.\n\n  If you have received this message in error (for instance, if you did not\nactually request to have your password reset) please delete this message.\nOtherwise, if you have questions or problems with your password, please\nreply directly and I will assist you.\n\n  Thank you!\n\n--Brian Tiemann\nlionking.org administrator";
+		  sendEmail(from,to,subject,message,false);
+		  printLog("Artist " + to + " requested password reset email.");
+//out.println(url);
+		%>
+
+		<sql:update var="updTempPasswd">
+		INSERT INTO temppasswd
+		(artistid,hash,generated) VALUES 
+		(?,?,NOW())
+		<sql:param value="${recovery.artistid}" />
+		<sql:param value="${hash}" />
+		</sql:update>
+
+		<div class="pageinfo">
+
+		<p>Your profile name is <b>${recovery.artistname}</b>.</p>
+
+		<p>An email containing a password recovery token is now being sent to your email address on file, <b>${recovery.email}</b>.
+		Expect it to arrive within the next few minutes. Follow the instructions in this email to reset your profile password.</p>
+
+		</div>
+
+		</c:if>
+		</c:forEach>
+
+	</c:when>
+	<c:otherwise>
+
+		<div class="error">
+		<h3>An error occurred</h3>
+		<p>There was no profile found matching the information you supplied.</p>
+		</div>
+
+	</c:otherwise>
+	</c:choose>
+
+</c:when>
+<c:otherwise>
+{% endcomment %}
+
+	<div class="pageinfo">
+
+	<p>If you have forgotten your profile name or your password, you can recover it here.</p>
+
+	</div>
+
+	<div id="recovery">
+
+	<form>
+	<div class="recovertype pageinfo">
+	<p>If you have forgotten your profile name, you can recover it if you know the email address in your profile.</p>
+	<div class="centerdiv">
+	<button type="button" onClick="setupRecovery('name')">Forgot Name</button>
+	</div>
+	</div>
+	<div class="recovertype pageinfo">
+	<p>If you have forgotten your password, you can reset it if you know your profile name or email address.</p>
+	<div class="centerdiv">
+	<button type="button" onClick="setupRecovery('password')">Forgot Password</button>
+	</div>
+	</div>
+	</form>
+
+	<br clear="all" />
+
+	</div>
+
+        <div id="recovery_name">
+        <form method="POST" action="{% url "recovery-reset" %}">
+
+        <div class="pageinfo">
+        <p>Enter your email address to recover your profile name.</p>
+        </div>
+
+        <table class="formtable">
+        <tr>
+        <td class="label">Email</td>
+        <td class="data"><input name="email" class="std" /></td>
+        </tr>
+        <tr>
+        <td colspan="2" class="buttons">
+        <button type="submit">Send Recovery Email</button>
+        </td>
+        </tr>
+        </table>
+        {% csrf_token %}
+        </form>
+        </div>
+
+        <div id="recovery_password">
+        <form method="POST" action="{% url "recovery-reset" %}">
+        <div class="pageinfo">
+        <p>Enter either your profile name or your email address to recover your password.</p>
+        </div>
+
+        <table class="formtable">
+        <tr>
+        <td class="label">Profile Name</td>
+        <td class="data"><input name="username" class="std" id="artist_pick_recover" /></td>
+        </tr>
+        <tr>
+        <td class="label">Email</td>
+        <td class="data"><input name="email" class="std" /></td>
+        </tr>
+        <tr>
+        <td colspan="2" class="buttons">
+        <button type="submit">Send Recovery Email</button>
+        </td>
+        </tr>
+        </table>
+        {% csrf_token %}
+        </form>
+        </div>
+
+</c:otherwise>
+</c:choose>
+
+</div>
+</div>
+
+</c:when>
+<c:otherwise>
+
+<div class="error">
+<h3>An error occurred</h3>
+You are already logged in.
+</div>
+
+</c:otherwise>
+</c:choose>
+
+<jsp:include page="inc_root/inc_lowerlayout.jsp" />
+<jsp:include page="inc_root/inc_footer.jsp" />
+
+{% endblock %}

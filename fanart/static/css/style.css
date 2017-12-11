@@ -2713,3 +2713,10 @@ table.contentpane .infotable td {
 	border: 1px solid rgb(3, 162, 15);
 	margin: 3px;
 }
+
+#recovery_name {
+	display: none;
+}
+#recovery_password {
+	display: none;
+}

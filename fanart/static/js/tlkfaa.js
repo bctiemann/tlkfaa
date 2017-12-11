@@ -2617,10 +2617,12 @@ function doSearch(mode) {
 }
 
 function setupRecovery(recovertype) {
-  var url = "/ajax_recover.jsp?type="+recovertype;
-  $('#recovery').load(url,function() {
-    setupAutocompleteArtist('recover');
-  });
+//  var url = "/ajax_recover.jsp?type="+recovertype;
+//  $('#recovery').load(url,function() {
+//    setupAutocompleteArtist('recover');
+//  });
+    $('#recovery').hide();
+    $('#recovery_' + recovertype).show();
 }
 
 function votePicture(contestid,entryid) {

@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.contrib.auth import (
     login, authenticate, get_user_model, password_validation,
 )
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordResetView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -679,6 +679,11 @@ class RegisterView(FormView):
 
     def get_success_url(self):
         return reverse('artmanager:prefs')
+
+
+class RecoveryView(FormView):
+    form_class = forms.RecoveryForm
+    template_name = 'fanart/recovery.html'
 
 
 class GuidelinesView(TemplateView):
@@ -1483,3 +1488,5 @@ class HelpView(TemplateView):
     template_name = 'fanart/help.html'
 
 
+class UsernameAwarePasswordResetView(PasswordResetView):
+    form_class = forms.UsernameAwarePasswordResetForm
