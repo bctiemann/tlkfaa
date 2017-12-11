@@ -85,7 +85,7 @@
             <div class="masonry">
                 {% for picture in showcase.pictures|slice:":20" %}
                     <div class="offertile picturetile">
-                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picure.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
+                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picture.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
 
 {% comment %}
 			<script type="text/javascript">
