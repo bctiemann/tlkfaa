@@ -175,8 +175,8 @@ class RegisterForm(forms.Form):
     is_artist = forms.BooleanField(required=False)
 
 
-class RecoveryForm(forms.Form):
-    pass
+class RecoverUsernameForm(forms.Form):
+    email = forms.EmailField(label=_("Email"), max_length=254, required=False)
 
 
 class UsernameAwarePasswordResetForm(PasswordResetForm):

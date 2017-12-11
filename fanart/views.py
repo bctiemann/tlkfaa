@@ -681,9 +681,17 @@ class RegisterView(FormView):
         return reverse('artmanager:prefs')
 
 
-class RecoveryView(FormView):
-    form_class = forms.RecoveryForm
+class RecoveryView(TemplateView):
     template_name = 'fanart/recovery.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return redirect('home')
+        return super(RecoveryView, self).get(request, *args, **kwargs)
+
+
+class UsernameAwarePasswordResetView(PasswordResetView):
+    form_class = forms.UsernameAwarePasswordResetForm
 
 
 class GuidelinesView(TemplateView):
@@ -1488,5 +1496,3 @@ class HelpView(TemplateView):
     template_name = 'fanart/help.html'
 
 
-class UsernameAwarePasswordResetView(PasswordResetView):
-    form_class = forms.UsernameAwarePasswordResetForm

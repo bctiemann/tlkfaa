@@ -1,0 +1,10 @@
+{% extends "fanart/recovery.html" %}
+
+{% block recovery_content %}
+
+<p>Your profile name is <b>${recovery.artistname}</b>.</p>
+
+<p>An email containing a password recovery token is now being sent to your email address on file, <b>${recovery.email}</b>.
+Expect it to arrive within the next few minutes. Follow the instructions in this email to reset your profile password.</p>
+
+{% endblock %}
