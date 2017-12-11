@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import (
     authenticate, get_user_model, password_validation,
@@ -245,4 +245,19 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
                 subject_template_name, email_template_name, context, from_email,
                 user.email, html_email_template_name=html_email_template_name,
             )
+
+
+class HashedSetPasswordForm(SetPasswordForm):
+
+    def save(self, commit=True):
+        password = self.cleaned_data["new_password1"]
+
+        m = hashlib.md5()
+        m.update(password)
+        password_hash = m.hexdigest()
+        self.user.set_password(password_hash)
+
+        if commit:
+            self.user.save()
+        return self.user
 

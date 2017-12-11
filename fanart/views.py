@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.contrib.auth import (
     login, authenticate, get_user_model, password_validation,
 )
-from django.contrib.auth.views import LoginView, PasswordResetView
+from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -692,6 +692,10 @@ class RecoveryView(TemplateView):
 
 class UsernameAwarePasswordResetView(PasswordResetView):
     form_class = forms.UsernameAwarePasswordResetForm
+
+
+class HashedPasswordResetConfirmView(PasswordResetConfirmView):
+    form_class = forms.HashedSetPasswordForm
 
 
 class GuidelinesView(TemplateView):
