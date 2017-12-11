@@ -38,10 +38,8 @@ urlpatterns = [
     url(r'^Recovery/$', fanart_views.RecoveryView.as_view(), name='recovery'),
     url(r'^Recovery/reset/$', fanart_views.UsernameAwarePasswordResetView.as_view(), name='recovery-reset'),
     url(r'^password_reset/done/$', auth_views.PasswordResetDoneView.as_view(template_name='fanart/recovery_done.html'), name='password_reset_done'),
-    url(r'^Recovery/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', fanart_views.HashedPasswordResetConfirmView.as_view(template_name='fanart/recovery_reset.html'), name='password_reset_confirm'),
-#auth_views.password_reset_confirm, {'template_name': 'accounts/password_reset_confirm.html',}, name='password_reset_confirm'),
-    url(r'^Recovery/reset/complete/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-#{'template_name': 'accounts/password_reset_complete.html',}, 
+    url(r'^Recovery/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', fanart_views.HashedPasswordResetConfirmView.as_view(template_name='fanart/recovery_reset.html', post_reset_login=True), name='password_reset_confirm'),
+    url(r'^Recovery/reset/complete/$', auth_views.PasswordResetCompleteView.as_view(template_name='fanart/recovery_complete.html'), name='password_reset_complete'),
 
     url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/$', fanart_views.ApproveRequestView.as_view(), name='approve-request'),
     url(r'^ApproveRequest/(?P<hash>[0-9a-f-]+)/success/$', fanart_views.ApproveRequestSuccessView.as_view(), name='approve-request-success'),
