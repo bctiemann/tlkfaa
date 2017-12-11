@@ -1,23 +1,23 @@
 {% extends "fanart/base.html" %}
 {% load bbcode_tags %}
 
-{% block activetab_special %}active{% endblock %}
+{% block activetab_showcase %}active{% endblock %}
 
 {% block grass %}
-{% include "fanart/grass_special.html" %}
+{% include "fanart/grass_showcase.html" %}
 {% endblock %}
 
 {% block body_prop %}tall{% endblock %}
 
 {% block content %}
 
-{% if special %}
+{% if showcase %}
 
     <div class="featurebox">
 
-        <h2>{{ special.title }}</h2>
+        <h2>{{ showcase.title }}</h2>
         <div class="pageinfo">
-            <p>{{ special.description|safe }}</p>
+            <p>{{ showcase.description|safe }}</p>
         </div>
 
         {{ pages_link.pages_nav|safe }}
@@ -72,20 +72,20 @@
 
     </div>
 
-    {% for special in specials %}
+    {% for showcase in showcases %}
 
         <div class="featurebox">
 
-            <h2><a href="{% url "special" special_id=special.id %}">{{ special.title }}</a></h2>
+            <h2><a href="{% url "showcases" showcase_id=showcase.id %}">{{ showcase.title }}</a></h2>
 
             <div class="pageinfo">
-                <p>{{ special.description|safe }}</p>
+                <p>{{ showcase.description|safe }}</p>
             </div>
 
             <div class="masonry">
-                {% for picture in special.pictures|slice:":20" %}
+                {% for picture in showcase.pictures|slice:":20" %}
                     <div class="offertile picturetile">
-                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picure.url }}" rel="shadowbox[special_{{ special.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
+                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picure.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
 
 {% comment %}
 			<script type="text/javascript">

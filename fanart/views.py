@@ -352,22 +352,22 @@ class TradingTreeView(UserPaneMixin, TemplateView):
         return context
 
 
-class SpecialFeaturesView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/special.html'
+class ShowcasesView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/showcase.html'
 
     def get_context_data(self, **kwargs):
-        context = super(SpecialFeaturesView, self).get_context_data(**kwargs)
+        context = super(ShowcasesView, self).get_context_data(**kwargs)
 
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
-        special_id = kwargs.get('special_id', None)
+        showcase_id = kwargs.get('showcase_id', None)
 
-        if special_id:
-            context['special'] = get_object_or_404(models.SpecialFeature, pk=special_id)
+        if showcase_id:
+            context['showcase'] = get_object_or_404(models.Showcase, pk=showcase_id)
 
-            pictures = context['special'].pictures.order_by('date_uploaded')
+            pictures = context['showcase'].pictures.order_by('date_uploaded')
 
             context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
             try:
@@ -388,7 +388,7 @@ class SpecialFeaturesView(UserPaneMixin, TemplateView):
             context['contest'] = models.Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
             context['contest_entries'] = context['contest'].winning_entries
 
-            context['specials'] = models.SpecialFeature.objects.filter(is_visible=True).order_by('id')
+            context['showcases'] = models.Showcase.objects.filter(is_visible=True).order_by('id')
 
         return context
 

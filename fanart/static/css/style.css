@@ -412,12 +412,12 @@ li.tab.coloringcave {
 li.tab.coloringcave.active {
 	background: url('../images/tab-coloringcave-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
-li.tab.special {
-	background: url('../images/tab-special-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+li.tab.showcases {
+	background: url('../images/tab-showcases-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	left: -1px;
 }
-li.tab.special.active {
-	background: url('../images/tab-special-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+li.tab.showcase.active {
+	background: url('../images/tab-showcases-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 img#tab_main {
 /*	left: 61px;*/
@@ -437,7 +437,7 @@ img#tab_tradingtree {
 img#tab_coloringcave {
 	left: 676px;
 }
-img#tab_special {
+img#tab_showcases {
 	left: 804px;
 }
 

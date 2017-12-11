@@ -174,6 +174,6 @@ class BulletinAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Bulletin, BulletinAdmin)
 
 
-class SpecialFeatureAdmin(admin.ModelAdmin):
+class ShowcaseAdmin(admin.ModelAdmin):
     list_display = ('title', 'tag', 'is_visible',)
-admin.site.register(fanart_models.SpecialFeature, SpecialFeatureAdmin)
+admin.site.register(fanart_models.Showcase, ShowcaseAdmin)

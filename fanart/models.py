@@ -1130,27 +1130,7 @@ class ContestVote(models.Model):
         return reverse('contest', kwargs={'contest_id': self.entry.contest.id})
 
 
-#class PrivateMessage(models.Model):
-#    sender = models.ForeignKey('User', null=True, blank=True, related_name='pms_sent')
-#    recipient = models.ForeignKey('User', null=True, blank=True, related_name='pms_received')
-#    date_sent = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-#    reply_to = models.ForeignKey('PrivateMessage', null=True, blank=True)
-#    subject = models.TextField(blank=True)
-#    message = models.TextField(blank=True)
-#    date_viewed = models.DateTimeField(null=True, blank=True)
-#    date_replied = models.DateTimeField(null=True, blank=True)
-#    deleted_by_sender = models.BooleanField(default=False)
-#    deleted_by_recipient = models.BooleanField(default=False)
-
-#    @property
-#    def quoted_message(self):
-#        return '\n\n\n[quote]\n{0}\n[/quote]'.format(self.message)
-
-#    class Meta:
-#        ordering = ['-date_sent']
-
-
-class SpecialFeature(models.Model):
+class Showcase(models.Model):
     keyword = models.CharField(max_length=32, blank=True)
     tag = models.ForeignKey('Tag', null=True, blank=True)
     title = models.TextField(blank=True)
