@@ -1,0 +1,105 @@
+<%--
+inc_aotm.jsp
+Include file for displaying the Artist of the Month on the main page.
+--%>
+
+<%@ include file="inc_functions.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" import="java.io.*" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+<c:set var="month" value="2017-02" />
+<c:set var="basepath" value="${basepath}" />
+
+
+<h2>Featured Artist of the Month</h2>
+
+<sql:query var="qryAOTM">
+SELECT * FROM artists 
+WHERE featured=?
+<sql:param value="${month}" />
+</sql:query>
+
+<c:forEach var="aotm" items="${qryAOTM.rows}">
+
+<c:set var="artistname" value="${aotm.artistname}" />
+<c:set var="dirname" value="${aotm.dirname}" />
+
+<div class="aotm">
+
+<c:if test="${aotm.profilepic > 0}">
+<img class="profilepic" src="/profiles/${aotm.profilepic}.${aotm.profilepic_ext}" />
+</c:if>
+
+<h3><a href="/Artists/${aotm.dirname}">${aotm.artistname}</a></h3>
+
+<%
+  String basepath = (String)pageContext.getAttribute("basepath");
+  String month = (String)pageContext.getAttribute("month");
+  String artistname = (String)pageContext.getAttribute("artistname");
+  String dirname = (String)pageContext.getAttribute("dirname");
+  File intro = new File(basepath + "/featured/" + month + "/intro");
+  File ownwords = new File(basepath + "/featured/" + month + "/ownwords");
+  File analysis = new File(basepath + "/featured/" + month + "/analysis");
+  File imgs = new File(basepath + "/featured/" + month + "/imgs");
+  File banner = new File(basepath + "/featured/" + month + "/banner.jpg");
+  if (banner.length() > 0) {
+    pageContext.setAttribute("banner",true);
+  }
+%>
+
+<div class="intro">
+<%= readFile(intro).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+</div>
+
+<div class="ownwords">
+<%= readFile(ownwords).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+</div>
+
+<div id="aotm_imgs">
+<%
+  String piclist[] = readFile(imgs).split("\\n");
+  for (String filename : piclist) {
+    if (filename.length() > 0) {
+      String[] fnParts = filename.split("\\.");
+      String basename = fnParts[0];
+      pageContext.setAttribute("filename",filename);
+%>
+<sql:query var="qryPic">
+SELECT * FROM pictures
+WHERE artistid=?
+AND filename=?
+AND deleted IS NULL
+<sql:param value="${aotm.artistid}" />
+<sql:param value="${filename}" />
+</sql:query>
+<c:forEach var="pic" items="${qryPic.rows}">
+	<a href="/Artwork/Artists/${aotm.dirname}/${pic.filename}?${pic.pictureid}" rel="shadowbox[aotm]"><img src="/Artwork/Artists/${aotm.dirname}/${fanart:encodeURI(pic.basename)}.s.jpg" width="60" height="${pic.thumbheight}" /></a>
+</c:forEach>
+<%
+    }
+  }
+%>
+</div>
+
+<%= readFile(analysis).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+</div>
+
+<c:if test="${banner}">
+<img class="banner" src="/featured/${month}/banner.jpg" />
+</c:if>
+
+<br clear="all" />
+</div>
+
+</c:forEach>
+
+
+<c:if test="${loggedin == 1}">
+<div id="aotmvote"><jsp:include page="/ajax_aotmvote.jsp" /></div>
+</c:if>

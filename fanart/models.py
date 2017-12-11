@@ -55,6 +55,9 @@ def get_banner_path(instance, filename):
 def get_pending_path(instance, filename):
     return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
 
+def get_featured_path(instance, filename):
+    return 'featured/{0}/{1}'.format(instance.featured_artist.month_featured, filename)
+
 #def get_coloring_path(instance, filename):
 #    return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
 
@@ -450,9 +453,9 @@ ORDER BY fanart_user.sort_name
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(User, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('fanart', 'User', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart.models', 'User', self.id, 'small'), countdown=20)
             if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
-                process_images.apply_async(('fanart', 'User', self.id, 'profile'), countdown=20)
+                process_images.apply_async(('fanart.models', 'User', self.id, 'profile'), countdown=20)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
@@ -935,7 +938,7 @@ class Pending(models.Model):
         super(Pending, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
-            process_images.apply_async(('fanart', 'Pending', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart.models', 'Pending', self.id, 'small'), countdown=20)
 
     class Meta:
         ordering = ['date_uploaded']
@@ -1170,3 +1173,48 @@ class Banner(models.Model):
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+
+class FeaturedArtist(models.Model):
+    artist = models.ForeignKey('User')
+    date_featured = models.DateField()
+    intro_text = models.TextField(blank=True, default='')
+    own_words_text = models.TextField(blank=True, default='')
+    analysis_text = models.TextField(blank=True, default='')
+
+    @property
+    def month_featured(self):
+        return self.date_featured.strftime('%Y-%m')
+
+    def __unicode__(self):
+        return '{0} {1}'.format(self.month_featured, self.artist.username)
+
+
+class FeaturedArtistPicture(models.Model):
+    featured_artist = models.ForeignKey('FeaturedArtist')
+    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_featured_path, null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    @property
+    def thumbnail_url(self):
+        if os.path.exists(self.thumbnail_path):
+            return '{0}featured/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.featured_artist.month_featured, self.basename)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+
+    @property
+    def thumbnail_path(self):
+        path_parts = self.picture.name.split('/')
+        path = '/'.join(path_parts[:-1])
+        filename_parts = path_parts[-1].split('.')
+        basename = '.'.join(filename_parts[:-1])
+        extension = filename_parts[-1].lower()
+        return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
+
+    def save(self, update_thumbs=True, *args, **kwargs):
+        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        super(FeaturedArtistPicture, self).save(*args, **kwargs)
+        logger.info(self.picture)
+        if update_thumbs:
+            process_images.apply_async(('fanart.models', 'FeaturedArtistPicture', self.id, 'small'), countdown=20)

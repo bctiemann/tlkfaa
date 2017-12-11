@@ -84,6 +84,11 @@ def create_thumbnail(model, picture_object, thumb_size):
             new_image_path = image_path
         orig_height = picture_object.profile_height
         orig_width = picture_object.profile_width
+    elif model == 'FeaturedArtistPicture':
+        image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.picture.name)
+        new_image_path = picture_object.thumbnail_path
+        orig_height = picture_object.height
+        orig_width = picture_object.width
 
     try:
         im = Image.open(image_path)
@@ -110,6 +115,8 @@ def process_images(model_class_path, model, object_id, thumb_size='small'):
     models = importlib.import_module(model_class_path)
 #    model_class = getattr(importlib.import_module(model_class_path), model)
 #    from model_app import models
+    print models
+    print model
     model_class = getattr(models, model)
 
     try:

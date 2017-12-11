@@ -177,3 +177,15 @@ admin.site.register(fanart_models.Bulletin, BulletinAdmin)
 class ShowcaseAdmin(admin.ModelAdmin):
     list_display = ('title', 'tag', 'is_visible',)
 admin.site.register(fanart_models.Showcase, ShowcaseAdmin)
+
+
+class FeaturedArtistAdmin(admin.ModelAdmin):
+    list_display = ('artist', 'month_featured',)
+    readonly_fields = ('artist',)
+admin.site.register(fanart_models.FeaturedArtist, FeaturedArtistAdmin)
+
+class FeaturedArtistPictureAdmin(admin.ModelAdmin):
+    list_display = ('featured_artist', 'picture',)
+#    readonly_fields = ('featured_artist',)
+admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAdmin)
+

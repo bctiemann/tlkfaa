@@ -131,7 +131,7 @@ class Offer(models.Model):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(Offer, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('fanart.models', 'Offer', self.id, 'offer'), countdown=20)
+            process_images.apply_async(('trading_tree.models', 'Offer', self.id, 'offer'), countdown=20)
 
     def get_absolute_url(self):
         return reverse('offer', kwargs={'offer_id': self.id})
@@ -191,7 +191,7 @@ class Claim(models.Model):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(Claim, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('fanart.models', 'Claim', self.id, 'small'), countdown=20)
+            process_images.apply_async(('trading_tree.models', 'Claim', self.id, 'small'), countdown=20)
 
     def delete(self, *args, **kwargs):
         if self.offer.type == 'icon':
