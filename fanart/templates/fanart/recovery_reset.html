@@ -5,53 +5,31 @@
 
 {% if validlink %}
 
-                        <div class="pageinfo">
+<div class="pageinfo">
+    <p>You will need to set a new password to regain access to your profile.</p>
+</div>
 
-                        <p>You will need to set a new password to regain access to your profile.</p>
-
-                        </div>
-
-                        <form name="recoverform" method="POST">
-                        <table class="formtable">
-                        <tr>
-                        <td class="label">New Password</td>
-                        <td class="data"><input type="password" class="std" name="new_password1" value="" /></td>
-                        <td rowspan="2">
-                            {{ form.new_password1.errors }}
-                            {{ form.new_password2.errors }}
-                        </td>
-                        </tr>
-                        <tr>
-                        <td class="label">Repeat Password</td>
-                        <td class="data"><input type="password" class="std" name="new_password2" value="" /></td>
-                        </tr>
-                        <tr>
-                        <td colspan="3" class="buttons">
-                        <button type="submit">Save Changes</button>
-                        </td>
-                        </tr>
-                        </table>
-                        {% csrf_token %}
-                        </form>
-
-
-<form method="post">{% csrf_token %}
-
-<p>{% trans "Please enter your new password twice so we can verify you typed it in correctly." %}</p>
-
-<fieldset class="module aligned">
-    <div class="form-row field-password1">
-        {{ form.new_password1.errors }}
-        <label for="id_new_password1">{% trans 'New password:' %}</label>
-        {{ form.new_password1 }}
-    </div>
-    <div class="form-row field-password2">
-        {{ form.new_password2.errors }}
-        <label for="id_new_password2">{% trans 'Confirm password:' %}</label>
-        {{ form.new_password2 }}
-    </div>
-    <input type="submit" value="{% trans 'Change my password' %}" />
-</fieldset>
+<form name="recoverform" method="POST">
+    <table class="formtable">
+        <tr>
+            <td class="label">New Password</td>
+            <td class="data"><input type="password" class="std" name="new_password1" value="" /></td>
+            <td rowspan="2">
+                {{ form.new_password1.errors }}
+                {{ form.new_password2.errors }}
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Repeat Password</td>
+            <td class="data"><input type="password" class="std" name="new_password2" value="" /></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="buttons">
+                <button type="submit">Save Changes</button>
+            </td>
+        </tr>
+    </table>
+    {% csrf_token %}
 </form>
 
 {% else %}
