@@ -1218,3 +1218,6 @@ class FeaturedArtistPicture(models.Model):
         logger.info(self.picture)
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'FeaturedArtistPicture', self.id, 'small'), countdown=20)
+
+    def __unicode__(self):
+        return '{0}/{1}'.format(self.featured_artist.artist.username, self.picture.name)

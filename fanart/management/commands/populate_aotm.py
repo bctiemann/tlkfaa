@@ -24,19 +24,19 @@ class Command(BaseCommand):
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'intro'), 'r')
-                aotm.intro_text = file.read()
+                aotm.intro_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'ownwords'), 'r')
-                aotm.own_words_text = file.read()
+                aotm.own_words_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'analysis'), 'r')
-                aotm.analysis_text = file.read()
+                aotm.analysis_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
             except IOError:
                 pass
 
