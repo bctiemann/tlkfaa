@@ -1181,6 +1181,10 @@ class FeaturedArtist(models.Model):
     intro_text = models.TextField(blank=True, default='')
     own_words_text = models.TextField(blank=True, default='')
     analysis_text = models.TextField(blank=True, default='')
+    is_published = models.BooleanField(default=False)
+    banner = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='banner_height', width_field='banner_width', upload_to=get_featured_path, null=True, blank=True)
+    banner_width = models.IntegerField(null=True, blank=True)
+    banner_height = models.IntegerField(null=True, blank=True)
 
     @property
     def month_featured(self):
@@ -1188,6 +1192,9 @@ class FeaturedArtist(models.Model):
 
     def __unicode__(self):
         return '{0} {1}'.format(self.month_featured, self.artist.username)
+
+    class Meta:
+        ordering = ['-date_featured']
 
 
 class FeaturedArtistPicture(models.Model):

@@ -1,3 +1,5 @@
+{% load bbcode_tags %}
+
 <%--
 inc_aotm.jsp
 Include file for displaying the Artist of the Month on the main page.
@@ -17,88 +19,43 @@ Include file for displaying the Artist of the Month on the main page.
 <c:set var="basepath" value="${basepath}" />
 
 
+{% if aotm %}
+
 <h2>Featured Artist of the Month</h2>
-
-<sql:query var="qryAOTM">
-SELECT * FROM artists 
-WHERE featured=?
-<sql:param value="${month}" />
-</sql:query>
-
-<c:forEach var="aotm" items="${qryAOTM.rows}">
-
-<c:set var="artistname" value="${aotm.artistname}" />
-<c:set var="dirname" value="${aotm.dirname}" />
 
 <div class="aotm">
 
-<c:if test="${aotm.profilepic > 0}">
-<img class="profilepic" src="/profiles/${aotm.profilepic}.${aotm.profilepic_ext}" />
-</c:if>
+{% if aotm.artist.profile_pic_url %}
+    <img class="profilepic" src="{{ aotm.artist.profile_pic_url }}" />
+{% endif %}
 
-<h3><a href="/Artists/${aotm.dirname}">${aotm.artistname}</a></h3>
-
-<%
-  String basepath = (String)pageContext.getAttribute("basepath");
-  String month = (String)pageContext.getAttribute("month");
-  String artistname = (String)pageContext.getAttribute("artistname");
-  String dirname = (String)pageContext.getAttribute("dirname");
-  File intro = new File(basepath + "/featured/" + month + "/intro");
-  File ownwords = new File(basepath + "/featured/" + month + "/ownwords");
-  File analysis = new File(basepath + "/featured/" + month + "/analysis");
-  File imgs = new File(basepath + "/featured/" + month + "/imgs");
-  File banner = new File(basepath + "/featured/" + month + "/banner.jpg");
-  if (banner.length() > 0) {
-    pageContext.setAttribute("banner",true);
-  }
-%>
+<h3><a href="{% url "artist" dir_name=aotm.artist.dir_name %}">{{ aotm.artist.username }}</a></h3>
 
 <div class="intro">
-<%= readFile(intro).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+{{ aotm.intro_text|bbcode|safe }}
 </div>
 
 <div class="ownwords">
-<%= readFile(ownwords).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+{{ aotm.own_words_text|bbcode|safe }}
 </div>
 
 <div id="aotm_imgs">
-<%
-  String piclist[] = readFile(imgs).split("\\n");
-  for (String filename : piclist) {
-    if (filename.length() > 0) {
-      String[] fnParts = filename.split("\\.");
-      String basename = fnParts[0];
-      pageContext.setAttribute("filename",filename);
-%>
-<sql:query var="qryPic">
-SELECT * FROM pictures
-WHERE artistid=?
-AND filename=?
-AND deleted IS NULL
-<sql:param value="${aotm.artistid}" />
-<sql:param value="${filename}" />
-</sql:query>
-<c:forEach var="pic" items="${qryPic.rows}">
-	<a href="/Artwork/Artists/${aotm.dirname}/${pic.filename}?${pic.pictureid}" rel="shadowbox[aotm]"><img src="/Artwork/Artists/${aotm.dirname}/${fanart:encodeURI(pic.basename)}.s.jpg" width="60" height="${pic.thumbheight}" /></a>
-</c:forEach>
-<%
-    }
-  }
-%>
+{% for picture in aotm.featuredartistpicture_set.all %}
+    <a href="{{ picture.picture.url }}?" rel="shadowbox[aotm]"><img src="{{ picture.picture.url }}" width="60" height="${pic.thumbheight}" /></a>
+{% endfor %}
 </div>
 
-<%= readFile(analysis).replace("A_NAME",artistname).replace("\n\n","<br /><br />") %>
+{{ aotm.analysis_text|bbcode|safe }}
 </div>
 
-<c:if test="${banner}">
-<img class="banner" src="/featured/${month}/banner.jpg" />
-</c:if>
+{% if aotm.banner %}
+    <img class="banner" src="{{ aotm.banner.url }}" />
+{% endif %}
 
 <br clear="all" />
 </div>
 
-</c:forEach>
-
+{% endif %}
 
 <c:if test="${loggedin == 1}">
 <div id="aotmvote"><jsp:include page="/ajax_aotmvote.jsp" /></div>

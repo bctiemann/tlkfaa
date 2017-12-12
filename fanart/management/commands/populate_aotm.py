@@ -13,6 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from fanart import models
+from fanart.utils import unescape
 
 
 class Command(BaseCommand):
@@ -31,22 +32,28 @@ class Command(BaseCommand):
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'intro'), 'r')
-                aotm.intro_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
+                aotm.intro_text = unescape(bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())))
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'ownwords'), 'r')
-                aotm.own_words_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
+                aotm.own_words_text = unescape(bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())))
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'analysis'), 'r')
-                aotm.analysis_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
+                aotm.analysis_text = unescape(bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())))
             except IOError:
                 pass
 
+            banner_path = os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'banner.jpg')
+            if os.path.exists(banner_path):
+                im = Image.open(banner_path)
+                aotm.banner = 'featured/{0}/{1}'.format(artist.featured, 'banner.jpg')
+                aotm.banner_width = im.width
+                aotm.banner_height = im.height
             aotm.save()
 
             imgs = []

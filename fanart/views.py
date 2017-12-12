@@ -100,6 +100,8 @@ class HomeView(UserPaneMixin, TemplateView):
         context['admin_announcements'] = [models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
         context['recently_active_artists'] = models.User.objects.recently_active()
+
+        context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
         return context
 
 
