@@ -1216,10 +1216,15 @@ class FeaturedArtistPicture(models.Model):
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     @property
+    def basename(self):
+        path_parts = self.picture.name.split('/')
+        path = '/'.join(path_parts[:-1])
+        filename_parts = path_parts[-1].split('.')
+        return '.'.join(filename_parts[:-1])
+
+    @property
     def thumbnail_url(self):
-        if os.path.exists(self.thumbnail_path):
-            return '{0}featured/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.featured_artist.month_featured, self.basename)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return '{0}featured/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.featured_artist.month_featured, self.basename)
 
     @property
     def thumbnail_path(self):

@@ -22,7 +22,7 @@
 
     <div id="aotm_imgs">
         {% for picture in aotm.featuredartistpicture_set.all %}
-            <a href="{{ picture.picture.url }}?" rel="shadowbox[aotm]"><img src="{{ picture.picture.url }}" width="60" height="${pic.thumbheight}" /></a>
+            <a href="{{ picture.picture.url }}?" rel="shadowbox[aotm]"><img src="{{ picture.thumbnail_url }}" width="60" height="${pic.thumbheight}" /></a>
         {% endfor %}
     </div>
 
