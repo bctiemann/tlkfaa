@@ -32,7 +32,7 @@ Include file for displaying the Artist of the Month on the main page.
 <h3><a href="{% url "artist" dir_name=aotm.artist.dir_name %}">{{ aotm.artist.username }}</a></h3>
 
 <div class="intro">
-{{ aotm.intro_text|bbcode|safe }}
+{{ aotm.intro_text_parsed|bbcode|safe }}
 </div>
 
 <div class="ownwords">
@@ -45,7 +45,7 @@ Include file for displaying the Artist of the Month on the main page.
 {% endfor %}
 </div>
 
-{{ aotm.analysis_text|bbcode|safe }}
+{{ aotm.analysis_text_parsed|bbcode|safe }}
 </div>
 
 {% if aotm.banner %}

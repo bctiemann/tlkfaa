@@ -1190,6 +1190,14 @@ class FeaturedArtist(models.Model):
     def month_featured(self):
         return self.date_featured.strftime('%Y-%m')
 
+    @property
+    def intro_text_parsed(self):
+        return self.intro_text.replace('A_NAME', self.artist.username)
+
+    @property
+    def analysis_text_parsed(self):
+        return self.analysis_text.replace('A_NAME', self.artist.username)
+
     def __unicode__(self):
         return '{0} {1}'.format(self.month_featured, self.artist.username)
 
