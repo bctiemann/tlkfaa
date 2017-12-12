@@ -85,7 +85,7 @@ def create_thumbnail(model, picture_object, thumb_size):
         orig_height = picture_object.profile_height
         orig_width = picture_object.profile_width
     elif model == 'FeaturedArtistPicture':
-        image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.picture.name)
+        image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.showcase_picture.name)
         new_image_path = picture_object.thumbnail_path
         orig_height = picture_object.height
         orig_width = picture_object.width

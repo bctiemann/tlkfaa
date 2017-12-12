@@ -64,36 +64,34 @@ class Command(BaseCommand):
                 pass
 
             for img in imgs:
+                file_exists = False
                 filename = img.rstrip()
                 file_dir = os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured)
                 file_path = os.path.join(file_dir, filename)
                 if os.path.exists(file_path):
+                    file_exists = True
                     picture = None
-                else:
-                    try:
-                        picture = models.Picture.objects.get(artist=artist, filename=filename)
-                    except models.Picture.DoesNotExist:
-                        print '{0} not found'.format(filename)
-                        continue
-                    except models.Picture.MultipleObjectsReturned:
-                        raise Exception, 'Multiple matches for {0}'.format(filename)
+                try:
+                    picture = models.Picture.objects.get(artist=artist, filename=filename)
+                except models.Picture.DoesNotExist:
+                    print '{0} not found'.format(filename)
+                except models.Picture.MultipleObjectsReturned:
+                    raise Exception, 'Multiple matches for {0}'.format(filename)
 
-                if picture:
-                    print picture.path
+                if picture and not file_exists:
                     if os.path.exists(file_path):
                         raise Exception, '{0} already exists in {1}'.format(filename, artist.featured)
                     shutil.copy(picture.path, file_dir)
                     shutil.copy(picture.thumbnail_path, file_dir)
-                else:
-                    print file_path
 
-                try:
-                    im = Image.open(file_path)
-                    width = im.width
-                    height = im.height
-                except IOError:
-                    width = 0
-                    height = 0
-                defaults = {'width': width, 'height': height}
-                aotm_pic, created = models.FeaturedArtistPicture.objects.get_or_create(featured_artist=aotm, picture='featured/{0}/{1}'.format(artist.featured, filename), defaults=defaults)
-                print aotm_pic
+                if os.path.exists(file_path):
+                    try:
+                        im = Image.open(file_path)
+                        width = im.width
+                        height = im.height
+                    except IOError:
+                        width = 0
+                        height = 0
+                    defaults = {'width': width, 'height': height, 'picture': picture}
+                    aotm_pic, created = models.FeaturedArtistPicture.objects.get_or_create(featured_artist=aotm, showcase_picture='featured/{0}/{1}'.format(artist.featured, filename), defaults=defaults)
+                    print aotm_pic

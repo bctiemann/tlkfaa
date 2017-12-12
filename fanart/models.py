@@ -1210,14 +1210,15 @@ class FeaturedArtist(models.Model):
 
 class FeaturedArtistPicture(models.Model):
     featured_artist = models.ForeignKey('FeaturedArtist')
-    picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_featured_path, null=True, blank=True)
+    showcase_picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_featured_path, null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True)
 
     @property
     def basename(self):
-        path_parts = self.picture.name.split('/')
+        path_parts = self.showcase_picture.name.split('/')
         path = '/'.join(path_parts[:-1])
         filename_parts = path_parts[-1].split('.')
         return '.'.join(filename_parts[:-1])
@@ -1228,7 +1229,7 @@ class FeaturedArtistPicture(models.Model):
 
     @property
     def thumbnail_path(self):
-        path_parts = self.picture.name.split('/')
+        path_parts = self.showcase_picture.name.split('/')
         path = '/'.join(path_parts[:-1])
         filename_parts = path_parts[-1].split('.')
         basename = '.'.join(filename_parts[:-1])
@@ -1238,9 +1239,9 @@ class FeaturedArtistPicture(models.Model):
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(FeaturedArtistPicture, self).save(*args, **kwargs)
-        logger.info(self.picture)
+        logger.info(self.showcase_picture)
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'FeaturedArtistPicture', self.id, 'small'), countdown=20)
 
     def __unicode__(self):
-        return '{0}/{1}'.format(self.featured_artist.artist.username, self.picture.name)
+        return '{0}/{1}'.format(self.featured_artist.artist.username, self.showcase_picture.name)

@@ -186,6 +186,17 @@ admin.site.register(fanart_models.FeaturedArtist, FeaturedArtistAdmin)
 
 class FeaturedArtistPictureAdmin(admin.ModelAdmin):
     list_display = ('featured_artist', 'picture',)
-#    readonly_fields = ('featured_artist',)
+    readonly_fields = ('featured_artist', 'picture',)
+
+#    def get_form(self, request, obj=None, **kwargs):
+#        if obj:
+#            self.user_id_for_formfield = obj.featured_artist.artist_id
+#        return super(FeaturedArtistPictureAdmin, self).get_form(request, obj, **kwargs)
+
+#    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#        if db_field.name == 'picture':
+#            kwargs['queryset'] = fanart_models.Picture.objects.filter(artist=self.user_id_for_formfield)
+#        return super(FeaturedArtistPictureAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAdmin)
 
