@@ -14,3 +14,4 @@ Pillow==4.2.1
 django-precise-bbcode==1.2.8
 celery==4.1.0
 requests==2.18.4
+html2bbcode==2.3.3

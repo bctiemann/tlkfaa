@@ -6,6 +6,7 @@ import os
 import unicodedata, re
 import datetime
 import shutil
+from html2bbcode import parser
 from PIL import Image
 
 import logging
@@ -16,7 +17,13 @@ from fanart import models
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        parser.add_argument('--map', '--config', default=None,
+                        help='Mapping file elements')
+
     def handle(self, *args, **options):
+        bbcode_parser = parser.HTML2BBCode(options.get('map'))
+
         for artist in models.User.objects.filter(featured__isnull=False).exclude(featured='no').order_by('featured'):
             date_featured = datetime.datetime.strptime(artist.featured, '%Y-%m')
             aotm, created = models.FeaturedArtist.objects.get_or_create(artist=artist, date_featured=date_featured)
@@ -24,19 +31,19 @@ class Command(BaseCommand):
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'intro'), 'r')
-                aotm.intro_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
+                aotm.intro_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'ownwords'), 'r')
-                aotm.own_words_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
+                aotm.own_words_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
             except IOError:
                 pass
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'analysis'), 'r')
-                aotm.analysis_text = re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read())
+                aotm.analysis_text = bbcode_parser.feed(re.sub('(?<![\r\n])(\r?\n|\n?\r)(?![\r\n])', ' ', file.read()))
             except IOError:
                 pass
 
