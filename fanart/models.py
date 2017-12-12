@@ -58,6 +58,9 @@ def get_pending_path(instance, filename):
 def get_featured_path(instance, filename):
     return 'featured/{0}/{1}'.format(instance.featured_artist.month_featured, filename)
 
+def get_featured_banner_path(instance, filename):
+    return 'featured/{0}/{1}'.format(instance.month_featured, filename)
+
 #def get_coloring_path(instance, filename):
 #    return 'Artwork/coloring/{0}.{1}'.format(instance.id, instance.extension)
 
@@ -1182,7 +1185,7 @@ class FeaturedArtist(models.Model):
     own_words_text = models.TextField(blank=True, default='')
     analysis_text = models.TextField(blank=True, default='')
     is_published = models.BooleanField(default=False)
-    banner = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='banner_height', width_field='banner_width', upload_to=get_featured_path, null=True, blank=True)
+    banner = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='banner_height', width_field='banner_width', upload_to=get_featured_banner_path, null=True, blank=True)
     banner_width = models.IntegerField(null=True, blank=True)
     banner_height = models.IntegerField(null=True, blank=True)
 

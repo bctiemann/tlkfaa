@@ -1,51 +1,32 @@
 {% load bbcode_tags %}
 
-<%--
-inc_aotm.jsp
-Include file for displaying the Artist of the Month on the main page.
---%>
-
-<%@ include file="inc_functions.jsp" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" import="java.io.*" %>
-
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fanart" uri="http://fanart.lionking.org/jsp/jstl/fanart" %>
-
-<sql:setDataSource dataSource="jdbc/Fanart" />
-
-<c:set var="month" value="2017-02" />
-<c:set var="basepath" value="${basepath}" />
-
-
 {% if aotm %}
 
 <h2>Featured Artist of the Month</h2>
 
 <div class="aotm">
 
-{% if aotm.artist.profile_pic_url %}
-    <img class="profilepic" src="{{ aotm.artist.profile_pic_url }}" />
-{% endif %}
+    {% if aotm.artist.profile_pic_url %}
+        <img class="profilepic" src="{{ aotm.artist.profile_pic_url }}" />
+    {% endif %}
 
-<h3><a href="{% url "artist" dir_name=aotm.artist.dir_name %}">{{ aotm.artist.username }}</a></h3>
+    <h3><a href="{% url "artist" dir_name=aotm.artist.dir_name %}">{{ aotm.artist.username }}</a></h3>
 
-<div class="intro">
-{{ aotm.intro_text_parsed|bbcode|safe }}
-</div>
+    <div class="intro">
+        {{ aotm.intro_text_parsed|bbcode|safe }}
+    </div>
 
-<div class="ownwords">
-{{ aotm.own_words_text|bbcode|safe }}
-</div>
+    <div class="ownwords">
+        {{ aotm.own_words_text|bbcode|safe }}
+    </div>
 
-<div id="aotm_imgs">
-{% for picture in aotm.featuredartistpicture_set.all %}
-    <a href="{{ picture.picture.url }}?" rel="shadowbox[aotm]"><img src="{{ picture.picture.url }}" width="60" height="${pic.thumbheight}" /></a>
-{% endfor %}
-</div>
+    <div id="aotm_imgs">
+        {% for picture in aotm.featuredartistpicture_set.all %}
+            <a href="{{ picture.picture.url }}?" rel="shadowbox[aotm]"><img src="{{ picture.picture.url }}" width="60" height="${pic.thumbheight}" /></a>
+        {% endfor %}
+    </div>
 
-{{ aotm.analysis_text_parsed|bbcode|safe }}
+    {{ aotm.analysis_text_parsed|bbcode|safe }}
 </div>
 
 {% if aotm.banner %}
