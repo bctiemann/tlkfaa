@@ -523,11 +523,11 @@ class Picture(models.Model):
 
     @property
     def preview_path(self):
-        return '{0}/Artwork/Artists/{1}/{2}.p.{3}'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename, self.extension)
+        return '{0}/Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename)
 
     @property
     def thumbnail_path(self):
-        return '{0}/Artwork/Artists/{1}/{2}.s.{3}'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename, self.extension)
+        return '{0}/Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename)
 
     @property
     def url(self):
