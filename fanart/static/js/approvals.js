@@ -67,3 +67,11 @@ console.log(data);
 function showInfo(pendingid) {
   $('#pendinginfo_'+pendingid).show();
 }
+
+$(document).ready(function() {
+
+    $.getJSON('/admin/approve/count/', function(data) {
+        $('#pendingcount').html(data.count);
+    });
+
+});

@@ -848,6 +848,18 @@ class Favorite(models.Model):
     objects = FavoriteManager()
 
 
+class PendingManager(UserManager):
+
+    def requiring_approval(self):
+        return self.get_queryset().filter(is_approved=False) \
+            .exclude(Q(artist__auto_approve=True) \
+                & ~(Q(force_approve=True) \
+                | Q(width__gt=settings.APPROVAL_TRIGGER_WIDTH) \
+                | Q(height__gt=settings.APPROVAL_TRIGGER_HEIGHT) \
+                | Q(file_size__gt=settings.APPROVAL_TRIGGER_SIZE) \
+                | Q(is_movie=True))) \
+            .order_by('date_uploaded')[0:100]
+
 class Pending(models.Model):
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
@@ -879,6 +891,8 @@ class Pending(models.Model):
     is_scanned = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
+
+    objects = PendingManager()
 
     @property
     def basename(self):

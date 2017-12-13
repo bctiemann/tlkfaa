@@ -12,7 +12,8 @@ from pms import views as pms_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^admin/approve/', approval_views.ApprovalView.as_view(), name='approve'),
+    url(r'^admin/approve/$', approval_views.ApprovalView.as_view(), name='approve'),
+    url(r'^admin/approve/count/$', approval_views.PendingCountView.as_view(), name='pending-count'),
 
     url(
         r'^login/$',

@@ -47,14 +47,7 @@ class ApprovalView(UserPassesTestMixin, AccessMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApprovalView, self).get_context_data(**kwargs)
 
-        context['pending_pictures'] = models.Pending.objects.filter(is_approved=False) \
-            .exclude(Q(artist__auto_approve=True) \
-                & ~(Q(force_approve=True) \
-                | Q(width__gt=settings.APPROVAL_TRIGGER_WIDTH) \
-                | Q(height__gt=settings.APPROVAL_TRIGGER_HEIGHT) \
-                | Q(file_size__gt=settings.APPROVAL_TRIGGER_SIZE) \
-                | Q(is_movie=True))) \
-            .order_by('date_uploaded')[0:100]
+        context['pending_pictures'] = models.Pending.objects.requiring_approval()[0:100]
 
 #SELECT pending.*,artists.*,folders.name FROM artists,pending
 #LEFT JOIN folders ON pending.folderid=folders.folderid
@@ -74,4 +67,11 @@ class ApprovalView(UserPassesTestMixin, AccessMixin, TemplateView):
         context['threshold_size'] = settings.APPROVAL_WARNING_SIZE
 
         return context
+
+
+class PendingCountView(APIView):
+
+    def get(self, request):
+        response = {'count': models.Pending.objects.requiring_approval().count()}
+        return Response(response)
 
