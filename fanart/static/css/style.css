@@ -2504,6 +2504,9 @@ div.aotm div#aotm_imgs img {
 	-moz-box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 	box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 }
+img.aotm-banner {
+	display: block;
+}
 
 table.birthdays {
 	width: 320px;
