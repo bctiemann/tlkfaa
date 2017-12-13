@@ -933,11 +933,26 @@ class Pending(models.Model):
     def tagged_characters(self):
         return [pc.character for pc in self.picturecharacter_set.all()]
 
+    @property
+    def sanitized_filename(self):
+        base_fn = re.sub('\.[^\.]+$', '', self.filename)
+        base_fn = re.sub('[^a-zA-Z0-9_-]', '', base_fn)
+        out_fn = ''.join([part.capitalize() for part in re.split('[- _+~&()\.]', base_fn)])
+        out_fn = re.sub('(?i)copy$', '', out_fn)
+        out_fn = re.sub('(?i)jpg$', '', out_fn)
+        out_fn = re.sub('(?i)gif$', '', out_fn)
+        out_fn = re.sub('(?i)png$', '', out_fn)
+        out_fn = re.sub('(?i)tlk$', 'TLK', out_fn)
+        out_fn = re.sub('(?i)tlkfaa$', 'TLKFAA', out_fn)
+        out_fn = re.sub('(?i)icon$', 'Icon', out_fn)
+        return out_fn
+
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
 
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        self.file_size = self.picture.size
         super(Pending, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:

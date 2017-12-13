@@ -4,12 +4,15 @@ from django.conf import settings
 
 from django.contrib.auth import views as auth_views
 from fanart import views as fanart_views
+from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
 from pms import views as pms_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
+    url(r'^admin/approve/', approval_views.ApprovalView.as_view(), name='approve'),
 
     url(
         r'^login/$',

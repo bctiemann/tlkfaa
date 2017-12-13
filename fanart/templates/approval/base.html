@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<title>The Lion King Fan-Art Archive: Approvals</title>
+	<link rel="stylesheet" href="{% static "css/style.css" %}">
+	<link rel="stylesheet" href="{% static "css/approvals.css" %}">
+	<link rel="stylesheet" href="{% static "css/tooltip.css" %}" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+
+	<link href="{% static "css/custom-theme/jquery-ui-1.8.9.custom.css" %}" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="{% static "js/jquery-ui-1.8.9.custom.min.js" %}"></script>
+
+	<script type="text/javascript" src="{% static "js/tooltip.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/ajaxfileupload.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/approvals.js" %}"></script>
+</head>
+
+<body>
+
+<div id="pendingcount"><jsp:include page="ajax_approve.jsp?fnc=count" /></div>
+
+<div id="pendinglist">
+
+{% for pending in pending_pictures %}
+<c:forEach var="pending" items="${qryPending.rows}">
+
+	<c:set var="pending" value="${pending}" scope="request" />
+	<div class="pending" id="pending_${pending.pendingid}">
+	<jsp:include page="inc_approve.jsp" />
+        {% include "approval/pending.html" %}
+	</div>
+
+</c:forEach>
+{% endfor %}
+
+</div>
+
+</body>
+</html>

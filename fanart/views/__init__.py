@@ -27,8 +27,8 @@ from fanart.forms import AjaxableResponseMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
 
-from .response import JSONResponse, response_mimetype
-from .serialize import serialize
+from fanart.response import JSONResponse, response_mimetype
+from fanart.serialize import serialize
 
 from datetime import timedelta
 import uuid
