@@ -1,6 +1,6 @@
   Hello,
 
-  Thank you for your submission of the picture {{ pending.filename }}.
+  Thank you for your submission of the picture "{{ pending.filename }}".
 
   However, this picture is off-topic to a certain degree, or otherwise
 not in the spirit of the posted Guidelines. I will allow this picture into

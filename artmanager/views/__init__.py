@@ -359,7 +359,7 @@ class PendingDeleteView(LoginRequiredMixin, DeleteView):
 
         self.object = self.get_object()
 
-        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.object.directory), ignore_errors=True)
+#        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.object.directory), ignore_errors=True)
 
         self.object.delete()
 

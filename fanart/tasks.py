@@ -49,7 +49,7 @@ def send_email(recipients,
 
     connection.close()
 
-def create_thumbnail(model, picture_object, thumb_size):
+def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
     logger.info('Creating {0} px thumb for {1} {2}'.format(max_pixels, model, picture_object.id))
 
@@ -70,7 +70,10 @@ def create_thumbnail(model, picture_object, thumb_size):
         orig_width = picture_object.width
     elif model == 'Pending':
         image_path = '{0}/{1}'.format(settings.MEDIA_ROOT, picture_object.picture.name)
-        new_image_path = picture_object.thumbnail_path
+        if thumb_size == 'small':
+            new_image_path = picture_object.thumbnail_path
+        elif thumb_size == 'large':
+            new_image_path = picture_object.preview_path
         orig_height = picture_object.height
         orig_width = picture_object.width
     elif model == 'User':
@@ -124,7 +127,7 @@ def process_images(model_class_path, model, object_id, thumb_size='small'):
     except model_class.DoesNotExist:
         return None
 
-    width, height = create_thumbnail(model, picture_object, thumb_size)
+    width, height = create_thumbnail(model, picture_object, thumb_size, kwargs=None)
 #    picture_object.width_thumb_small, picture_object.height_thumb_small = create_thumbnail(picture_object, 'small')
 #    picture_object.width_thumb_large, picture_object.height_thumb_large = create_thumbnail(picture_object, 'large')
 #    picture_object.thumb_small = '{0}/{1}'.format(settings.THUMB_SIZE['small'], picture_object.file.name)

@@ -1,6 +1,6 @@
   Hello,
 
-  Thank you for your submission of the picture {{ pending.filename }}.
+  Thank you for your submission of the picture "{{ pending.filename }}".
 
   However, it appears that this picture may not be your own original work,
 or might be based heavily on some other source. This is contrary to the spirit

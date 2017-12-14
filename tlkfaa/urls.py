@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^admin/approve/list/$', approval_views.PendingListView.as_view(), name='pending-list'),
     url(r'^admin/approve/count/$', approval_views.PendingCountView.as_view(), name='pending-count'),
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/approve/$', approval_views.PendingApproveView.as_view(), name='pending-approve'),
+    url(r'^admin/approve/(?P<pending_id>[0-9]+)/reject/$', approval_views.PendingRejectView.as_view(), name='pending-reject'),
 
     url(
         r'^login/$',

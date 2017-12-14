@@ -1,0 +1,11 @@
+  Hello,
+
+  Thank you for your submission of the picture "{{ pending.filename }}".
+
+  Unfortunately, there was a problem in processing this picture on the
+server end; I have to ask you to please re-upload it. I apologize for the
+inconvenience!
+
+--Brian Tiemann
+fanart.lionking.org
+

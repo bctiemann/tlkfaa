@@ -17,6 +17,7 @@ import uuid
 import datetime
 import os
 import re
+import shutil
 
 from fanart.utils import dictfetchall, make_dir_name
 from fanart.tasks import process_images
@@ -928,6 +929,15 @@ class Pending(models.Model):
         return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
 
     @property
+    def preview_path(self):
+        path_parts = self.picture.name.split('/')
+        path = '/'.join(path_parts[:-1])
+        filename_parts = path_parts[-1].split('.')
+        basename = '.'.join(filename_parts[:-1])
+        extension = filename_parts[-1].lower()
+        return '{0}/{1}/{2}.p.jpg'.format(settings.MEDIA_ROOT, path, basename)
+
+    @property
     def thumbnail_created(self):
         return os.path.exists(self.thumbnail_path)
 
@@ -971,6 +981,11 @@ class Pending(models.Model):
         logger.info(self.picture)
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'Pending', self.id, 'small'), countdown=20)
+            process_images.apply_async(('fanart.models', 'Pending', self.id, 'large'), countdown=20)
+
+    def delete(self, *args, **kwargs):
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.directory), ignore_errors=True)
+        super(Pending, self).delete(*args, **kwargs)
 
     class Meta:
         ordering = ['date_uploaded']

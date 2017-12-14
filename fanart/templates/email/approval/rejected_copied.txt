@@ -1,0 +1,27 @@
+  Hello,
+
+  Thank you for your submission of the picture titled "{{ pending.filename }}".
+
+  It is against the policy of The Lion King WWW Archive to accept any
+fan-artwork that is copied or traced from any existing pictures, frames,
+poses, merchandise, or clip-art originally created by Disney, or by any
+other fan-artists except with permission. This picture you've uploaded
+appears not to be original, and so unfortunately it is not possible to
+accept your submission for inclusion into the Fan-Art Archive.
+
+  Please note that if your upload is based on line-art obtained from
+another artist (e.g. through the Coloring Cave), you should upload your
+picture by posting it back into the Coloring Cave, attached to the
+original artist's line-art. That way it will show up automatically in
+your gallery's special "Coloring Cave Pictures" folder, and will remain
+connected to the original art as well. This applies EVEN IF the original
+artist has given permission for the line-art to be used.
+
+  Please feel free to review the uploading guidelines at
+http://fanart.lionking.org/, and I encourage you to 
+contribute any fan-art that meets these guidelines. Thank you for
+understanding!
+
+--Brian Tiemann
+fanart.lionking.org
+

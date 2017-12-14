@@ -17,7 +17,7 @@ function approvePicture(fnc,pendingid) {
   $('#loading_table').clone().appendTo('#pending_'+pendingid).show();
 
 //    url = "/admin/ajax_approve.jsp?fnc="+fnc+"&pendingid="+pendingid;
-    url = '/admin/' + fnc + '/' + pendingid + '/approve/';
+    url = '/admin/approve/' + pendingid + '/' + fnc + '/';
     $.post(url,postform,function(data) {
       $('#pending_'+pendingid).html(data);
 //      url = "/admin/ajax_approve.jsp?fnc=count";

@@ -105,28 +105,74 @@ class PendingApproveView(ApprovalAPIView):
             pending.artist.comments += '{0}\n\n{1}'.format(timezone.now().strftime('%Y-%m-%d'), new_comments)
             pending.artist.save()
 
+        send_email = False
         if request.POST.get('warn_ot'):
-            email_context = {'pending': pending}
-            tasks.send_email.delay(
-                recipients=[pending.artist.email],
-                subject='Fan Art Submission (off-topic warning)',
-                context=email_context,
-                text_template='email/approval/warning_offtopic.txt',
-                html_template='email/approval/warning_offtopic.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            subject = 'Fan Art Submission (off-topic warning)'
+            text_template = 'email/approval/warning_offtopic.txt'
+            html_template = 'email/approval/warning_offtopic.html'
+            send_email = True
 
         if request.POST.get('warn_copied'):
+            subject = 'Fan Art Submission (originality warning)',
+            text_template = 'email/approval/warning_originality.txt',
+            html_template = 'email/approval/warning_originality.html',
+            send_email = True
+
+        if send_email:
             email_context = {'pending': pending}
             tasks.send_email.delay(
                 recipients=[pending.artist.email],
-                subject='Fan Art Submission (originality warning)',
+                subject=subject,
                 context=email_context,
-                text_template='email/approval/warning_originality.txt',
-                html_template='email/approval/warning_originality.html',
+                text_template=text_template,
+                html_template=html_template,
                 bcc=[settings.DEBUG_EMAIL]
             )
 
         logger.info(request.POST)
         return Response(response)
 
+
+class PendingRejectView(ApprovalAPIView):
+
+    def post(self, request, pending_id):
+        response = {'success': True}
+        pending = get_object_or_404(models.Pending, pk=pending_id)
+
+        pending.delete()
+
+        send_email = False
+        if request.POST.get('reason') == 'copied':
+            subject = 'Fan Art Submission (unable to accept)'
+            text_template = 'email/approval/rejected_copied.txt'
+            html_template = 'email/approval/rejected_copied.html'
+            send_email = True
+        if request.POST.get('reason') == 'off-topic':
+            subject = 'Fan Art Submission (unable to accept)'
+            text_template = 'email/approval/rejected_offtopic.txt'
+            html_template = 'email/approval/rejected_offtopic.html'
+            send_email = True
+        if request.POST.get('reason') == 'inappropriate':
+            subject = 'Fan Art Submission (unable to accept)'
+            text_template = 'email/approval/rejected_inappropriate.txt'
+            html_template = 'email/approval/rejected_inappropriate.html'
+            send_email = True
+        if request.POST.get('reason') == 'reupload':
+            subject = 'Fan Art Submission (please re-upload {0})'.format(pending.filename)
+            text_template = 'email/approval/rejected_reupload.txt'
+            html_template = 'email/approval/rejected_reupload.html'
+            send_email = True
+
+        if send_email:
+            email_context = {'pending': pending}
+            tasks.send_email.delay(
+                recipients=[pending.artist.email],
+                subject=subject,
+                context=email_context,
+                text_template=text_template,
+                html_template=html_template,
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        logger.info(request.POST)
+        return Response(response)
