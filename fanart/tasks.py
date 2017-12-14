@@ -9,7 +9,7 @@ from celery.utils.log import get_task_logger
 from PIL import Image
 import os
 import importlib
-
+from pwd import getpwnam
 
 import logging
 logger = logging.getLogger(__name__)
@@ -101,6 +101,8 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
 
     im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
     im.save(new_image_path, im.format)
+    www_uid = getpwnam(settings.WWW_USER).pw_uid
+    os.chown(new_image_path, www_uid, -1)
 
     return im.size
 
