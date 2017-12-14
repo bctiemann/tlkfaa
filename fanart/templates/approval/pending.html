@@ -21,6 +21,7 @@
                 <input type="hidden" name="uploadop" value="moviethumb" />
                 <input type="hidden" name="pendingid" value="{{ pending.id }}" />
                 <input type="hidden" name="partistid" value="{{ pending.artist.id }}" />
+                {% csrf_token %}
             </td>
             <td class="thumb">
                 {% if pending.is_movie and not pending.has_thumb %}

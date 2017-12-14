@@ -27,7 +27,7 @@
 <c:forEach var="pending" items="${qryPending.rows}">
 
 	<c:set var="pending" value="${pending}" scope="request" />
-	<div class="pending" id="pending_${pending.pendingid}">
+	<div class="pending" id="pending_{{ pending.id }}">
 	<jsp:include page="inc_approve.jsp" />
         {% include "approval/pending.html" %}
 	</div>
@@ -36,6 +36,12 @@
 {% endfor %}
 
 </div>
+
+<table id="loading_table" style="display: none;">
+    <tr>
+        <td><img src="{% static "images/loading.gif" %}" /></td>
+    </tr>
+</table>
 
 </body>
 </html>

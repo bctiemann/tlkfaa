@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models
+from fanart import models, tasks
 from fanart import views as fanart_views
 from coloring_cave import forms
 from coloring_cave.models import Base, ColoringPicture
@@ -69,9 +69,57 @@ class ApprovalView(UserPassesTestMixin, AccessMixin, TemplateView):
         return context
 
 
-class PendingCountView(APIView):
+class ApprovalAPIView(UserPassesTestMixin, AccessMixin, APIView):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_approver
+
+
+class PendingCountView(ApprovalAPIView):
 
     def get(self, request):
         response = {'count': models.Pending.objects.requiring_approval().count()}
+        return Response(response)
+
+
+class PendingApproveView(ApprovalAPIView):
+
+    def post(self, request, pending_id):
+        response = {'success': True}
+        pending = get_object_or_404(models.Pending, pk=pending_id)
+
+        pending.is_approved = True
+        pending.approved_by = request.user
+        pending.save()
+
+        new_comments = request.POST.get('newcomments')
+        if new_comments:
+            pending.artist.comments += '{0}\n\n{1}'.format(timezone.now().strftime('%Y-%m-%d'), new_comments)
+            pending.artist.save()
+
+        if request.POST.get('warn_ot'):
+            email_context = {'pending': pending}
+            tasks.send_email.delay(
+                recipients=[pending.artist.email],
+                subject='Fan Art Submission (off-topic warning)',
+                context=email_context,
+                text_template='email/approval/warning_offtopic.txt',
+                html_template='email/approval/warning_offtopic.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        if request.POST.get('warn_copied'):
+            email_context = {'pending': pending}
+            tasks.send_email.delay(
+                recipients=[pending.artist.email],
+                subject='Fan Art Submission (originality warning)',
+                context=email_context,
+                text_template='email/approval/warning_originality.txt',
+                html_template='email/approval/warning_originality.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        logger.info(request.POST)
         return Response(response)
 

@@ -9,10 +9,15 @@ function setFilename(pendingid) {
 }
 
 function approvePicture(fnc,pendingid) {
-  var url = "/admin/ajax_approve.jsp?fnc=loading";
+//  var url = "/admin/ajax_approve.jsp?fnc=loading";
   var postform = $('#approveform_'+pendingid).serialize();
-  $('#pending_'+pendingid).load(url,function() {
-    url = "/admin/ajax_approve.jsp?fnc="+fnc+"&pendingid="+pendingid;
+//  $('#pending_'+pendingid).load(url,function() {
+
+  $('#pending_'+pendingid).empty();
+  $('#loading_table').clone().appendTo('#pending_'+pendingid).show();
+
+//    url = "/admin/ajax_approve.jsp?fnc="+fnc+"&pendingid="+pendingid;
+    url = '/admin/' + fnc + '/' + pendingid + '/approve/';
     $.post(url,postform,function(data) {
       $('#pending_'+pendingid).html(data);
       url = "/admin/ajax_approve.jsp?fnc=count";
@@ -24,7 +29,7 @@ function approvePicture(fnc,pendingid) {
         }});
       }
     });
-  });
+//  });
 }
 
 function addComment(selform) {
