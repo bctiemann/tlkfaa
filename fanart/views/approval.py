@@ -223,3 +223,26 @@ class PendingResizeView(ApprovalUpdateView):
         return reverse('pending-detail', kwargs={'pending_id': self.object.id})
 
 
+class PendingConvertView(ApprovalUpdateView):
+    template_name = 'approval/pending.html'
+    form_class = forms.ApprovalForm
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'])
+
+    def form_valid(self, form):
+        im = Image.open(self.object.picture.path)
+        image_dir = os.path.dirname(os.path.realpath(self.object.picture.path))
+        rgb_im = im.convert('RGB')
+        rgb_im.save('{0}/{1}.jpg'.format(image_dir, self.object.sanitized_filename))
+        self.object.filename = '{0}.jpg'.format(self.object.sanitized_filename)
+        new_picture_path = self.object.picture.name.split('/')[0:-1]
+        new_picture_path.append('{0}.jpg'.format(self.object.sanitized_filename))
+        self.object.picture = '/'.join(new_picture_path)
+
+        logger.info(self.request.POST)
+
+        return super(PendingConvertView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('pending-detail', kwargs={'pending_id': self.object.id})
