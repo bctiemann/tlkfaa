@@ -974,7 +974,7 @@ class Pending(models.Model):
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
 
-    def save(self, update_thumbs=True, *args, **kwargs):
+    def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         self.file_size = self.picture.size
         super(Pending, self).save(*args, **kwargs)
