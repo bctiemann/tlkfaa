@@ -97,6 +97,7 @@ class PendingApproveView(ApprovalAPIView):
         response = {'success': True}
         pending = get_object_or_404(models.Pending, pk=pending_id)
 
+        pending.filename = request.POST.get('filename')
         pending.is_approved = True
         pending.approved_by = request.user
         pending.save()
