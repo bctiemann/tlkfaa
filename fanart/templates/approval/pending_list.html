@@ -1,0 +1,8 @@
+{% for pending in pending_pictures %}
+
+    <div class="pending" id="pending_{{ pending.id }}">
+        {% include "approval/pending.html" %}
+    </div>
+
+{% endfor %}
+

@@ -22,19 +22,7 @@
 <div id="pendingcount"><jsp:include page="ajax_approve.jsp?fnc=count" /></div>
 
 <div id="pendinglist">
-
-{% for pending in pending_pictures %}
-<c:forEach var="pending" items="${qryPending.rows}">
-
-	<c:set var="pending" value="${pending}" scope="request" />
-	<div class="pending" id="pending_{{ pending.id }}">
-	<jsp:include page="inc_approve.jsp" />
-        {% include "approval/pending.html" %}
-	</div>
-
-</c:forEach>
-{% endfor %}
-
+{% include "approval/pending_list.html" %}
 </div>
 
 <table id="loading_table" style="display: none;">

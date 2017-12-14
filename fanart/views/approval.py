@@ -37,12 +37,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ApprovalView(UserPassesTestMixin, AccessMixin, TemplateView):
-    template_name = 'approval/base.html'
+class ApprovalAPIView(UserPassesTestMixin, AccessMixin, APIView):
     raise_exception = True
 
     def test_func(self):
         return self.request.user.is_approver
+
+
+class ApprovalTemplateView(UserPassesTestMixin, AccessMixin, TemplateView):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_approver
+
+
+class ApprovalView(ApprovalTemplateView):
+    template_name = 'approval/base.html'
 
     def get_context_data(self, **kwargs):
         context = super(ApprovalView, self).get_context_data(**kwargs)
@@ -69,11 +79,8 @@ class ApprovalView(UserPassesTestMixin, AccessMixin, TemplateView):
         return context
 
 
-class ApprovalAPIView(UserPassesTestMixin, AccessMixin, APIView):
-    raise_exception = True
-
-    def test_func(self):
-        return self.request.user.is_approver
+class PendingListView(ApprovalView):
+    template_name = 'approval/pending_list.html'
 
 
 class PendingCountView(ApprovalAPIView):

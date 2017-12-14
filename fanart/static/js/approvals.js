@@ -20,12 +20,13 @@ function approvePicture(fnc,pendingid) {
     url = '/admin/' + fnc + '/' + pendingid + '/approve/';
     $.post(url,postform,function(data) {
       $('#pending_'+pendingid).html(data);
-      url = "/admin/ajax_approve.jsp?fnc=count";
-      $('#pendingcount').load(url);
+//      url = "/admin/ajax_approve.jsp?fnc=count";
+      updateCount();
       if (fnc == 'approve') {
-        url = "/admin/ajax_approve.jsp?fnc=getnew";
+//        url = "/admin/ajax_approve.jsp?fnc=getnew";
+        url = '/admin/approve/list/';
         $.ajax({ url: url, success: function(data) {
-          $('#pendinglist').append(data);
+          $('#pendinglist').empty().append(data);
         }});
       }
     });
@@ -73,10 +74,14 @@ function showInfo(pendingid) {
   $('#pendinginfo_'+pendingid).show();
 }
 
-$(document).ready(function() {
-
+function updateCount() {
     $.getJSON('/admin/approve/count/', function(data) {
         $('#pendingcount').html(data.count);
     });
+}
+
+$(document).ready(function() {
+
+    updateCount();
 
 });
