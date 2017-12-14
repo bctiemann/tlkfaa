@@ -167,6 +167,13 @@ class GiftPictureForm(forms.ModelForm):
         fields = ['reply_message']
 
 
+class ApprovalForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Pending
+        fields = []
+
+
 class RegisterForm(forms.Form):
     username = forms.CharField(validators=[models.validate_unique_username], error_messages={'required': 'You must enter a profile name.'})
     email = forms.EmailField(validators=[models.validate_unique_email], error_messages={'required': 'You must enter a valid email address.'})

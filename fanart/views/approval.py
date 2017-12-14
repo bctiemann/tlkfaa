@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidd
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -18,10 +18,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models, tasks
+from fanart import models, forms, tasks
 from fanart import views as fanart_views
-from coloring_cave import forms
-from coloring_cave.models import Base, ColoringPicture
 
 from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
@@ -32,12 +30,20 @@ import json
 import random
 import mimetypes
 import os
+from PIL import Image
 
 import logging
 logger = logging.getLogger(__name__)
 
 
 class ApprovalAPIView(UserPassesTestMixin, AccessMixin, APIView):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_approver
+
+
+class ApprovalUpdateView(UserPassesTestMixin, AccessMixin, UpdateView):
     raise_exception = True
 
     def test_func(self):
@@ -51,35 +57,30 @@ class ApprovalTemplateView(UserPassesTestMixin, AccessMixin, TemplateView):
         return self.request.user.is_approver
 
 
-class ApprovalView(ApprovalTemplateView):
+class ApprovalHomeView(ApprovalTemplateView):
     template_name = 'approval/base.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ApprovalView, self).get_context_data(**kwargs)
-
+        context = super(ApprovalHomeView, self).get_context_data(**kwargs)
         context['pending_pictures'] = models.Pending.objects.requiring_approval()[0:100]
-
-#SELECT pending.*,artists.*,folders.name FROM artists,pending
-#LEFT JOIN folders ON pending.folderid=folders.folderid
-#WHERE pending.artistid=artists.artistid
-#AND approved=false
-#AND (autoapprove=false OR (
-#(width>1200
-#OR height>1200
-#OR filesize>300000)
-#AND ismovie=false)
-#AND forceapprove=false
-#)
-#ORDER BY uploaded
-#LIMIT ${approvepreload}
         context['threshold_width'] = settings.APPROVAL_WARNING_WIDTH
         context['threshold_height'] = settings.APPROVAL_WARNING_HEIGHT
         context['threshold_size'] = settings.APPROVAL_WARNING_SIZE
-
         return context
 
 
-class PendingListView(ApprovalView):
+class PendingDetailView(ApprovalTemplateView):
+    template_name = 'approval/pending.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PendingDetailView, self).get_context_data(**kwargs)
+        context['pending'] = get_object_or_404(models.Pending, pk=self.kwargs['pending_id'])
+        context['threshold_width'] = settings.APPROVAL_WARNING_WIDTH
+        context['threshold_height'] = settings.APPROVAL_WARNING_HEIGHT
+        context['threshold_size'] = settings.APPROVAL_WARNING_SIZE
+        return context
+
+class PendingListView(ApprovalHomeView):
     template_name = 'approval/pending_list.html'
 
 
@@ -176,3 +177,49 @@ class PendingRejectView(ApprovalAPIView):
 
         logger.info(request.POST)
         return Response(response)
+
+
+class PendingResizeView(ApprovalUpdateView):
+    template_name = 'approval/pending.html'
+    form_class = forms.ApprovalForm
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'])
+
+    def form_valid(self, form):
+
+        try:
+            width = int(self.request.POST.get('width'))
+        except ValueError:
+            width = None
+        try:
+            height = int(self.request.POST.get('height'))
+        except ValueError:
+            height = None
+        try:
+            quality = int(self.request.POST.get('quality'))
+        except ValueError:
+            quality = 90
+
+        im = Image.open(self.object.picture.path)
+        orig_width = im.width
+        orig_height = im.height
+
+        if height:
+            im = im.resize((orig_width * height / orig_height, height), Image.ANTIALIAS)
+        elif width:
+            im = im.resize((width, orig_height * width / orig_width), Image.ANTIALIAS)
+
+        im.save(self.object.picture.path, im.format, quality=quality)
+        self.object.width = im.width
+        self.object.height = im.height
+        self.object.save(update_thumbs=False)
+
+        logger.info(self.request.POST)
+
+        return super(PendingResizeView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('pending-detail', kwargs={'pending_id': self.object.id})
+
+

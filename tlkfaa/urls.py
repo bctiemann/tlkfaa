@@ -12,11 +12,13 @@ from pms import views as pms_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^admin/approve/$', approval_views.ApprovalView.as_view(), name='approve'),
+    url(r'^admin/approve/$', approval_views.ApprovalHomeView.as_view(), name='approve'),
     url(r'^admin/approve/list/$', approval_views.PendingListView.as_view(), name='pending-list'),
     url(r'^admin/approve/count/$', approval_views.PendingCountView.as_view(), name='pending-count'),
+    url(r'^admin/approve/(?P<pending_id>[0-9]+)/$', approval_views.PendingDetailView.as_view(), name='pending-detail'),
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/approve/$', approval_views.PendingApproveView.as_view(), name='pending-approve'),
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/reject/$', approval_views.PendingRejectView.as_view(), name='pending-reject'),
+    url(r'^admin/approve/(?P<pending_id>[0-9]+)/resize/$', approval_views.PendingResizeView.as_view(), name='pending-resize'),
 
     url(
         r'^login/$',

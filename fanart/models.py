@@ -54,7 +54,7 @@ def get_banner_path(instance, filename):
     return 'banners/{0}'.format(filename)
 
 def get_pending_path(instance, filename):
-    return 'pending/{0}/{1}'.format(uuid.uuid4(), filename)
+    return 'pending/{0}/{1}.{2}'.format(uuid.uuid4(), instance.sanitized_filename, instance.extension)
 
 def get_featured_path(instance, filename):
     return 'featured/{0}/{1}'.format(instance.featured_artist.month_featured, filename)
@@ -912,12 +912,12 @@ class Pending(models.Model):
     @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_filename)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
-        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.basename)
+        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_filename)
 
     @property
     def thumbnail_path(self):
