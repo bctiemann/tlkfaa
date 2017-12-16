@@ -54,7 +54,7 @@ def get_banner_path(instance, filename):
     return 'banners/{0}'.format(filename)
 
 def get_pending_path(instance, filename):
-    return 'pending/{0}/{1}.{2}'.format(uuid.uuid4(), instance.sanitized_filename, instance.extension)
+    return 'pending/{0}/{1}.{2}'.format(instance.hash, instance.sanitized_filename, instance.extension)
 
 def get_featured_path(instance, filename):
     return 'featured/{0}/{1}'.format(instance.featured_artist.month_featured, filename)
@@ -875,7 +875,7 @@ class Pending(models.Model):
     height = models.IntegerField(null=True, blank=True)
     file_size = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    hash = models.CharField(max_length=32, blank=True)
+    hash = models.UUIDField(default=uuid.uuid4, editable=False)
     notify_approval = models.BooleanField(default=False)
     work_in_progress = models.BooleanField(default=False)
     allow_comments = models.BooleanField(default=True)
