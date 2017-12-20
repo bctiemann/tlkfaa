@@ -523,15 +523,15 @@ class Picture(models.Model):
 
     @property
     def path(self):
-        return '{0}/Artwork/Artists/{1}/{2}'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.filename)
+        return '{0}/{1}'.format(self.artist.absolute_dir_name, self.filename)
 
     @property
     def preview_path(self):
-        return '{0}/Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename)
+        return '{0}/{1}.p.jpg'.format(self.artist.absolute_dir_name, self.basename)
 
     @property
     def thumbnail_path(self):
-        return '{0}/Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, self.artist.dir_name, self.basename)
+        return '{0}/{1}.s.jpg'.format(self.artist.absolute_dir_name, self.basename)
 
     @property
     def url(self):
@@ -668,6 +668,9 @@ class Folder(models.Model):
         for picture in self.picture_set.all():
             picture.folder = self.parent
             picture.save()
+        for pending in self.pending_set.all():
+            pending.folder = self.parent
+            pending.save()
         for folder in self.folder_set.all():
             folder.parent = self.parent
             folder.save()

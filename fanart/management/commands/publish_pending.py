@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from django.utils import six, timezone
 
 import os
+import fnmatch
 import unicodedata, re
 
 import logging
@@ -21,3 +22,19 @@ class Command(BaseCommand):
                 print '{0} requires approval'.format(pending.id)
                 continue
 
+            filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
+            for existing_file in os.listdir(pending.artist.absolute_dir_name):
+                if fnmatch.fnmatch(existing_file, '{0}.*'.format(pending.next_unique_basename)):
+                    logger.error('File {0} exists, matching {1}! Skipping.'.format(existing_file, filename))
+                    continue
+
+            # if replacement, update picture record
+            # else, insert picture
+            # Clear then insert picturecharacters
+            # Clear then populate keywords into tags
+            # If not replacement, populate unviewedpictures
+            # Update artist.last_upload
+            # artist.refresh_num_pictures()
+            # artist.refresh_picture_ranks()
+            # Move files into place
+            # Send email notification
