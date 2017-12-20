@@ -235,10 +235,10 @@ class PendingConvertView(ApprovalUpdateView):
         im = Image.open(self.object.picture.path)
         image_dir = os.path.dirname(os.path.realpath(self.object.picture.path))
         rgb_im = im.convert('RGB')
-        rgb_im.save('{0}/{1}.jpg'.format(image_dir, self.object.sanitized_filename))
-        self.object.filename = '{0}.jpg'.format(self.object.sanitized_filename)
+        rgb_im.save('{0}/{1}.jpg'.format(image_dir, self.object.sanitized_basename))
+        self.object.filename = '{0}.jpg'.format(self.object.sanitized_basename)
         new_picture_path = self.object.picture.name.split('/')[0:-1]
-        new_picture_path.append('{0}.jpg'.format(self.object.sanitized_filename))
+        new_picture_path.append('{0}.jpg'.format(self.object.sanitized_basename))
         self.object.picture = '/'.join(new_picture_path)
 
         logger.info(self.request.POST)

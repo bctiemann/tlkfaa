@@ -5,12 +5,12 @@
     <table>
         <tr>
             <td class="approve">
-                <a href="javascript:nop()" onClick="setFilename('{{ pending.sanitized_filename }}')">{{ pending.filename }}</a><br />
+                <a href="javascript:nop()" onClick="setFilename('{{ pending.sanitized_basename }}')">{{ pending.filename }}</a><br />
                 {% if pending.is_movie and not pending.has_thumb %}
                     Thumbnail: <input type="file" name="uploadfile" id="uploadfile_{{ pending.id }}" />
                     <button type="button" class="small" onClick="uploadThumb('{{ pending.id }}','uploadfile_{{ pending.id }}','pending_{{ pending.id }}')">Upload</button>
                 {% else %}
-                    <input type="text" size="40" name="filename" value="{{ pending.sanitized_filename }}" />
+                    <input type="text" size="40" name="filename" value="{{ pending.sanitized_basename }}" />
                     <button type="button" class="small approve" onClick="approvePicture('approve','{{ pending.id }}')">Approve</button>
                     <div class="sendwarning"><input type="checkbox" name="warn_ot" id="warn_ot_{{ pending.id }}" value="1" /> <label for="warn_ot_{{ pending.id }}">Send off-topic warning</label></div>
                     <div class="sendwarning"><input type="checkbox" name="warn_copied" id="warn_copied_{{ pending.id }}" value="1" /> <label for="warn_copied_{{ pending.id }}">Send originality warning</label></div>
@@ -34,7 +34,7 @@
                 <div class="pendingartist {% if pending.artist.comments %}flagartist{% elif pending.artist.num_pictures == 0 %}newartist{% endif %}">
                     <b><a target="_blank" href="{% url "artist" dir_name=pending.artist.dir_name %}">{{ pending.artist.username }}</a></b><br />
                     {{ pending.artist.num_pictures }}<br />
-                    <a href="mailto:{{ pending.artist.email }}?subject=Fan-art upload ({{ pending.sanitized_filename }}.{{ pending.extension }})">email</a><br />
+                    <a href="mailto:{{ pending.artist.email }}?subject=Fan-art upload ({{ pending.sanitized_basename }}.{{ pending.extension }})">email</a><br />
                     {% if pending.notify_approval %}notify<br />{% endif %}
                     {% if pending.artist.comments %}<a href="javascript:nop()" onClick="alert(document.approveform_{{ pending.id }}.comments.value)">comments</a><br />{% endif %}
                     <a href="javascript:nop()" onClick="addComment(document.approveform_{{ pending.id }})">add comment</a>

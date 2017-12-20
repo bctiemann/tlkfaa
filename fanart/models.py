@@ -54,7 +54,7 @@ def get_banner_path(instance, filename):
     return 'banners/{0}'.format(filename)
 
 def get_pending_path(instance, filename):
-    return 'pending/{0}/{1}.{2}'.format(instance.hash, instance.sanitized_filename, instance.extension)
+    return 'pending/{0}/{1}.{2}'.format(instance.hash, instance.sanitized_basename, instance.extension)
 
 def get_featured_path(instance, filename):
     return 'featured/{0}/{1}'.format(instance.featured_artist.month_featured, filename)
@@ -912,12 +912,12 @@ class Pending(models.Model):
     @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_filename)
+            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
-        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_filename)
+        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
 
     @property
     def thumbnail_path(self):
@@ -958,7 +958,7 @@ class Pending(models.Model):
         return [pc.character for pc in self.picturecharacter_set.all()]
 
     @property
-    def sanitized_filename(self):
+    def sanitized_basename(self):
         base_fn = re.sub('\.[^\.]+$', '', self.filename)
         base_fn = re.sub('[^a-zA-Z0-9_-]', '', base_fn)
         out_fn = ''.join([part.capitalize() for part in re.split('[- _+~&()\.]', base_fn)])
@@ -970,6 +970,30 @@ class Pending(models.Model):
         out_fn = re.sub('(?i)tlkfaa$', 'TLKFAA', out_fn)
         out_fn = re.sub('(?i)icon$', 'Icon', out_fn)
         return out_fn
+
+    @property
+    def sanitized_filename(self):
+        return '{0}.{1}'.format(self.sanitized_basename, self.extension)
+
+    @property
+    def next_unique_basename(self):
+        raw_basename = re.sub('[0-9]+$', '', self.sanitized_basename)
+        highest_match = 0
+        matched_input = False
+        for picture in self.artist.picture_set.filter(filename__startswith=raw_basename):
+            if picture.basename == self.basename:
+                matched_input = True
+            match = re.match('{0}([0-9]*)'.format(raw_basename), picture.basename)
+            if match:
+                try:
+                    trailing_number = int(match.group(1))
+                except ValueError:
+                    trailing_number = 0
+                if trailing_number > highest_match:
+                    highest_match = trailing_number
+        if not matched_input:
+            return self.basename
+        return '{0}{1}'.format(raw_basename, highest_match + 1)
 
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
