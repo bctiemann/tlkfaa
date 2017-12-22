@@ -29,6 +29,22 @@ class Command(BaseCommand):
                     continue
 
             # if replacement, update picture record
+            if pending.replaces_picture:
+                pending.replaces_picture.filename = filename
+                pending.replaces_picture.title = pending.title
+                pending.replaces_picture.mime_type = pending.mime_type
+                pending.replaces_picture.date_inserted = timezone.now()
+                pending.replaces_picture.date_updated = timezone.now()
+                if pending.reset_upload_date:
+                    pending.replaces_picture.date_uploaded = pending.date_uploaded
+                pending.replaces_picture.hash = pending.hash
+                pending.replaces_picture.folder = pending.folder
+                pending.replaces_picture.keywords = pending.keywords
+                pending.replaces_picture.work_in_progress = pending.work_in_progress
+                pending.replaces_picture.allow_comments = pending.allow_comments
+                pending.replaces_picture.is_scanned = pending.is_scanned
+                pending.replaces_picture.save()
+
             # else, insert picture
             # Clear then insert picturecharacters
             # Clear then populate keywords into tags

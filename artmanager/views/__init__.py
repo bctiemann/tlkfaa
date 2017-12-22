@@ -247,6 +247,9 @@ class UploadFileView(LoginRequiredMixin, CreateView):
         pending.user_agent = self.request.META['HTTP_USER_AGENT']
         pending.save(update_thumbs=True)
 
+        pending.hash = hashlib.md5(open(pending.picture.path, 'rb').read()).hexdigest()
+        pending.save()
+
         for character_id in (self.request.POST.get('characters')).split(','):
             if character_id:
                 logger.info(character_id)
