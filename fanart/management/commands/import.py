@@ -276,7 +276,7 @@ class Command(BaseCommand):
                         mime_type = picture['mimetype'],
                         file_size = picture['filesize'],
                         quality = picture['quality'] if picture['quality'] else '',
-                        thumb_height = picture['thumbheight'],
+#                        thumb_height = picture['thumbheight'],
                         num_comments = picture['numcomments'],
                         num_faves = picture['numpicfaves'],
 #                        characters = picture['characters'] if picture['characters'] else '',

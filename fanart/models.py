@@ -483,7 +483,7 @@ class Picture(models.Model):
     mime_type = models.CharField(max_length=100, blank=True)
     file_size = models.IntegerField(blank=True)
     quality = models.CharField(max_length=1, blank=True)
-    thumb_height = models.IntegerField(blank=True)
+#    thumb_height = models.IntegerField(blank=True)
     num_comments = models.IntegerField(default=0)
     num_faves = models.IntegerField(default=0)
 #    characters = models.CharField(max_length=50, blank=True)
@@ -550,6 +550,10 @@ class Picture(models.Model):
     @property
     def preview_height(self):
         return int(self.height * settings.THUMB_SIZE['large'] / self.width)
+
+    @property
+    def thumb_height(self):
+        return int(self.height * settings.THUMB_SIZE['small'] / self.width)
 
     @property
     def thumb_height_x2(self):
