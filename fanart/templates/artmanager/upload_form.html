@@ -43,7 +43,7 @@ console.log(refreshThumbsInterval);
         <tr>
             <td class="label">Folder</td>
             <td class="data">
-                <select name="folder" class="foldermenu">
+                <select name="folder" class="foldermenu" {% if replacing_picture %}folderid="{{ replacing_picture.folder.id }}"{% endif %}>
                     <option value="0">(Main)</option>
                 </select>
             </td>
