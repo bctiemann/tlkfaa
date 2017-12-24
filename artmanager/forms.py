@@ -48,7 +48,7 @@ class UploadFileForm(forms.ModelForm):
 
     class Meta:
         model = models.Pending
-        fields = ['title', 'notes', 'keywords', 'allow_comments', 'work_in_progress', 'notify_approval', 'force_approve', 'reset_upload_date', 'replaces_picture']
+        fields = ['title', 'notes', 'keywords', 'allow_comments', 'work_in_progress', 'notify_on_approval', 'force_approve', 'reset_upload_date', 'replaces_picture', 'notify_fans_of_replacement']
 
 
 class PendingForm(forms.ModelForm):

@@ -81,8 +81,8 @@ class Command(BaseCommand):
                     tag, is_created = models.Tag.objects.get_or_create(tag=keyword)
                     picture.tags.add(tag)
 
-            # If not replacement, populate unviewedpictures
-            if not pending.replaces_picture:
+            # If not a replacement or notify_fans_of_replacement is on, populate unviewedpictures
+            if not pending.replaces_picture or pending.notify_fans_of_replacement:
                 for watcher in pending.artist.fans.all():
                     uvp = models.UnviewedPicture.objects.create(
                         picture = picture,
