@@ -74,6 +74,13 @@ class Command(BaseCommand):
                     picture.tags.add(tag)
 
             # If not replacement, populate unviewedpictures
+            if not pending.replaces_picture:
+                for watcher in pending.artist.fans.all():
+                    uvp = models.UnviewedPicture.objects.create(
+                        picture = picture,
+                        user = watcher.user,
+                    )
+
             # Update artist.last_upload
             # artist.refresh_num_pictures()
             # artist.refresh_picture_ranks()
