@@ -52,6 +52,10 @@ class Command(BaseCommand):
                 'approved_by': pending.approved_by,
             }
             if pending.replaces_picture:
+                original_path = pending.replaces_picture.path
+                original_thumbnail_path = pending.replaces_picture.thumbnail_path
+                original_preview_path = pending.replaces_picture.preview_path
+
                 picture = pending.replaces_picture
                 for key, value in defaults.iteritems():
                     setattr(picture, key, value)
@@ -98,4 +102,16 @@ class Command(BaseCommand):
                 pending.artist.refresh_main_folder_picture_ranks()
 
             # Move files into place
+            if pending.replaces_picture:
+                os.remove(original_path)
+                os.remove(original_thumbnail_path)
+                os.remove(original_preview_path)
+
+            os.rename(pending.picture.path, picture.path)
+            os.rename(pending.thumbnail_path, picture.thumbnail_path)
+            os.rename(pending.preview_path, picture.preview_path)
+            os.rmdir(os.path.dirname(pending.picture.path))
+
             # Send email notification
+            # delete pending
+            pending.delete()

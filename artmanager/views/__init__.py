@@ -604,7 +604,8 @@ class PictureBulkMoveView(APIView):
 
         for folder in set(folders_to_refresh):
             folder.refresh_num_pictures()
-            request.user.refresh_picture_ranks(refresh_folder=True, folder=folder)
+            folder.refresh_picture_ranks()
+#            request.user.refresh_picture_ranks(refresh_folder=True, folder=folder)
 
 #        logger.info(self.folder, self.original_folder)
 #        if self.folder != self.original_folder:
