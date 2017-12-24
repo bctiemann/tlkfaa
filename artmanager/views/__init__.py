@@ -492,7 +492,7 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
 
         logger.info(self.request.POST)
 
-        self.original_folder = self.folder
+        self.object.original_folder = self.object.folder
 
         self.object.picturecharacter_set.all().delete()
         for character_id in (self.request.POST.get('characters')).split(','):

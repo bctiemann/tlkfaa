@@ -60,6 +60,12 @@ class Command(BaseCommand):
                 picture = models.Picture.objects.create(**defaults)
 
             # Clear then insert picturecharacters
+            picture.picturecharacter_set.all().delete()
+            for pc in pending.picturecharacter_set.all():
+                pc.pending = None
+                pc.picture = picture
+                pc.save()
+
             # Clear then populate keywords into tags
             # If not replacement, populate unviewedpictures
             # Update artist.last_upload
