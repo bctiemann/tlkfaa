@@ -437,16 +437,16 @@ ORDER BY fanart_user.sort_name
         self.num_pictures = self.picture_set.count()
         self.save()
 
-    def refresh_picture_ranks(self, folder=None, refresh_folder=False):
+    def refresh_picture_ranks(self):
         pictures = self.picture_set.order_by('date_uploaded')
-        if refresh_folder:
-            pictures = pictures.filter(folder=folder)
         for i, picture in enumerate(pictures):
-            if refresh_folder:
-                picture.rank_in_folder = i + 1
-                logger.info(picture, picture.rank_in_folder)
-            else:
-                picture.rank_in_artist = i + 1
+            picture.rank_in_artist = i + 1
+            picture.save()
+
+    def refresh_main_folder_picture_ranks(self):
+        pictures = self.picture_set.filter(folder=None).order_by('date_uploaded')
+        for i, picture in enumerate(pictures):
+            picture.rank_in_folder = i + 1
             picture.save()
 
     def refresh_num_characters(self):
@@ -643,10 +643,11 @@ class Picture(models.Model):
 
         self.artist.refresh_num_pictures()
         self.artist.refresh_picture_ranks()
-        self.artist.refresh_picture_ranks(refresh_folder=True, folder=self.folder)
-
         if self.folder:
+            self.folder.refresh_picture_ranks()
             self.folder.refresh_num_pictures()
+        else:
+            self.artist.refresh_main_folder_picture_ranks()
 
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
 
@@ -670,6 +671,13 @@ class Folder(models.Model):
         logger.info('Refreshing {0}'.format(self))
         self.num_pictures = self.picture_set.count()
         self.save()
+
+    def refresh_picture_ranks(self):
+        pictures = self.picture_set.filter(folder=self).order_by('date_uploaded')
+        for i, picture in enumerate(pictures):
+            picture.rank_in_folder = i + 1
+            logger.info('{0} {1}'.format(picture, picture.rank_in_folder))
+            picture.save()
 
     def get_absolute_url(self):
         return reverse('artist-gallery', kwargs={'dir_name': self.user.dir_name})

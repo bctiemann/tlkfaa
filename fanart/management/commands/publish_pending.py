@@ -82,7 +82,15 @@ class Command(BaseCommand):
                     )
 
             # Update artist.last_upload
-            # artist.refresh_num_pictures()
-            # artist.refresh_picture_ranks()
+            pending.artist.last_upload = timezone.now()
+
+            # Refresh num_pictures and picture ranks in artist and folder
+            pending.artist.refresh_num_pictures()
+            if pending.folder:
+                pending.folder.refresh_num_pictures()
+                pending.folder.refresh_picture_ranks()
+            else:
+                pending.artist.refresh_main_folder_picture_ranks()
+
             # Move files into place
             # Send email notification
