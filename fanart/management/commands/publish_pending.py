@@ -86,6 +86,7 @@ class Command(BaseCommand):
 
             # Refresh num_pictures and picture ranks in artist and folder
             pending.artist.refresh_num_pictures()
+            pending.artist.refresh_picture_ranks()
             if pending.folder:
                 pending.folder.refresh_num_pictures()
                 pending.folder.refresh_picture_ranks()
