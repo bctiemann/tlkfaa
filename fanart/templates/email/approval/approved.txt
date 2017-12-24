@@ -1,0 +1,15 @@
+  Hello,
+
+  This is an automated message from The Lion King Fan-Art Archive
+(http://fanart.lionking.org). It is sent because you requested to have it
+sent when your uploaded picture was accepted. The picture has been
+accepted and added to your collection.
+          
+Filename: {{ pending.filename }}
+Title: {{ pending.title }}
+        
+  Thank you!
+     
+--Brian Tiemann
+lionking.org administrator
+

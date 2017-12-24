@@ -115,9 +115,9 @@ class PendingApproveView(ApprovalAPIView):
             send_email = True
 
         if request.POST.get('warn_copied'):
-            subject = 'Fan Art Submission (originality warning)',
-            text_template = 'email/approval/warning_originality.txt',
-            html_template = 'email/approval/warning_originality.html',
+            subject = 'Fan Art Submission (originality warning)'
+            text_template = 'email/approval/warning_originality.txt'
+            html_template = 'email/approval/warning_originality.html'
             send_email = True
 
         if send_email:

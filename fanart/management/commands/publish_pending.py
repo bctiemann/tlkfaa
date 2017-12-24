@@ -9,7 +9,7 @@ import unicodedata, re
 import logging
 logger = logging.getLogger(__name__)
 
-from fanart import models
+from fanart import models, tasks
 
 
 class Command(BaseCommand):
@@ -113,5 +113,20 @@ class Command(BaseCommand):
             os.rmdir(os.path.dirname(pending.picture.path))
 
             # Send email notification
+            subject = 'Fan-Art Picture Accepted'
+            text_template = 'email/approval/approved.txt'
+            html_template = 'email/approval/approved.html'
+
+            if pending.notify_on_approval:
+                email_context = {'pending': pending}
+                tasks.send_email.delay(
+                    recipients=[pending.artist.email],
+                    subject=subject,
+                    context=email_context,
+                    text_template=text_template,
+                    html_template=html_template,
+                    bcc=[settings.DEBUG_EMAIL]
+                )
+
             # delete pending
             pending.delete()
