@@ -136,7 +136,7 @@ console.log(refreshThumbsInterval);
             <tr>
                 <td class="label"></td>
                 <td class="data inputlabels">
-                    <input type="checkbox" name="allow_comments" id="allowcomments" value="1" {% if replacing_picture.allow_comments and user.allow_comments %}checked{% endif %}>
+                    <input type="checkbox" name="allow_comments" id="allowcomments" value="1" {% if replacing_picture.allow_comments != False and user.allow_comments %}checked{% endif %}>
                     <label for="allowcomments">Allow comments on this picture</label>
                 </td>
             </tr>
