@@ -269,7 +269,7 @@ class Command(BaseCommand):
                         artist = user,
                         folder = folder,
                         filename = picture['filename'],
-                        extension = picture['extension'],
+#                        extension = picture['extension'],
                         title = picture['title'],
                         is_color = picture['color'],
                         type = picture['type'],

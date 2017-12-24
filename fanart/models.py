@@ -476,7 +476,7 @@ class Picture(models.Model):
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
     filename = models.CharField(max_length=255, blank=True)
-    extension = models.CharField(max_length=5, blank=True)
+#    extension = models.CharField(max_length=5, blank=True)
     title = models.TextField(blank=True)
     is_color = models.BooleanField(default=True)
     type = models.CharField(max_length=32, blank=True)
@@ -493,7 +493,7 @@ class Picture(models.Model):
     date_approved = models.DateTimeField(null=True, blank=True, db_index=True)
     date_updated = models.DateTimeField(null=True, blank=True)
     date_deleted = models.DateTimeField(null=True, blank=True)
-    hash = models.CharField(max_length=32, blank=True)
+    hash = models.UUIDField(null=True, blank=True, editable=False)
     is_public = models.BooleanField(default=True)
     rank_in_artist = models.IntegerField(default=0)
     rank_in_folder = models.IntegerField(default=0)
@@ -512,6 +512,12 @@ class Picture(models.Model):
     @property
     def basename(self):
         return '.'.join(self.filename.split('.')[:-1])
+
+    @property
+    def extension(self):
+        if self.filename:
+            return self.filename.split('.')[-1].lower()
+        return self.picture.name.split('.')[-1].lower()
 
     @property
     def thumbnail_url(self):
@@ -874,7 +880,7 @@ class Pending(models.Model):
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_pending_path, null=True, blank=True)
     filename = models.CharField(max_length=255, blank=True, default='')
 #    extension = models.CharField(max_length=5, blank=True, default='')
-    type = models.CharField(max_length=32, blank=True)
+    mime_type = models.CharField(max_length=32, blank=True)
     is_movie = models.BooleanField(default=False)
     has_thumb = models.BooleanField(default=False)
     title = models.TextField(blank=True)

@@ -29,23 +29,36 @@ class Command(BaseCommand):
                     continue
 
             # if replacement, update picture record
-            if pending.replaces_picture:
-                pending.replaces_picture.filename = filename
-                pending.replaces_picture.title = pending.title
-                pending.replaces_picture.mime_type = pending.mime_type
-                pending.replaces_picture.date_inserted = timezone.now()
-                pending.replaces_picture.date_updated = timezone.now()
-                if pending.reset_upload_date:
-                    pending.replaces_picture.date_uploaded = pending.date_uploaded
-                pending.replaces_picture.hash = pending.hash
-                pending.replaces_picture.folder = pending.folder
-                pending.replaces_picture.keywords = pending.keywords
-                pending.replaces_picture.work_in_progress = pending.work_in_progress
-                pending.replaces_picture.allow_comments = pending.allow_comments
-                pending.replaces_picture.is_scanned = pending.is_scanned
-                pending.replaces_picture.save()
-
             # else, insert picture
+            defaults = {
+                'artist': pending.artist,
+                'filename': pending.filename,
+                'title': pending.title,
+                'mime_type': pending.mime_type,
+                'width': pending.width,
+                'height': pending.height,
+                'file_size': pending.file_size,
+                'date_approved': timezone.now(),
+                'hash': pending.hash,
+                'folder': pending.folder,
+                'keywords': pending.keywords,
+                'work_in_progress': pending.work_in_progress,
+                'allow_comments': pending.work_in_progress,
+                'is_scanned': pending.is_scanned,
+                'approved_by': pending.approved_by,
+            }
+            if pending.replaces_picture:
+                picture = pending.replaces_picture
+                for key, value in defaults.iteritems():
+                    setattr(picture, key, value)
+                if pending.reset_upload_date:
+                    picture.date_uploaded = pending.date_uploaded
+                picture.date_updated = timezone.now()
+                picture.save()
+            else:
+                defaults['date_uploaded'] = pending.date_uploaded
+                picture = models.Picture.objects.create(**defaults)
+
             # Clear then insert picturecharacters
             # Clear then populate keywords into tags
             # If not replacement, populate unviewedpictures
