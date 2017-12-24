@@ -67,6 +67,12 @@ class Command(BaseCommand):
                 pc.save()
 
             # Clear then populate keywords into tags
+            picture.tags.clear()
+            for keyword in pending.keywords.split(','):
+                if keyword:
+                    tag, is_created = models.Tag.objects.get_or_create(tag=keyword)
+                    picture.tags.add(tag)
+
             # If not replacement, populate unviewedpictures
             # Update artist.last_upload
             # artist.refresh_num_pictures()
