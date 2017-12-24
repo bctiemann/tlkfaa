@@ -18,8 +18,12 @@ class Command(BaseCommand):
         requiring_approval = [p.id for p in models.Pending.objects.requiring_approval()]
         for pending in models.Pending.objects.all():
             print pending.id
+
             if pending.id in requiring_approval:
                 print '{0} requires approval'.format(pending.id)
+                continue
+
+            if not pending.thumbnail_created or not pending.preview_created:
                 continue
 
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)

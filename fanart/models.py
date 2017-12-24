@@ -963,6 +963,10 @@ class Pending(models.Model):
         return os.path.exists(self.thumbnail_path)
 
     @property
+    def preview_created(self):
+        return os.path.exists(self.preview_path)
+
+    @property
     def dimensions_warning(self):
         return self.width > settings.MAX_UPLOAD_WIDTH or self.height > settings.MAX_UPLOAD_HEIGHT
 
