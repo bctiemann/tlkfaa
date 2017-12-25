@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/reject/$', approval_views.PendingRejectView.as_view(), name='pending-reject'),
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/resize/$', approval_views.PendingResizeView.as_view(), name='pending-resize'),
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/convert/$', approval_views.PendingConvertView.as_view(), name='pending-convert'),
+    url(r'^admin/approve/(?P<pending_id>[0-9]+)/upload_thumb/$', approval_views.PendingUploadThumbView.as_view(), name='pending-upload-thumb'),
+#    url(r'^admin/approve/thumb_status/$', approval_views.PendingThumbStatusView.as_view(), name='pending-thumb-status'),
 
     url(
         r'^login/$',

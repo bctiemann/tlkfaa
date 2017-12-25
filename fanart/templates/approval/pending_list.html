@@ -1,3 +1,24 @@
+<script type="text/javascript">
+var refreshThumbsInterval = null;
+var thumbsGenerated = true;
+
+var checkThumbs = function() {
+    var url = '/admin/approve/thumb_status/';
+    $.getJSON(url, function(data) {
+        var continueChecking = false;
+        for (pending_id in data) {
+            $('#pendinghumb_' + pending_id).attr('src', data[pending_id].thumbnail_url);
+            if (!data[pending_id].thumbnail_done) {
+                continueChecking = true;
+            }
+        }
+        if (!continueChecking) {
+            clearInterval(refreshThumbsInterval);
+        }
+    });
+};
+</script>
+
 {% for pending in pending_pictures %}
 
     <div class="pending" id="pending_{{ pending.id }}">

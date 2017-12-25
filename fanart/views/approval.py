@@ -247,3 +247,60 @@ class PendingConvertView(ApprovalUpdateView):
 
     def get_success_url(self):
         return reverse('pending-detail', kwargs={'pending_id': self.object.id})
+
+
+class PendingUploadThumbView(UpdateView):
+    model = models.Pending
+    form_class = forms.ApprovalForm
+    template_name = 'approval/pending.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'])
+
+    def form_valid(self, form):
+        response = {'success': False}
+
+        max_pixels = settings.THUMB_SIZE['small']
+        im_thumb = Image.open(self.request.FILES['picture'])
+        orig_height = im_thumb.height
+        orig_width = im_thumb.width
+        logger.info(im_thumb)
+        im_thumb.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
+        im_thumb.save(self.object.thumbnail_path, im_thumb.format)
+
+        max_pixels = settings.THUMB_SIZE['large']
+        im_preview = Image.open(self.request.FILES['picture'])
+        orig_height = im_preview.height
+        orig_width = im_preview.width
+        logger.info(im_preview)
+        im_preview.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
+        im_preview.save(self.object.preview_path, im_preview.format)
+
+#        self.object.picture = self.request.FILES['picture']
+#        self.object.filename = self.request.FILES['picture'].name
+#        self.object.date_uploaded = timezone.now()
+#        super(UploadClaimView, self).form_valid(form)
+
+        self.object.has_thumb = True
+        self.object.save()
+
+        return JsonResponse(response)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PendingUploadThumbView, self).get_context_data(*args, **kwargs)
+        context['pending'] = self.object
+        return context
+
+
+#class PendingThumbStatusView(APIView):
+#
+#    def get(self, request, offer_id=None):
+#        response = {}
+#        if request.user.profile_picture:
+#            response = {
+#                'url': request.user.profile_pic_url,
+#                'thumbnail_url': request.user.profile_pic_thumbnail_url,
+#                'thumbnail_done': request.user.profile_pic_thumbnail_created,
+#            }
+#        return Response(response)
+
