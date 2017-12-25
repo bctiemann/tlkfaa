@@ -249,7 +249,7 @@ class PendingConvertView(ApprovalUpdateView):
         return reverse('pending-detail', kwargs={'pending_id': self.object.id})
 
 
-class PendingUploadThumbView(UpdateView):
+class PendingUploadThumbView(ApprovalUpdateView):
     model = models.Pending
     form_class = forms.ApprovalForm
     template_name = 'approval/pending.html'
