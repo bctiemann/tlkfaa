@@ -231,11 +231,16 @@ class UploadFileView(LoginRequiredMixin, CreateView):
 
         logger.info(self.request.POST)
 
+        if not self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys() + settings.IMAGE_FILE_TYPES.keys():
+            response['message'] = 'Invalid file type.'
+            return JsonResponse(response)
+
         try:
             folder = models.Folder.objects.get(pk=self.request.POST.get('folder', None), user=self.request.user)
         except models.Folder.DoesNotExist:
             folder = None
 
+        update_thumbs = True
         pending = form.save(commit=False)
         pending.artist = self.request.user
         pending.folder = folder
@@ -245,7 +250,10 @@ class UploadFileView(LoginRequiredMixin, CreateView):
         pending.remote_host = self.request.META['REMOTE_ADDR']
         pending.remote_addr = self.request.META['REMOTE_ADDR']
         pending.user_agent = self.request.META['HTTP_USER_AGENT']
-        pending.save(update_thumbs=True)
+        if self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys():
+            pending.is_movie = True
+            update_thumbs = False
+        pending.save(update_thumbs=update_thumbs)
 
         pending.hash = hashlib.md5(open(pending.picture.path, 'rb').read()).hexdigest()
         pending.save()

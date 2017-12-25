@@ -164,21 +164,25 @@ $(function () {
 //        autoUpload: false,
         done: function (e, data) {
 
-            $('#uploadsuccess').slideUp('fast');
-            $('#uploadformdiv').slideUp('fast');
-            $('#uploadsuccess').load('/ArtManager/upload/success/' + data.result.pending_id, function(data) {
-                $('#uploadsuccess').slideDown('fast');
-                $('#uploadformdiv').html(data);
-                Shadowbox.setup('#uploadformdiv a.shadowbox');
-                $('#uploadformdiv').load('/ArtManager/upload/form/',function() {
-                    $(this).slideDown();
-                    setupTooltipPreview();
+            if (data.result.success) {
+                $('#uploadsuccess').slideUp('fast');
+                $('#uploadformdiv').slideUp('fast');
+                $('#uploadsuccess').load('/ArtManager/upload/success/' + data.result.pending_id, function(data) {
+                    $('#uploadsuccess').slideDown('fast');
+                    $('#uploadformdiv').html(data);
+                    Shadowbox.setup('#uploadformdiv a.shadowbox');
+                    $('#uploadformdiv').load('/ArtManager/upload/form/',function() {
+                        $(this).slideDown();
+                        setupTooltipPreview();
+                    });
+                    $('#comment').val('');
                 });
-                $('#comment').val('');
-            });
-//            $('.pending-uploads').html(data.pending);
+//                $('.pending-uploads').html(data.pending);
 
-            refreshThumbsInterval = setInterval('checkThumbs()', 1000);            
+                refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+            } else {
+                alert(data.result.message);
+            }
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);

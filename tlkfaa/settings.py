@@ -332,14 +332,28 @@ THUMB_SIZE = {
     'offer': 120,
 }
 
-CONTENT_TYPE = {
-    'image/jpg': 'jpg',
-    'image/gif': 'gif',
-    'image/png': 'png',
-}
+#CONTENT_TYPE = {
+#    'image/jpg': 'jpg',
+#    'image/gif': 'gif',
+#    'image/png': 'png',
+#    'application/x-shockwave-flash"': 'swf',
+#    'video/x-ms-wmv': 'wmv',
+#    'video/quicktime': 'mov',
+#}
 
 PROFILE_TYPES = [
     'image/jpg',
     'image/png',
     'image/gif',
 ]
+
+IMAGE_FILE_TYPES = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+}
+MOVIE_FILE_TYPES = {
+    'application/x-shockwave-flash"': 'swf',
+    'video/x-ms-wmv': 'wmv',
+    'video/quicktime': 'mov',
+}

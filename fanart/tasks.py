@@ -93,10 +93,14 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         orig_height = picture_object.height
         orig_width = picture_object.width
 
+    if not os.path.exists(image_path):
+        logger.error('{0} not found. Possibly already deleted.'.format(image_path))
+        return None, None
+
     try:
         im = Image.open(image_path)
-    except IOError:
-        logger.error('{0} not found. Possibly already deleted.'.format(image_path))
+    except IOError, e:
+        logger.error(e)
         return None, None
 
     im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))

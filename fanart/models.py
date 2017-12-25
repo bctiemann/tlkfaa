@@ -932,12 +932,20 @@ class Pending(models.Model):
 
     @property
     def thumbnail_url(self):
+        if self.is_movie:
+            if self.has_thumb:
+                return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+            return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         if os.path.exists(self.thumbnail_path):
             return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
+        if self.is_movie:
+            if self.has_thumb:
+                return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+            return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
 
     @property
@@ -960,6 +968,8 @@ class Pending(models.Model):
 
     @property
     def thumbnail_created(self):
+        if self.is_movie:
+            return True
         return os.path.exists(self.thumbnail_path)
 
     @property
