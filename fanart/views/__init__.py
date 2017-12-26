@@ -409,28 +409,23 @@ class ContestsView(UserPaneMixin, TemplateView):
         if not sort_by in ['artist', 'startdate', 'deadline']:
             sort_by = 'startdate'
 
-        contest_id = kwargs.get('contest_id', None)
-        if contest_id:
-            context['contest'] = get_object_or_404(models.Contest, pk=contest_id, is_active=True)
-        else:
-            contest_type = kwargs.get('contest_type', None)
-            if not contest_type:
-                contest_type = 'global'
+        contest_type = kwargs.get('contest_type', None)
+        if not contest_type:
+            contest_type = 'global'
 
-            personal_account_deadline_cutoff_date = timezone.now() - timedelta(days=2)
-            contests = models.Contest.objects.filter(type=contest_type, is_active=True)
-            if contest_type == 'personal':
-                contests = contests.filter(date_end__gte=personal_account_deadline_cutoff_date)
+        personal_account_deadline_cutoff_date = timezone.now() - timedelta(days=2)
+        contests = models.Contest.objects.filter(type=contest_type, is_active=True)
+        if contest_type == 'personal':
+            contests = contests.filter(date_end__gte=personal_account_deadline_cutoff_date)
 
-            if sort_by == 'artist':
-                contests = contests.order_by('creator__username')
-            if sort_by == 'startdate':
-                contests = contests.order_by('-date_start')
-            if sort_by == 'deadline':
-                contests = contests.order_by('-date_end')
+        if sort_by == 'artist':
+            contests = contests.order_by('creator__username')
+        if sort_by == 'startdate':
+            contests = contests.order_by('-date_start')
+        if sort_by == 'deadline':
+            contests = contests.order_by('-date_end')
 
-            context['contests'] = contests
-
+        context['contests'] = contests
         context['sort_by'] = sort_by
 
         return context

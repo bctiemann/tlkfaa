@@ -1,10 +1,10 @@
 {% extends "fanart/base.html" %}
 {% load bbcode_tags %}
 
-{% block activetab_showcase %}active{% endblock %}
+{% block activetab_showcases %}active{% endblock %}
 
 {% block grass %}
-{% include "fanart/grass_showcase.html" %}
+{% include "fanart/grass_showcases.html" %}
 {% endblock %}
 
 {% block body_prop %}tall{% endblock %}
@@ -35,7 +35,7 @@
     <div class="featurebox">
 
 
-        <a class="archive-link" href="/Contests.jsp?type=global&sortby=deadline">Previous Contests</a>
+        <a class="archive-link" href="{% url "contests" type="global" %}?sort_by=deadline">Previous Contests</a>
         <h2>Current Art Contest</h2>
 
         <div class="contest">

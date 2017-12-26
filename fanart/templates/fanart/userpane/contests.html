@@ -3,13 +3,13 @@
     <h4>New Contests</h4>
 
     {% for contest in contests_data.contests_new %}
-        <div><a href="/Contests.jsp?contestid={{ contest.id }}">{{ contest.title }}</a></div>
+        <div><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>
     {% endfor %}
 
     <h4>Upcoming Deadlines</h4>
 
     {% for contest in contests_data.contests_ending %}
-        <div><a href="/Contests.jsp?contestid={{ contest.id }}">{{ contest.title }}</a></div>
+        <div><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>
     {% endfor %}
 
 </c:if>

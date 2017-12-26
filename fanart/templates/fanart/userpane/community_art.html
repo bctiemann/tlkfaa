@@ -1,6 +1,6 @@
 <h3>Trading Tree</h3>
 
-<h4><a href="/TradingTree.jsp?offertype=icon">icons</a></h4>
+<h4><a href="{% url "trading-tree" offer_type="icon" %}">icons</a></h4>
 <table>
 <tr>
 <td class="label">Total icons</td>
@@ -16,7 +16,7 @@
 </tr>
 </table>
 
-<h4><a href="/TradingTree.jsp?offertype=adoptable">adoptables</a></h4>
+<h4><a href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a></h4>
 <table>
 <tr>
 <td class="label">Total adoptables</td>
@@ -32,7 +32,7 @@
 </tr>
 </table>
 
-<h3><a href="/ColoringCave.jsp">Coloring Cave</a></h3>
+<h3><a href="{% url "coloring-cave" %}">Coloring Cave</a></h3>
 
 <table>
 <tr>
