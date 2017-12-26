@@ -1,0 +1,6 @@
+This is an automated message from The Lion King Fan-Art Archive.
+
+You have received a new Private Message from {{ sender.username }}.
+
+Please visit {{ base_url }} and check your PMs in ArtManager.
+

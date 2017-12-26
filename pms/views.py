@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models, utils
+from fanart import models, utils, tasks
 from fanart import views as fanart_views
 from pms import forms
 from pms.models import PrivateMessage
@@ -99,9 +99,6 @@ class PMCreateView(CreateView):
     model = PrivateMessage
     form_class = forms.PMForm
 
-    def get_object(self):
-        return get_object_or_404(PrivateMessage, (Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=self.kwargs['pm_id'])
-
     def form_valid(self, form):
         pm = form.save(commit=False)
         pm.sender = self.request.user
@@ -112,16 +109,19 @@ class PMCreateView(CreateView):
             if not pm.subject.startswith('Re: '):
                 pm.subject = 'Re: {0}'.format(pm.subject)
         pm.save()
+
+        email_context = {'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
+        tasks.send_email.delay(
+            recipients=[form.cleaned_data['recipient'].email],
+            subject='TLKFAA Private Message from {0}'.format(self.request.user.username),
+            context=email_context,
+            text_template='email/pm_sent.txt',
+            html_template='email/pm_sent.html',
+            bcc=[settings.DEBUG_EMAIL]
+        )
+
         response = super(PMCreateView, self).form_valid(form)
         return response
-
-#                <%
-#                        String recptname = (String)pageContext.getAttribute("recptname");
-#                        String recptemail = (String)pageContext.getAttribute("recptemail");
-#                        String sendername = (String)pageContext.getAttribute("sendername");
-#                        String msgBody = "This is an automated message from The Lion King Fan-Art Archive.\n\nYou have received a new Private Message from " + sendername + ".\n\nPlease visithttp://fanart.lionking.org and check your PMs in ArtManager.";
-#                        sendEmail("fanart@lionking.org", recptemail, "TLKFAA Private Message", msgBody, false);
-#                %>
 
     def get_success_url(self):
         return reverse('pm-success', kwargs={'pm_id': self.object.id})
