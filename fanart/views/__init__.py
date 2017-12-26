@@ -48,6 +48,9 @@ ONE_MONTH = 180
 class LoginView(LoginView):
     form_class = forms.LoginForm
 
+    def form_invalid(self, form):
+        return redirect('home')
+
 
 class UserPaneMixin(object):
 

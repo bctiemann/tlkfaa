@@ -62,11 +62,13 @@ class LoginForm(AuthenticationForm):
 
     def clean(self):
         m = hashlib.md5()
+        logger.info(self.cleaned_data)
         username = self.cleaned_data.get('username')
-        m.update(self.cleaned_data.get('password'))
-        password = m.hexdigest()
+        raw_password = self.cleaned_data.get('password')
 
-        if username is not None and password:
+        if username is not None and raw_password:
+            m.update(raw_password)
+            password = m.hexdigest()
             self.user_cache = authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
                 raise forms.ValidationError(

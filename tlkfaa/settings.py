@@ -167,6 +167,7 @@ MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT'
 #MEDIA_URL = '/Artwork/Artists/'
 
 LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/'
 
 # This logging setup has the following attributes:
 # When DEBUG = True, debug information will be displayed on requested page.
