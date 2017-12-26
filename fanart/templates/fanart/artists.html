@@ -16,7 +16,7 @@
 
     By artist name:
     {% for letter in 'abcdefghijklmnopqrstuvwxyz' %}
-        <a href="{% url "artists" %}?list=name&initial={{ letter }}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
+        <a href="{% url "artists" list="name" %}?initial={{ letter }}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
     {% endfor %}
 </div>
 {% endblock %}
