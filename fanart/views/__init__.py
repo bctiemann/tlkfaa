@@ -995,7 +995,7 @@ class PictureView(TemplateView):
         return context
 
 
-class PictureFansView(DetailView):
+class PictureFansView(LoginRequiredMixin, DetailView):
     template_name = 'includes/picture_fans.html'
 
     def get_object(self):
