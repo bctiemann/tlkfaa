@@ -30,6 +30,9 @@ Logged in as
 <form name="loginform" method="post" action="{% url "login" %}" !onSubmit="return doLogin()">
 {% csrf_token %}
 
+{% if login_failed %}
+<div class="login-failed-banner">Login failed.</div>
+{% endif %}
 <table class="formtable">
 <tr>
 <td class="label">Artist login</td>

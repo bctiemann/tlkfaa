@@ -2723,3 +2723,10 @@ table.contentpane .infotable td {
 #recovery_password {
 	display: none;
 }
+
+div.login-failed-banner {
+	margin: 0px auto;
+	width: 70px;
+	color: #f00;
+	font-weight: bold;
+}

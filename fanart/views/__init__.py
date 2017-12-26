@@ -49,6 +49,7 @@ class LoginView(LoginView):
     form_class = forms.LoginForm
 
     def form_invalid(self, form):
+        self.request.session['login_failed'] = True
         return redirect('home')
 
 
@@ -105,6 +106,10 @@ class HomeView(UserPaneMixin, TemplateView):
         context['recently_active_artists'] = models.User.objects.recently_active()
 
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
+
+        context['login_failed'] = self.request.session.get('login_failed')
+        self.request.session['login_failed'] = False
+
         return context
 
 
