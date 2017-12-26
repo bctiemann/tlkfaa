@@ -454,10 +454,11 @@ class ContestView(UserPaneMixin, DetailView):
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
+        context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
         context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
 
 #        logger.info(context['form'])
-        logger.info(self.object)
+#        logger.info(self.object)
 
         return context
 
@@ -470,6 +471,11 @@ class ContestEntryCreateView(CreateView):
     def form_valid(self, form):
         contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
         picture = get_object_or_404(models.Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
+
+        logger.info(contest.allow_multiple_entries)
+        logger.info(contest.contestentry_set.filter(picture__artist=self.request.user).exists())
+        if not contest.allow_multiple_entries and contest.contestentry_set.filter(picture__artist=self.request.user).exists():
+            return redirect(reverse('contest', kwargs={'contest_id': contest.id}))
 
         contest_entry = form.save(commit=False)
         contest_entry.user = self.request.user

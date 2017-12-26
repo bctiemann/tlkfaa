@@ -70,36 +70,40 @@
 <br clear="all" />
 
 {% if user.is_authenticated and not contest.is_ended %}
-    <form name="contestentryform" id="contestentryform" method="POST" action="{% url "contest-entry-create" contest_id=contest.id %}">
-        <table class="formtable">
-            <tr>
-                <td class="label">Picture From Gallery</td>
-                <td class="data" id="picselect">
-                    <div id="pickpicture_new"></div>
-                    <a href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" class="buttons">
-                    <button type="button" onClick="this.form.submit();" 1onClick="postSelectedPic(this.form)">Enter Picture</button>
-                </td>
-            </tr>
-        </table>
-        <input type="hidden" name="contestid" value="{{ contest.id }}" />
-        <input type="hidden" name="picture" value="" />
-        {% csrf_token %}
-    </form>
-        
-    <form name="pickpictureform">
-        <input type="hidden" name="item" value="contestpic" />
-        <input type="hidden" name="itemid" value="new" />
-        <input type="hidden" name="pictureid" value="" />
-    </form>
+    {% if not contest.allow_multiple_entries and my_entries.exists %}
 
-    <form name="contestform" method="POST" action="{% url "contest-vote" contest_id=contest.id %}">
-        <input type="hidden" name="entry" value="" />
-        {% csrf_token %}
-    </form>
+    {% else %}
+        <form name="contestentryform" id="contestentryform" method="POST" action="{% url "contest-entry-create" contest_id=contest.id %}">
+            <table class="formtable">
+                <tr>
+                    <td class="label">Picture From Gallery</td>
+                    <td class="data" id="picselect">
+                        <div id="pickpicture_new"></div>
+                        <a href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="buttons">
+                        <button type="button" onClick="this.form.submit();" 1onClick="postSelectedPic(this.form)">Enter Picture</button>
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="contestid" value="{{ contest.id }}" />
+            <input type="hidden" name="picture" value="" />
+            {% csrf_token %}
+        </form>
+        
+        <form name="pickpictureform">
+            <input type="hidden" name="item" value="contestpic" />
+            <input type="hidden" name="itemid" value="new" />
+            <input type="hidden" name="pictureid" value="" />
+        </form>
+
+        <form name="contestform" method="POST" action="{% url "contest-vote" contest_id=contest.id %}">
+            <input type="hidden" name="entry" value="" />
+            {% csrf_token %}
+        </form>
+    {% endif %}
 {% endif %}
 
 {% for entry in contest.winning_entries %}
