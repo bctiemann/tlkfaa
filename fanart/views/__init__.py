@@ -118,7 +118,7 @@ class ArtistsView(UserPaneMixin, TemplateView):
         context['show_search_input'] = False
 
         list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
-        if not list in ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']:
+        if not list in models.artists_tabs:
             list = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
@@ -193,7 +193,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
 #            mode = 'canon'
 
         list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
-        if not list in ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character']:
+        if not list in models.artwork_tabs:
             list = default_artwork_view
 
         start = int(self.request.GET.get('start', 0))
@@ -1287,7 +1287,7 @@ class CheckNameAvailabilityView(APIView):
         response = {'is_available': True}
         dir_name = utils.make_dir_name(username)
         response['dir_name'] = dir_name
-        response['is_available'] = not models.User.objects.filter(dir_name=dir_name).exists()
+        response['is_available'] = not models.User.objects.filter(dir_name=dir_name).exists() and dir_name not in models.artists_tabs
         return Response(response)
 
 

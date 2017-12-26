@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 THREE = 90
 
 
+artists_tabs = ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']
+artwork_tabs = ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character']
+
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
 
@@ -77,7 +80,7 @@ def get_featured_banner_path(instance, filename):
 
 def validate_unique_username(value):
     dir_name = make_dir_name(value)
-    if User.objects.filter(Q(username=value) | Q(dir_name=dir_name)).exists():
+    if User.objects.filter(Q(username=value) | Q(dir_name=dir_name)).exists() or dir_name in artists_tabs:
         raise ValidationError(
             _('The name %(value)s is already in use.'),
             params={'value': value},

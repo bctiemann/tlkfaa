@@ -4,6 +4,7 @@ from django.conf import settings
 
 from django.contrib.auth import views as auth_views
 from fanart import views as fanart_views
+from fanart.models import artists_tabs, artwork_tabs
 from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
@@ -31,8 +32,8 @@ urlpatterns = [
     url(r'^logout/', auth_views.logout, {'next_page': 'home'}, name='logout'),
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
-    url(r'^Artists/(?:(?P<list>[a-z]+)/)?$', fanart_views.ArtistsView.as_view(), name='artists'),
-    url(r'^Artwork/(?:(?P<list>[a-z]+)/)?$', fanart_views.ArtworkView.as_view(), name='artwork'),
+    url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
+    url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<mode>[a-z]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
