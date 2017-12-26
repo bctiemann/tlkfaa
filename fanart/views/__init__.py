@@ -970,11 +970,16 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
-class PictureView(TemplateView):
+class PictureView(UserPaneMixin, TemplateView):
     template_name = 'fanart/picture.html'
 
     def get_context_data(self, **kwargs):
         context = super(PictureView, self).get_context_data(**kwargs)
+
+        context['community_art_data'] = self.get_community_art_data()
+        context['contests_data'] = self.get_contests_data()
+        context['sketcher_users'] = range(12)
+
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
@@ -1027,11 +1032,15 @@ class MessageTooltipView(TemplateView):
         return context
 
 
-class CharacterView(TemplateView):
+class CharacterView(UserPaneMixin, TemplateView):
     template_name = 'fanart/character.html'
 
     def get_context_data(self, **kwargs):
         context = super(CharacterView, self).get_context_data(**kwargs)
+
+        context['community_art_data'] = self.get_community_art_data()
+        context['contests_data'] = self.get_contests_data()
+        context['sketcher_users'] = range(12)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
         other_characters = self.request.GET.get('othercharacters', None)
@@ -1052,11 +1061,16 @@ class CharacterView(TemplateView):
         return context
 
 
-class ArtistView(TemplateView):
+class ArtistView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artist.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtistView, self).get_context_data(**kwargs)
+
+        context['community_art_data'] = self.get_community_art_data()
+        context['contests_data'] = self.get_contests_data()
+        context['sketcher_users'] = range(12)
+
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
 #        shouts_received = artist.shouts_received.order_by('-date_posted')
