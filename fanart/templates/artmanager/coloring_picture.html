@@ -4,3 +4,7 @@
     {{ picture.comment|bbcode|safe }}
 </div>
 
+{% if picture.character_set.exists %}
+    Profile picture for <a href="{% url "character" character_id=picture.character_set.first.id %}">{{ picture.character_set.first.name }}</a>
+{% endif %}
+
