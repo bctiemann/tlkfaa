@@ -1,0 +1,24 @@
+<table class="users">
+    {% for fan in picture.fans.all %}
+        <tr>
+            <td class="profilepic">
+                {% if fan.user.profile_pic_thumbnail_url %}
+                    {% if fan.user.is_artist %}
+                        <a href="{% url "artist" dir_name=fan.user.dir_name %}"><img class="userprofilepic" src="{{ fan.user.profile_pic_thumbnail_url }}" /></a>
+                    {% else %}
+                        <img class="userprofilepic" src="{{ fan.user.profile_pic_thumbnail_url }}" />
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td>
+                {% if fan.user.is_artist %}
+                    <a href="{% url "artist" dir_name=fan.user.dir_name %}">{{ fan.user.username }}</a>
+                {% else %}
+                    {{ fan.user.username }}
+                {% endif %}
+                favorited this picture on {{ fan.date_added|date:"m/d/Y" }}
+            </td>
+        </tr>
+
+    {% endfor %}
+</table>

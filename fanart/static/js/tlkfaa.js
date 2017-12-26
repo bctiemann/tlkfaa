@@ -1759,7 +1759,8 @@ function togglePicFans(pictureid) {
   if (status == "block") {
     $('#picfans_'+pictureid).slideUp('fast');
   } else {
-    var url = "/ajax_picturefans.jsp?pictureid="+pictureid;
+//    var url = "/ajax_picturefans.jsp?pictureid="+pictureid;
+    var url = '/picture/' + pictureid + '/fans/';
     $('#picfans_'+pictureid).load(url,function() {
       $('#picfans_'+pictureid).slideDown('fast');
     });

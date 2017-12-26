@@ -995,6 +995,13 @@ class PictureView(TemplateView):
         return context
 
 
+class PictureFansView(DetailView):
+    template_name = 'includes/picture_fans.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'])
+
+
 class PictureTooltipView(PictureView):
     template_name = 'includes/tooltip_picture.html'
 

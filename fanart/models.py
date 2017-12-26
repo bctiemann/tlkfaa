@@ -872,6 +872,9 @@ class Favorite(models.Model):
 
     objects = FavoriteManager()
 
+    class Meta:
+        ordering = ['-date_added']
+
 
 class PendingManager(UserManager):
 
