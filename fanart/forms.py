@@ -80,6 +80,13 @@ class LoginForm(AuthenticationForm):
         return self.cleaned_data
 
 
+class VisibleFaveForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Favorite
+        fields = ['is_visible']
+
+
 class PictureCommentForm(forms.ModelForm):
     comment = forms.CharField(label='Comment:')
 

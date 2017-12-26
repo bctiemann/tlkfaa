@@ -919,7 +919,7 @@ class DeleteShoutView(APIView):
 
 class ToggleFaveView(APIView):
 
-    def get(self, request, fave_type, object_id):
+    def post(self, request, fave_type, object_id):
         response = {}
         if fave_type == 'picture':
             picture = get_object_or_404(models.Picture, pk=object_id)
@@ -940,6 +940,18 @@ class ToggleFaveView(APIView):
             response['artist_id'] = artist.id
             response['is_fave'] = is_fave
         return Response(response)
+
+
+class ToggleVisibleView(AjaxableResponseMixin, UpdateView):
+    model = models.Favorite
+    form_class = forms.VisibleFaveForm
+
+    def get_object(self):
+        artist = get_object_or_404(models.User, pk=self.kwargs['artist_id'], is_artist=True)
+        return get_object_or_404(models.Favorite, user=self.request.user, artist=artist)
+
+    def get_success_url(self):
+        return reverse('artist', kwargs={'dir_name': self.object.artist.dir_name})
 
 
 class ToggleBlockView(APIView):

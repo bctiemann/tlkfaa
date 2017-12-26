@@ -121,6 +121,7 @@ urlpatterns = [
 #    url(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 
     url(r'^fave/(?P<fave_type>[a-z]+)/(?P<object_id>[0-9]+)/$', fanart_views.ToggleFaveView.as_view(), name='toggle-fave'),
+    url(r'^visible/(?P<artist_id>[0-9]+)/$', fanart_views.ToggleVisibleView.as_view(), name='toggle-visible'),
     url(r'^block/(?P<user_id>[0-9]+)/$', fanart_views.ToggleBlockView.as_view(), name='toggle-block'),
 
     url(r'^tooltip/picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureTooltipView.as_view(), name='picture-tooltip'),

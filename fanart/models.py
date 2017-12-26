@@ -866,7 +866,7 @@ class Favorite(models.Model):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
     picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
     character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
-    is_visible = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=False)
     date_added = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     last_viewed = models.DateTimeField(null=True, blank=True)
 

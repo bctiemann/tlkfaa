@@ -1692,7 +1692,7 @@ function toggleFave(id,type) {
     var faveurl = '/userbox/favorite_artists_box/';
   }
 //  $('#togglefave'+type+'_'+id).load(url,function() {
-  $.getJSON(url, function(data) {
+  $.post(url, function(data) {
     if (isfave) {
       $('#togglefave'+type+'_'+id).removeClass('isfave');
       $('#togglevisible_'+id).removeClass('isvisible');
@@ -1706,20 +1706,25 @@ function toggleFave(id,type) {
         $('#togglevisible_'+id).toggle();
       }
     });
-  });
+  }, 'json');
 }
 
 function toggleVisible(id) {
-  var isvisible = $('#togglevisible_'+id).hasClass('isvisible');
-  var url = "/ajax_fave.jsp?artistid="+id+"&visible=1";
-  var faveurl = "/ajax_favoriteartistsbox.jsp";
-  $('#togglevisible_'+id).load(url,function() {
-    if (isvisible) {
-      $('#togglevisible_'+id).removeClass('isvisible');
-    } else {
+//  var url = "/ajax_fave.jsp?artistid="+id+"&visible=1";
+  var url = '/visible/' + id + '/';
+//  var faveurl = "/ajax_favoriteartistsbox.jsp";
+  var faveurl = '/userbox/favorite_artists_box/';
+  var params = {
+    is_visible: !($('#togglevisible_'+id).hasClass('isvisible')),
+  };
+  $.post(url, params, function(data) {
+//  $('#togglevisible_'+id).load(url,function() {
+    if (params.is_visible) {
       $('#togglevisible_'+id).addClass('isvisible');
+    } else {
+      $('#togglevisible_'+id).removeClass('isvisible');
     }
-    $('#favoriteartistsbox').load(faveurl);
+    $('#favorite_artists_box').load(faveurl);
   });
 }
 
