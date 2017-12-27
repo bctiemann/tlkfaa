@@ -607,7 +607,7 @@ class Picture(models.Model):
     @property
     def pictures_in_folder(self):
         if self.folder == None:
-            return Picture.objects.filter(user=self.artist, folder=None)
+            return Picture.objects.filter(artist=self.artist, folder=None)
         return self.folder.picture_set
 
     @property

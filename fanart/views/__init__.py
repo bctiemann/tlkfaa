@@ -992,7 +992,7 @@ class PictureView(UserPaneMixin, TemplateView):
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
-        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
+        picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')

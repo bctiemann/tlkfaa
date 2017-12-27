@@ -16,173 +16,171 @@
 
 {% if not picture %}
 
-<div class="error">
-<h3>An error occurred</h3>
-The specified picture was not found.
-</div>
+    <div class="error">
+        <h3>An error occurred</h3>
+        The specified picture was not found.
+    </div>
 
 {% elif picture_is_private %}
 
-<div class="error">
-<h3>An error occurred</h3>
-The specified picture is private.
-</div>
+    <div class="error">
+        <h3>An error occurred</h3>
+        The specified picture is private.
+    </div>
 
 {% else %}
 
-<div class="featurebox">
+    <div class="featurebox">
 
-<div class="picture standalone">
+        <div class="picture standalone">
 
-<p><a href="{{ picture.url }}">{{ picture.filename }}</a></p>
+            <p><a href="{{ picture.url }}">{{ picture.filename }}</a></p>
 
-{% if picture.mime_type == 'application/x-shockwave-flash' %}
-	<object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
-	<param name="movie" value="/Artwork/Artists/${picture.dirname}/${picture.filename}">
-	<embed src="/Artwork/Artists/${picture.dirname}/${picture.filename}" class="inlinemovie" width="${picture.width}" height="${picture.height}">
-	</embed>
-	</object>
-{% elif picture.mime_type in video_types %}
-	<video id="video_display" class="video-js" controls preload="auto" width="${picture.width}" height="${picture.height}" poster="" data-setup="{}">
-		<source src="/Artwork/Artists/${picture.dirname}/${picture.filename}" type="${picture.mimetype}">
-		<p class="vjs-no-js">
-		To view this video please enable JavaScript, and consider upgrading to a web browser that
-		<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-		</p>
-	</video>
-{% else %}
-	<a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ picture.url }}" /></a>
-{% endif %}
+            {% if picture.mime_type == 'application/x-shockwave-flash' %}
+                <object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
+                    <param name="movie" value="/Artwork/Artists/${picture.dirname}/${picture.filename}">
+                    <embed src="/Artwork/Artists/${picture.dirname}/${picture.filename}" class="inlinemovie" width="${picture.width}" height="${picture.height}">
+                    </embed>
+                </object>
+            {% elif picture.mime_type in video_types %}
+                <video id="video_display" class="video-js" controls preload="auto" width="${picture.width}" height="${picture.height}" poster="" data-setup="{}">
+                    <source src="/Artwork/Artists/${picture.dirname}/${picture.filename}" type="${picture.mimetype}">
+                    <p class="vjs-no-js">
+                        To view this video please enable JavaScript, and consider upgrading to a web browser that
+                        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                    </p>
+                </video>
+            {% else %}
+                <a href="javascript:nop()" onClick="togglePicture({{ picture.id }})" title="{{ picture.filename }} by {{ picture.artist.username }}"><img class="fullsize preview" id="thepicture" src="{{ picture.url }}" /></a>
+            {% endif %}
 
-<div class="pictureheading">
+            <div class="pictureheading">
 
-<div class="artistname">
-    {% if user.is_authenticated %}
-        <div class="toggleartistfavorite">
-        <a id="togglefaveartist_{{ picture.artist.id }}" class="addfavorites {% if fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.artist.id }},'artist')" title="Follow this artist"></a>
-        <a id="togglevisible_{{ picture.artist.id }}" class="addvisible {% if fave_artist.is_visible %}isvisible{% endif %}" {% if not fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ picture.artist.id }})" title="Be visible to this artist"></a>
-        </div>
-    {% endif %}
-    <a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a>
-</div>
+                <div class="artistname">
+                    {% if user.is_authenticated %}
+                        <div class="toggleartistfavorite">
+                            <a id="togglefaveartist_{{ picture.artist.id }}" class="addfavorites {% if fave_artist %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.artist.id }},'artist')" title="Follow this artist"></a>
+                            <a id="togglevisible_{{ picture.artist.id }}" class="addvisible {% if fave_artist.is_visible %}isvisible{% endif %}" {% if not fave_artist %}style="display: none"{% endif %} href="javascript:nop()" onClick="toggleVisible({{ picture.artist.id }})" title="Be visible to this artist"></a>
+                        </div>
+                    {% endif %}
+                    <a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a>
+                </div>
 
-<div class="picturestats">
-<table class="picnav">
-<tr>
-<td class="link">
-{% if picture.previous_picture_in_artist %}
-    <a href="{% url "picture" picture_id=picture.previous_picture_in_artist.id %}" {% if picture.artist == user or picture.previous_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_artist.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
-{% endif %}
-</td>
-<td>All: {{ picture.rank_in_artist }}/{{ picture.artist.picture_set.count }}</td>
-<td class="link">
-{% if picture.next_picture_in_artist %}
-    <a href="{% url "picture" picture_id=picture.next_picture_in_artist.id %}" {% if picture.artist == user or picture.next_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_artist.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
-{% endif %}
-</td>
-</tr>
-<tr>
-<td class="link">
-{% if picture.previous_picture_in_folder %}
-    <a href="{% url "picture" picture_id=picture.previous_picture_in_folder.id %}" {% if picture.artist == user or picture.previous_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_folder.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
-{% endif %}
-</td>
-<td>Folder: {{ picture.rank_in_folder }}/{{ picture.pictures_in_folder.count }}</td>
-<td class="link">
-{% if picture.next_picture_in_folder %}
-    <a href="{% url "picture" picture_id=picture.next_picture_in_folder.id %}" {% if picture.artist == user or picture.next_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_folder.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
-{% endif %}
-</td>
-</tr>
-</table>
-<ul>
-<li>
-{% if picture.folder %}
-    <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}" title="{{ picture.folder.name }}" class="tooltip"><div class="picfolder">{{ picture.folder.name }}</div></a>
-{% else %}
-    <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
-</c:choose>
-{% endif %}
-</li>
-<li>{{ picture.date_uploaded|date }}</li>
-<li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
-<li>{{ picture.file_size|filesizeformat }}</li>
-<li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</li>
+                <div class="picturestats">
+                    <table class="picnav">
+                        <tr>
+                            <td class="link">
+                                {% if picture.previous_picture_in_artist %}
+                                    <a href="{% url "picture" picture_id=picture.previous_picture_in_artist.id %}" {% if picture.artist == user or picture.previous_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_artist.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
+                                {% endif %}
+                            </td>
+                            <td>All: {{ picture.rank_in_artist }}/{{ picture.artist.picture_set.count }}</td>
+                            <td class="link">
+                                {% if picture.next_picture_in_artist %}
+                                    <a href="{% url "picture" picture_id=picture.next_picture_in_artist.id %}" {% if picture.artist == user or picture.next_picture_in_artist.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_artist.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="link">
+                                {% if picture.previous_picture_in_folder %}
+                                    <a href="{% url "picture" picture_id=picture.previous_picture_in_folder.id %}" {% if picture.artist == user or picture.previous_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.previous_picture_in_folder.id }}"><img src="{% static "images/arrow_left.png" %}" /></a>
+                                {% endif %}
+                            </td>
+                            <td>Folder: {{ picture.rank_in_folder }}/{{ picture.pictures_in_folder.count }}</td>
+                            <td class="link">
+                                {% if picture.next_picture_in_folder %}
+                                    <a href="{% url "picture" picture_id=picture.next_picture_in_folder.id %}" {% if picture.artist == user or picture.next_picture_in_folder.is_public %}class="previewPopupTrigger"{% endif %} type="picture" itemid="{{ picture.next_picture_in_folder.id }}"><img src="{% static "images/arrow_right.png" %}" /></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    <ul>
+                        <li>
+                            {% if picture.folder %}
+                                <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}" title="{{ picture.folder.name }}" class="tooltip"><div class="picfolder">{{ picture.folder.name }}</div></a>
+                            {% else %}
+                                <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
+                            {% endif %}
+                        </li>
+                        <li>{{ picture.date_uploaded|date }}</li>
+                        <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
+                        <li>{{ picture.file_size|filesizeformat }}</li>
+                        <li>{{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}</li>
 
-{% if user.is_authenticated %}
-<a id="togglefavepicture_{{ picture.id }}" class="addfavorites {% if fave_picture %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite this picture"></a>
-{% endif %}
+                        {% if user.is_authenticated %}
+                            <a id="togglefavepicture_{{ picture.id }}" class="addfavorites {% if fave_picture %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite this picture"></a>
+                        {% endif %}
                         
-<li>{{ picture.fans.count }} favorite{{ picture.fans.count|pluralize }}</li>
+                        <li>{{ picture.fans.count }} favorite{{ picture.fans.count|pluralize }}</li>
 
-{% if picture.picturecharacter_set.count %}
-<li>Characters tagged:</li>
-{% endif %}
-{% for pc in picture.picturecharacter_set.all %}
-    <li>
-        <a href="/Characters/?characterid={{ pc.character.id }}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
-        <p class="charactername"><a href="/Characters/?characterid={{ pc.character.id }}">{{ pc.character.name }}</a></p>
-        <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
-    </li>
-{% endfor %}
+                        {% if picture.picturecharacter_set.count %}
+                            <li>Characters tagged:</li>
+                        {% endif %}
+                        {% for pc in picture.picturecharacter_set.all %}
+                            <li>
+                                <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
+                                <p class="charactername"><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></p>
+                                <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
+                            </li>
+                        {% endfor %}
 
-{% if picture.tags.count %}
-<li>Keywords:</li>
-{% endif %}
-{% for tag in picture.tags.all %}
-    <a class="tag" href="/Artwork/?list=tag&term={{ tag }}">{{ tag }}</a>
-{% endfor %}
+                        {% if picture.tags.count %}
+                            <li>Keywords:</li>
+                        {% endif %}
+                        {% for tag in picture.tags.all %}
+                            <a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag }}">{{ tag }}</a>
+                        {% endfor %}
 
-{% if picture.giftpicture_set.count %}
-<li>Sent to:</li>
-{% endif %}
-{% for gp in picture.giftpicture_set.all %}
-    <li><a href="{% url "artist" dir_name=gp.recipient.dir_name %}">{{ gp.recipient.username }}</a></li>
-{% endfor %}
+                        {% if picture.giftpicture_set.count %}
+                            <li>Sent to:</li>
+                        {% endif %}
+                        {% for gp in picture.giftpicture_set.all %}
+                            <li><a href="{% url "artist" dir_name=gp.recipient.dir_name %}">{{ gp.recipient.username }}</a></li>
+                        {% endfor %}
 
-</ul>
+                    </ul>
 
-</div>
+                </div>
 
-</div>
+            </div>
 
-<div class="picturecaption">
-{{ picture.title|bbcode|safe }}
-</div>
+            <div class="picturecaption">
+                {{ picture.title|bbcode|safe }}
+            </div>
 
-<!-- {% view_picture picture user %} -->
+            <!-- {% view_picture picture user %} -->
 
-{% endif %}
+            <br clear="right" />
 
-<br clear="right" />
+            {% if picture.coloringbase_set.exists and picture.coloringbase_set.first.coloringpicture_set.exists %}
+                <h3>In the <a href="{% url "coloring-cave" coloring_base_id=picture.coloringbase_set.first.id %}">Coloring Cave</a>:</h3>
+                <div id="offerslayout">
+                    {% for coloring_pic in picture.coloringbase_set.first.coloringpicture_set.all %}
+                        <div class="offertile picturetile">
+                            <a href="{{ coloring_pic.url }}" rel="shadowbox[Colored]"><img class="" src="{{ coloring_pic.thumbnail_url }}" width="60" height="{{ coloring_pic.thumb_height }}" /></a>
+                            <a href="{% url "artist" dir_name=coloring_pic.artist.dir_name %}">{{ coloring_pic.artist.username|truncatechars:13 }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-<c:if test="${isdisplayed == 1}">
+            {% if picture.allow_comments and picture.artist.allow_comments %}
+                <div id="comments_{{ picture.id }}">
 
-{% if picture.coloringbase_set.exists %}
-    <h3>In the <a href="/ColoringCave.jsp?ccid=${ccbase.coloring_baseid}">Coloring Cave</a>:</h3>
-    <div id="offerslayout">
-    {% for coloring_pic in picture.coloringbase_set.first.coloringpicture_set.all %}
-        <div class="offertile picturetile">
-            <a href="/Artwork/coloring/{{ coloring_pic.id }}.{{ coloring_pic.extension }}" rel="shadowbox[Colored]"><img class="" src="/Artwork/coloring/{{ coloring_pic.id_orig }}.s.jpg" width="60" height="{{ coloring_pic.thumb_height }}" /></a>
-            <a href="/Artists/${colored.dirname}/">{{ coloring_pic.artist.username|truncatechars:13 }}</a>
+                    <div id="blockstatus"></div>
+
+                    {% include "includes/comments.html" %}
+
+                </div>
+            {% endif %}
+
+
         </div>
-    {% endfor %}
-    </div>
-{% endif %}
-
-{% if picture.allow_comments and picture.artist.allow_comments %}
-    <div id="comments_{{ picture.id }}">
-
-    <div id="blockstatus"></div>
-
-    {% include "includes/comments.html" %}
 
     </div>
+
 {% endif %}
-
-</div>
-
-</div>
 
 {% endblock %}
 
