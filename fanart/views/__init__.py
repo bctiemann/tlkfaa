@@ -193,7 +193,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
         context['show_search_input'] = False
 
         default_artwork_view = settings.DEFAULT_ARTWORK_VIEW
-        if self.request.user.is_authenticated() and self.request.user.unviewedpicture_set.exists():
+        if self.request.user.is_authenticated and self.request.user.unviewedpicture_set.exists():
             default_artwork_view = 'unviewed'
 
 #        mode = kwargs.get('mode', None)
@@ -345,13 +345,13 @@ class TradingTreeView(UserPaneMixin, TemplateView):
         offer_id = self.request.GET.get('offer_id', None)
         if offer_id:
             context['offer'] = get_object_or_404(Offer, pk=offer_id)
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
 
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
 
-        if self.request.user.is_authenticated() and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
+        if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
             context['show_for_you'] = True
             if offer_type == 'icon':
                 context['claims_for_you'] = self.request.user.icon_claims_ready.all()
@@ -454,8 +454,9 @@ class ContestView(UserPaneMixin, DetailView):
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
-        context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
-        context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
+        if self.request.user.is_authenticated:
+            context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
+            context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
 
 #        logger.info(context['form'])
 #        logger.info(self.object)
@@ -526,7 +527,7 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         context['contests_data'] = self.get_contests_data()
         context['sketcher_users'] = range(12)
 
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return context
 
         favorite_pictures = self.request.user.favorite_pictures.order_by('date_added', 'picture__date_uploaded')
@@ -610,7 +611,7 @@ class RegisterView(FormView):
     template_name = 'fanart/register.html'
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect('home')
         return super(RegisterView, self).get(request, *args, **kwargs)
 
@@ -696,7 +697,7 @@ class RecoveryView(TemplateView):
     template_name = 'fanart/recovery.html'
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect('home')
         return super(RecoveryView, self).get(request, *args, **kwargs)
 
@@ -783,7 +784,8 @@ class CommentsView(TemplateView):
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
-        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
+        if self.request.user.is_authenticated:
+            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
         context['hash'] = uuid.uuid4()
         return context
 
@@ -876,7 +878,8 @@ class ShoutsView(TemplateView):
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
             context['shouts'] = context['shouts'].filter(id=shout_id)
-        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
+        if self.request.user.is_authenticated:
+            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         context['hash'] = uuid.uuid4()
         return context
 
@@ -994,7 +997,7 @@ class PictureView(UserPaneMixin, TemplateView):
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
         context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         context['hash'] = uuid.uuid4()
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
             context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
@@ -1086,13 +1089,13 @@ class ArtistView(UserPaneMixin, TemplateView):
 #        shouts_paginator = Paginator(shouts_received, 10)
 #        context['shouts'] = shouts_paginator.page(1)
         context['shouts'] = artist.shouts_received.order_by('-date_posted')[0:10]
-        context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
 
         context['last_nine_uploads'] = artist.picture_set.filter(is_public=True).order_by('-date_uploaded')[0:9]
         context['nine_most_popular_pictures'] = artist.picture_set.filter(num_faves__gt=0, is_public=True).order_by('-num_faves')[0:9]
         context['last_nine_coloring_pictures'] = artist.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
+            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
             context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
 
         return context
@@ -1114,7 +1117,7 @@ class ArtistGalleryView(ArtistView):
             context['show_folders'] = True
         context['list'] = self.request.GET.get('list', 'folder')
 
-        if context['list'] == 'new' and self.request.user.is_authenticated():
+        if context['list'] == 'new' and self.request.user.is_authenticated:
             pictures = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(picture__artist=artist, user=self.request.user).order_by('picture__date_uploaded')]
         else:
             pictures = artist.picture_set.all()
@@ -1173,6 +1176,7 @@ class ArtWallView(ArtistView):
 
 
 class FoldersView(APIView):
+    permission_classes = ()
 
     def get(self, request, artist_id):
         response = {}
