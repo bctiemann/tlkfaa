@@ -17,7 +17,7 @@
                     <div class="picuploaded">
                         {{ picture.date_uploaded|naturaltime }}
                     </div>
-                    <div class="picowner"><a href="/Artists/${picture.dirname}">{{ picture.artist.username }}</a></div>
+                    <div class="picowner"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
                         <div class="pictitle">
                             {{ picture.title|bbcode|safe }}
                         </div>

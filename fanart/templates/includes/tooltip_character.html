@@ -1,0 +1,35 @@
+{% load humanize %}
+{% load bbcode_tags %}
+
+{% if character %}
+
+<div class="previewPopupResult" id="preview_{{ character.id }}">
+    <table class="tooltip">
+        <tr>
+            <td>
+            {% if picture.preview_extension == 'p.jpg' %}
+                <div class="video-preview {{ picture.extension }}"></div>
+            {% endif %}
+            <a href="{% url "character" character_id=character.id %}"><img class="tooltippreview" src="{{ character.picture_url }}" width="{{ character.profile_picture.preview_width }}" height="{{ character.profile_picture.preview_height }}" /></a>
+            </td>
+            <td class="picturedetails">
+                <div class="picturedetails">
+                    <div class="picuploaded">
+                        {{ picture.date_uploaded|naturaltime }}
+                    </div>
+                        <div class="charactername">{{ character.name }}</div>
+                        {% if character.owner %}
+                            <div class="picowner"><a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a></div>
+                        {% else %}
+                            <div class="picowner">(Canon)</div>
+                        {% endif %}
+                        <div class="pictitle">
+                            {{ character.description|bbcode|safe }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+    </table>
+</div>
+
+{% endif %}

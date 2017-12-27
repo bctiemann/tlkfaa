@@ -1073,6 +1073,10 @@ class CharacterView(UserPaneMixin, TemplateView):
         return context
 
 
+class CharacterTooltipView(CharacterView):
+    template_name = 'includes/tooltip_character.html'
+
+
 class ArtistView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artist.html'
 

@@ -4,7 +4,7 @@
 {% if coloring_picture %}
 
 <div class="previewPopupResult" id="preview_{{ coloring_picture.id }}">
-    <a href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img class="tooltippreview" src="{{ coloring_picture.url }}" width="{{ coloring_picture.preview_width }}" height="{{ coloring_picture.preview_height }}" /></a>
+    <a href="{% url "coloring-cave" coloring_base_id=coloring_picture.base.id %}"><img class="tooltippreview" src="{{ coloring_picture.url }}" width="{{ coloring_picture.preview_width }}" height="{{ coloring_picture.preview_height }}" /></a>
     <div class="tooltipdata">
     Original by {{ coloring_picture.base.creator.username }}
     </div>
