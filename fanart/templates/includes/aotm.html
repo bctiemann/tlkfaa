@@ -33,11 +33,17 @@
     <img class="aotm-banner" src="{{ aotm.banner.url }}" />
 {% endif %}
 
+{% if user.is_authenticated %}
+<c:if test="${loggedin == 1}">
+<div id="aotmvote">
+<jsp:include page="/ajax_aotmvote.jsp" />
+{% include "includes/aotm_vote.html" %}
+</div>
+</c:if>
+{% endif %}
+
 <br clear="all" />
 </div>
 
 {% endif %}
 
-<c:if test="${loggedin == 1}">
-<div id="aotmvote"><jsp:include page="/ajax_aotmvote.jsp" /></div>
-</c:if>

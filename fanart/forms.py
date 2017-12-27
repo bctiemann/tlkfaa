@@ -134,6 +134,12 @@ class ContestVoteForm(forms.ModelForm):
         fields = ['entry']
 
 
+class AotmVoteForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Vote
+        fields = ['artist']
+
 #class PMForm(forms.ModelForm):
 
 #    class Meta:

@@ -269,16 +269,36 @@ function getMoreShouts(artistid,offset,obj) {
   }});
 }
 
-function doAotmVote(artistid) {
-  var url = "ajax_aotmvote.jsp?artistid="+artistid;
+function getAotmForm() {
+  var url = '/aotm/vote/form/';
   $('#aotmvote').load(url,function() {
-    if (artistid == -1) {
-//      setupAutocompleteArtist('aotm',"$('#aotmartistid').val(ui.item.artistid);");
-      setupAutocompleteArtist('aotm',"doAotmVote(ui.item.artistid);");
-      $('#artist_pick_aotm').focus();
-    } else if (artistid) {
-      setTimeout("doAotmVote()",2000);
-    }
+    setupAutocompleteArtist('aotm',"doAotmVote(ui.item.artistid);");
+  });
+}
+
+function getAotmVote() {
+  var url = '/aotm/vote/';
+  $('#aotmvote').load(url,function() {
+  });
+}
+
+function doAotmVote(artistid) {
+//  var url = "ajax_aotmvote.jsp?artistid="+artistid;
+  var url = '/aotm/vote/';
+  var params = {
+    artist: artistid,
+  };
+  $.post(url, params, function(data) {
+    $('#aotmvote').html('Voting for ' + data.username + '...');
+    setTimeout('getAotmVote()', 2000);
+//  $('#aotmvote').load(url,function() {
+//    if (artistid == -1) {
+////      setupAutocompleteArtist('aotm',"$('#aotmartistid').val(ui.item.artistid);");
+//      setupAutocompleteArtist('aotm',"doAotmVote(ui.item.artistid);");
+//      $('#artist_pick_aotm').focus();
+//    } else if (artistid) {
+//      setTimeout("doAotmVote()",2000);
+//    }
   });
 }
 

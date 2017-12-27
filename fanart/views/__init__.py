@@ -1179,6 +1179,28 @@ class ArtWallView(ArtistView):
         return context
 
 
+class AotmVoteView(LoginRequiredMixin, CreateView):
+    template_name = 'includes/aotm_vote.html'
+    form_class = forms.AotmVoteForm
+
+    def form_valid(self, form):
+        models.Vote.objects.filter(voter=self.request.user).delete()
+        vote = form.save(commit=False)
+        vote.voter = self.request.user
+        vote.save()
+        response = {
+            'success': True,
+            'username': form.cleaned_data['artist'].username,
+        }
+        return JsonResponse(response)
+
+    def get_success_url(self):
+        return reverse('aotm-vote')
+
+class AotmVoteFormView(LoginRequiredMixin, TemplateView):
+    template_name = 'includes/aotm_vote_form.html'
+
+
 class FoldersView(APIView):
     permission_classes = ()
 
