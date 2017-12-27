@@ -35,12 +35,12 @@
     <div class="featurebox">
 
 
-        <a class="archive-link" href="{% url "contests" type="global" %}?sort_by=deadline">Previous Contests</a>
+        <a class="archive-link" href="{% url "contests" contest_type="global" %}?sort_by=deadline">Previous Contests</a>
         <h2>Current Art Contest</h2>
 
         <div class="contest">
 
-            <h3><a href="/Contests.jsp?contestid=${contest.contestid}">{{ contest.title }}</a></h3>
+            <h3><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></h3>
 
             <div class="contestdetails">
 
