@@ -545,6 +545,18 @@ class Picture(models.Model):
         return self.picture.name.split('.')[-1].lower()
 
     @property
+    def video_width(self):
+        if not self.width:
+            return 700
+        return self.width
+
+    @property
+    def video_height(self):
+        if not self.height:
+            return 500
+        return self.height
+
+    @property
     def thumbnail_url(self):
         return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
 

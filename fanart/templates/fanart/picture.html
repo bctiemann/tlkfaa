@@ -37,14 +37,14 @@
             <p><a href="{{ picture.url }}">{{ picture.filename }}</a></p>
 
             {% if picture.mime_type == 'application/x-shockwave-flash' %}
-                <object class="inlinemovie" width="${picture.width > 0 ? picture.width : 700}" height="${picture.height > 0 ? picture.height : 500}">
-                    <param name="movie" value="/Artwork/Artists/${picture.dirname}/${picture.filename}">
-                    <embed src="/Artwork/Artists/${picture.dirname}/${picture.filename}" class="inlinemovie" width="${picture.width}" height="${picture.height}">
+                <object class="inlinemovie" width="{{ picture.video_width }}" height="{{ picture.video_height }}">
+                    <param name="movie" value="{{ picture.url }}">
+                    <embed src="{{ picture.url }}" class="inlinemovie" width="{{ picture.width }}" height="{{ picture.height }}">
                     </embed>
                 </object>
             {% elif picture.mime_type in video_types %}
-                <video id="video_display" class="video-js" controls preload="auto" width="${picture.width}" height="${picture.height}" poster="" data-setup="{}">
-                    <source src="/Artwork/Artists/${picture.dirname}/${picture.filename}" type="${picture.mimetype}">
+                <video id="video_display" class="video-js" controls preload="auto" width="{{ picture.width }}" height="{{ picture.height }}" poster="" data-setup="{}">
+                    <source src="{{ picture.url }}" type="{{ picture.mime_type }}">
                     <p class="vjs-no-js">
                         To view this video please enable JavaScript, and consider upgrading to a web browser that
                         <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
