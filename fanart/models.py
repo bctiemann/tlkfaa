@@ -106,6 +106,28 @@ class FanartUserManager(UserManager):
     def recently_active(self):
         return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
 
+    def upcoming_birthdays(self):
+        with connection.cursor() as cursor:
+            query = """
+SELECT `id`, `username`, `birth_date`,
+    DATE_ADD(
+        birth_date,
+        INTERVAL IF(DAYOFYEAR(birth_date) >= DAYOFYEAR(CURDATE()),
+            YEAR(CURDATE())-YEAR(birth_date),
+            YEAR(CURDATE())-YEAR(birth_date)+1
+        ) YEAR
+    ) AS `next_birthday`
+FROM `fanart_user`
+WHERE
+    `birth_date` IS NOT NULL
+HAVING
+    `next_birthday` BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+ORDER BY `next_birthday`
+"""
+            cursor.execute(query, [])
+            result = dictfetchall(cursor)
+        return result
+
     def create_user(self, username, email=None, password=None, is_artist=True, **extra_fields):
         user = super(FanartUserManager, self).create_user(username, email=email, password=password, **extra_fields)
         new_dir_name = make_dir_name(user.username)
