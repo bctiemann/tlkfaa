@@ -155,7 +155,7 @@ console.log(refreshThumbsInterval);
     </table>
 
     <div id="progress">
-        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+        <div class="bar no-border"></div>
     </div>
 
     <script>
@@ -184,6 +184,7 @@ $(function () {
                 refreshThumbsInterval = setInterval('checkThumbs()', 1000);
             } else {
                 alert(data.result.message);
+                $('#progress .bar').css('width', '0%').addClass('no-border');
             }
         },
         progressall: function (e, data) {
@@ -197,6 +198,7 @@ $(function () {
             $("#up_btn").off('click').on('click', function () {
 console.log(data);
                 data.submit();
+                $('#progress .bar').removeClass('no-border');
             });
         },
     });

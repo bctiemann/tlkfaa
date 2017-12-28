@@ -140,7 +140,9 @@ class ColoringPictureStatusView(APIView):
             if coloring_picture.picture and coloring_picture.filename:
                 response[coloring_picture.id] = {
                     'thumbnail_url': coloring_picture.thumbnail_url,
+                    'preview_url': coloring_picture.preview_url,
                     'thumbnail_done': coloring_picture.thumbnail_created,
+                    'preview_done': coloring_picture.preview_created,
                 }
         return Response(response)
 

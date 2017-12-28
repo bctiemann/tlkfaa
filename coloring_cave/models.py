@@ -111,6 +111,13 @@ class ColoringPicture(models.Model):
         return '{0}/{1}.s.jpg'.format(path, self.id)
 
     @property
+    def preview_path(self):
+        if not self.picture:
+            return None
+        path = ('/').join(self.picture.path.split('/')[:-1])
+        return '{0}/{1}.p.jpg'.format(path, self.id)
+
+    @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
@@ -119,12 +126,16 @@ class ColoringPicture(models.Model):
     @property
     def preview_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/coloring/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_created(self):
         return os.path.exists(self.thumbnail_path)
+
+    @property
+    def preview_created(self):
+        return os.path.exists(self.preview_path)
 
     @property
     def url(self):
@@ -159,11 +170,13 @@ class ColoringPicture(models.Model):
         logger.info(self.picture)
         if update_thumbs:
             process_images.apply_async(('coloring_cave.models', 'ColoringPicture', self.id, 'small'), countdown=20)
+            process_images.apply_async(('coloring_cave.models', 'ColoringPicture', self.id, 'large'), countdown=20)
 
     def delete(self, *args, **kwargs):
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.picture.name))
             os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.preview_path))
         except OSError:
             pass
 

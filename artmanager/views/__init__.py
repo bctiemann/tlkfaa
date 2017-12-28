@@ -309,6 +309,7 @@ class PendingStatusView(APIView):
                 'thumbnail_url': pending.thumbnail_url,
                 'preview_url': pending.preview_url,
                 'thumbnail_done': pending.thumbnail_created,
+                'preview_done': pending.preview_created,
             }
         return Response(response)
 

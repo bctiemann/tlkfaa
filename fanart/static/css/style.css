@@ -2715,6 +2715,10 @@ table.contentpane .infotable td {
 	border-radius: 3px;
 	border: 1px solid rgb(3, 162, 15);
 	margin: 3px;
+	width: 0px;
+}
+.bar.no-border {
+	border-width: 0px;
 }
 
 #recovery_name {

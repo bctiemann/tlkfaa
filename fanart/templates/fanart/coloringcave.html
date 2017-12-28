@@ -32,7 +32,9 @@ var checkThumbs = function() {
     $.getJSON(url, function(data) {
         var continueChecking = false;
         for (coloring_picture_id in data) {
-            $('img#claimthumb_' + coloring_picture_id).attr('src', data[coloring_picture_id].thumbnail_url);
+            if ($('img#claimthumb_' + coloring_picture_id).attr('src') != data[coloring_picture_id].thumbnail_url) {
+                $('img#claimthumb_' + coloring_picture_id).attr('src', data[coloring_picture_id].thumbnail_url);
+            }
             if (!data[coloring_picture_id].thumbnail_done) {
                 continueChecking = true;
             }
@@ -85,6 +87,7 @@ $(function () {
 //            $.each(data.result.files, function (index, file) {
 //                $('<p/>').text(file.name).appendTo(document.body);
 //            });
+//            $('#progress .bar').addClass('no-border');
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -96,6 +99,7 @@ $(function () {
         add: function (e, data) {            
             $("#up_btn").off('click').on('click', function () {
                 data.submit();
+                $('#progress .bar').removeClass('no-border');
             });
         },
     });
