@@ -369,7 +369,7 @@ ORDER BY fanart_user.sort_name
         if self.profile_picture:
             if self.profile_pic_resized:
                 return self.profile_picture.url
-            return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+            return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
         if self.profile_pic_id and self.profile_pic_ext:
             return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
         return '{0}images/blankdot.gif'.format(settings.STATIC_URL)
@@ -383,7 +383,7 @@ ORDER BY fanart_user.sort_name
         elif self.profile_pic_id:
             return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
         elif self.profile_picture:
-            return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+            return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
         return None
 
     @property
@@ -990,7 +990,7 @@ class Pending(models.Model):
             return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         if os.path.exists(self.thumbnail_path):
             return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
@@ -1000,7 +1000,7 @@ class Pending(models.Model):
             return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         if os.path.exists(self.preview_path):
             return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_path(self):

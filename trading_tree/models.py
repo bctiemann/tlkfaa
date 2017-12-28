@@ -99,7 +99,7 @@ class Offer(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_created(self):
@@ -177,7 +177,7 @@ class Claim(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
-        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
+        return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_created(self):
