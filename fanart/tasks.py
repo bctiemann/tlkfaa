@@ -53,12 +53,12 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
     logger.info('Creating {0} px thumb for {1} {2}'.format(max_pixels, model, picture_object.id))
 
-    if model == 'TradingOffer':
+    if model == 'Offer':
         image_path = '{0}/Artwork/offers/{1}.{2}'.format(settings.MEDIA_ROOT, picture_object.id, picture_object.extension)
         new_image_path = '{0}/Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
         orig_height = picture_object.height
         orig_width = picture_object.width
-    if model == 'TradingClaim':
+    if model == 'Claim':
         image_path = '{0}/Artwork/claims/{1}.{2}'.format(settings.MEDIA_ROOT, picture_object.id, picture_object.extension)
         new_image_path = '{0}/Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
         orig_height = picture_object.height

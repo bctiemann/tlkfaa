@@ -38,7 +38,9 @@ var checkThumbs = function() {
     $.getJSON(url, function(data) {
         var continueChecking = false;
         for (offer_id in data) {
-            $('img#offerthumb_' + offer_id).attr('src', data[offer_id].thumbnail_url);
+            if ($('img#offerthumb_' + offer_id).attr('src') != data[offer_id].thumbnail_url) {
+                $('img#offerthumb_' + offer_id).attr('src', data[offer_id].thumbnail_url);
+            }
             if (!data[offer_id].thumbnail_done) {
                 continueChecking = true;
             }
@@ -69,8 +71,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="label">Post new {{ offer_type }}</td>
                 <td class="data" id="offerselect">
                     {% if offer_type == "icon" %}
-                        <input type="file" name="uploadfile" id="uploadfile" validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." />
-<input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-icon-offer" %}">
+                        <input id="fileupload" type="file" name="picture" validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." data-url="{% url "artmanager:upload-icon-offer" %}">
                     {% elif offer_type == "adoptable" %}
                         <span id="charactername">
                             {% if character %}
@@ -93,8 +94,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
             <tr>
                 <td colspan="2" class="buttons">
                     {% if offer_type == "icon" %}
-                        <button type="button" onClick="validateForm('offerform_new','uploadPicture(\'offerform_new\',\'uploadfile\',\'offerslayout\',null,true)')">Post Icon Offer</button>
-<button type="button" id="up_btn" class="start">Upload</button>
+                        <button type="button" id="up_btn" class="start">Post Icon Offer</button>
                     {% elif offer_type == "adoptable" %}
                         <button type="button" onClick="validateForm('offerform_new','postAdoptableOffer()')">Post Adoptable</button>
                     {% endif %}
@@ -108,7 +108,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
     </form>
 
     <div id="progress">
-        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+        <div class="bar no-border"></div>
     </div>
 
     <div id="offerslayout">
@@ -139,6 +139,7 @@ $(function () {
             $("#up_btn").off('click').on('click', function () {
 console.log(data);
                 data.submit();
+                $('#progress .bar').removeClass('no-border');
             });
         },
     });

@@ -38,7 +38,7 @@
 <input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}">
 {#                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>#}
 <div id="progress_{{ claim.id }}">
-    <div class="bar" style="width: 0%;"></div>
+    <div class="bar no-border"></div>
 </div>
 
 <script>
@@ -59,7 +59,7 @@ $(function () {
             $('#progress_' + {{ claim.id }} + ' .bar').css(
                 'width',
                 progress + '%'
-            );
+            ).removeClass('no-border');
         },
     });
 });

@@ -33,7 +33,9 @@ var checkThumbs = function() {
     $.getJSON(url, function(data) {
         var continueChecking = false;
         for (claim_id in data) {
-            $('#claimthumb_' + claim_id + ' img').attr('src', data[claim_id].thumbnail_url);
+            if ($('#claimthumb_' + claim_id + ' img').attr('src') != data[claim_id].thumbnail_url) {
+                $('#claimthumb_' + claim_id + ' img').attr('src', data[claim_id].thumbnail_url);
+            }
             if (!data[claim_id].thumbnail_done) {
                 continueChecking = true;
             }
