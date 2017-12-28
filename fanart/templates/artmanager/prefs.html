@@ -11,21 +11,15 @@ var refreshThumbsInterval = null;
 var checkThumbs = function() {
     var url = '/profile-pic/upload/status/';
     $.getJSON(url, function(data) {
-        $('#progress .bar').css(
-            'width',
-            '0%'
-        ).css(
-            'border-width',
-            '0px'
-        );
+        $('#progress .bar').css('width', '0%').addClass('no-border');
         var continueChecking = false;
-        if ('thumbnail_done' in data) {
+        if ('resize_done' in data) {
             $('#profilepic').show();
-            if ($('#profilepic img').attr('src') != data.thumbnail_url) {
-                $('#profilepic img').attr('src', data.thumbnail_url);
+            if ($('#profilepic img').attr('src') != data.url) {
+                $('#profilepic img').attr('src', data.url);
                 $('#profilepic_link').attr('href', data.url);
             }
-            if (!data.thumbnail_done) {
+            if (!data.resize_done) {
                 continueChecking = true;
                 $('#profilepic_link').attr('href', null);
             }
@@ -133,7 +127,7 @@ var checkThumbs = function() {
 
                     <input id="fileupload" type="file" name="profile_picture" data-url="{% url "upload-profile-pic" %}">
                     <div id="progress">
-                        <div class="bar" style="border-width: 0px; width: 0%;"></div>
+                        <div class="bar no-border"></div>
                     </div>
 
 <script>
@@ -150,10 +144,7 @@ console.log(data);
             $('#progress .bar').css(
                 'width',
                 progress + '%'
-            ).css(
-                'border-width',
-                '1px'
-            );
+            ).removeClass('no-border');
         },
     });
 });

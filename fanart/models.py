@@ -18,6 +18,7 @@ import datetime
 import os
 import re
 import shutil
+from PIL import Image
 
 from fanart.utils import dictfetchall, make_dir_name
 from fanart.tasks import process_images
@@ -366,7 +367,9 @@ ORDER BY fanart_user.sort_name
     @property
     def profile_pic_url(self):
         if self.profile_picture:
-            return self.profile_picture.url
+            if self.profile_pic_resized:
+                return self.profile_picture.url
+            return '{0}images/loading2.gif'.format(settings.STATIC_URL)
         if self.profile_pic_id and self.profile_pic_ext:
             return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
         return '{0}images/blankdot.gif'.format(settings.STATIC_URL)
@@ -386,6 +389,15 @@ ORDER BY fanart_user.sort_name
     @property
     def profile_pic_thumbnail_created(self):
         return os.path.exists(self.profile_pic_thumbnail_path)
+
+    @property
+    def profile_pic_resized(self):
+        if not self.profile_picture:
+            return False
+        im = Image.open(self.profile_picture.path)
+        if im.width > settings.THUMB_SIZE['profile'] or im.height > settings.THUMB_SIZE['profile']:
+            return False
+        return True
 
     @property
     def profile_pic_thumbnail_path(self):

@@ -1454,6 +1454,7 @@ class ProfilePicStatusView(APIView):
                 'url': request.user.profile_pic_url,
                 'thumbnail_url': request.user.profile_pic_thumbnail_url,
                 'thumbnail_done': request.user.profile_pic_thumbnail_created,
+                'resize_done': request.user.profile_pic_resized,
             }
         return Response(response)
 
