@@ -220,6 +220,11 @@ class UploadView(ArtManagerPaneView):
 class UploadFormView(LoginRequiredMixin, TemplateView):
     template_name = 'artmanager/upload_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(UploadFormView, self).get_context_data(**kwargs)
+        context['max_title_chars'] = settings.MAX_PICTURE_TITLE_CHARS
+        return context
+
 
 class UploadFileView(LoginRequiredMixin, CreateView):
     model = models.Pending

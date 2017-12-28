@@ -75,7 +75,7 @@ console.log(refreshThumbsInterval);
                 <div class="charcount" id="title_charcount">{{ replacing_picture.title|length }} / {{ max_title_chars }}</div>
             </td>
             <td class="data">
-                <textarea name="title" id="ta_title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="You must enter a description for the picture, up to ${maxtitlechars} characters long." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_charcount')">{{ replacing_picture.title }}</textarea>
+                <textarea name="title" id="ta_title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="You must enter a description for the picture, up to {{ max_title_chars }} characters long." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_charcount')">{{ replacing_picture.title }}</textarea>
             </td>
         </tr>
     </table>
