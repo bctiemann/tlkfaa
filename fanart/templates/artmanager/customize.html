@@ -38,7 +38,11 @@ $(function () {
         dropZone: null,
         done: function (e, data) {
 console.log(data);
-            window.location.reload();
+            if (data.result.success) {
+                window.location.reload();
+            } else {
+                alert(data.result.message);
+            }
         },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);

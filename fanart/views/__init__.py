@@ -17,6 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
 from django.forms import ValidationError
+from django.template.defaultfilters import filesizeformat
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -1488,12 +1489,20 @@ class UploadBannerView(CreateView):
 
     def form_invalid(self, form):
         response = {'success': False}
+        response['message'] = form.errors['picture'][0]
         return JsonResponse(response)
 
     def form_valid(self, form):
         response = {'success': False}
 
         logger.info(self.request.FILES)
+        logger.info(form.cleaned_data)
+        logger.info(form.cleaned_data['picture'].size)
+        if form.cleaned_data['picture'].size > settings.MAX_BANNER_SIZE:
+            formatted_size = filesizeformat(settings.MAX_BANNER_SIZE)
+            logger.info(formatted_size)
+            response['message'] = u'File is too large. Please keep the file size under {0} for banner images.'.format(formatted_size)
+            return JsonResponse(response)
 
         try:
             if self.request.user.banner:
@@ -1505,6 +1514,7 @@ class UploadBannerView(CreateView):
         logger.info(banner)
         self.request.user.banner = banner
         self.request.user.save()
+        response['success'] = True
 
         return JsonResponse(response)
 
