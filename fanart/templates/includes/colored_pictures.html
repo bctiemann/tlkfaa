@@ -32,7 +32,7 @@ refreshingThumbs = true;
 {% endfor %}
 
 <script type="text/javascript">
-if (refreshingThumbs) {
+if (refreshingThumbs && !refreshThumbsInterval) {
     refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 }
 </script>
