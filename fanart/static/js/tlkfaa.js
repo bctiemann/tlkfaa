@@ -156,7 +156,11 @@ function validateForm(selformid,successfnc) {
   });
 //  if (valid || true) {
   if (valid) {
-    eval(successfnc);
+    if (successfnc) {
+      eval(successfnc);
+    } else {
+      return true;
+    }
   } else {
     $('#dialog_confirm_text').html('');
     for (i in valmsgs) {
@@ -172,6 +176,7 @@ function validateForm(selformid,successfnc) {
         }
       }
     });
+    return false;
   }
 }
 

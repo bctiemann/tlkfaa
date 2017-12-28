@@ -138,8 +138,10 @@ $(function () {
         add: function (e, data) {
             $("#up_btn").off('click').on('click', function () {
 console.log(data);
-                data.submit();
-                $('#progress .bar').removeClass('no-border');
+                if (validateForm('offerform_new')) {
+                    data.submit();
+                    $('#progress .bar').removeClass('no-border');
+                }
             });
         },
     });

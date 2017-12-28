@@ -197,8 +197,10 @@ $(function () {
         add: function (e, data) {
             $("#up_btn").off('click').on('click', function () {
 console.log(data);
-                data.submit();
-                $('#progress .bar').removeClass('no-border');
+                if (validateForm('uploadform')) {
+                    data.submit();
+                    $('#progress .bar').removeClass('no-border');
+                }
             });
         },
     });
