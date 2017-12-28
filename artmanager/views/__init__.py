@@ -17,6 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
+from django.template.defaultfilters import filesizeformat
 
 from django.core.exceptions import ValidationError
 #from django.utils.translation import ugettext_lazy as _
@@ -238,6 +239,12 @@ class UploadFileView(LoginRequiredMixin, CreateView):
 
         if not self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys() + settings.IMAGE_FILE_TYPES.keys():
             response['message'] = 'Invalid file type.'
+            return JsonResponse(response)
+
+        if self.request.FILES['picture'].size > settings.MAX_UPLOAD_SIZE_HARD:
+            formatted_size = filesizeformat(settings.MAX_UPLOAD_SIZE_HARD)
+            logger.info(formatted_size)
+            response['message'] = u'File is too large. Please keep the file size under {0}.'.format(formatted_size)
             return JsonResponse(response)
 
         try:
