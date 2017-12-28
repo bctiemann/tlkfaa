@@ -13,7 +13,9 @@ var checkThumbs = function() {
     $.getJSON(url, function(data) {
         var continueChecking = false;
         for (pending_id in data) {
-            $('img#pendingthumb_' + pending_id).attr('src', data[pending_id].thumbnail_url);
+            if ($('img#pendingthumb_' + pending_id).attr('src') != data[pending_id].preview_url) {
+                $('img#pendingthumb_' + pending_id).attr('src', data[pending_id].preview_url);
+            }
             if (!data[pending_id].thumbnail_done) {
                 continueChecking = true;
             }

@@ -986,7 +986,9 @@ class Pending(models.Model):
             if self.has_thumb:
                 return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
             return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
-        return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+        if os.path.exists(self.preview_path):
+            return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+        return '{0}images/loading2.gif'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_path(self):

@@ -22,7 +22,9 @@
                 {% endif %}
 	</div>
 
-        {% include "includes/pending.html" %}
+        {% with hide_actions=True %}
+            {% include "includes/pending.html" %}
+        {% endwith %}
 
 {% comment %}
 	<sql:query var="qryPending">

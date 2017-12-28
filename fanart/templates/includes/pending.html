@@ -6,10 +6,10 @@
         <tr>
             <td class="thumb">
                 <a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
-                    {% if pending.is_movie %}
+                    {% if pending.is_movie and False %}
                         <img id="pendingthumb_{{ pending.id }}" class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
                     {% else %}
-                        <img id="pendingthumb_{{ pending.id }}" class="thumb" src="{{ pending.thumbnail_url }}" />
+                        <img id="pendingthumb_{{ pending.id }}" class="thumb" src="{{ pending.preview_url }}" />
                     {% endif %}
                 </a>
                 <div class="picturestats">
@@ -32,6 +32,7 @@
             </td>
             <td class="fullwidth picturedetails">
 
+                {% if not hide_actions %}
                 <div class="actions-container">
                     <a href="javascript:nop()"><div class="actions_hover" id="actions_{{ pending.id }}">Actions</div></a>
                     <div class="actions_menu" id="actions_{{ pending.id }}_popup">
@@ -40,6 +41,7 @@
                         <a class="ui-state-default ui-corner-all" href="javascript:nop()" onClick="deletePending({{ pending.id }})">Delete</a>
                     </div>
                 </div>
+                {% endif %}
 
                 <div class="picturedetails">
 

@@ -295,6 +295,7 @@ class PendingStatusView(APIView):
         for pending in request.user.pending_set.all():
             response[pending.id] = {
                 'thumbnail_url': pending.thumbnail_url,
+                'preview_url': pending.preview_url,
                 'thumbnail_done': pending.thumbnail_created,
             }
         return Response(response)
