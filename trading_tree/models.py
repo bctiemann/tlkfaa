@@ -174,14 +174,31 @@ class Claim(models.Model):
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.s.jpg'.format(self.id))
 
     @property
+    def preview_path(self):
+        if self.picture:
+            path = ('/').join(self.picture.path.split('/')[:-1])
+            return '{0}/{1}.p.jpg'.format(path, self.id)
+        return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.p.jpg'.format(self.id))
+
+    @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
+    def preview_url(self):
+        if os.path.exists(self.preview_path):
+            return '{0}Artwork/claims/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
+        return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
+
+    @property
     def thumbnail_created(self):
         return os.path.exists(self.thumbnail_path)
+
+    @property
+    def preview_created(self):
+        return os.path.exists(self.preview_path)
 
     @property
     def url(self):
@@ -192,6 +209,7 @@ class Claim(models.Model):
         super(Claim, self).save(*args, **kwargs)
         if update_thumbs:
             process_images.apply_async(('trading_tree.models', 'Claim', self.id, 'small'), countdown=20)
+            process_images.apply_async(('trading_tree.models', 'Claim', self.id, 'large'), countdown=20)
 
     def delete(self, *args, **kwargs):
         if self.offer.type == 'icon':

@@ -60,7 +60,11 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         orig_width = picture_object.width
     if model == 'Claim':
         image_path = '{0}/Artwork/claims/{1}.{2}'.format(settings.MEDIA_ROOT, picture_object.id, picture_object.extension)
-        new_image_path = '{0}/Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
+        if thumb_size == 'small':
+            new_image_path = picture_object.thumbnail_path
+        elif thumb_size == 'large':
+            new_image_path = picture_object.preview_path
+#        new_image_path = '{0}/Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
         orig_height = picture_object.height
         orig_width = picture_object.width
     elif model == 'ColoringPicture':
@@ -69,7 +73,6 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
             new_image_path = picture_object.thumbnail_path
         elif thumb_size == 'large':
             new_image_path = picture_object.preview_path
-#        new_image_path = '{0}/Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_ROOT, picture_object.id)
         orig_height = picture_object.height
         orig_width = picture_object.width
     elif model == 'Pending':

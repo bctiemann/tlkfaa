@@ -29,7 +29,7 @@
                 {% if not claim.filename %}
                     <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ claim.offer.thumbnail_url }}" /></a>
                 {% else %}
-                    <a href="{{ claim.url }}" rel="shadowbox"><img class="thumb" src="{{ claim.url }}" /></a>
+                    <a href="{{ claim.url }}" rel="shadowbox"><img class="thumb" src="{{ claim.preview_url }}" /></a>
                 {% endif %}
             {% elif claim.offer.type == "adoptable" %}
                     <a href="{% url "trading-tree" offer_type=claim.offer.type %}?offer_id={{ claim.offer.id }}"><img class="thumb" src="{{ claim.offer.thumbnail_url }}" /></a>
