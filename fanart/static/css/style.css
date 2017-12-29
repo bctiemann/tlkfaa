@@ -2769,7 +2769,8 @@ div.login-failed-banner {
 	background-color: #449d44;
 	border-color: #398439
 }
-.btn:active, .btn:active:focus {
+.btn:active, .btn:active:focus,
+.button:active, .button:active:focus {
 	outline: thin dotted;
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px
