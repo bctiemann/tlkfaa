@@ -394,13 +394,18 @@ ORDER BY fanart_user.sort_name
     def profile_pic_resized(self):
         if not self.profile_picture:
             return False
-        im = Image.open(self.profile_picture.path)
-        if im.width > settings.THUMB_SIZE['profile'] or im.height > settings.THUMB_SIZE['profile']:
+        try:
+            im = Image.open(self.profile_picture.path)
+            if im.width > settings.THUMB_SIZE['profile'] or im.height > settings.THUMB_SIZE['profile']:
+                return False
+        except IOError:
             return False
         return True
 
     @property
     def profile_pic_thumbnail_path(self):
+        if self.profile_picture == None:
+            return None
         path_parts = self.profile_picture.name.split('/')
         path = '/'.join(path_parts[:-1])
         filename_parts = path_parts[-1].split('.')

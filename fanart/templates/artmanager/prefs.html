@@ -125,7 +125,16 @@ var checkThumbs = function() {
                         <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
                     </div>
 
-                    <input id="fileupload" type="file" name="profile_picture" data-url="{% url "upload-profile-pic" %}">
+                    {#<input id="fileupload" type="file" name="profile_picture" data-url="{% url "upload-profile-pic" %}">#}
+
+                   <span class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Select</span>
+                        <!-- The file input field used as target for the file upload widget -->
+                        <input id="fileupload" type="file" name="profile_picture" data-url="{% url "upload-profile-pic" %}">
+                   </span>
+                   <span id="selected_file"></span>
+
                     <div id="progress">
                         <div class="bar no-border"></div>
                     </div>

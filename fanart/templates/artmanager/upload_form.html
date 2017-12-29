@@ -39,14 +39,13 @@ console.log(refreshThumbsInterval);
             <td class="label">File</td>
             <td class="data">
                 {#<input name="uploadfile" type="file" id="uploadfile" validate="hasvalue" message="You must select a file to upload." />#}
-    <span class="btn btn-success fileinput-button">
-        <i class="glyphicon glyphicon-plus"></i>
-        <span>Select files...</span>
-        <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-file" %}">
-    </span>
-<span id="selected_file"></span>
-
+                <span class="btn btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Select</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-file" %}">
+               </span>
+               <span id="selected_file"></span>
             </td>
         </tr>
         <tr>
