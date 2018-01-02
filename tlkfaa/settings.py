@@ -318,6 +318,7 @@ CELERY_BROKER_URL = 'amqp://tlkfaa:5zPM}XLh^Zgm-cAM@localhost:5672/tlkfaa'
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_ACCEPT_CONTENT = ['pickle']
+#CELERY_ALWAYS_EAGER = True
 
 SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
