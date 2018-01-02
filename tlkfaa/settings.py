@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'coloring_cave',
     'pms',
     'artmanager',
+    'sketcher',
 ]
 
 MIDDLEWARE_CLASSES = [
