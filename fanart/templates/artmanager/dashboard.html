@@ -1,6 +1,8 @@
 {% extends "artmanager/base.html" %}
 {% load bbcode_tags %}
 
+{% block page_title %} &mdash; ArtManager: Dashboard{% endblock %}
+
 {% block am_content %}
 
 {% if user.is_artist %}
@@ -89,7 +91,7 @@
 	<div class="newforme">
 	<h3>New for You</h3>
         {% for claim in user.claims_ready %}
-            {% include "includes/tradingtree_foryou.html" %}
+            {% include "trading_tree/for_you.html" %}
         {% endfor %}
 	</div>
 {% endif %}

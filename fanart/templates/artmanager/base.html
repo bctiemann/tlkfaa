@@ -4,6 +4,8 @@
 
 {% block body_prop %}{% endblock %}
 
+{% block page_title %} &mdash; ArtManager{% endblock %}
+
 {% block utility_page %}utilpage{% endblock %}
 
 {% block content %}
@@ -25,14 +27,14 @@
         {% if request.user.is_artist %}
             <a href="{% url "artmanager:dashboard" %}" class="{% if page == "dashboard" %}selected{% endif %}">Artist Dashboard</a>
             <a href="{% url "artmanager:prefs" %}" class="{% if page == "prefs" %}selected{% endif %}">Artist Info/Prefs</a>
-            <a href="{% url "artmanager:upload" %}" class="{% if page == "upload" %}selected{% endif %}">Upload</a>
+            <a href="{% url "artmanager:upload" %}" class="{% if page == "upload" or page == "pending" %}selected{% endif %}">Upload</a>
             <a href="{% url "artmanager:artwork" %}" class="{% if page == "artwork" %}selected{% endif %}">Artwork</a>
             <a href="{% url "artmanager:folders" %}" class="{% if page == "folders" %}selected{% endif %}">Folders</a>
             <a href="{% url "artmanager:artwall" %}" class="{% if page == "artwall" %}selected{% endif %}">ArtWall</a>
             <a href="{% url "artmanager:characters" %}" class="{% if page == "characters" %}selected{% endif %}">Characters</a>
             <a href="{% url "artmanager:customize" %}" class="sectionend {% if page == "customize" %}selected{% endif %}">Gallery Appearance</a>
             <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">Private Messages</a>
-            <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "trading-tree" %}selected{% endif %}">Trading Tree</a>
+            <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "trading-tree" or page == "trading-tree-for-you" %}selected{% endif %}">Trading Tree</a>
             <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "coloring-cave" %}selected{% endif %}">Coloring Cave</a>
             <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "contests" %}selected{% endif %}">Contests</a>
             <a href="{% url "artmanager:bulletins" %}" class="sectionend {% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "bulletins" %}selected{% endif %}">Bulletins</a>

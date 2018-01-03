@@ -1,6 +1,8 @@
 {% extends "artmanager/base.html" %}
 {% load bbcode_tags %}
 
+{% block page_title %} &mdash; ArtManager: Trading Tree For You{% endblock %}
+
 {% block am_content %}
 
 {% if user.is_artist %}
@@ -16,7 +18,7 @@
 
 {% for claim in claims_for_you %}
     <div class="offer" id="claim_{{ claim.id }}">
-        {% include "includes/tradingtree_foryou.html" %}
+        {% include "trading_tree/for_you.html" %}
     </div>
 {% endfor %}
 
