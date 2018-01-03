@@ -1021,10 +1021,10 @@ class PictureFansView(LoginRequiredMixin, DetailView):
 
 
 class PictureTooltipView(PictureView):
-    template_name = 'includes/tooltip_picture.html'
+    template_name = 'tooltips/picture.html'
 
 class ColoringPictureTooltipView(TemplateView):
-    template_name = 'includes/tooltip_coloring_picture.html'
+    template_name = 'tooltips/coloring_picture.html'
 
     def get_context_data(self, **kwargs):
         context = super(ColoringPictureTooltipView, self).get_context_data(**kwargs)
@@ -1033,7 +1033,7 @@ class ColoringPictureTooltipView(TemplateView):
         return context
 
 class MessageTooltipView(TemplateView):
-    template_name = 'includes/tooltip_message.html'
+    template_name = 'tooltips/message.html'
 
     def get_context_data(self, **kwargs):
         context = super(MessageTooltipView, self).get_context_data(**kwargs)
@@ -1075,7 +1075,7 @@ class CharacterView(UserPaneMixin, TemplateView):
 
 
 class CharacterTooltipView(CharacterView):
-    template_name = 'includes/tooltip_character.html'
+    template_name = 'tooltips/character.html'
 
 
 class ArtistView(UserPaneMixin, TemplateView):
