@@ -40,7 +40,7 @@ ONE_MONTH = 180
 
 
 class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
-    template_name = 'fanart/tradingtree.html'
+    template_name = 'trading_tree/trading_tree.html'
 
     def get_context_data(self, **kwargs):
         context = super(TradingTreeView, self).get_context_data(**kwargs)
@@ -76,7 +76,7 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
 class PostClaimView(CreateView):
     model = Claim
     form_class = forms.ClaimForm
-    template_name = 'includes/tradingtree.html'
+    template_name = 'trading_tree/offer.html'
 
     def form_valid(self, form):
         logger.info(self.request.POST)
@@ -94,7 +94,7 @@ class PostClaimView(CreateView):
 class UploadClaimView(UpdateView):
     model = Claim
     form_class = forms.UploadClaimForm
-    template_name = 'includes/claim.html'
+    template_name = 'trading_tree/claim.html'
 
     def get_object(self):
         return get_object_or_404(Claim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
@@ -118,7 +118,7 @@ class UploadClaimView(UpdateView):
 class RemoveClaimUploadView(UpdateView):
     model = Claim
     form_class = forms.UploadClaimForm
-    template_name = 'includes/claim.html'
+    template_name = 'trading_tree/claim.html'
 
     def get_object(self):
         return get_object_or_404(Claim, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
@@ -143,7 +143,7 @@ class RemoveClaimUploadView(UpdateView):
 class AcceptClaimView(UpdateView):
     model = Claim
     form_class = forms.AcceptClaimForm
-    template_name = 'includes/tradingtree_foryou.html'
+    template_name = 'trading_tree/for_you.html'
 
     def get_object(self):
         return get_object_or_404(Claim, pk=self.kwargs['claim_id'], user=self.request.user)
@@ -221,7 +221,7 @@ class RemoveClaimView(DeleteView):
 
 class OfferView(DetailView):
     models = Offer
-    template_name = 'includes/offer.html'
+    template_name = 'trading_tree/offer_detail.html'
 
     def get_object(self):
         return get_object_or_404(Offer, pk=self.kwargs['offer_id'])
@@ -230,7 +230,7 @@ class OfferView(DetailView):
 class EditOfferView(UpdateView):
     models = Offer
     form_class = forms.OfferForm
-    template_name = 'includes/edit_offer.html'
+    template_name = 'trading_tree/edit_offer.html'
 
     def get_object(self):
         return get_object_or_404(Offer, pk=self.kwargs['offer_id'], artist=self.request.user)
@@ -239,7 +239,7 @@ class EditOfferView(UpdateView):
 class RemoveOfferView(UpdateView):
     models = Offer
     form_class = forms.RemoveOfferForm
-    template_name = 'includes/edit_offer.html'
+    template_name = 'trading_tree/edit_offer.html'
 
     def get_object(self):
         return get_object_or_404(Offer, pk=self.kwargs['offer_id'], artist=self.request.user)

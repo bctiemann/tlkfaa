@@ -58,7 +58,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 
 
     {% if offer.is_active and offer.is_visible %}
-        {% include "includes/tradingtree.html" %}
+        {% include "trading_tree/offer.html" %}
     {% else %}
         This offer is no longer active.
     {% endif %}

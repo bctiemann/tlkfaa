@@ -20,7 +20,7 @@
                 {% endif %}
                 <div id="editoffer_{{ offer.id }}">
                     {% with offer as object %}
-                        {% include "includes/offer.html" %}
+                        {% include "trading_tree/offer_detail.html" %}
                     {% endwith %}
                 </div>
             </td>
@@ -34,7 +34,7 @@
 
             {% for claim in offer.claim_set.all %}
                 <div class="claim" id="claim_{{ claim.id }}">
-                    {% include "includes/claim.html" %}
+                    {% include "trading_tree/claim.html" %}
                 </div>
             {% endfor %}
 
@@ -72,7 +72,7 @@
             {% for claim in offer.claim_set.all %}
 
                 <div class="claim" id="claim_{{ claim.id }}">
-                    {% include "includes/claim.html" %}
+                    {% include "trading_tree/claim.html" %}
                 </div>
 
             {% endfor %}

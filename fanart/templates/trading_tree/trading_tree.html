@@ -47,7 +47,7 @@ var checkThumbs = function() {
 };
 </script>
 
-        {% include "includes/tradingtree.html" %}
+        {% include "trading_tree/offer.html" %}
 
 <script type="text/javascript">
 if (thumbsGenerated == false) {
@@ -68,7 +68,7 @@ if (thumbsGenerated == false) {
             <h3>New for You</h3>
             {% for claim in claims_for_you %}
                 <div class="offer" id="claim_{{ claim.id }}">
-                    {% include "includes/tradingtree_foryou.html" %}
+                    {% include "trading_tree/for_you.html" %}
                 </div>
             {% endfor %}
         </div>
