@@ -35,8 +35,17 @@
                         {% if claim.offer.artist == user %}
                             <div id="claimupload_{{ claim.id }}" {% if claim.filename %}style="display: none"{% endif %}>
 {#                                <input type="file" name="uploadfile" id="claim_upload_{{ claim.id }}" />#}
-<input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}">
+{#<input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}">#}
 {#                                <button type="button" onClick="uploadPicture(this.form.id,'claim_upload_{{ claim.id }}','claimthumb_{{ claim.id }}','claimupload_{{ claim.id }}')">Upload</button>#}
+
+                <span class="button btn-select fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Select</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input id="fileupload_{{ claim.id }}" type="file" name="picture" data-url="{% url "upload-claim" claim_id=claim.id %}" %}">
+               </span>
+               <span id="selected_file"></span>
+
 <div id="progress_{{ claim.id }}">
     <div class="bar no-border"></div>
 </div>

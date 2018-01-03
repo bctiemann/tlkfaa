@@ -26,7 +26,15 @@
     {% endif %}
 </div>
 
-<input id="fileupload" type="file" name="picture" data-url="{% url "upload-banner" %}">
+                <span class="button btn-select fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Select</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input id="fileupload" type="file" name="picture" data-url="{% url "upload-banner" %}">
+               </span>
+               <span id="selected_file"></span>
+
+{#<input id="fileupload" type="file" name="picture" data-url="{% url "upload-banner" %}">#}
 <div id="progress">
     <div class="bar" style="border-width: 0px; width: 0%;"></div>
 </div>

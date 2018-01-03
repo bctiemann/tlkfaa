@@ -56,7 +56,18 @@ var checkThumbs = function() {
                 <table class="formtable">
                     <tr>
                         <td class="label">Select file</td>
-                        <td class="data"><input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}"></td>
+                        <td class="data">
+{#<input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}">#}
+
+                <span class="button btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Select</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input id="fileupload" type="file" name="picture" data-url="{% url "upload-coloring-picture" coloring_base_id=coloring_base.id %}">
+               </span>
+               <span id="selected_file"></span>
+
+                        </td>
                     </tr>
                     <tr>
                         <td class="label">Comment</td>
@@ -96,9 +107,11 @@ $(function () {
             );
         },
         add: function (e, data) {            
+            $('#selected_file').html(data.files[0].name);
             $("#up_btn").off('click').on('click', function () {
                 data.submit();
                 $('#progress .bar').removeClass('no-border');
+                $('#selected_file').html('');
             });
         },
     });
