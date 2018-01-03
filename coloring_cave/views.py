@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 class ColoringCaveView(fanart_views.UserPaneMixin, TemplateView):
-    template_name = 'fanart/coloringcave.html'
+    template_name = 'coloring_cave/coloring_cave.html'
 
     def get_context_data(self, **kwargs):
         context = super(ColoringCaveView, self).get_context_data(**kwargs)
@@ -67,7 +67,7 @@ class ColoringCaveView(fanart_views.UserPaneMixin, TemplateView):
 
 
 class ColoringCavePictureView(fanart_views.UserPaneMixin, TemplateView):
-    template_name = 'fanart/coloringcave.html'
+    template_name = 'coloring_cave/coloring_cave.html'
 
     def get_context_data(self, **kwargs):
         context = super(ColoringCavePictureView, self).get_context_data(**kwargs)
@@ -83,7 +83,7 @@ class ColoringCavePictureView(fanart_views.UserPaneMixin, TemplateView):
 
 class ColoringPicturesView(DetailView):
     model = Base
-    template_name = 'includes/colored_pictures.html'
+    template_name = 'coloring_cave/colored_pictures.html'
 
     def get_object(self):
         return get_object_or_404(Base, pk=self.kwargs['coloring_base_id'])
@@ -97,7 +97,7 @@ class ColoringPicturesView(DetailView):
 class UploadColoringPictureView(CreateView):
     model = ColoringPicture
     form_class = forms.UploadColoringPictureForm
-    template_name = 'includes/colored_pictures.html'
+    template_name = 'coloring_cave/colored_pictures.html'
 
 #    def get_object(self):
 #        return get_object_or_404(models.ColoringPic, pk=self.kwargs['claim_id'], offer__artist=self.request.user)
