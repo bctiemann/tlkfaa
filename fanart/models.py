@@ -937,7 +937,7 @@ class PendingManager(UserManager):
                 | Q(height__gt=settings.APPROVAL_TRIGGER_HEIGHT) \
                 | Q(file_size__gt=settings.APPROVAL_TRIGGER_SIZE) \
                 | Q(is_movie=True))) \
-            .order_by('date_uploaded')[0:100]
+            .order_by('date_uploaded')
 
 class Pending(models.Model):
     artist = models.ForeignKey('User', null=True)
@@ -1088,6 +1088,10 @@ class Pending(models.Model):
         if not matched_input:
             return self.basename
         return '{0}{1}'.format(raw_basename, highest_match + 1)
+
+    @property
+    def requires_approval(self):
+        return Pending.objects.requiring_approval().filter(pk=self.pk).exists()
 
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
