@@ -77,7 +77,7 @@ class DashboardView(ArtManagerPaneView):
         return context
 
 
-class PrefsView(LoginRequiredMixin, DetailView):
+class PrefsView(LoginRequiredMixin, UserPaneMixin, DetailView):
     template_name = 'artmanager/prefs.html'
     model = models.User
 
