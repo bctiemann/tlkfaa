@@ -2796,8 +2796,9 @@ function refreshSketcherLogin() {
 }
 
 function refreshSketcherUserBox() {
-  var url = "/ajax_sketcherbox.jsp";
-  $('#sketcherbox').load(url);
+//  var url = "/ajax_sketcherbox.jsp";
+  var url = '/userbox/sketcher_box/';
+  $('#sketcher_box').load(url);
 }
 
 function refreshResetStatus() {  
