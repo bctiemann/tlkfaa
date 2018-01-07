@@ -45,10 +45,6 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TradingTreeView, self).get_context_data(**kwargs)
 
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
-
         offer_type = kwargs.get('offer_type')
         if not offer_type:
             offer_type = 'icon'

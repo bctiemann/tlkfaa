@@ -42,10 +42,6 @@ class ColoringCaveView(fanart_views.UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ColoringCaveView, self).get_context_data(**kwargs)
 
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
-
         sort_by = self.request.GET.get('sort_by', None)
         if not sort_by in ['popularity', 'date']:
             sort_by = 'popularity'
@@ -71,10 +67,6 @@ class ColoringCavePictureView(fanart_views.UserPaneMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ColoringCavePictureView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         context['coloring_bases'] = coloring_bases[0:100]
         context['sort_by'] = sort_by

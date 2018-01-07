@@ -82,11 +82,8 @@ class UserPaneMixin(object):
     def get_sketcher_users(self):
         return ActiveUser.objects.all()
 
-
-class UserPaneView(UserPaneMixin, TemplateView):
-
     def get_context_data(self, **kwargs):
-        context = super(UserPaneView, self).get_context_data(**kwargs)
+        context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
@@ -102,7 +99,7 @@ class UserPaneView(UserPaneMixin, TemplateView):
         return context
 
 
-class HomeView(UserPaneView):
+class HomeView(UserPaneMixin, TemplateView):
     template_name = 'fanart/home.html'
 
     def get_context_data(self, **kwargs):
@@ -121,7 +118,7 @@ class HomeView(UserPaneView):
         return context
 
 
-class ArtistsView(UserPaneView):
+class ArtistsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artists.html'
 
     def get_context_data(self, **kwargs):
@@ -184,7 +181,7 @@ class ArtistsView(UserPaneView):
         return context
 
 
-class ArtworkView(UserPaneView):
+class ArtworkView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artwork.html'
 
     def get_context_data(self, **kwargs):
@@ -260,7 +257,7 @@ class ArtworkView(UserPaneView):
         return context
 
 
-class CharactersView(UserPaneView):
+class CharactersView(UserPaneMixin, TemplateView):
     template_name = 'fanart/characters.html'
 
     def get_context_data(self, **kwargs):
@@ -324,7 +321,7 @@ class CharactersView(UserPaneView):
         return context
 
 
-class TradingTreeView(UserPaneView):
+class TradingTreeView(UserPaneMixin, TemplateView):
     template_name = 'fanart/tradingtree.html'
 
     def get_context_data(self, **kwargs):
@@ -354,7 +351,7 @@ class TradingTreeView(UserPaneView):
         return context
 
 
-class ShowcasesView(UserPaneView):
+class ShowcasesView(UserPaneMixin, TemplateView):
     template_name = 'fanart/showcase.html'
 
     def get_context_data(self, **kwargs):
@@ -391,7 +388,7 @@ class ShowcasesView(UserPaneView):
         return context
 
 
-class ContestsView(UserPaneView):
+class ContestsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/contests.html'
 
     def get_context_data(self, **kwargs):
@@ -423,7 +420,7 @@ class ContestsView(UserPaneView):
         return context
 
 
-class ContestView(UserPaneView):
+class ContestView(UserPaneMixin, DetailView):
     template_name = 'fanart/contest.html'
 
     def get_object(self):
@@ -432,13 +429,11 @@ class ContestView(UserPaneView):
     def get_context_data(self, **kwargs):
         context = super(ContestView, self).get_context_data(**kwargs)
 
-        contest = get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], is_active=True)
-
         if self.request.user.is_authenticated:
-            context['my_entries'] = contest.contestentry_set.filter(picture__artist=self.request.user).all()
-            context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=contest).first()
+            context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
+            context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
 
-        context['contest'] = contest
+#        context['contest'] = contest
 #        logger.info(context['form'])
 #        logger.info(self.object)
 
@@ -498,7 +493,7 @@ class ContestVoteView(CreateView):
         return response
 
 
-class FavoritePicturesView(UserPaneView):
+class FavoritePicturesView(UserPaneMixin, TemplateView):
     template_name = 'fanart/favorite_pictures.html'
 
     def get_context_data(self, **kwargs):
@@ -700,16 +695,16 @@ class UserBoxSetView(APIView):
         return Response(response)
 
 
-class FavoriteArtistsBoxView(UserPaneView):
+class FavoriteArtistsBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/favorite_artists.html'
 
-class FavoritePicturesBoxView(UserPaneView):
+class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/favorite_pictures.html'
 
-class SketcherBoxView(UserPaneView):
+class SketcherBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/sketcher.html'
 
-class CommunityArtBoxView(UserPaneView):
+class CommunityArtBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/community_art.html'
 
     def get_context_data(self, **kwargs):
@@ -717,7 +712,7 @@ class CommunityArtBoxView(UserPaneView):
         context['community_art_data'] = self.get_community_art_data()
         return context
 
-class ContestsBoxView(UserPaneView):
+class ContestsBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/contests.html'
 
     def get_context_data(self, **kwargs):
@@ -725,7 +720,7 @@ class ContestsBoxView(UserPaneView):
         context['contests_data'] = self.get_contests_data()
         return context
 
-class ToolBoxView(UserPaneView):
+class ToolBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/toolbox.html'
 
 
@@ -959,7 +954,7 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
-class PictureView(UserPaneView):
+class PictureView(UserPaneMixin, TemplateView):
     template_name = 'fanart/picture.html'
 
     def get_context_data(self, **kwargs):
@@ -1017,7 +1012,7 @@ class MessageTooltipView(TemplateView):
         return context
 
 
-class CharacterView(UserPaneView):
+class CharacterView(UserPaneMixin, TemplateView):
     template_name = 'fanart/character.html'
 
     def get_context_data(self, **kwargs):
@@ -1046,7 +1041,7 @@ class CharacterTooltipView(CharacterView):
     template_name = 'tooltips/character.html'
 
 
-class ArtistView(UserPaneView):
+class ArtistView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artist.html'
 
     def get_context_data(self, **kwargs):

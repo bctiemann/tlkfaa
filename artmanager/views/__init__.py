@@ -55,11 +55,6 @@ class ArtManagerPaneView(LoginRequiredMixin, UserPaneMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArtManagerPaneView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
-
         return context
 
 
@@ -1108,11 +1103,6 @@ class CustomizeView(LoginRequiredMixin, UserPaneMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CustomizeView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
-
         return context
 
     def form_valid(self, form):
