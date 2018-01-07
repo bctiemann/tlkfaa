@@ -27,6 +27,7 @@ from fanart import models, forms, utils, tasks
 from fanart.forms import AjaxableResponseMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
+from sketcher.models import ActiveUser
 
 from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
@@ -78,6 +79,9 @@ class UserPaneMixin(object):
         contests_data['contests_ending'] = models.Contest.objects.filter(type='personal', is_active=True, is_cancelled=False, date_end__gt=timezone.now()).order_by('-date_end')[0:5]
         return contests_data
 
+    def get_sketcher_users(self):
+        return ActiveUser.objects.all()
+
 
 class UserPaneView(UserPaneMixin, TemplateView):
 
@@ -86,20 +90,23 @@ class UserPaneView(UserPaneMixin, TemplateView):
 
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
+
+        sketcher_users = self.get_sketcher_users()
+        context['sketcher_slots'] = []
+        for slot in range(12):
+            try:
+                context['sketcher_slots'].append(sketcher_users[slot])
+            except IndexError:
+                context['sketcher_slots'].append(None)
 
         return context
 
 
-class HomeView(UserPaneMixin, TemplateView):
+class HomeView(UserPaneView):
     template_name = 'fanart/home.html'
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         context['current_contest'] = models.Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
         context['admin_announcements'] = [models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
@@ -114,15 +121,11 @@ class HomeView(UserPaneMixin, TemplateView):
         return context
 
 
-class ArtistsView(UserPaneMixin, TemplateView):
+class ArtistsView(UserPaneView):
     template_name = 'fanart/artists.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtistsView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         context['show_search_input'] = False
 
@@ -181,15 +184,11 @@ class ArtistsView(UserPaneMixin, TemplateView):
         return context
 
 
-class ArtworkView(UserPaneMixin, TemplateView):
+class ArtworkView(UserPaneView):
     template_name = 'fanart/artwork.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtworkView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         context['show_search_input'] = False
 
@@ -261,15 +260,11 @@ class ArtworkView(UserPaneMixin, TemplateView):
         return context
 
 
-class CharactersView(UserPaneMixin, TemplateView):
+class CharactersView(UserPaneView):
     template_name = 'fanart/characters.html'
 
     def get_context_data(self, **kwargs):
         context = super(CharactersView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         dir_name = kwargs.get('dir_name', None)
         if dir_name:
@@ -329,15 +324,11 @@ class CharactersView(UserPaneMixin, TemplateView):
         return context
 
 
-class TradingTreeView(UserPaneMixin, TemplateView):
+class TradingTreeView(UserPaneView):
     template_name = 'fanart/tradingtree.html'
 
     def get_context_data(self, **kwargs):
         context = super(TradingTreeView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         offer_type = kwargs.get('offer_type')
         if not offer_type:
@@ -363,15 +354,11 @@ class TradingTreeView(UserPaneMixin, TemplateView):
         return context
 
 
-class ShowcasesView(UserPaneMixin, TemplateView):
+class ShowcasesView(UserPaneView):
     template_name = 'fanart/showcase.html'
 
     def get_context_data(self, **kwargs):
         context = super(ShowcasesView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         showcase_id = kwargs.get('showcase_id', None)
 
@@ -404,15 +391,11 @@ class ShowcasesView(UserPaneMixin, TemplateView):
         return context
 
 
-class ContestsView(UserPaneMixin, TemplateView):
+class ContestsView(UserPaneView):
     template_name = 'fanart/contests.html'
 
     def get_context_data(self, **kwargs):
         context = super(ContestsView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         sort_by = self.request.GET.get('sort_by', None)
         if not sort_by in ['artist', 'startdate', 'deadline']:
@@ -440,9 +423,7 @@ class ContestsView(UserPaneMixin, TemplateView):
         return context
 
 
-class ContestView(UserPaneMixin, DetailView):
-    model = models.Contest
-    form_class = forms.ContestEntryForm
+class ContestView(UserPaneView):
     template_name = 'fanart/contest.html'
 
     def get_object(self):
@@ -451,14 +432,13 @@ class ContestView(UserPaneMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ContestView, self).get_context_data(**kwargs)
 
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
+        contest = get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], is_active=True)
 
         if self.request.user.is_authenticated:
-            context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
-            context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=self.object).first()
+            context['my_entries'] = contest.contestentry_set.filter(picture__artist=self.request.user).all()
+            context['my_vote'] = models.ContestVote.objects.filter(user=self.request.user, entry__contest=contest).first()
 
+        context['contest'] = contest
 #        logger.info(context['form'])
 #        logger.info(self.object)
 
@@ -518,15 +498,11 @@ class ContestVoteView(CreateView):
         return response
 
 
-class FavoritePicturesView(UserPaneMixin, TemplateView):
+class FavoritePicturesView(UserPaneView):
     template_name = 'fanart/favorite_pictures.html'
 
     def get_context_data(self, **kwargs):
         context = super(FavoritePicturesView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         if not self.request.user.is_authenticated:
             return context
@@ -983,15 +959,11 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
-class PictureView(UserPaneMixin, TemplateView):
+class PictureView(UserPaneView):
     template_name = 'fanart/picture.html'
 
     def get_context_data(self, **kwargs):
         context = super(PictureView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         context['picture'] = picture
@@ -1045,15 +1017,11 @@ class MessageTooltipView(TemplateView):
         return context
 
 
-class CharacterView(UserPaneMixin, TemplateView):
+class CharacterView(UserPaneView):
     template_name = 'fanart/character.html'
 
     def get_context_data(self, **kwargs):
         context = super(CharacterView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
         other_characters = self.request.GET.get('othercharacters', None)
@@ -1078,15 +1046,11 @@ class CharacterTooltipView(CharacterView):
     template_name = 'tooltips/character.html'
 
 
-class ArtistView(UserPaneMixin, TemplateView):
+class ArtistView(UserPaneView):
     template_name = 'fanart/artist.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtistView, self).get_context_data(**kwargs)
-
-        context['community_art_data'] = self.get_community_art_data()
-        context['contests_data'] = self.get_contests_data()
-        context['sketcher_users'] = range(12)
 
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
