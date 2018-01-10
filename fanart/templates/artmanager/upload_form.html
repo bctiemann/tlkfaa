@@ -182,7 +182,8 @@ $(function () {
                     $('#uploadformdiv').load('/ArtManager/upload/form/',function() {
                         $(this).slideDown();
                         setupTooltipPreview();
-                    });
+                        getFolderTree($('#edit_artistid').val(), null, true, false, getFolderSelect);
+                     });
                     $('#comment').val('');
                 });
 //                $('.pending-uploads').html(data.pending);
