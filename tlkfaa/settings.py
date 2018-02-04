@@ -29,7 +29,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fanart-dj.lionking.org']
+ALLOWED_HOSTS = ['fanart-dj.lionking.org', 'fanart.lionking.org']
 
 SERVER_HOST = 'fanart.lionking.org'
 SERVER_URL_PREFIX = 'http://'
@@ -244,7 +244,8 @@ LOGGING = {
 def show_toolbar(request):
     return True
 DEBUG_TOOLBAR_CONFIG = {
-#    "SHOW_TOOLBAR_CALLBACK" : show_toolbar,
+    "SHOW_TOOLBAR_CALLBACK" : show_toolbar,
+#    "RESULTS_CACHE_SIZE": 1000,
 }
 
 DEBUG_TOOLBAR_PANELS = [
