@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 
 from django.contrib.auth import views as auth_views
+from django.views.generic.base import RedirectView
 from fanart import views as fanart_views
 from fanart.models import artists_tabs, artwork_tabs
 from fanart.views import approval as approval_views
@@ -13,6 +14,7 @@ from pms import views as pms_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
+    url(r'^admin/approve.jsp$', RedirectView.as_view(url='/admin/approve/', permanent=True), name='approve-redirect'),
     url(r'^admin/approve/$', approval_views.ApprovalHomeView.as_view(), name='approve'),
     url(r'^admin/approve/list/$', approval_views.PendingListView.as_view(), name='pending-list'),
     url(r'^admin/approve/count/$', approval_views.PendingCountView.as_view(), name='pending-count'),
@@ -72,6 +74,8 @@ urlpatterns = [
     url(r'^Artists/(?P<dir_name>[^/]+)/Gallery/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
+
+    url(r'^Picture.jsp$', fanart_views.PictureRedirectView.as_view(), name='picture-redirect'),
 
     url(r'^picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
