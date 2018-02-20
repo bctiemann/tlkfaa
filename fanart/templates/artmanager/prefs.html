@@ -61,6 +61,7 @@ var checkThumbs = function() {
     </script>
 
     <form name="artistform" id="artistform" method="POST" action="{% url "artmanager:prefs-update" %}">
+        <input name="username" style="position: absolute; top: -500px;" />
         <table class="formtable">
             <tr>
                 <td class="label">Artist Name</td>
@@ -175,7 +176,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         <table class="formtable">
             <tr>
                 <td class="label">Email</td>
-                <td class="data"><input type="text" class="std" name="email" id="email" value="{{ user.email }}" 1validate="email" /></td>
+                <td class="data"><input type="email" class="std" name="email" id="email" value="{{ user.email }}" 1validate="email" /></td>
                 <td class="legend">Must be a real, working address</td>
             </tr>
             <tr>
