@@ -45,7 +45,7 @@ class Command(BaseCommand):
 #        'do_contests': True,
 #        'do_contestpics': True,
 #        'do_contestvotes': True,
-        'do_pms': True,
+#        'do_pms': True,
 #        'do_specials': True,
 #        'do_votes': True,
 #        'do_customicons': True,
@@ -152,8 +152,8 @@ class Command(BaseCommand):
         if 'do_users' in self.enabled:
 #            c.execute("""SELECT * FROM users where userid=1""")
             c.execute("""SELECT * FROM users""")
-#            for user in c.fetchall():
-            for user in []:
+            for user in c.fetchall():
+#            for user in []:
                 print user
                 u = fanart_models.User.objects.create_user(
                     id_orig = user['userid'],
@@ -554,6 +554,8 @@ class Command(BaseCommand):
 #                    extension = claim['extension'] if claim['extension'] else '',
                     date_uploaded = claim['picdate'],
                 )
+                f.date_posted = claim['posted']
+                f.save()
 
         if 'do_picturecharacters' in self.enabled:
             c.execute("""SELECT * FROM picturecharacters""")
@@ -832,8 +834,10 @@ class Command(BaseCommand):
 #                    date_entered = a['entered'],
                     date_notified = a['emailsent'],
                 )
+                print a['entered']
                 f.date_entered = a['entered']
                 f.save()
+                print f.date_entered
 
         if 'do_contestvotes' in self.enabled:
             c.execute("""SELECT * FROM contestvotes""")
@@ -860,7 +864,7 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM specials""")
             for a in c.fetchall():
                 print a
-                f = fanart_models.SpecialFeature.objects.create(
+                f = fanart_models.Showcase.objects.create(
                     keyword = a['keyword'],
                     title = a['title'],
                     description = a['description'],
