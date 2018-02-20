@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['fanart-dj.lionking.org', 'fanart.lionking.org']
 
@@ -362,3 +362,5 @@ MOVIE_FILE_TYPES = {
     'video/x-ms-wmv': 'wmv',
     'video/quicktime': 'mov',
 }
+
+EMAIL_HOST = 'mail.lionking.org'
