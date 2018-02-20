@@ -62,8 +62,8 @@ class LoginForm(AuthenticationForm):
 
     def clean(self):
         m = hashlib.md5()
-        logger.info(self.cleaned_data)
         username = self.cleaned_data.get('username')
+        logger.info('Login: {0}'.format(username))
         raw_password = self.cleaned_data.get('password')
 
         if username is not None and raw_password:
