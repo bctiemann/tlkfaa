@@ -736,7 +736,7 @@ class Folder(models.Model):
         pictures = self.picture_set.filter(folder=self).order_by('date_uploaded')
         for i, picture in enumerate(pictures):
             picture.rank_in_folder = i + 1
-            logger.info('{0} {1}'.format(picture, picture.rank_in_folder))
+#            logger.info('{0} {1}'.format(picture, picture.rank_in_folder))
             picture.save()
 
     def get_absolute_url(self):
