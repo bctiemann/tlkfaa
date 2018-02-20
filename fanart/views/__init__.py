@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
@@ -44,7 +45,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 THREE_MONTHS = 90
-ONE_MONTH = 180
+ONE_MONTH = 30
 
 
 class LoginView(LoginView):
@@ -108,7 +109,7 @@ class HomeView(UserPaneMixin, TemplateView):
         context['current_contest'] = models.Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
         context['admin_announcements'] = [models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
-        context['recently_active_artists'] = models.User.objects.recently_active()
+        context['recently_active_artists'] = models.User.objects.recently_active(self.request)
 
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
 
@@ -207,11 +208,11 @@ class ArtworkView(UserPaneMixin, TemplateView):
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         one_month_ago = timezone.now() - timedelta(days=ONE_MONTH)
-        if list == 'unviewed':
+        if list == 'unviewed' and self.request.user.is_authenticated:
             artwork = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(user=self.request.user).order_by('-picture__date_uploaded')]
         elif list == 'newest':
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_uploaded')
-        elif list == 'newestfaves':
+        elif list == 'newestfaves' and self.request.user.is_authenticated:
             artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_uploaded')
             logger.info(artwork.query)
         elif list == 'toprated':
@@ -952,6 +953,16 @@ class ToggleBlockView(APIView):
         response['is_blocked'] = is_blocked
         response['success'] = True
         return Response(response)
+
+
+class PictureRedirectView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        picture_id = self.request.GET.get('pictureid')
+        if not picture_id.isnumeric():
+            raise Http404
+        picture = get_object_or_404(models.Picture, pk=picture_id, date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
+        return reverse('picture', kwargs={'picture_id': picture.id})
 
 
 class PictureView(UserPaneMixin, TemplateView):

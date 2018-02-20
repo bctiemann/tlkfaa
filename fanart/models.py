@@ -104,8 +104,11 @@ class OverwriteStorage(FileSystemStorage):
 
 class FanartUserManager(UserManager):
 
-    def recently_active(self):
-        return self.get_queryset().filter(is_artist=True, is_active=True, is_public=True, num_pictures__gt=0).order_by('-last_upload')[0:10]
+    def recently_active(self, request):
+        artists = self.get_queryset().filter(is_artist=True, is_active=True, num_pictures__gt=0).order_by('-last_upload')
+        if request.user.is_authenticated == False:
+            artists = artists.filter(is_public=True)
+        return artists[0:10]
 
     def upcoming_birthdays(self):
         with connection.cursor() as cursor:
@@ -133,7 +136,10 @@ ORDER BY `next_birthday`
         user = super(FanartUserManager, self).create_user(username, email=email, password=password, **extra_fields)
         new_dir_name = make_dir_name(user.username)
         new_absolute_dir_name = '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, new_dir_name)
-        os.mkdir(new_absolute_dir_name)
+        try:
+            os.mkdir(new_absolute_dir_name)
+        except OSError:
+            pass
         user.dir_name = new_dir_name
         user.sort_name = user.username
         user.is_artist = is_artist
@@ -1284,7 +1290,7 @@ class ContestEntry(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            return ContestEntry.objects.get(contest=self.contest, picture=self.picture)
+            return ContestEntry.objects.get(contest=self.contest, picture=self.picture).save()
         except ContestEntry.DoesNotExist:
             return super(ContestEntry, self).save(*args, **kwargs)
 
