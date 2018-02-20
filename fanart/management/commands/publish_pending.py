@@ -103,9 +103,12 @@ class Command(BaseCommand):
 
             # Move files into place
             if pending.replaces_picture:
-                os.remove(original_path)
-                os.remove(original_thumbnail_path)
-                os.remove(original_preview_path)
+                try:
+                    os.remove(original_path)
+                    os.remove(original_thumbnail_path)
+                    os.remove(original_preview_path)
+                except OSError:
+                    pass
 
             os.rename(pending.picture.path, picture.path)
             os.rename(pending.thumbnail_path, picture.thumbnail_path)
