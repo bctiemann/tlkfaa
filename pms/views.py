@@ -13,6 +13,9 @@ from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
 from django.forms import ValidationError
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -36,7 +39,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class PMsView(TemplateView):
+class PMsView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/private_messages.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -75,7 +78,7 @@ class PMsView(TemplateView):
         return context
 
 
-class PMView(DetailView):
+class PMView(LoginRequiredMixin, DetailView):
     model = PrivateMessage
     template_name = 'includes/pm.html'
 
@@ -95,7 +98,7 @@ class PMView(DetailView):
         return context
 
 
-class PMCreateView(CreateView):
+class PMCreateView(LoginRequiredMixin, CreateView):
     model = PrivateMessage
     form_class = forms.PMForm
 
@@ -131,7 +134,7 @@ class PMSuccessView(PMView):
     template_name = 'includes/pm_success.html'
 
 
-class PMShoutView(TemplateView):
+class PMShoutView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/pm.html'
 
     def get_context_data(self, **kwargs):
@@ -144,7 +147,7 @@ class PMShoutView(TemplateView):
         return context
 
 
-class PMUserView(TemplateView):
+class PMUserView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/pm.html'
 
     def get_context_data(self, **kwargs):
@@ -157,7 +160,7 @@ class PMUserView(TemplateView):
         return context
 
 
-class PMsMoveView(APIView):
+class PMsMoveView(LoginRequiredMixin, APIView):
 
     def post(self, request, action):
         response = {'success': False, 'action': action, 'pm_ids': request.POST.get('pm_ids')}
