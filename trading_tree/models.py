@@ -231,8 +231,6 @@ class Claim(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.offer.type == 'icon':
-            os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
-            os.remove(self.thumbnail_path)
             try:
                 os.remove(os.path.join(settings.MEDIA_ROOT, self.thumbnail_path))
                 os.remove(self.thumbnail_path)
