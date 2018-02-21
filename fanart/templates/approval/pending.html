@@ -48,7 +48,7 @@ $(function () {
                     <div class="sendwarning"><input type="checkbox" name="warn_copied" id="warn_copied_{{ pending.id }}" value="1" /> <label for="warn_copied_{{ pending.id }}">Send originality warning</label></div>
                 {% endif %}
 		{% if pending.notes %}<div class="pendingnotes">{{ pending.notes }}</div>{% endif %}
-                <input type="hidden" name="comments" value="{{ pending.comments }}" />
+                <input type="hidden" name="comments" value="{{ pending.artist.comments }}" />
                 <input type="hidden" name="newcomments" value="" />
                 <input type="hidden" name="uploadop" value="moviethumb" />
                 <input type="hidden" name="pendingid" value="{{ pending.id }}" />
