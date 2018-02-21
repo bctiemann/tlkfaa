@@ -45,7 +45,7 @@ class Command(BaseCommand):
 #        'do_contests': True,
 #        'do_contestpics': True,
 #        'do_contestvotes': True,
-#        'do_pms': True,
+        'do_pms': True,
 #        'do_specials': True,
 #        'do_votes': True,
 #        'do_customicons': True,
@@ -129,6 +129,7 @@ class Command(BaseCommand):
                 sender = fanart_models.User.objects.get(id_orig=pm['senderid'])
                 recipient = fanart_models.User.objects.get(id_orig=pm['recptid'])
                 f = PrivateMessage.objects.create(
+                    id = pm['pmid'],
                     sender = sender,
                     recipient = recipient,
                     date_sent = pm['sent'],
@@ -140,6 +141,8 @@ class Command(BaseCommand):
                     deleted_by_sender = pm['deleted_s'],
                     deleted_by_recipient = pm['deleted_r'],
                 )
+                f.date_sent = pm['sent']
+                f.save()
             except fanart_models.User.DoesNotExist:
                 pass
             self.get_child_pms(c, pm['pmid'], f)
