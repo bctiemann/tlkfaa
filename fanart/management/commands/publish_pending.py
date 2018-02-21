@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 'folder': pending.folder,
                 'keywords': pending.keywords,
                 'work_in_progress': pending.work_in_progress,
-                'allow_comments': pending.work_in_progress,
+                'allow_comments': pending.allow_comments,
                 'is_scanned': pending.is_scanned,
                 'approved_by': pending.approved_by,
             }
