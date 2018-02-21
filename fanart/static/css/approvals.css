@@ -33,6 +33,7 @@ div.pending td.thumb {
 }
 div.pending td.thumb img {
 	border: 1px solid #000;
+	width: 60px;
 }
 div.pending td.artist-info {
 	width: 100px;
