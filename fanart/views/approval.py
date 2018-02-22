@@ -40,6 +40,8 @@ class ApprovalAPIView(UserPassesTestMixin, AccessMixin, APIView):
     raise_exception = True
 
     def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
         return self.request.user.is_approver
 
 
@@ -47,6 +49,8 @@ class ApprovalUpdateView(UserPassesTestMixin, AccessMixin, UpdateView):
     raise_exception = True
 
     def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
         return self.request.user.is_approver
 
 
@@ -54,6 +58,8 @@ class ApprovalTemplateView(UserPassesTestMixin, AccessMixin, TemplateView):
     raise_exception = True
 
     def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
         return self.request.user.is_approver
 
 
