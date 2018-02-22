@@ -135,7 +135,7 @@ The specified artist's gallery is not publicly visible.
 
                 {% for coloring_picture in last_nine_coloring_pictures %}
 			<div class="offertile picturetile">
-			<a id="picturetile_{{ coloring_picture.id }}" class="previewPopupTrigger" type="coloring_picture" itemid="{{ coloring_picture.id }}" href="/ColoringCave.jsp?ccid=${ccpic.basepic}"><img src="{{ coloring_picture.thumbnail_url }}" width="60" height="{{ coloring_picture.thumb_height }}" /></a>
+			<a id="picturetile_{{ coloring_picture.id }}" class="previewPopupTrigger" type="coloring_picture" itemid="{{ coloring_picture.id }}" href="{% url "coloring-cave" coloring_base_id=coloring_picture.base.id %}"><img src="{{ coloring_picture.thumbnail_url }}" width="60" height="{{ coloring_picture.thumb_height }}" /></a>
                         {{ coloring_picture.date_posted }}
 			</div>
                 {% endfor %}
