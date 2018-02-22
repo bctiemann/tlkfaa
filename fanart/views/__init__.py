@@ -1174,7 +1174,6 @@ class ColoringPicturesView(ArtistView):
         context['artist'] = artist
 
         pictures = artist.coloringpicture_set.all()
-        logger.info(pictures)
 
         context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
         try:
