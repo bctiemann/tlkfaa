@@ -156,7 +156,7 @@ STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
 #MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT'
+MEDIA_ROOT = ''
 #MEDIA_URL = '/Artwork/Artists/'
 
 LOGIN_URL = '/'
