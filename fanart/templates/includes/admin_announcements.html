@@ -1,5 +1,6 @@
 {% load bbcode_tags %}
 {% for announcement in admin_announcements %}
+{% if announcement %}
 
 <div class="bulletinlink">
     <div class="bulletindate">{{ announcement.date_posted|date }}</div>
@@ -7,4 +8,5 @@
     {{ announcement.bulletin|bbcode|safe }}
 </div>
 
+{% endif %}
 {% endfor %}

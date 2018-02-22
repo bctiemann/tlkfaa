@@ -17,11 +17,22 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Artist',
+            name='User',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=32, null=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('password', models.CharField(max_length=128, verbose_name='password')),
+                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
             ],
+            options={
+                'abstract': False,
+            },
         ),
+#        migrations.CreateModel(
+#            name='Artist',
+#            fields=[
+#                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+#                ('name', models.CharField(blank=True, max_length=32, null=True)),
+#                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+#            ],
+#        ),
     ]
