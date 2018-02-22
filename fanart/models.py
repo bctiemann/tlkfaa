@@ -159,7 +159,7 @@ class User(AbstractUser):
         unique=True,
         help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
 #        validators=[username_validator],
-        validators=[validate_unique_username],
+#        validators=[validate_unique_username],
         error_messages={
             'unique': _("A user with that username already exists."),
         },
@@ -278,8 +278,8 @@ WHERE fanart_user.id=fanart_favorite.artist_id
 AND fanart_favorite.user_id=%s
 AND fanart_favorite.picture_id IS NULL
 AND fanart_favorite.character_id IS NULL
-AND fanart_user.is_active=true
-AND fanart_user.is_artist=true
+AND fanart_user.is_active=1
+AND fanart_user.is_artist=1
 GROUP BY fanart_favorite.artist_id
 ORDER BY fanart_user.sort_name
 """
@@ -335,15 +335,17 @@ ORDER BY fanart_user.sort_name
 
     @property
     def claims_ready(self):
-        return self.icon_claims_ready.union(self.adoptable_claims_ready)
+        return self.icon_claims_ready.union(self.adoptable_claims_ready).order_by('-date_posted')
 
     @property
     def icon_claims_received(self):
-        return self.claim_set.filter(offer__type='icon', offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+#        return self.claim_set.filter(offer__type='icon', offer__is_visible=True).exclude(filename='').order_by('-date_posted')
+        return self.claim_set.filter(offer__type='icon', offer__is_visible=True).exclude(filename='')
 
     @property
     def adoptable_claims_received(self):
-        return self.claim_set.filter(offer__type='adoptable').order_by('-date_posted')
+#        return self.claim_set.filter(offer__type='adoptable').order_by('-date_posted')
+        return self.claim_set.filter(offer__type='adoptable')
 
     @property
     def active_offers(self):

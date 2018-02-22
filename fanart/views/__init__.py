@@ -343,9 +343,9 @@ class TradingTreeView(UserPaneMixin, TemplateView):
         if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
             context['show_for_you'] = True
             if offer_type == 'icon':
-                context['claims_for_you'] = self.request.user.icon_claims_ready.all()
+                context['claims_for_you'] = self.request.user.icon_claims_ready.all().order_by('-date_posted')
             elif offer_type == 'adoptable':
-                context['claims_for_you'] = self.request.user.adoptable_claims_ready.all()
+                context['claims_for_you'] = self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
 
         context['offer_type'] = offer_type
         return context

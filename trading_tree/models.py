@@ -241,7 +241,7 @@ class Claim(models.Model):
     def get_absolute_url(self):
         return reverse('upload-claim', kwargs={'claim_id': self.id})
 
-    class Meta:
-        ordering = ['date_posted']
+#    class Meta:
+#        ordering = ['date_posted']
 
 
