@@ -141,7 +141,7 @@ The specified artist's gallery is not publicly visible.
                 {% endfor %}
 
 		</div>
-		<div class="viewmoretile"><a href="/ColoringCave.jsp?artistid=${thisartist.artistid}">View more...</a></div>
+		<div class="viewmoretile"><a href="{% url "coloring-cave-artist" dir_name=artist.dir_name %}">View more...</a></div>
 	</div>
         {% endif %}
 

@@ -1,0 +1,26 @@
+{% extends "fanart/artist.html" %}
+
+{% block banner %}{% endblock %}
+
+{% block subview %}
+
+    <h2>Colored Line-Art</h2>
+
+    {{ pages_link.pages_nav|safe }}
+
+    <div class="coloring-pictures">
+    {% for picture in pictures reversed %}
+
+        <div class="coloring-picture-tile">
+            <img src="{{ picture.url }}" />
+            <p><a href="{% url "coloring-cave" coloring_base_id=picture.base.id %}">Original by {{ picture.base.picture.artist.username }}</a></p>
+        </div>
+
+    {% endfor %}
+    </div>
+
+    {{ pages_link.pages_nav|safe }}
+
+{% endblock %}
+
+

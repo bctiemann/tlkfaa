@@ -1165,6 +1165,35 @@ class ArtWallView(ArtistView):
         return context
 
 
+class ColoringPicturesView(ArtistView):
+    template_name = 'fanart/artist-coloringpictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArtistView, self).get_context_data(**kwargs)
+        artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
+        context['artist'] = artist
+
+        pictures = artist.coloringpicture_set.all()
+        logger.info(pictures)
+
+        context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        reversed_page = context['pictures_paginator'].num_pages - page + 1
+
+        try:
+            context['pictures'] = context['pictures_paginator'].page(reversed_page)
+        except EmptyPage:
+            context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
+        context['page_number'] = context['pictures_paginator'].num_pages - context['pictures'].number + 1
+
+        context['pages_link'] = utils.PagesLink(len(pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
+
+
 class AotmVoteView(LoginRequiredMixin, CreateView):
     template_name = 'includes/aotm_vote.html'
     form_class = forms.AotmVoteForm
