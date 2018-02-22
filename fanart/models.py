@@ -20,7 +20,7 @@ import re
 import shutil
 from PIL import Image
 
-from fanart.utils import dictfetchall, make_dir_name
+from fanart.utils import dictfetchall, make_dir_name, upperfirst
 from fanart.tasks import process_images
 
 import logging
@@ -1060,8 +1060,8 @@ class Pending(models.Model):
     @property
     def sanitized_basename(self):
         base_fn = re.sub('\.[^\.]+$', '', self.filename)
-        base_fn = re.sub('[^a-zA-Z0-9_-]', '', base_fn)
-        out_fn = ''.join([part.capitalize() for part in re.split('[- _+~&()\.]', base_fn)])
+        out_fn = ''.join([upperfirst(part) for part in re.split('[- _+~&()\.]', base_fn)])
+        out_fn = re.sub('[^a-zA-Z0-9_-]', '', out_fn)
         out_fn = re.sub('(?i)copy$', '', out_fn)
         out_fn = re.sub('(?i)jpg$', '', out_fn)
         out_fn = re.sub('(?i)gif$', '', out_fn)
