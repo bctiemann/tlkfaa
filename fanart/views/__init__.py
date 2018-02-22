@@ -234,9 +234,8 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 if list == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
                 elif list == 'tag':
-                    logger.info(term)
+                    logger.info('Artwork search: {0}'.format(term.encode('utf8')))
                     tag = models.Tag.objects.filter(tag=term).first()
-                    logger.info(tag)
                     if tag:
                         artwork = tag.picture_set.all().order_by('-num_faves')
                     else:
