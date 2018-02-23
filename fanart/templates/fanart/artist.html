@@ -180,7 +180,13 @@ The specified artist's gallery is not publicly visible.
 {% endcomment %}
 			<tr>
 			<td class="label">Joined</td>
-			<td class="data">{{ artist.date_joined|date:"M j, Y" }}</td>
+			<td class="data">
+                            {% if artist.date_joined_str %}
+                                {{ artist.date_joined|date:"M j, Y" }}
+                            {% else %}
+                                <span class="grayed-out">Before Feb 18 1999</span>
+                            {% endif %}
+                        </td>
 			</tr>
 			<tr>
 			<td class="label">First Upload</td>

@@ -2796,3 +2796,7 @@ div.login-failed-banner {
 .coloring-picture-tile img {
 	height: 100%;
 }
+
+.grayed-out {
+	color: #777777;
+}

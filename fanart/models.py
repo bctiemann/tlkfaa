@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import uuid
 import datetime
+import pytz
 import os
 import re
 import shutil
@@ -307,6 +308,12 @@ ORDER BY fanart_user.sort_name
     @property
     def unread_shouts(self):
         return Shout.objects.filter(artist=self, is_received=False).order_by('-date_posted')
+
+    @property
+    def date_joined_str(self):
+        if self.date_joined < datetime.datetime(1999, 1, 1, tzinfo=pytz.utc):
+            return None
+        return self.date_joined
 
     @property
     def first_upload(self):
