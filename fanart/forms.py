@@ -263,6 +263,7 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
             if extra_email_context is not None:
                 context.update(extra_email_context)
             logger.info(user.email)
+            logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
             self.send_mail(
                 subject_template_name, email_template_name, context, from_email,
                 user.email, html_email_template_name=html_email_template_name,
@@ -278,6 +279,7 @@ class HashedSetPasswordForm(SetPasswordForm):
         m.update(password)
         password_hash = m.hexdigest()
         self.user.set_password(password_hash)
+        logger.info('User {0} reset password.'.format(self.user.username))
 
         if commit:
             self.user.save()
