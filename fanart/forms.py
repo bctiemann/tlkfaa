@@ -1,3 +1,4 @@
+from django.conf import settings
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
@@ -14,7 +15,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from fanart import models
+from fanart import models, tasks
 
 import json
 import hashlib
@@ -231,8 +232,8 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
         return list(set(users))
 
     def save(self, domain_override=None,
-             subject_template_name='registration/password_reset_subject.txt',
-             email_template_name='registration/password_reset_email.html',
+             subject_template_name=None,
+             email_template_name=None,
              use_https=False, token_generator=default_token_generator,
              from_email=None, request=None, html_email_template_name=None,
              extra_email_context=None):
@@ -264,11 +265,14 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
                 context.update(extra_email_context)
             logger.info(user.email)
             logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
-            self.send_mail(
-                subject_template_name, email_template_name, context, from_email,
-                user.email, html_email_template_name=html_email_template_name,
+            tasks.send_email.delay(
+                recipients=[user.email],
+                subject='TLKFAA: Password Recovery',
+                context=context,
+                text_template='email/password_reset_email.txt',
+                html_template='email/password_reset_email.html',
+                bcc=[settings.DEBUG_EMAIL]
             )
-
 
 class HashedSetPasswordForm(SetPasswordForm):
 
