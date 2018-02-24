@@ -31,7 +31,8 @@ class Command(BaseCommand):
                 c.execute("""SELECT created FROM artists WHERE artistid = {0}""".format(user.artist_id_orig))
                 artist_old = c.fetchone()
 
-            if user_old and user_old['created'] == None and artist_old and artist_old['created'] == None:
+#            if user_old and user_old['created'] == None and artist_old and artist_old['created'] == None:
+            if artist_old and artist_old['created'] == None:
                 print user.username.encode('utf8'), user.id, user.date_joined, user_old, artist_old
                 user.date_joined = '1970-01-01'
                 user.save()
