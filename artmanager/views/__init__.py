@@ -521,6 +521,8 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
                     continue
                 logger.info(character)
                 pc = models.PictureCharacter.objects.create(picture=self.object, character=character)
+                character.date_tagged = timezone.now()
+                character.refresh_num_pictures()
 
         picture_tags = []
         for keyword in (self.request.POST.get('keywords')).split(','):
