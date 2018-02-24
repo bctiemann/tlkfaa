@@ -73,6 +73,7 @@ class Command(BaseCommand):
                 pc.pending = None
                 pc.picture = picture
                 pc.save()
+                pc.character.refresh_num_pictures()
 
             # Clear then populate keywords into tags
             picture.tags.clear()
