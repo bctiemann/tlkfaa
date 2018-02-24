@@ -856,43 +856,47 @@ class Character(models.Model):
 
     @property
     def picture_url(self):
-        if self.is_canon:
+        if self.profile_picture:
+            return self.profile_picture.url
+        elif self.profile_coloring_picture:
+            return self.profile_coloring_picture.url
+        elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.{2}'.format(settings.MEDIA_ROOT, self.id, ext)):
                     return '{0}canon_characters/{1}.{2}'.format(settings.MEDIA_URL, self.id, ext)
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
-        elif self.profile_picture:
-            return self.profile_picture.url
-        elif self.profile_coloring_picture:
-            return self.profile_coloring_picture.url
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
     @property
     def thumbnail_url(self):
-        if self.is_canon:
-            return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
-        elif self.profile_picture:
+        if self.profile_picture:
             return self.profile_picture.thumbnail_url
         elif self.profile_coloring_picture:
             return self.profile_coloring_picture.thumbnail_url
+        elif self.is_canon:
+            return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
-        if self.is_canon:
-            return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
-        elif self.profile_picture:
+        if self.profile_picture:
             return self.profile_picture.preview_url
         elif self.profile_coloring_picture:
             return self.profile_coloring_picture.preview_url
+        elif self.is_canon:
+            return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
     @property
     def adoption_offer(self):
         return self.offer_set.filter(is_active=True, is_visible=True).first()
+
+    def refresh_num_pictures(self):
+        self.num_pictures = self.picturecharacter_set.count()
+        self.save()
 
     def set_deleted(self):
 
