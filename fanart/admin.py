@@ -34,7 +34,7 @@ admin.site.register(fanart_models.User, UserAdmin)
 class PictureAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
-    readonly_fields = ('artist', 'approved_by',)
+    readonly_fields = ('artist', 'approved_by', 'tags')
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
 
