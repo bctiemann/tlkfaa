@@ -970,7 +970,7 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
-class PictureRedirectView(RedirectView):
+class PictureRedirectByIDView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         picture_id = self.request.GET.get('pictureid')
@@ -978,6 +978,13 @@ class PictureRedirectView(RedirectView):
             raise Http404
         picture = get_object_or_404(models.Picture, pk=picture_id, date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         return reverse('picture', kwargs={'picture_id': picture.id})
+
+
+class PictureRedirectByPathView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        picture = get_object_or_404(models.Picture, filename=kwargs.get('filename'), artist__dir_name=kwargs.get('dir_name'), date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
+        return picture.url
 
 
 class PictureView(UserPaneMixin, TemplateView):
