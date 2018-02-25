@@ -307,6 +307,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
     </script>
 
     <form name="artistform" id="artistform" method="POST" action="{% url "artmanager:prefs-update-profile" %}">
+        <input name="username" style="position: absolute; top: -500px;" />
         <table class="formtable">
             <tr>
                 <td class="label">Name</td>
