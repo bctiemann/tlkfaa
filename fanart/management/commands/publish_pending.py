@@ -26,6 +26,12 @@ class Command(BaseCommand):
             if not pending.thumbnail_created or not pending.preview_created:
                 continue
 
+            if pending.locked_for_publish:
+                continue
+
+            pending.locked_for_publish = True
+            pending.save()
+
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
             for existing_file in os.listdir(pending.artist.absolute_dir_name):
                 if fnmatch.fnmatch(existing_file, '{0}.*'.format(pending.next_unique_basename)):

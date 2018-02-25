@@ -989,6 +989,7 @@ class Pending(models.Model):
     is_scanned = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
+    locked_for_publish = models.BooleanField(default=False)
 
     objects = PendingManager()
 
