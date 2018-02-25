@@ -1578,6 +1578,10 @@ img.thumb {
 	margin-right: 10px;
 	display: block;
 }
+img.thumb.characterpic {
+	border: none;
+	border-radius: 5px;
+}
 img.claimthumb {
 	width: 50px;
 }
