@@ -24,9 +24,11 @@ class Command(BaseCommand):
                 continue
 
             if not pending.thumbnail_created or not pending.preview_created:
+                print '{0} thumbnails still processing'.format(pending.id)
                 continue
 
             if pending.locked_for_publish:
+                print '{0} locked for publish'.format(pending.id)
                 continue
 
             pending.locked_for_publish = True
