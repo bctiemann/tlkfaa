@@ -875,7 +875,10 @@ class Character(models.Model):
         elif self.profile_coloring_picture:
             return self.profile_coloring_picture.thumbnail_url
         elif self.is_canon:
-            return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
+            for ext in ['gif', 'jpg', 'png']:
+                if os.path.exists('{0}/images/canon_characters/{1}.s.jpg'.format(settings.MEDIA_ROOT, self.id)):
+                    return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
+            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
@@ -886,7 +889,10 @@ class Character(models.Model):
         elif self.profile_coloring_picture:
             return self.profile_coloring_picture.preview_url
         elif self.is_canon:
-            return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
+            for ext in ['gif', 'jpg', 'png']:
+                if os.path.exists('{0}/images/canon_characters/{1}.p.jpg'.format(settings.MEDIA_ROOT, self.id)):
+                    return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
+            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
         else:
             return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
 
