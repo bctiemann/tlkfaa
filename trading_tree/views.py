@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
@@ -265,4 +266,10 @@ class OfferStatusView(APIView):
                 }
         return Response(response)
 
+
+class OfferRedirectView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        offer = get_object_or_404(Offer, pk=kwargs.get('offer_id'))
+        return offer.url
 
