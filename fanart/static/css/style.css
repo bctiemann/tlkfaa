@@ -1490,10 +1490,12 @@ img.fullsize {
 	max-width: auto;
 	display: block;
 	margin: 0px auto;
+/*
 	border: 1px solid #000;
 	-webkit-box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 	-moz-box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 	box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
+*/
 }
 img.preview {
 	max-width: 500px;
