@@ -68,7 +68,7 @@ class LoginForm(AuthenticationForm):
         raw_password = self.cleaned_data.get('password')
 
         if username is not None and raw_password:
-            m.update(raw_password)
+            m.update(raw_password.encode('utf8'))
             password = m.hexdigest()
             self.user_cache = authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
