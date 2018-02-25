@@ -1045,6 +1045,7 @@ class CharacterView(UserPaneMixin, TemplateView):
         context = super(CharacterView, self).get_context_data(**kwargs)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
+        logger.info('Viewing character {0}'.format(context['character']))
         other_characters = self.request.GET.get('othercharacters', None)
         character_list = [str(context['character'].id)]
         if other_characters:
@@ -1052,8 +1053,8 @@ class CharacterView(UserPaneMixin, TemplateView):
             other_character_ids = [str(c.id) for c in context['other_characters']]
             context['other_characters_param'] = ','.join(other_character_ids)
             character_list += other_character_ids
+            logger.info('Other characters: {0}'.format(character_list))
         context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
-        logger.info(character_list)
 
         character_pictures = models.Picture.objects.all()
         for character_id in character_list:
