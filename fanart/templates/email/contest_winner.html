@@ -1,0 +1,38 @@
+<p>
+Congratulations! Your entry of {{ entry.picture.filename }} into the
+Archive-Wide Art Contest "{{ contest.title }}"
+received {{ vote_percent }}% of the votes, making it the winning entry!
+</p>
+
+<p>
+Winning the contest entitles you to choose the theme for the next contest.
+Please go to the following URL to set up the contest rules:
+</p>
+
+<p>
+<a href="{{ base_url }}{% url "contest-setup" %}">{{ base_url }}{% url "contest-setup" %}</a>
+</p>
+
+<p>
+There, you can specify the contest's theme, set the rules, and select
+how long the contest will run. PLEASE NOTE: after you submit the contest
+settings, you will not be able to edit them further, so please make sure
+you have everything the way you want it before you click the "Begin New
+Contest" button!
+</p>
+
+<p>
+If you do not set up the contest within three days, the next runner-up
+will be sent this e-mail and be allowed to create the next contest instead.
+</p>
+
+<p>
+Please feel free to e-mail me at <a href="mailto:{{ admin_email }}">{{ admin_email }}</a> if you have any
+questions or concerns. Congratulations!
+</p>
+
+<p>
+--Brian Tiemann<br />
+lionking.org administrator
+</p>
+

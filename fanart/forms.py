@@ -135,6 +135,13 @@ class ContestVoteForm(forms.ModelForm):
         fields = ['entry']
 
 
+class ContestForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Contest
+        fields = ['title']
+
+
 class AotmVoteForm(forms.ModelForm):
 
     class Meta:

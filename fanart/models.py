@@ -1287,6 +1287,13 @@ class Contest(models.Model):
             entries = entries.annotate(votes=Count('contestvote')).order_by('-votes', 'date_entered')
         return entries[0:20]
 
+    @property
+    def total_votes(self):
+        votes = 0
+        for entry in self.contestentry_set.all():
+            votes += entry.num_votes
+        return votes
+
     def get_absolute_url(self):
         return reverse('contest', kwargs={'contest_id': self.id})
 
@@ -1317,6 +1324,9 @@ class ContestEntry(models.Model):
     class Meta:
         verbose_name_plural = 'contest entries'
         ordering = ['-date_entered']
+
+    def __unicode__(self):
+        return '{0} {1} {2}'.format(self.id, self.contest, self.picture)
 
 
 class ContestVote(models.Model):

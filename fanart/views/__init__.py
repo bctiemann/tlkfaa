@@ -478,6 +478,25 @@ class ContestVoteView(CreateView):
         return response
 
 
+class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
+    model = models.Contest
+    template_name = 'fanart/contest_setup.html'
+    form_class = forms.ContestForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ContestSetupView, self).get_context_data(**kwargs)
+        return context
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        logger.info(form.cleaned_data)
+        response = super(ContestSetupView, self).form_valid(form)
+        return response
+
+#    def get_success_url(self):
+#        return reverse('approve-request-success', kwargs={'hash': self.object.hash})
+
+
 class FavoritePicturesView(UserPaneMixin, TemplateView):
     template_name = 'fanart/favorite_pictures.html'
 
@@ -507,13 +526,17 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         return context
 
 
-class ApproveRequestView(LoginRequiredMixin, UpdateView):
+class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
     model = models.GiftPicture
     template_name = 'fanart/approve_request.html'
     form_class = forms.GiftPictureForm
 
     def get_object(self):
         return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user, is_active=False, date_declined__isnull=True)
+
+    def get_context_data(self, **kwargs):
+        context = super(ApproveRequestView, self).get_context_data(**kwargs)
+        return context
 
     def form_valid(self, form):
         logger.info(self.request.POST)

@@ -201,7 +201,6 @@ class UploadView(ArtManagerPaneView):
 
         replacing_picture = None
         replacing_picture_id = self.request.GET.get('replace', None)
-        logger.info(replacing_picture_id)
         if replacing_picture_id:
             try:
                 replacing_picture = models.Picture.objects.get(pk=replacing_picture_id, artist=self.request.user)
