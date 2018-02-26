@@ -352,7 +352,10 @@ IMAGE_FILE_TYPES = {
 MOVIE_FILE_TYPES = {
     'application/x-shockwave-flash"': 'swf',
     'video/x-ms-wmv': 'wmv',
+    'video/x-msvideo': 'avi',
     'video/quicktime': 'mov',
+    'video/mpeg': 'mpg',
+    'video/mp4': 'mp4',
 }
 
 EMAIL_HOST = 'mail.lionking.org'

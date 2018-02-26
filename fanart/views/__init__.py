@@ -995,13 +995,7 @@ class PictureView(UserPaneMixin, TemplateView):
             context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
 
-        context['video_types'] = [
-            'video/quicktime',
-            'video/mpeg',
-            'video/mp4',
-            'video/x-msvideo',
-            'video/x-ms-wmv',
-        ]
+        context['video_types'] = settings.MOVIE_FILE_TYPES.keys()
         return context
 
 

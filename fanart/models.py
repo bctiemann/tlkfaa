@@ -593,29 +593,52 @@ class Picture(models.Model):
         return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
 
     @property
+    def thumbnail_url_corrected(self):
+        return '{0}Artwork/Artists/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename, self.thumbnail_extension)
+
+    @property
     def preview_url(self):
         return '{0}Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
+
+    @property
+    def preview_url_corrected(self):
+        return '{0}Artwork/Artists/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename, self.thumbnail_extension)
 
     @property
     def path(self):
         return '{0}/{1}'.format(self.artist.absolute_dir_name, self.filename)
 
     @property
+    def thumbnail_path(self):
+        return '{0}/{1}.s.jpg'.format(self.artist.absolute_dir_name, self.basename)
+
+    @property
+    def thumbnail_path_corrected(self):
+        return '{0}/{1}.s.{2}'.format(self.artist.absolute_dir_name, self.basename, self.thumbnail_extension)
+
+    @property
     def preview_path(self):
         return '{0}/{1}.p.jpg'.format(self.artist.absolute_dir_name, self.basename)
 
     @property
-    def thumbnail_path(self):
-        return '{0}/{1}.s.jpg'.format(self.artist.absolute_dir_name, self.basename)
+    def preview_path_corrected(self):
+        return '{0}/{1}.p.{2}'.format(self.artist.absolute_dir_name, self.basename, self.thumbnail_extension)
 
     @property
     def url(self):
         return '{0}Artwork/Artists/{1}/{2}'.format(settings.MEDIA_URL, self.artist.dir_name, self.filename)
 
     @property
+    def thumbnail_extension(self):
+        if self.mime_type in settings.MOVIE_FILE_TYPES.keys():
+            return 'jpg'
+        return self.extension
+
+    @property
     def preview_extension(self):
         if self.mime_type in ['image/jpeg', 'image/png', 'image/gif']:
             return self.extension
+#            return 'p.{0}'.format(self.extension)
         return 'p.jpg'
 
     @property
