@@ -1390,6 +1390,12 @@ function setupTagCharacters(pictureid,obj) {
   });
 }
 
+function postContestEntry(picform) {
+    if (picform.picture.value) {
+        picform.submit();
+    }
+}
+
 function postSelectedPic(picform) {
 //  if (typeof picform.picture !== "undefined") {
   if (picform.picture.value) {
