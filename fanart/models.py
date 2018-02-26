@@ -1310,7 +1310,7 @@ class ContestEntry(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            return ContestEntry.objects.get(contest=self.contest, picture=self.picture).save()
+            return ContestEntry.objects.exclude(pk=self.pk).get(contest=self.contest, picture=self.picture).save()
         except ContestEntry.DoesNotExist:
             return super(ContestEntry, self).save(*args, **kwargs)
 
