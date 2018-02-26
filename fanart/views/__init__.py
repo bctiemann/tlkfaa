@@ -214,7 +214,6 @@ class ArtworkView(UserPaneMixin, TemplateView):
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_uploaded')
         elif list == 'newestfaves' and self.request.user.is_authenticated:
             artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_uploaded')
-            logger.info(artwork.query)
         elif list == 'toprated':
             artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
         elif list == 'topratedrecent':
