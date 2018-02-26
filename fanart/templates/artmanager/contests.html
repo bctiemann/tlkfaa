@@ -22,7 +22,7 @@
             </tr>
             <tr>
                 <td class="label">Allow Voting</td>
-                <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_new" value="1" /></td>
+                <td class="data"><input type="checkbox" name="allow_voting" id="allow_voting_new" value="1" /></td>
             </tr>
             <tr>
                 <td class="label">Theme/Description</td>
@@ -65,7 +65,7 @@ $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
                 </tr>
                 <tr>
                     <td class="label">Allow Voting</td>
-                    <td class="data"><input type="checkbox" name="allowvoting" id="allowvoting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
+                    <td class="data"><input type="checkbox" name="allow_voting" id="allow_voting_{{ contest.id }}" value="1" {% if contest.allow_voting %}checked{% endif %} /></td>
                 </tr>
                 <tr>
                     <td class="label">Theme/Description</td>
