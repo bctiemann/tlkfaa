@@ -1490,10 +1490,12 @@ img.fullsize {
 	max-width: auto;
 	display: block;
 	margin: 0px auto;
+/*
 	border: 1px solid #000;
 	-webkit-box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 	-moz-box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
 	box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
+*/
 }
 img.preview {
 	max-width: 500px;
@@ -1551,10 +1553,11 @@ table.picnav td.link {
 }
 div.picturecaption {
 	margin: 20px;
-	font-size: 11px;
+	font-size: 20px;
+	font-family: 'Assistant', sans-serif;
 }
 div.picturecaption h3 {
-	font-size: 13px;
+	font-size: 23px;
 	font-weight: bold;
 	margin-bottom: 5px;
 }
@@ -1574,6 +1577,10 @@ img.thumb {
 	margin: 3px;
 	margin-right: 10px;
 	display: block;
+}
+img.thumb.characterpic {
+	border: none;
+	border-radius: 5px;
 }
 img.claimthumb {
 	width: 50px;

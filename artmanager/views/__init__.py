@@ -184,6 +184,10 @@ class UserModeView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def form_valid(self, form):
+        logger.info('{0} switched user mode: {1}'.format(self.request.user, self.request.POST))
+        return super(UserModeView, self).form_valid(form)
+
 
 class UploadView(ArtManagerPaneView):
     template_name = 'artmanager/upload.html'

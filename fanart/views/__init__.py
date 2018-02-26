@@ -214,7 +214,6 @@ class ArtworkView(UserPaneMixin, TemplateView):
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_uploaded')
         elif list == 'newestfaves' and self.request.user.is_authenticated:
             artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_uploaded')
-            logger.info(artwork.query)
         elif list == 'toprated':
             artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
         elif list == 'topratedrecent':
@@ -318,36 +317,6 @@ class CharactersView(UserPaneMixin, TemplateView):
         context['characters'] = characters_page
         context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
-        return context
-
-
-class TradingTreeView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/tradingtree.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(TradingTreeView, self).get_context_data(**kwargs)
-
-        offer_type = kwargs.get('offer_type')
-        if not offer_type:
-            offer_type = 'icon'
-
-        offer_id = self.request.GET.get('offer_id', None)
-        if offer_id:
-            context['offer'] = get_object_or_404(Offer, pk=offer_id)
-            if self.request.user.is_authenticated:
-                context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
-
-        three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
-        context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
-
-        if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
-            context['show_for_you'] = True
-            if offer_type == 'icon':
-                context['claims_for_you'] = self.request.user.icon_claims_ready.all().order_by('-date_posted')
-            elif offer_type == 'adoptable':
-                context['claims_for_you'] = self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
-
-        context['offer_type'] = offer_type
         return context
 
 
@@ -970,7 +939,7 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
-class PictureRedirectView(RedirectView):
+class PictureRedirectByIDView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         picture_id = self.request.GET.get('pictureid')
@@ -978,6 +947,13 @@ class PictureRedirectView(RedirectView):
             raise Http404
         picture = get_object_or_404(models.Picture, pk=picture_id, date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         return reverse('picture', kwargs={'picture_id': picture.id})
+
+
+class PictureRedirectByPathView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        picture = get_object_or_404(models.Picture, filename=kwargs.get('filename'), artist__dir_name=kwargs.get('dir_name'), date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
+        return picture.url
 
 
 class PictureView(UserPaneMixin, TemplateView):
@@ -1045,6 +1021,7 @@ class CharacterView(UserPaneMixin, TemplateView):
         context = super(CharacterView, self).get_context_data(**kwargs)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
+        logger.info('Viewing character {0}'.format(context['character']))
         other_characters = self.request.GET.get('othercharacters', None)
         character_list = [str(context['character'].id)]
         if other_characters:
@@ -1052,8 +1029,8 @@ class CharacterView(UserPaneMixin, TemplateView):
             other_character_ids = [str(c.id) for c in context['other_characters']]
             context['other_characters_param'] = ','.join(other_character_ids)
             character_list += other_character_ids
+            logger.info('Other characters: {0}'.format(character_list))
         context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
-        logger.info(character_list)
 
         character_pictures = models.Picture.objects.all()
         for character_id in character_list:
@@ -1460,7 +1437,7 @@ class UploadProfilePicView(UpdateView):
 
 class ProfilePicStatusView(APIView):
 
-    def get(self, request, offer_id=None):
+    def get(self, request):
         response = {}
         if request.user.profile_picture:
             response = {
@@ -1539,7 +1516,7 @@ class UploadBannerView(CreateView):
 
 class BannerStatusView(APIView):
 
-    def get(self, request, offer_id=None):
+    def get(self, request):
         response = {}
         if request.user.profile_picture:
             response = {
