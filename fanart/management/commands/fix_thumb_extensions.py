@@ -36,9 +36,11 @@ class Command(BaseCommand):
         to_legacy = options.get('to_legacy')
         start_id = options.get('start_id')
 
-        for picture in models.Picture.objects.filter(pk__gte=start_id).order_by('-date_uploaded'):
-#        for picture in models.Picture.objects.filter(pk=645511).order_by('-date_uploaded'):
+        for picture in models.Picture.objects.filter(pk__gte=start_id).exclude(artist_id=36222).order_by('-date_uploaded'):
+#        for picture in models.Picture.objects.filter(pk=645510).order_by('-date_uploaded'):
             print picture, picture.date_uploaded
+
+            image = Image.open(picture.path)
 
             if to_legacy:
                 print 'To legacy'
@@ -53,13 +55,25 @@ class Command(BaseCommand):
             if settings.IMAGE_FILE_TYPES[Image.MIME[preview.format]] != 'jpg':
                 print preview.format
                 if to_legacy:
-                    os.rename(picture.preview_path_corrected, picture.preview_path_legacy)
+                    preview_new = Image.new('RGB', preview.size)
+                    image = Image.open(picture.path)
+                    image.thumbnail(preview.size)
+                    preview_new.paste(image)
+                    preview_new.save(picture.preview_path_legacy, 'JPEG')
+#                    os.rename(picture.preview_path_corrected, picture.preview_path_legacy)
                 elif from_legacy:
-                    os.rename(picture.preview_path_legacy, picture.preview_path_corrected)
+                    preview.save(picture.preview_path_corrected, image.format)
+#                    os.rename(picture.preview_path_legacy, picture.preview_path_corrected)
             thumbnail = Image.open(thumbnail_path)
             if settings.IMAGE_FILE_TYPES[Image.MIME[thumbnail.format]] != 'jpg':
                 print thumbnail.format
                 if to_legacy:
-                    os.rename(picture.thumbnail_path_corrected, picture.thumbnail_path_legacy)
+                    thumbnail_new = Image.new('RGB', thumbnail.size)
+                    image = Image.open(picture.path)
+                    image.thumbnail(thumbnail.size)
+                    thumbnail_new.paste(image)
+                    thumbnail_new.save(picture.thumbnail_path_legacy, 'JPEG')
+#                    os.rename(picture.thumbnail_path_corrected, picture.thumbnail_path_legacy)
                 elif from_legacy:
-                    os.rename(picture.thumbnail_path_legacy, picture.thumbnail_path_corrected)
+                    thumbnail.save(picture.thumbnail_path_corrected, image.format)
+#                    os.rename(picture.thumbnail_path_legacy, picture.thumbnail_path_corrected)
