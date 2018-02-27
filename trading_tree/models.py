@@ -32,13 +32,13 @@ def get_offers_path(instance, filename):
     return 'Artwork/offers/{0}.{1}'.format(instance.id, instance.extension)
 
 def get_offers_thumb_path(instance, filename):
-    return 'Artwork/offers/{0}.s.jpg'.format(instance.id)
+    return 'Artwork/offers/{0}.s.{1}'.format(instance.id, instance.thumbnail_extension)
 
 def get_claims_path(instance, filename):
     return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
 
 def get_claims_thumb_path(instance, filename):
-    return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
+    return 'Artwork/claims/{0}.s.{1}'.format(instance.id, instance.thumbnail_extension)
 
 
 class OverwriteStorage(FileSystemStorage):
@@ -53,6 +53,8 @@ class Offer(models.Model):
         ('icon', 'Icon'),
         ('adoptable', 'Adoptable'),
     )
+
+    THUMBNAILS_JPEG = True
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('fanart.User', null=True, blank=True)
@@ -86,32 +88,38 @@ class Offer(models.Model):
 
     @property
     def extension(self):
-        return self.filename.split('.')[-1].lower()
+        return self.picture.name.split('.')[-1].lower()
+
+    @property
+    def thumbnail_extension(self):
+        if self.THUMBNAILS_JPEG:
+            return 'jpg'
+        return self.extension
 
     @property
     def thumbnail_path(self):
         if self.picture:
             path = ('/').join(self.picture.path.split('/')[:-1])
-            return '{0}/{1}.s.jpg'.format(path, self.id)
+            return '{0}/{1}.s.{2}'.format(path, self.id, self.thumbnail_extension)
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.s.jpg'.format(self.id))
 
     @property
     def preview_path(self):
         if self.picture:
             path = ('/').join(self.picture.path.split('/')[:-1])
-            return '{0}/{1}.p.jpg'.format(path, self.id)
+            return '{0}/{1}.p.{2}'.format(path, self.id, self.thumbnail_extension)
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.p.jpg'.format(self.id))
 
     @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/offers/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/offers/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/offers/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/offers/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
@@ -159,6 +167,9 @@ class Offer(models.Model):
 
 
 class Claim(models.Model):
+
+    THUMBNAILS_JPEG = True
+
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     offer = models.ForeignKey('Offer', null=True, blank=True)
     user = models.ForeignKey('fanart.User', null=True, blank=True)
@@ -185,29 +196,35 @@ class Claim(models.Model):
         return self.filename.split('.')[-1].lower()
 
     @property
+    def thumbnail_extension(self):
+        if self.THUMBNAILS_JPEG:
+            return 'jpg'
+        return self.extension
+
+    @property
     def thumbnail_path(self):
         if self.picture:
             path = ('/').join(self.picture.path.split('/')[:-1])
-            return '{0}/{1}.s.jpg'.format(path, self.id)
+            return '{0}/{1}.s.{2}'.format(path, self.id, self.thumbnail_extension)
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.s.jpg'.format(self.id))
 
     @property
     def preview_path(self):
         if self.picture:
             path = ('/').join(self.picture.path.split('/')[:-1])
-            return '{0}/{1}.p.jpg'.format(path, self.id)
+            return '{0}/{1}.p.{2}'.format(path, self.id, self.thumbnail_extension)
         return os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.p.jpg'.format(self.id))
 
     @property
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
-            return '{0}Artwork/claims/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/claims/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
         if os.path.exists(self.preview_path):
-            return '{0}Artwork/claims/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
+            return '{0}Artwork/claims/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property

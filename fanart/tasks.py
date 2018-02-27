@@ -115,7 +115,18 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         return None, None
 
     im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
-    im.save(new_image_path, im.format)
+
+    if getattr(picture_object, 'THUMBNAILS_JPEG', True) == True:
+        format = 'JPEG'
+        mode = 'RGB'
+    else:
+        format = im.format
+        mode = im.mode
+
+    im_new = Image.new(mode, im.size, (255,255,255))
+    im_new.paste(im)
+    im_new.save(new_image_path, format)
+
     www_uid = getpwnam(settings.WWW_USER).pw_uid
     os.chown(new_image_path, www_uid, -1)
 

@@ -23,7 +23,7 @@
                         {% endif %}
                         <div class="claimcomment">{{ claim.comment|bbcode|safe }}</div>
                         {% if claim.reference_url %}
-                            <div class="claimrefurl"><a href="{{ claim.reference_url }}" rel="shadowbox">Reference</a></div>
+                            <div class="claimrefurl"><a href="{{ claim.reference_url }}" target="_blank">Reference</a></div>
                         {% endif %}
                         {% if claim.filename %}
                             {% if claim.date_fulfilled %}

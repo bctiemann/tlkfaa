@@ -126,6 +126,7 @@ class RemoveClaimUploadView(UpdateView):
         try:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.object.picture.name))
             os.remove(os.path.join(self.object.thumbnail_path))
+            os.remove(os.path.join(self.object.preview_path))
         except OSError:
             pass
         self.object.picture = None
