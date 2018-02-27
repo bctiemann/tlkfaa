@@ -1228,7 +1228,7 @@ class FoldersView(APIView):
                     'extension': folder.latest_picture.extension,
                     'thumbheight': folder.latest_picture.thumb_height,
                     'uploaded': folder.latest_picture.date_uploaded.strftime('%-m/%-d/%Y'),
-                    'preview_image_url': '{0}Artwork{1}{2}.p.jpg'.format(settings.MEDIA_URL, reverse('artist', kwargs={'dir_name': artist.dir_name}), folder.latest_picture.basename)
+                    'preview_image_url': '{0}Artwork{1}{2}.p.{3}'.format(settings.MEDIA_URL, reverse('artist', kwargs={'dir_name': artist.dir_name}), folder.latest_picture.basename, folder.latest_picture.thumbnail_extension)
                 }
             folders.append({
                 'folderid': folder.id,
