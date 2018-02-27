@@ -995,6 +995,9 @@ class PendingManager(UserManager):
             .order_by('date_uploaded')
 
 class Pending(models.Model):
+
+    THUMBNAILS_JPEG = True
+
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_pending_path, null=True, blank=True)
@@ -1040,6 +1043,12 @@ class Pending(models.Model):
         return self.picture.name.split('.')[-1].lower()
 
     @property
+    def thumbnail_extension(self):
+        if self.is_movie or self.THUMBNAILS_JPEG:
+            return 'jpg'
+        return self.extension
+
+    @property
     def directory(self):
         return self.picture.name.split('/')[1]
 
@@ -1047,20 +1056,20 @@ class Pending(models.Model):
     def thumbnail_url(self):
         if self.is_movie:
             if self.has_thumb:
-                return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+                return '{0}pending/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
             return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         if os.path.exists(self.thumbnail_path):
-            return '{0}pending/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+            return '{0}pending/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
     def preview_url(self):
         if self.is_movie:
             if self.has_thumb:
-                return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+                return '{0}pending/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
             return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
         if os.path.exists(self.preview_path):
-            return '{0}pending/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename)
+            return '{0}pending/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
         return '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
 
     @property
@@ -1070,7 +1079,7 @@ class Pending(models.Model):
         filename_parts = path_parts[-1].split('.')
         basename = '.'.join(filename_parts[:-1])
         extension = filename_parts[-1].lower()
-        return '{0}/{1}/{2}.s.jpg'.format(settings.MEDIA_ROOT, path, basename)
+        return '{0}/{1}/{2}.s.{3}'.format(settings.MEDIA_ROOT, path, basename, self.thumbnail_extension)
 
     @property
     def preview_path(self):
@@ -1079,7 +1088,7 @@ class Pending(models.Model):
         filename_parts = path_parts[-1].split('.')
         basename = '.'.join(filename_parts[:-1])
         extension = filename_parts[-1].lower()
-        return '{0}/{1}/{2}.p.jpg'.format(settings.MEDIA_ROOT, path, basename)
+        return '{0}/{1}/{2}.p.{3}'.format(settings.MEDIA_ROOT, path, basename, self.thumbnail_extension)
 
     @property
     def thumbnail_created(self):
