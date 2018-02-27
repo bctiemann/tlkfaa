@@ -773,6 +773,7 @@ class CommentsView(TemplateView):
 class PostCommentView(CreateView):
     model = models.PictureComment
     form_class = forms.PictureCommentForm
+    template_name = 'includes/comments.html'
 
     def form_valid(self, form):
         logger.info(form.cleaned_data)
