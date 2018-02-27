@@ -13,15 +13,48 @@ from fanart import models
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+
+        parser.add_argument('--from_legacy',
+                    dest='from_legacy',
+                    default=True,
+                    action="store_true",
+                    help='From legacy (jpg) to corrected (png)')
+        parser.add_argument('--to_legacy',
+                    dest='to_legacy',
+                    default=False,
+                    action="store_true",
+                    help='From corrected (png) to legacy (jpg)')
+
     def handle(self, *args, **options):
+
+        from_legacy = options.get('from_legacy')
+        to_legacy = options.get('to_legacy')
 
 #        for picture in models.Picture.objects.all().order_by('-date_uploaded'):
         for picture in models.Picture.objects.filter(pk=645511).order_by('-date_uploaded'):
-            preview = Image.open(picture.preview_path)
+            print picture
+
+            if to_legacy:
+                print 'To legacy'
+                thumbnail_path = picture.thumbnail_path_corrected
+                preview_path = picture.preview_path_corrected
+            elif from_legacy:
+                print 'From legacy'
+                thumbnail_path = picture.thumbnail_path_legacy
+                preview_path = picture.preview_path_legacy
+
+            preview = Image.open(preview_path)
             if settings.IMAGE_FILE_TYPES[Image.MIME[preview.format]] != 'jpg':
                 print preview.format
-                os.rename(picture.preview_path, picture.preview_path_corrected)
-            thumbnail = Image.open(picture.thumbnail_path)
+                if to_legacy:
+                    os.rename(picture.preview_path_corrected, picture.preview_path_legacy)
+                elif from_legacy:
+                    os.rename(picture.preview_path_legacy, picture.preview_path_corrected)
+            thumbnail = Image.open(thumbnail_path)
             if settings.IMAGE_FILE_TYPES[Image.MIME[thumbnail.format]] != 'jpg':
                 print thumbnail.format
-                os.rename(picture.thumbnail_path, picture.thumbnail_path_corrected)
+                if to_legacy:
+                    os.rename(picture.thumbnail_path_corrected, picture.thumbnail_path_legacy)
+                elif from_legacy:
+                    os.rename(picture.thumbnail_path_legacy, picture.thumbnail_path_corrected)
