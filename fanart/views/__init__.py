@@ -780,6 +780,26 @@ class PostCommentView(CreateView):
         comment = form.save(commit=False)
         comment.user = self.request.user
         comment.save()
+
+        picture = form.cleaned_data['picture']
+        if picture.artist.email_comments:
+            email_context = {
+                'user': self.request.user,
+                'picture': picture,
+                'comment': comment,
+                'base_url': settings.SERVER_BASE_URL,
+            }
+            tasks.send_email.delay(
+                recipients=[picture.artist.email],
+                subject='TLKFAA: New Comment Posted',
+                context=email_context,
+                text_template='email/comment_posted.txt',
+                html_template='email/comment_posted.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        logger.info('User {0} posted comment {1} ({2}).'.format(self.request.user, comment.id, picture))
+
         response = super(PostCommentView, self).form_valid(form)
         return response
 
@@ -871,8 +891,10 @@ class PostShoutView(CreateView):
     template_name = 'includes/shouts.html'
 
     def form_valid(self, form):
+        logger.info(form.cleaned_data)
+
         response = {'success': False}
-        artist = models.User.objects.get(pk=self.request.POST.get('artist', None))
+        artist = form.cleaned_data['artist']
         current_user_is_blocked = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         if current_user_is_blocked:
             raise PermissionDenied
@@ -880,15 +902,16 @@ class PostShoutView(CreateView):
         shout.user = self.request.user
         shout.save()
 
-        email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
-        tasks.send_email.delay(
-            recipients=[artist.email],
-            subject='TLKFAA: New Roar Posted',
-            context=email_context,
-            text_template='email/shout_posted.txt',
-            html_template='email/shout_posted.html',
-            bcc=[settings.DEBUG_EMAIL]
-        )
+        if artist.email_shouts:
+            email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
+            tasks.send_email.delay(
+                recipients=[artist.email],
+                subject='TLKFAA: New Roar Posted',
+                context=email_context,
+                text_template='email/shout_posted.txt',
+                html_template='email/shout_posted.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
 
         logger.info('User {0} posted shout {1} (artist {2}).'.format(self.request.user, shout.id, artist))
 

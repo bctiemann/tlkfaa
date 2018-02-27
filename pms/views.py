@@ -113,15 +113,17 @@ class PMCreateView(LoginRequiredMixin, CreateView):
                 pm.subject = 'Re: {0}'.format(pm.subject)
         pm.save()
 
-        email_context = {'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
-        tasks.send_email.delay(
-            recipients=[form.cleaned_data['recipient'].email],
-            subject='TLKFAA Private Message from {0}'.format(self.request.user.username),
-            context=email_context,
-            text_template='email/pm_sent.txt',
-            html_template='email/pm_sent.html',
-            bcc=[settings.DEBUG_EMAIL]
-        )
+        recipient = form.cleaned_data['recipient']
+        if recipient.email_pms:
+            email_context = {'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
+            tasks.send_email.delay(
+                recipients=[recipient.email],
+                subject='TLKFAA Private Message from {0}'.format(self.request.user.username),
+                context=email_context,
+                text_template='email/pm_sent.txt',
+                html_template='email/pm_sent.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
 
         response = super(PMCreateView, self).form_valid(form)
         return response
