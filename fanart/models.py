@@ -590,6 +590,10 @@ class Picture(models.Model):
 
     @property
     def thumbnail_url(self):
+        return self.thumbnail_url_legacy
+
+    @property
+    def thumbnail_url_legacy(self):
         return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
 
     @property
@@ -598,6 +602,10 @@ class Picture(models.Model):
 
     @property
     def preview_url(self):
+        return self.preview_url_legacy
+
+    @property
+    def preview_url_legacy(self):
         return '{0}Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
 
     @property
@@ -610,6 +618,10 @@ class Picture(models.Model):
 
     @property
     def thumbnail_path(self):
+        return self.thumbnail_path_legacy
+
+    @property
+    def thumbnail_path_legacy(self):
         return '{0}/{1}.s.jpg'.format(self.artist.absolute_dir_name, self.basename)
 
     @property
@@ -618,6 +630,10 @@ class Picture(models.Model):
 
     @property
     def preview_path(self):
+        return self.preview_path_legacy
+
+    @property
+    def preview_path_legacy(self):
         return '{0}/{1}.p.jpg'.format(self.artist.absolute_dir_name, self.basename)
 
     @property
