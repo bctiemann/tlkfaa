@@ -65,7 +65,7 @@
 <div class="picinfowrapper">
 <div class="picinfo">
 <div class="picinfodata piclink">{% if picture.allow_comments %}<a href="javascript:nop()" onClick="toggleComments({{ picture.id }})">comments ({{ picture.picturecomment_set.count }})</a>{% endif %}</div>
-<div class="picinfodata piclink"><a href="/Picture.jsp?pictureid={{ picture.id }}">link</a></div>
+<div class="picinfodata piclink"><a href="{% url "picture" picture_id=picture.id %}">link</a></div>
 <div class="picinfodata">{{ picture.width }} x {{ picture.height }}</div>
 <div class="picinfodata">{{ picture.file_size|filesizeformat }}</div>
 <div class="picinfodata pictype">{{ picture.type }}</div>

@@ -56,72 +56,7 @@
 
         <div class="am_content">
 
-        {% block am_content %}
-
-	<c:choose>
-	<c:when test="${op == 'dashboard'}">
-	<jsp:include page="am_dashboard.jsp" />
-	</c:when>
-	<c:when test="${op == 'prefs'}">
-	<jsp:include page="am_prefs.jsp" />
-	</c:when>
-	<c:when test="${op == 'upload'}">
-	<jsp:include page="am_upload.jsp?commit=${commit}" />
-	</c:when>
-	<c:when test="${op == 'pending'}">
-	<jsp:include page="am_pending.jsp" />
-	</c:when>
-	<c:when test="${op == 'artwork'}">
-	<jsp:include page="am_artwork.jsp" />
-	</c:when>
-	<c:when test="${op == 'folders'}">
-	<jsp:include page="am_folders.jsp" />
-	</c:when>
-	<c:when test="${op == 'requests'}">
-	<jsp:include page="am_requests.jsp" />
-	</c:when>
-	<c:when test="${op == 'characters'}">
-	<jsp:include page="am_characters.jsp" />
-	</c:when>
-	<c:when test="${op == 'privatemsgs'}">
-	<jsp:include page="am_privatemsgs.jsp" />
-	</c:when>
-	<c:when test="${op == 'tradingtree'}">
-	<jsp:include page="am_tradingtree.jsp" />
-	</c:when>
-	<c:when test="${op == 'coloringcave'}">
-	<jsp:include page="am_coloringcave.jsp" />
-	</c:when>
-	<c:when test="${op == 'contests'}">
-	<jsp:include page="am_contests.jsp" />
-	</c:when>
-	<c:when test="${op == 'bulletins'}">
-	<jsp:include page="am_bulletins.jsp" />
-	</c:when>
-	<c:when test="${op == 'customize'}">
-	<jsp:include page="am_customize.jsp" />
-	</c:when>
-	<c:when test="${op == 'uploadhistory'}">
-	<jsp:include page="am_uploadhistory.jsp" />
-	</c:when>
-	<c:when test="${op == 'comments'}">
-	<jsp:include page="am_comments.jsp" />
-	</c:when>
-	<c:when test="${op == 'shouts'}">
-	<jsp:include page="am_shouts.jsp" />
-	</c:when>
-	<c:when test="${op == 'fans'}">
-	<jsp:include page="am_fans.jsp" />
-	</c:when>
-	<c:when test="${op == 'blocks'}">
-	<jsp:include page="am_blocks.jsp" />
-	</c:when>
-	<c:otherwise>
-	<jsp:include page="am_dashboard.jsp" />
-	</c:otherwise>
-	</c:choose>
-
-        {% endblock %}
+        {% block am_content %}{% endblock %}
 
         </div>
     </div>
