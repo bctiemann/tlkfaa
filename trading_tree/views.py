@@ -246,7 +246,7 @@ class RemoveOfferView(UpdateView):
 
         self.object.is_active = False
         self.object.is_visible = False
-        self.object.save()
+        self.object.save(update_thumbs=False)
 
         response['success'] = True
 
