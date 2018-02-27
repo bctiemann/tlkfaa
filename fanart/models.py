@@ -154,6 +154,8 @@ class User(AbstractUser):
         ('', '(No response)'),
     )
 
+    THUMBNAILS_JPEG = False
+
     username = models.CharField(
         _('username'),
         max_length=150,

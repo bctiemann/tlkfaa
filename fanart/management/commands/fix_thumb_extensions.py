@@ -25,15 +25,20 @@ class Command(BaseCommand):
                     default=False,
                     action="store_true",
                     help='From corrected (png) to legacy (jpg)')
+        parser.add_argument('--start_id',
+                    dest='start_id',
+                    default=0,
+                    help='Min picture id')
 
     def handle(self, *args, **options):
 
         from_legacy = options.get('from_legacy')
         to_legacy = options.get('to_legacy')
+        start_id = options.get('start_id')
 
-#        for picture in models.Picture.objects.all().order_by('-date_uploaded'):
-        for picture in models.Picture.objects.filter(pk=645511).order_by('-date_uploaded'):
-            print picture
+        for picture in models.Picture.objects.filter(pk__gte=start_id).order_by('-date_uploaded'):
+#        for picture in models.Picture.objects.filter(pk=645511).order_by('-date_uploaded'):
+            print picture, picture.date_uploaded
 
             if to_legacy:
                 print 'To legacy'

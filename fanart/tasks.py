@@ -123,7 +123,8 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         format = im.format
         mode = im.mode
 
-    im_new = Image.new(mode, im.size, (255,255,255))
+    logger.info(mode, format)
+    im_new = Image.new(mode, im.size)
     im_new.paste(im)
     im_new.save(new_image_path, format)
 
