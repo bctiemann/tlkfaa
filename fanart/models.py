@@ -36,17 +36,17 @@ artwork_tabs = ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
 
-def get_offers_path(instance, filename):
-    return 'Artwork/offers/{0}.{1}'.format(instance.id, instance.extension)
+#def get_offers_path(instance, filename):
+#    return 'Artwork/offers/{0}.{1}'.format(instance.id, instance.extension)
 
-def get_offers_thumb_path(instance, filename):
-    return 'Artwork/offers/{0}.s.jpg'.format(instance.id)
+#def get_offers_thumb_path(instance, filename):
+#    return 'Artwork/offers/{0}.s.jpg'.format(instance.id)
 
-def get_claims_path(instance, filename):
-    return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
+#def get_claims_path(instance, filename):
+#    return 'Artwork/claims/{0}.{1}'.format(instance.id, instance.extension)
 
-def get_claims_thumb_path(instance, filename):
-    return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
+#def get_claims_thumb_path(instance, filename):
+#    return 'Artwork/claims/{0}.s.jpg'.format(instance.id)
 
 def get_profile_path(instance, filename):
     extension = filename.split('.')[-1].lower()
@@ -529,6 +529,9 @@ class PictureManager(models.Manager):
 
 
 class Picture(models.Model):
+
+    THUMBNAILS_JPEG = True
+
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     artist = models.ForeignKey('User', null=True)
     folder = models.ForeignKey('Folder', null=True, blank=True)
@@ -577,6 +580,23 @@ class Picture(models.Model):
         return self.picture.name.split('.')[-1].lower()
 
     @property
+    def thumbnail_extension(self):
+        if self.is_movie or self.THUMBNAILS_JPEG:
+            return 'jpg'
+        return self.extension
+
+#    @property
+#    def preview_extension(self):
+#        if self.mime_type in ['image/jpeg', 'image/png', 'image/gif']:
+#            return self.extension
+##            return 'p.{0}'.format(self.extension)
+#        return 'p.jpg'
+
+    @property
+    def is_movie(self):
+        return self.mime_type in settings.MOVIE_FILE_TYPES.keys()
+
+    @property
     def video_width(self):
         if not self.width:
             return 700
@@ -590,26 +610,10 @@ class Picture(models.Model):
 
     @property
     def thumbnail_url(self):
-        return self.thumbnail_url_legacy
-
-    @property
-    def thumbnail_url_legacy(self):
-        return '{0}Artwork/Artists/{1}/{2}.s.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
-
-    @property
-    def thumbnail_url_corrected(self):
         return '{0}Artwork/Artists/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename, self.thumbnail_extension)
 
     @property
     def preview_url(self):
-        return self.preview_url_legacy
-
-    @property
-    def preview_url_legacy(self):
-        return '{0}Artwork/Artists/{1}/{2}.p.jpg'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename)
-
-    @property
-    def preview_url_corrected(self):
         return '{0}Artwork/Artists/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.artist.dir_name, self.basename, self.thumbnail_extension)
 
     @property
@@ -643,19 +647,6 @@ class Picture(models.Model):
     @property
     def url(self):
         return '{0}Artwork/Artists/{1}/{2}'.format(settings.MEDIA_URL, self.artist.dir_name, self.filename)
-
-    @property
-    def thumbnail_extension(self):
-        if self.mime_type in settings.MOVIE_FILE_TYPES.keys():
-            return 'jpg'
-        return self.extension
-
-    @property
-    def preview_extension(self):
-        if self.mime_type in ['image/jpeg', 'image/png', 'image/gif']:
-            return self.extension
-#            return 'p.{0}'.format(self.extension)
-        return 'p.jpg'
 
     @property
     def preview_width(self):

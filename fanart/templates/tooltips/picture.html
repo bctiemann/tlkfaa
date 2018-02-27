@@ -7,7 +7,7 @@
     <table class="tooltip">
         <tr>
             <td>
-            {% if picture.preview_extension == 'p.jpg' %}
+            {% if picture.is_movie %}
                 <div class="video-preview {{ picture.extension }}"></div>
             {% endif %}
             <a href="{% url "picture" picture_id=picture.id %}"><img class="tooltippreview" src="{{ picture.preview_url }}" width="{{ picture.preview_width }}" height="{{ picture.preview_height }}" /></a>
