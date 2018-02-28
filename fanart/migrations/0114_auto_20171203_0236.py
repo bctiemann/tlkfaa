@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import fanart.models
+import trading_tree.models
 
 
 class Migration(migrations.Migration):
@@ -21,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tradingoffer',
             name='picture',
-            field=models.ImageField(blank=True, height_field='height', max_length=255, null=True, storage=fanart.models.OverwriteStorage(), upload_to=fanart.models.get_offers_path, width_field='width'),
+            field=models.ImageField(blank=True, height_field='height', max_length=255, null=True, storage=fanart.models.OverwriteStorage(), upload_to=trading_tree.models.get_offers_path, width_field='width'),
         ),
         migrations.AddField(
             model_name='tradingoffer',
