@@ -1332,6 +1332,7 @@ div.pictitle {
 	padding-top: 15px;
 	margin: 0px 40px 25px 0px;
 	font-size: 13px;
+	font-family: Verdana, sans-serif;
 	min-width: 200px;
 }
 div.picvote {
