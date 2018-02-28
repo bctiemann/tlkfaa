@@ -1,0 +1,56 @@
+{% extends "artmanager/base.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+
+<%--
+NewContest.jsp
+Winner of the previous site-wide contest can log in and set up the next contest.
+--%>
+
+<jsp:include page="inc_root/inc_header.jsp" />
+<%@ include file="inc_root/inc_functions.jsp" %>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<sql:setDataSource dataSource="jdbc/Fanart" />
+
+		<h1>Create New Contest</h1>
+
+		<div class="am_panel">
+		<div class="am_tabs">
+		<a href="/NewContest.jsp" class="selected">New Contest</a>
+		</div>
+		<div class="am_content">
+
+			<h2>New Contest</h2>
+
+					<div class="pageinfo">
+
+					<p>
+					<b>Thank you!</b> Your new contest, called <b>{{ latest_contest.title }}</b>, is now
+					scheduled to begin tonight at midnight. The deadline for submissions is
+					midnight on <fmt:formatDate value="${newContest.deadline}" type="both" pattern="E M/d/yyyy" />, Eastern time.
+					</p>
+
+					<p>
+					You are in charge of this contest; you will have the ability to remove
+					entries that do not conform to the rules. However, you won't be able to
+					submit an entry yourself.
+					</p>
+
+					<p>
+					<a href="/">Return to fanart.lionking.org</a>
+					</p>
+
+					</div>
+
+		</div>
+		</div>
+
+{% endblock %}

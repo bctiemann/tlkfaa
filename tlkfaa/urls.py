@@ -90,6 +90,7 @@ urlpatterns = [
     url(r'^contest/entry/(?P<entry_id>[0-9]+)/delete/$', fanart_views.ContestEntryDeleteView.as_view(), name='contest-entry-delete'),
     url(r'^contest/(?P<contest_id>[0-9]+)/vote/$', fanart_views.ContestVoteView.as_view(), name='contest-vote'),
     url(r'^contest/setup/$', fanart_views.ContestSetupView.as_view(), name='contest-setup'),
+    url(r'^contest/setup/success/$', fanart_views.ContestSetupSuccessView.as_view(), name='contest-setup-success'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),
