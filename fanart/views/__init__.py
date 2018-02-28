@@ -485,16 +485,53 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ContestSetupView, self).get_context_data(**kwargs)
+
+        latest_contest = models.Contest.objects.filter(type='global').order_by('-date_created').first()
+        if not latest_contest.is_ended:
+            raise Http404
+
+        winning_entry = None
+        print latest_contest.winning_entries
+        for entry in latest_contest.winning_entries:
+            if entry.date_notified:
+                winning_entry = entry
+
+        if not winning_entry or winning_entry.picture.artist != self.request.user:
+            raise Http404
+
+        context['latest_contest'] = latest_contest
+
         return context
 
     def form_valid(self, form):
         logger.info(self.request.POST)
         logger.info(form.cleaned_data)
+
+        contest = form.save(commit=False)
+        contest.creator = self.request.user
+        contest.save()
+
         response = super(ContestSetupView, self).form_valid(form)
         return response
 
-#    def get_success_url(self):
-#        return reverse('approve-request-success', kwargs={'hash': self.object.hash})
+    def get_success_url(self):
+        return reverse('contest-setup-success')
+
+
+class ContestSetupSuccessView(LoginRequiredMixin, TemplateView):
+    model = models.Contest
+    template_name = 'fanart/contest_setup_success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContestSetupSuccessView, self).get_context_data(**kwargs)
+
+        latest_contest = models.Contest.objects.filter(type='global').order_by('-date_created').first()
+        if latest_contest.is_ended or latest_contest.creator != self.request.user:
+            raise Http404
+
+        context['latest_contest'] = latest_contest
+
+        return context
 
 
 class FavoritePicturesView(UserPaneMixin, TemplateView):

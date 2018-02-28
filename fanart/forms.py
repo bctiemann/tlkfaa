@@ -139,7 +139,7 @@ class ContestForm(forms.ModelForm):
 
     class Meta:
         model = models.Contest
-        fields = ['title']
+        fields = ['title', 'description', 'rules']
 
 
 class AotmVoteForm(forms.ModelForm):

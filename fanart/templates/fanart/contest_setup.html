@@ -22,31 +22,6 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 
 <c:set var="days_before_forfeit" value="3" />
 
-<c:choose>
-<c:when test="${loggedin == 1}">
-
-	<sql:query var="qryLastCompletedContest">
-	SELECT contestid,artistid,title FROM contests
-	WHERE type='global'
-	AND deadline<NOW()
-	AND active=1
-	ORDER BY created DESC
-	LIMIT 1
-	</sql:query>
-	<c:set var="lastCompletedContest" value="${qryLastCompletedContest.rows[0]}" />
-
-	<sql:query var="qryLatestContest">
-	SELECT contestid,title FROM contests
-	WHERE type='global'
-	AND active=1
-	ORDER BY created DESC
-	LIMIT 1
-	</sql:query>
-	<c:set var="latestContest" value="${qryLatestContest.rows[0]}" />
-
-	<c:choose>
-	<c:when test="${lastCompletedContest.contestid == latestContest.contestid}">
-
 		<h1>Create New Contest</h1>
 
 		<div class="am_panel">
@@ -57,104 +32,10 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 
 			<h2>New Contest</h2>
 
-			<sql:query var="qryWinner">
-			SELECT contestvotes.pictureid,pictures.filename,pictures.artistid,artistname,count(contestvotes.pictureid) AS num_votes
-			FROM contestpics
-			INNER JOIN contestvotes ON contestvotes.pictureid=contestpics.pictureid
-			INNER JOIN pictures ON pictures.pictureid=contestpics.pictureid
-			INNER JOIN artists ON artists.artistid=pictures.artistid
-			WHERE contestpics.contestid=?
-			AND (emailsent IS NULL OR DATEDIFF(emailsent,NOW()) < ?)
-			GROUP BY contestvotes.pictureid,contestvotes.contestid
-			ORDER BY num_votes DESC,entered
-			LIMIT 1
-			<sql:param value="${latestContest.contestid}" />
-			<sql:param value="${days_before_forfeit}" />
-			</sql:query>
-
-			<c:set var="winner" value="${qryWinner.rows[0]}" />
-
-			<c:choose>
-			<c:when test="${winner.artistid == artist.artistid}">
-
-				<c:if test="${param.fnc == 'create'}">
-					<c:choose>
-					<c:when test="${param.title != '' && param.description != ''}">
-
-						<sql:transaction>
-						<sql:update var="updContest">
-						INSERT INTO contests (type,artistid,title,description,rules,created,startdate,deadline,active,allowmultiple,anonymous,allowvoting)
-						VALUES (?,?,?,?,?,NOW(),DATE(DATE_ADD(NOW(), INTERVAL 1 DAY)),DATE(DATE_ADD(NOW(), INTERVAL ${param.length_days + 1} DAY)),?,?,?,?)
-						<sql:param value="global" />
-						<sql:param value="${artist.artistid}" />
-						<sql:param value="${param.title}" />
-						<sql:param value="${param.description}" />
-						<sql:param value="${param.rules}" />
-						<sql:param value="1" />
-						<sql:param value="${param.allowmultiple}" />
-						<sql:param value="${param.anonymous}" />
-						<sql:param value="1" />
-						</sql:update>
-						<sql:query var="qryContest">
-						SELECT last_insert_id() AS contestid FROM contests
-						LIMIT 1
-						</sql:query>
-						<c:set var="contestid" value="${qryContest.rows[0].contestid}" />
-						</sql:transaction>
-
-						<sql:query var="qryNewContest">
-						SELECT * FROM contests
-						WHERE contestid=?
-						<sql:param value="${contestid}" />
-						</sql:query>
-						<c:set var="newContest" value="${qryNewContest.rows[0]}" />
-
-						<c:set var="newcontestid" value="${newContest.contestid}" />
-						<c:set var="newcontestname" value="${newContest.title}" />
-						<c:set var="artistname" value="${artist.artistname}" />
-						<%
-							String newcontestid = pageContext.getAttribute("newcontestid").toString();
-							String newcontestname = pageContext.getAttribute("newcontestname").toString();
-							String artistname = pageContext.getAttribute("artistname").toString();
-							String message = "Artist " + artistname + " has created new contest " + newcontestid + ":\n\n" + newcontestname;
-							sendEmail("fanart@lionking.org", "btman@lionking.org", "New Contest Submitted", message, true);
-						%>
-					</c:when>
-					<c:otherwise>
-					</c:otherwise>
-					</c:choose>
-				</c:if>
-
-				<c:choose>
-				<c:when test="${newContest.contestid > 0}">
-
 					<div class="pageinfo">
 
 					<p>
-					<b>Thank you!</b> Your new contest, called <b>${param.title}</b>, is now
-					scheduled to begin tonight at midnight. The deadline for submissions is
-					midnight on <fmt:formatDate value="${newContest.deadline}" type="both" pattern="E M/d/yyyy" />, Eastern time.
-					</p>
-
-					<p>
-					You are in charge of this contest; you will have the ability to remove
-					entries that do not conform to the rules. However, you won't be able to
-					submit an entry yourself.
-					</p>
-
-					<p>
-					<a href="/">Return to fanart.lionking.org</a>
-					</p>
-
-					</div>
-
-				</c:when>
-				<c:otherwise>
-
-					<div class="pageinfo">
-
-					<p>
-					Congratulations, <B>${winner.artistname}</B>, on winning the <B>${latestContest.title}</B> contest! You can now set up the next contest using the form below.
+					Congratulations, <b>{{ request.user.username }}</b>, on winning the <b>{{ latest_contest.title }}</b> contest! You can now set up the next contest using the form below.
 					</p>
 
 					<p>
@@ -164,28 +45,28 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 
 					</div>
 
-					<form method="POST" action="NewContest.jsp">
+					<form method="POST" action="{% url "contest-setup" %}">
 					<table class="formtable">
 						<tr>
 							<td class="label">Contest Title</td>
-							<td><input name="title" value="${param.title}" maxlength="64" style="width: 300px;" /></td>
+							<td><input name="title" value="{{ form.title.value|default_if_none:"" }}" maxlength="64" style="width: 300px;" /></td>
 						</tr>
 						<tr>
 							<td class="label">Theme/Description</td>
-							<td><textarea name="description">${param.description}</textarea></td>
+							<td><textarea name="description">{{ form.description.value|default_if_none:"" }}</textarea></td>
 						</tr>
 						<tr>
 							<td class="label">Rules (optional)</td>
-							<td><textarea name="rules">${param.rules}</textarea></td>
+							<td><textarea name="rules">{{ form.rules.value|default_if_none:"" }}</textarea></td>
 						</tr>
 						<tr>
 							<td class="label">Contest Length</td>
 							<td>
 								<select name="length_days">
-									<option value="7" <c:if test="${param.length_days == 7}">selected</c:if>>1 week</option>
-									<option value="14" <c:if test="${param.length_days == 14}">selected</c:if>>2 weeks</option>
-									<option value="21" <c:if test="${param.length_days == 21}">selected</c:if>>3 weeks</option>
-									<option value="42" <c:if test="${param.length_days == 21}">selected</c:if>>6 weeks</option>
+									<option value="7" {% if form.length_days.value == 7 %}selected{% endif %}>1 week</option>
+									<option value="14" {% if form.length_days.value == 14 %}selected{% endif %}>2 weeks</option>
+									<option value="21" {% if form.length_days.value == 21 %}selected{% endif %}>3 weeks</option>
+									<option value="42" {% if form.length_days.value == 42 %}selected{% endif %}>6 weeks</option>
 								</select>
 							</td>
 						</tr>
@@ -193,8 +74,8 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 							<td class="label">Allow artists to submit more than one picture?</td>
 							<td>
 								<select name="allowmultiple">
-									<option value="1" <c:if test="${param.allowmultiple == 1}">selected</c:if>>Yes</option>
-									<option value="0" <c:if test="${param.allowmultiple == 0}">selected</c:if>>No</option>
+									<option value="1" {% if form.allow_multiple_entries.value == True %}selected{% endif %}>Yes</option>
+									<option value="0" {% if form.allow_multiple_entries.value == False %}selected{% endif %}>No</option>
 								</select>
 							</td>
 						</tr>
@@ -202,8 +83,8 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 							<td class="label">Anonymous entries?</td>
 							<td>
 								<select name="anonymous">
-									<option value="1" <c:if test="${param.anonymous == 1}">selected</c:if>>Yes</option>
-									<option value="0" <c:if test="${param.anonymous == 0}">selected</c:if>>No</option>
+									<option value="1" {% if form.allow_anonymous_entries.value == True %}selected{% endif %}>Yes</option>
+									<option value="0" {% if form.allow_anonymous_entries.value == False %}selected{% endif %}>No</option>
 								</select>
 							</td>
 						</tr>
@@ -215,48 +96,10 @@ Winner of the previous site-wide contest can log in and set up the next contest.
 						</tr>
 					</table>
 					<input type="hidden" name="fnc" value="create" />
+                                        {% csrf_token %}
 					</form>
 
-				</c:otherwise>
-				</c:choose>
-
-			</c:when>
-			<c:otherwise>
-
-				<div class="error">
-				<h3>An error occurred</h3>
-				You are not the winner of the previous contest.
-				</div>
-
-			</c:otherwise>
-			</c:choose>
-
 		</div>
 		</div>
-
-	</c:when>
-	<c:otherwise>
-
-		<div class="error">
-		<h3>An error occurred</h3>
-		The next contest is already set up.
-		</div>
-
-	</c:otherwise>
-	</c:choose>
-
-</c:when>
-<c:otherwise>
-
-	<div class="error">
-	<h3>An error occurred</h3>
-	You are not logged in. Please log in at right.
-	</div>
-
-</c:otherwise>
-</c:choose>
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
 {% endblock %}
