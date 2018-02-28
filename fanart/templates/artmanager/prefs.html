@@ -209,12 +209,12 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
             </tr>
             <tr>
                 <td class="label"></td>
-                <td class="data inputlabels"><input type="checkbox" name="showbirthdate" id="showbirthdate" value="1" {% if user.show_birthdate %}checked{% endif %} /> Display your birthdate in public</td>
+                <td class="data inputlabels"><input type="checkbox" name="showbirthdate" id="showbirthdate" value="1" {% if user.show_birthdate %}checked{% endif %} /> <label for="showbirthdate">Display your birthdate in public</label></td>
                 <td class="legend"></td>
             </tr>
             <tr>
                 <td class="label"></td>
-                <td class="data inputlabels"><input type="checkbox" name="showbirthdate_age" id="showbirthdate_age" value="1" {% if user.show_birthdate_age %}checked{% endif %} /> Display your age</td>
+                <td class="data inputlabels"><input type="checkbox" name="showbirthdate_age" id="showbirthdate_age" value="1" {% if user.show_birthdate_age %}checked{% endif %} /> <label for="showbirthdate_age">Display your age</label></td>
                 <td class="legend"></td>
             </tr>
             <tr>
