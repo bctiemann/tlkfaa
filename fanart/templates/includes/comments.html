@@ -40,7 +40,11 @@
                     </div>
                     <div id="reply_{{ comment.id }}" class="reply">
                         <form name="commentform_{{ comment.id }}" id="commentform_{{ comment.id }}">
-                            <textarea name="replytext" id="replytext_{{ comment.id }}"></textarea>
+                            <textarea class="comment" name="replytext" id="replytext_{{ comment.id }}"></textarea>
+                            <div class="replybuttons">
+                                <button type="button" onClick="postReply({{ picture.id }},{{ comment.id }})">Post</button>
+                                <button type="button" onClick="cancelReply({{ picture.id }},{{ comment.id }})">Cancel</button>
+                            </div>
                         </form>
                     </div>
                 </td></tr></table>

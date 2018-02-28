@@ -1799,8 +1799,16 @@ function togglePicFans(pictureid) {
 }
 
 function doReply(pictureid,commentid) {
+  $('#comment_'+commentid+' .commentbuttons').fadeOut('fast');
   $('#reply_'+commentid).slideDown('fast',function() {
-    document.getElementById('replybutton_'+commentid).onclick = function() { postReply(pictureid,commentid) };
+//    document.getElementById('replybutton_'+commentid).onclick = function() { postReply(pictureid,commentid) };
+  });
+}
+
+function cancelReply(pictureid,commentid) {
+  $('#comment_'+commentid+' .commentbuttons').fadeIn('fast');
+  $('#reply_'+commentid).slideUp('fast',function() {
+//    document.getElementById('replybutton_'+commentid).onclick = function() { postReply(pictureid,commentid) };
   });
 }
 
