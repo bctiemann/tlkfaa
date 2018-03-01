@@ -11,3 +11,5 @@ ALLOWED_HOSTS = ['localhost']
 MEDIA_ROOT = '/Users/brian.tiemann/Development/tlkfaa-dj/media'
 
 CELERY_TASK_ALWAYS_EAGER = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

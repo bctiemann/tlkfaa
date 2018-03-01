@@ -358,4 +358,3 @@ MOVIE_FILE_TYPES = {
     'video/mp4': 'mp4',
 }
 
-EMAIL_HOST = 'mail.lionking.org'

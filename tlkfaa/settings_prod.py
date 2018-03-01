@@ -26,3 +26,5 @@ DATABASES = {
 STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
 MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT'
 
+EMAIL_HOST = 'mail.lionking.org'
+
