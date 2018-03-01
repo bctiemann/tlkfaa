@@ -40,6 +40,9 @@ class Command(BaseCommand):
                     logger.error('File {0} exists, matching {1}! Skipping.'.format(existing_file, filename))
                     continue
 
+            pending.filename = filename
+            pending.save()
+
             # if replacement, update picture record
             # else, insert picture
             defaults = {
