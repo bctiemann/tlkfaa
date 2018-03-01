@@ -1,0 +1,7 @@
+<p>A new picture comment from {{ user.username }} has been posted on your picture {{ picture.filename }} at The Lion King Fan-Art Archive:</p>
+
+<p>
+{{ comment.comment }}
+</p>
+
+<p><a href="{{ base_url }}{% url "picture" picture_id=picture.id %}">{{ base_url }}{% url "picture" picture_id=picture.id %}</p>
