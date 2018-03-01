@@ -9,6 +9,10 @@
 
     {% include "includes/head_statics.html" %}
 
+    <script type="text/javascript">
+    var tooltips_enabled = {{ request.user.tooltips_enabled|yesno:"true,false,true" }};
+    </script>
+
 </head>
 <body>
 

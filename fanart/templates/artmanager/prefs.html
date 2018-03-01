@@ -275,6 +275,13 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="data inputlabels"><input type="checkbox" name="commissions" id="commissions" value="1" {% if user.commissions_open %}checked{% endif %} /> <label for="commissions">Accepting requests or commissions</label></td>
                 <td class="legend"></td>
             </tr>
+            <tr>
+                <td class="label">Popup Previews</td>
+                <td class="data">
+                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /><br />
+                </td>
+                <td class="legend"></td>
+            </tr>
 
             <tr>
                 <td colspan="3" class="buttons">
@@ -407,6 +414,13 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="label">Send Email Notifications For</td>
                 <td class="data">
                     <input type="checkbox" name="emailpms" id="emailpms" value="1" {% if user.email_pms %}checked{% endif %} /> <label for="emailpms"><b>Private Messages</b></label><br />
+                </td>
+                <td class="legend"></td>
+            </tr>
+            <tr>
+                <td class="label">Popup Previews</td>
+                <td class="data">
+                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /><br />
                 </td>
                 <td class="legend"></td>
             </tr>

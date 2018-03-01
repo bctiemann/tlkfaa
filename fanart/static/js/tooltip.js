@@ -55,6 +55,11 @@ var setupTooltipPreview = function() {
 
   $('.previewPopupTrigger').on('mouseover', function(e)
   {
+
+      if (!tooltips_enabled) {
+        return;
+      }
+
       // format of 'rel' tag: type,id
 //      var settings = $(this).attr('rel').split(',');
 //      var type = settings[0];

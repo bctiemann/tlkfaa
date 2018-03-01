@@ -216,6 +216,7 @@ class User(AbstractUser):
     email_pms = models.BooleanField(default=True)
     show_coloring_cave = models.BooleanField(default=True)
     commissions_open = models.BooleanField(default=True)
+    tooltips_enabled = models.BooleanField(default=True)
 
     profile_picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='profile_height', width_field='profile_width', upload_to=get_profile_path, null=True, blank=True)
     profile_width = models.IntegerField(null=True, blank=True)

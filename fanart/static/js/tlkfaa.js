@@ -2532,6 +2532,7 @@ function updatePrefs(fnc) {
         email_comments: $('#emailcomments').prop('checked'),
         email_pms: $('#emailpms').prop('checked'),
         show_coloring_cave: $('#showcc').prop('checked'),
+        tooltips_enabled: $('#tooltips_enabled').prop('checked'),
     };
 console.log(params);
     $.post(url, params, function(data) {
