@@ -919,7 +919,8 @@ textarea {
 	height: 200px;
 }
 textarea.comment {
-	width: 700px;
+	width: 90%;
+	max-width: 700px;
 	height: 80px;
 	padding: 20px;
 	font-family: Verdana, sans-serif;
@@ -1415,7 +1416,7 @@ div.commenttext {
 	border-color: #d5d9df;
 }
 div.commenttext table {
-	width: auto;
+	width: 100%;
 	margin-bottom: 14px;
 }
 div.commentreply {
