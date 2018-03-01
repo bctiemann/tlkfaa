@@ -1056,6 +1056,7 @@ class PictureView(UserPaneMixin, TemplateView):
             context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
 
+        logger.info('{0} viewing picture {1} via {2}'.format(self.request.user, picture, self.template_name))
         context['video_types'] = settings.MOVIE_FILE_TYPES.keys()
         return context
 
@@ -1099,7 +1100,7 @@ class CharacterView(UserPaneMixin, TemplateView):
         context = super(CharacterView, self).get_context_data(**kwargs)
 
         context['character'] = get_object_or_404(models.Character, pk=kwargs.get('character_id', None))
-        logger.info('Viewing character {0} via {1}'.format(context['character'], self.template_name))
+        logger.info('{0} viewing character {1} via {2}'.format(self.request.user, context['character'], self.template_name))
         other_characters = self.request.GET.get('othercharacters', None)
         character_list = [str(context['character'].id)]
         if other_characters:
