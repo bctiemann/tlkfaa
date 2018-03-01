@@ -1176,6 +1176,9 @@ class Pending(models.Model):
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.directory), ignore_errors=True)
         super(Pending, self).delete(*args, **kwargs)
 
+    def __unicode__(self):
+        return 'Pending {0} - {1} - {2}'.format(self.id, self.filename, self.artist.username)
+
     class Meta:
         ordering = ['date_uploaded']
 
