@@ -80,6 +80,26 @@ function updateCount() {
     });
 }
 
+function autoApproval(artist_id) {
+    if (confirm('Are you sure you want to give this artist auto-approval privileges?')) {
+        var url = '/admin/approve/auto_approval/' + artist_id + '/';
+        var params = {
+            auto_approve: true,
+        };
+        $.post(url, params, function(data) {
+            if (data.success) {
+                alert('Artist successfully granted auto-approval.');
+                url = '/admin/approve/list/';
+                $.ajax({ url: url, success: function(data) {
+                    $('#pendinglist').empty().append(data);
+                }});
+            } else {
+                alert(data.errors);
+            }
+        });
+    };
+}
+
 $(document).ready(function() {
 
     updateCount();

@@ -197,6 +197,13 @@ class ApprovalForm(forms.ModelForm):
         fields = []
 
 
+class AutoApprovalForm(forms.ModelForm):
+
+    class Meta:
+        model = models.User
+        fields = ['auto_approve']
+
+
 class RegisterForm(forms.Form):
     username = forms.CharField(validators=[models.validate_unique_username], error_messages={'required': 'You must enter a profile name.'})
     email = forms.EmailField(validators=[models.validate_unique_email], error_messages={'required': 'You must enter a valid email address.'})

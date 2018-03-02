@@ -20,6 +20,7 @@ from rest_framework.response import Response
 
 from fanart import models, forms, tasks
 from fanart import views as fanart_views
+from fanart.forms import AjaxableResponseMixin
 
 from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
@@ -310,3 +311,15 @@ class PendingUploadThumbView(ApprovalUpdateView):
 #            }
 #        return Response(response)
 
+
+class AutoApprovalView(AjaxableResponseMixin, ApprovalUpdateView):
+    model = models.User
+    form_class = forms.AutoApprovalForm
+    template_name = 'approval/pending.html'
+
+    def get_object(self):
+        return get_object_or_404(models.User, pk=self.kwargs['artist_id'])
+
+    def form_valid(self, form):
+        logger.info('{0} granted auto-approval to {1}'.format(self.request.user.username, self.object))
+        return super(AutoApprovalView, self).form_valid(form)
