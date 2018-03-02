@@ -4,3 +4,4 @@ venv/
 static_root
 media
 work
+database.db
