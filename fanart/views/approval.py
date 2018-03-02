@@ -321,5 +321,14 @@ class AutoApprovalView(AjaxableResponseMixin, ApprovalUpdateView):
         return get_object_or_404(models.User, pk=self.kwargs['artist_id'])
 
     def form_valid(self, form):
-        logger.info('{0} granted auto-approval to {1}'.format(self.request.user.username, self.object))
+        message = '{0} granted auto-approval to {1}'.format(self.request.user.username, self.object)
+        logger.info(message)
+
+        email_context = {'message': message}
+        subject = 'TLKFAA: Auto-approval granted to {0}'.format(self.object.username)
+        tasks.send_email.delay(
+            recipients=[settings.ADMIN_EMAIL],
+            subject=subject,
+            context=email_context,
+        )
         return super(AutoApprovalView, self).form_valid(form)
