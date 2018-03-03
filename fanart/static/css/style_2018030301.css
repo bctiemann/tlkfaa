@@ -2852,3 +2852,8 @@ div.login-failed-banner {
 .front-page-showcase-picture p a {
 	color: #ddf;
 }
+
+video {
+	display: block;
+}
+
