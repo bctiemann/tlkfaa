@@ -532,7 +532,7 @@ class PictureManager(models.Manager):
         return self.filter(num_faves__gt=50).order_by('?')
 
     def get_queryset(self):
-        return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False)
+        return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False).exclude(artist__is_artist=False)
 
 
 class Picture(models.Model):
