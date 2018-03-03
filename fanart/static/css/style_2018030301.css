@@ -1064,6 +1064,13 @@ div.featurebox.front-page {
 	width: 74%;
 	margin-left: 20px;
 }
+@media only screen and (max-width: 1440px) {
+    div.featurebox.front-page {
+        float: none;
+        width: auto;
+        margin-left: auto;
+    }
+}
 div.featurebox h2 {
 	text-align: left;
 	font-size: 13px;
@@ -2828,6 +2835,11 @@ div.login-failed-banner {
 	float: left;
 	width: 240px;
 	height: 100px;
+}
+@media only screen and (max-width: 1440px) {
+    .random-popular {
+        display: none;
+    }
 }
 
 .front-page-showcase-picture {
