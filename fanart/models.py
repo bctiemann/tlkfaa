@@ -527,6 +527,10 @@ ORDER BY fanart_user.sort_name
 
 class PictureManager(models.Manager):
 
+    @property
+    def random_popular(self):
+        return self.filter(num_faves__gt=50).order_by('?')
+
     def get_queryset(self):
         return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False)
 
