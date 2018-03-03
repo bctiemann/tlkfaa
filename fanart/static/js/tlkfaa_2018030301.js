@@ -2931,6 +2931,8 @@ $(document).ready(function() {
         getFolderTree($('#edit_artistid').val(), null, true, false, getFolderSelect);
     }
 
-    $('.random-popular').load('/random_popular/');
+    $('.random-popular').load('/random_popular/', function() {
+        setupTooltipPreview();
+    });
 
 });
