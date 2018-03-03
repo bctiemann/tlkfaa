@@ -51,7 +51,12 @@
 
 </div>
 
-<div class="featurebox">
+<div class="random-popular">
+{% include "includes/random_popular.html" %}
+</div>
+
+<div class="group">
+<div class="featurebox front-page">
 
 {% for artist in recently_active_artists %}
 
@@ -84,6 +89,7 @@
 
 <a class="button" href="{% url "artwork" list="newest" %}">More Recent Artwork</a>
 
+</div>
 </div>
 
 <div class="featurebox">

@@ -1059,6 +1059,11 @@ div.featurebox {
 div.featureboxwide {
 	min-width: 770px;
 }
+div.featurebox.front-page {
+	float: left;
+	width: 74%;
+	margin-left: 20px;
+}
 div.featurebox h2 {
 	text-align: left;
 	font-size: 13px;
@@ -2817,4 +2822,18 @@ div.login-failed-banner {
 
 .grayed-out {
 	color: #777777;
+}
+
+.random-popular {
+	float: left;
+	width: 240px;
+	height: 100%;
+}
+
+.front-page-showcase-picture {
+	margin-bottom: 5px;
+	color: #fff;
+}
+.front-page-showcase-picture p a {
+	color: #ddf;
 }
