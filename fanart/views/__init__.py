@@ -124,7 +124,7 @@ class RandomPopularView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RandomPopularView, self).get_context_data(**kwargs)
-        context['random_popular'] = models.Picture.objects.random_popular[0:10]
+        context['random_popular'] = models.Picture.objects.random_popular[0:15]
         return context
 
 
