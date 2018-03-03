@@ -113,7 +113,7 @@ class HomeView(UserPaneMixin, TemplateView):
 
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
 
-        context['random_popular'] = models.Picture.objects.random_popular
+        context['random_popular'] = models.Picture.objects.random_popular[0:10]
 
         context['login_failed'] = self.request.session.get('login_failed')
         self.request.session['login_failed'] = False
