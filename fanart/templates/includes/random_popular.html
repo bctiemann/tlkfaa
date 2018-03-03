@@ -4,7 +4,7 @@
 
     <div class="front-page-showcase-picture">
         <a href="{% url "picture" picture_id=picture.id %}"><img src="{{ picture.preview_url }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" /></a>
-        <span class="float-right">{{ picture.date_uploaded|naturaltime }}</span>
+        <span class="float-right">{{ picture.date_uploaded|date:"Y" }}</span>
         <p><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></p>
     </div>
 
