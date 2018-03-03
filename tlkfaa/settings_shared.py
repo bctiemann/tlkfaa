@@ -350,7 +350,7 @@ IMAGE_FILE_TYPES = {
     'image/gif': 'gif',
 }
 MOVIE_FILE_TYPES = {
-    'application/x-shockwave-flash"': 'swf',
+    'application/x-shockwave-flash': 'swf',
     'video/x-ms-wmv': 'wmv',
     'video/x-msvideo': 'avi',
     'video/quicktime': 'mov',
