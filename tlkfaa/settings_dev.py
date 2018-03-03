@@ -4,9 +4,11 @@ except ImportError:
     pass
 
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost']
+
+STATIC_ROOT = '/Users/brian.tiemann/Development/tlkfaa-dj/static_root'
 
 MEDIA_ROOT = '/Users/brian.tiemann/Development/tlkfaa-dj/media'
 

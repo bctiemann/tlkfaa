@@ -23,11 +23,6 @@ a.detected {
 	clear: both;
 }
 
-@font-face {
-	font-family: 'Lithograph Bold';
-	src: url('../fonts/Lithograph-Bold.ttf');
-}
-
 .wrapper {
 	min-height: 100%;
 	height: auto !important;
