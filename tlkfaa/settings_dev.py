@@ -4,7 +4,7 @@ except ImportError:
     pass
 
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost']
 
