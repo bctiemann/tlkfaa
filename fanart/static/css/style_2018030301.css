@@ -2827,12 +2827,15 @@ div.login-failed-banner {
 .random-popular {
 	float: left;
 	width: 240px;
-	height: 100%;
+	height: 100px;
 }
 
 .front-page-showcase-picture {
 	margin-bottom: 5px;
 	color: #fff;
+}
+.front-page-showcase-picture img {
+	border-radius: 4px;
 }
 .front-page-showcase-picture p a {
 	color: #ddf;

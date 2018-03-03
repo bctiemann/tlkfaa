@@ -113,11 +113,18 @@ class HomeView(UserPaneMixin, TemplateView):
 
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
 
-        context['random_popular'] = models.Picture.objects.random_popular[0:10]
-
         context['login_failed'] = self.request.session.get('login_failed')
         self.request.session['login_failed'] = False
 
+        return context
+
+
+class RandomPopularView(TemplateView):
+    template_name = 'includes/random_popular.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RandomPopularView, self).get_context_data(**kwargs)
+        context['random_popular'] = models.Picture.objects.random_popular[0:10]
         return context
 
 
