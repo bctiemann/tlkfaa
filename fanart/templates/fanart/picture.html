@@ -107,7 +107,7 @@
                         <li><a title="{{ picture.filename }}" href="{{ picture.url }}" class="tooltip">Direct link</a></li>
                         <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
                         <li>{{ picture.file_size|filesizeformat }}</li>
-                        <li>{{ picture.picturecomment_set.count }} comment{{ picture.picturecomment_set|pluralize }}</li>
+                        <li>{{ picture.picturecomment_set.count }} comment{{ picture.picturecomment_set.count|pluralize }}</li>
 
                         {% if user.is_authenticated %}
                             <a id="togglefavepicture_{{ picture.id }}" class="addfavorites {% if fave_picture %}isfave{% endif %}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite this picture"></a>
