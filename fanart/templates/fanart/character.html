@@ -55,7 +55,7 @@
             Canon
         {% else %}
             <div class="owner">Owner: <a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a></div>
-            {% if character.owner != character.creator %}
+            {% if character.creator and character.owner != character.creator %}
                 <div class="creator">Created by <a href="{% url "artist" dir_name=character.creator.dir_name %}">{{ character.creator.username }}</a></div>
             {% endif %}
         {% endif %}
