@@ -181,4 +181,7 @@ def unescape(text):
     return re.sub("&#?\w+;", fixup, text)
 
 def upperfirst(x):
-    return x[0].upper() + x[1:]
+    try:
+        return x[0].upper() + x[1:]
+    except IndexError:
+        return ''
