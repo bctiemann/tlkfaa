@@ -1496,3 +1496,10 @@ class FeaturedArtistPicture(models.Model):
 
     def __unicode__(self):
         return '{0}/{1}'.format(self.featured_artist.artist.username, self.showcase_picture.name)
+
+
+class ModNote(models.Model):
+    date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    note = models.TextField(blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='modnotes_received')
+    moderator = models.ForeignKey('User', null=True, blank=True)
