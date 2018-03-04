@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^admin/approve/(?P<pending_id>[0-9]+)/upload_thumb/$', approval_views.PendingUploadThumbView.as_view(), name='pending-upload-thumb'),
 #    url(r'^admin/approve/thumb_status/$', approval_views.PendingThumbStatusView.as_view(), name='pending-thumb-status'),
     url(r'^admin/approve/auto_approval/(?P<artist_id>[0-9]+)/$', approval_views.AutoApprovalView.as_view(), name='pending-auto-approval'),
+    url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/$', approval_views.ModNotesView.as_view(), name='pending-mod-notes'),
+    url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/add/$', approval_views.AddModNoteView.as_view(), name='pending-mod-notes-add'),
 
     url(
         r'^login/$',

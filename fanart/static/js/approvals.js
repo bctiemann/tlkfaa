@@ -100,8 +100,35 @@ function autoApproval(artist_id) {
     };
 }
 
+function showModNotes(artist_id) {
+    var url = '/admin/approve/mod_notes/' + artist_id + '/';
+    $('#dialog_mod_notes').load(url, function() {
+        $('#dialog_mod_notes').dialog('open');
+    });
+}
+
+function addModNote(artist_id) {
+    var url = '/admin/approve/mod_notes/' + artist_id + '/add/';
+    var params = {
+        note: $('#note').val(),
+    };
+console.log(params);
+    $.post(url, params, function(html) {
+        $('#dialog_mod_notes').html(html);
+    });
+}
+
 $(document).ready(function() {
 
     updateCount();
+
+    $('#dialog_mod_notes').dialog({
+        autoOpen: false,
+        resizable: false,
+        modal: true,
+        width: 600,
+        maxHeight: 600,
+        position: { my: "top", at: "top+200", of: window },
+    });
 
 });

@@ -197,6 +197,13 @@ class ApprovalForm(forms.ModelForm):
         fields = []
 
 
+class ModNoteForm(forms.ModelForm):
+
+    class Meta:
+        model = models.ModNote
+        fields = ['note']
+
+
 class AutoApprovalForm(forms.ModelForm):
 
     class Meta:

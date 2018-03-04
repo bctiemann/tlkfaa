@@ -1503,3 +1503,6 @@ class ModNote(models.Model):
     note = models.TextField(blank=True)
     artist = models.ForeignKey('User', null=True, blank=True, related_name='modnotes_received')
     moderator = models.ForeignKey('User', null=True, blank=True)
+
+    class Meta:
+        ordering = ['date_created']

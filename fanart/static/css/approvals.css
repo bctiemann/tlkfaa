@@ -109,3 +109,16 @@ div.pendingkeywords {
 button.approve {
 	float: right;
 }
+
+textarea.new-note {
+	height: 40px;
+	margin-top: 20px;
+}
+.mod-note {
+	margin: 20px;
+}
+.mod-note .date-created {
+	font-size: 10px;
+	color: #888;
+}
+

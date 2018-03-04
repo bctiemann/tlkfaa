@@ -1,0 +1,14 @@
+{% load humanize %}
+{% load bbcode_tags %}
+
+<h3>{{ artist.username }} &mdash; joined {{ artist.date_joined|date:"SHORT_DATE_FORMAT" }}</h3>
+
+{% for mod_note in artist.modnotes_received.all %}
+    <div class="mod-note">
+        <p class="date-created">{{ mod_note.date_created|timesince }} ago by {{ mod_note.moderator.username }}</p>
+        <p>{{ mod_note.note|bbcode|safe }}</p>
+    </div>
+{% endfor %}
+
+<p><textarea name="note" class="new-note" id="note"></textarea></p>
+<button onClick="addModNote({{ artist.id }})">Add</button>

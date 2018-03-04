@@ -1,7 +1,7 @@
 {% load static %}
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>The Lion King Fan-Art Archive: Approvals</title>
 
@@ -10,21 +10,6 @@
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <link rel="stylesheet" href="{% static "css/approvals.css" %}">
     <script type="text/javascript" src="{% static "js/approvals.js" %}"></script>
-
-{% comment %}
-    <link rel="stylesheet" href="{% static "css/style.css" %}">
-    <link rel="stylesheet" href="{% static "css/approvals.css" %}">
-    <link rel="stylesheet" href="{% static "css/tooltip.css" %}" />
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-
-    <link href="{% static "css/custom-theme/jquery-ui-1.8.9.custom.css" %}" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="{% static "js/jquery-ui-1.8.9.custom.min.js" %}"></script>
-
-    <script type="text/javascript" src="{% static "js/tooltip.js" %}"></script>
-{#    <script type="text/javascript" src="{% static "js/ajaxfileupload.js" %}"></script>#}
-    <script type="text/javascript" src="{% static "js/approvals.js" %}"></script>
-{% endcomment %}
 </head>
 
 <body>
@@ -40,6 +25,10 @@
         <td><img src="{% static "images/loading.gif" %}" /></td>
     </tr>
 </table>
+
+<div class="dialog" id="dialog_mod_notes" title="Moderator Notes">
+foo
+</div>
 
 </body>
 </html>

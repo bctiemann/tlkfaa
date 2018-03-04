@@ -55,6 +55,15 @@ class ApprovalUpdateView(UserPassesTestMixin, AccessMixin, UpdateView):
         return self.request.user.is_approver
 
 
+class ApprovalCreateView(UserPassesTestMixin, AccessMixin, CreateView):
+    raise_exception = True
+
+    def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
+        return self.request.user.is_approver
+
+
 class ApprovalTemplateView(UserPassesTestMixin, AccessMixin, TemplateView):
     raise_exception = True
 
@@ -332,3 +341,30 @@ class AutoApprovalView(AjaxableResponseMixin, ApprovalUpdateView):
             context=email_context,
         )
         return super(AutoApprovalView, self).form_valid(form)
+
+
+class ModNotesView(ApprovalTemplateView):
+    template_name = 'approval/mod_notes.html'
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(ModNotesView, self).get_context_data(*args, **kwargs)
+        context['artist'] = get_object_or_404(models.User, pk=self.kwargs['artist_id'])
+        return context
+
+
+class AddModNoteView(ApprovalCreateView):
+    model = models.ModNote
+    form_class = forms.ModNoteForm
+    template_name = 'approval/mod_notes.html'
+    
+    def form_valid(self, form):
+        artist = get_object_or_404(models.User, pk=self.kwargs['artist_id'])
+        logger.info(self.request.POST)
+        mod_note = form.save(commit=False)
+        mod_note.artist = artist
+        mod_note.moderator = self.request.user
+        mod_note.save()
+        return super(AddModNoteView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('pending-mod-notes', kwargs={'artist_id': self.object.artist.id})

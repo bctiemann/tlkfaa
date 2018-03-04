@@ -63,13 +63,12 @@ $(function () {
                 {% endif %}
             </td>
             <td class="artist-info">
-                <div class="pendingartist {% if pending.artist.comments %}flagartist{% elif pending.artist.num_pictures == 0 %}newartist{% endif %}">
+                <div class="pendingartist {% if pending.artist.modnotes_received.exists %}flagartist{% elif pending.artist.num_pictures == 0 %}newartist{% endif %}">
                     <p><b><a target="_blank" href="{% url "artist" dir_name=pending.artist.dir_name %}">{{ pending.artist.username }}</a></b><br /></p>
                     <p>{{ pending.artist.num_pictures }}<br /></p>
                     <p><a href="mailto:{{ pending.artist.email }}?subject=Fan-art upload ({{ pending.sanitized_basename }}.{{ pending.extension }})">email</a></p>
                     {% if pending.notify_approval %}<p>notify</p>{% endif %}
-                    {% if pending.artist.comments %}<p><a href="javascript:nop()" onClick="alert(document.approveform_{{ pending.id }}.comments.value)">comments</a></p>{% endif %}
-                    <p><a href="javascript:nop()" onClick="addComment(document.approveform_{{ pending.id }})">add comment</a></p>
+                    <p><a href="javascript:nop()" onClick="showModNotes({{ pending.artist.id }})">mod notes</a> ({{ pending.artist.modnotes_received.count }})</p>
                     {% if not pending.artist.auto_approve %}<p><a href="javascript:nop()" onClick="autoApproval({{ pending.artist.id }})">auto-approval</a></p>{% endif %}
                 </div>
             </td>
