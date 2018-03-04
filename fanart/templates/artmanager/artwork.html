@@ -130,7 +130,7 @@ Sort by:
                             {{ picture.date_uploaded|date:"D n/j/Y" }}<br />
                             {{ picture.width }} x {{ picture.height }}<br />
                             {{ picture.file_size|filesizeformat }}<br />
-                            {{ picture.num_comments }} comment{{ picture.num_comments|pluralize }}<br />
+                            {{ picture.picturecomment_set.count }} comment{{ picture.picturecomment_set.count|pluralize }}<br />
                             <a href="javascript:nop()" onClick="togglePicFans({{ picture.id }})">{{ picture.num_faves }} favorite{{ picture.num_faves|pluralize }}</a><br />
                         </div>
                     </td>
