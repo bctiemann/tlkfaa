@@ -149,6 +149,7 @@ $(function () {
         dropZone: null,
         done: function (e, data) {
 console.log(data);
+            clearInterval(refreshThumbsInterval);
             refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         },
         progressall: function (e, data) {
