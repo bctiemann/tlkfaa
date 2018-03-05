@@ -123,13 +123,16 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         format = im.format
         mode = im.mode
 
-    logger.info(mode, format)
+    logger.info('{0} {1}'.format(mode, format))
     im_new = Image.new(mode, im.size)
     im_new.paste(im)
     im_new.save(new_image_path, format)
 
     www_uid = getpwnam(settings.WWW_USER).pw_uid
-    os.chown(new_image_path, www_uid, -1)
+    try:
+        os.chown(new_image_path, www_uid, -1)
+    except OSError:
+        pass
 
     return im.size
 

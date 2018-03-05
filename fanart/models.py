@@ -414,7 +414,7 @@ ORDER BY fanart_user.sort_name
             return False
         try:
             im = Image.open(self.profile_picture.path)
-            if im.width > settings.THUMB_SIZE['profile'] or im.height > settings.THUMB_SIZE['profile']:
+            if im.width > settings.THUMB_SIZE['profile']:
                 return False
         except IOError:
             return False
