@@ -205,7 +205,7 @@ class User(AbstractUser):
     banner_text = models.TextField(blank=True)
     banner_text_updated = models.DateTimeField(null=True, blank=True)
     banner_text_min = models.TextField(blank=True)
-    zip_enabled = models.BooleanField(default=True)
+#    zip_enabled = models.BooleanField(default=True)
     show_email = models.BooleanField(default=True)
     show_birthdate = models.BooleanField(default=True)
     show_birthdate_age = models.BooleanField(default=True)
