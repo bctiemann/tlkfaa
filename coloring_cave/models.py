@@ -121,13 +121,13 @@ class ColoringPicture(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/coloring/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def preview_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/coloring/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def thumbnail_created(self):

@@ -29,8 +29,10 @@ logger = logging.getLogger(__name__)
 
 THREE = 90
 
-SPINNER_GIF = '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
-BLANKDOT_GIF = '{0}images/blankdot.gif'.format(settings.STATIC_URL)
+SPINNER_IMG = '{0}images/loading_spinner.gif'.format(settings.STATIC_URL)
+BLANKDOT_IMG = '{0}images/blankdot.gif'.format(settings.STATIC_URL)
+CHARACTER_PLACEHOLDER_IMG = '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+MOVIE_ICON_IMG = '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
 
 
 artists_tabs = ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']
@@ -390,10 +392,10 @@ ORDER BY fanart_user.sort_name
         if self.profile_picture:
             if self.profile_pic_resized:
                 return self.profile_picture.url
-            return SPINNER_GIF
+            return SPINNER_IMG
         if self.profile_pic_id and self.profile_pic_ext:
             return '{0}profiles/{1}.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
-        return BLANKDOT_GIF
+        return BLANKDOT_IMG
 
     @property
     def profile_pic_thumbnail_url(self):
@@ -404,7 +406,7 @@ ORDER BY fanart_user.sort_name
         elif self.profile_pic_id:
             return '{0}profiles/{1}.s.{2}'.format(settings.MEDIA_URL, self.profile_pic_id, self.profile_pic_ext)
         elif self.profile_picture:
-            return SPINNER_GIF
+            return SPINNER_IMG
         return None
 
     @property
@@ -904,9 +906,9 @@ class Character(models.Model):
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.{2}'.format(settings.MEDIA_ROOT, self.id, ext)):
                     return '{0}canon_characters/{1}.{2}'.format(settings.MEDIA_URL, self.id, ext)
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
         else:
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
 
     @property
     def thumbnail_url(self):
@@ -918,9 +920,9 @@ class Character(models.Model):
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.s.jpg'.format(settings.MEDIA_ROOT, self.id)):
                     return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
         else:
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
 
     @property
     def preview_url(self):
@@ -932,9 +934,9 @@ class Character(models.Model):
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.p.jpg'.format(settings.MEDIA_ROOT, self.id)):
                     return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
         else:
-            return '{0}images/blank_characterthumb.jpg'.format(settings.STATIC_URL)
+            return CHARACTER_PLACEHOLDER_IMG
 
     @property
     def adoption_offer(self):
@@ -1067,20 +1069,20 @@ class Pending(models.Model):
         if self.is_movie:
             if self.has_thumb:
                 return '{0}pending/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
-            return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
+            return MOVIE_ICON_IMG
         if os.path.exists(self.thumbnail_path):
             return '{0}pending/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
-        return SPINNER_GIF
+        return SPINNER_IMG
 
     @property
     def preview_url(self):
         if self.is_movie:
             if self.has_thumb:
                 return '{0}pending/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
-            return '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
+            return MOVIE_ICON_IMG
         if os.path.exists(self.preview_path):
             return '{0}pending/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
-        return SPINNER_GIF
+        return SPINNER_IMG
 
     @property
     def thumbnail_path(self):

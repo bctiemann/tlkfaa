@@ -114,13 +114,13 @@ class Offer(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/offers/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def preview_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/offers/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def thumbnail_created(self):
@@ -219,13 +219,13 @@ class Claim(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/claims/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def preview_url(self):
         if os.path.exists(self.preview_path):
             return '{0}Artwork/claims/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_GIF
+        return fanart_models.SPINNER_IMG
 
     @property
     def thumbnail_created(self):
