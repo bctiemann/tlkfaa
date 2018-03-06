@@ -534,7 +534,7 @@ class PictureManager(models.Manager):
 
     @property
     def random_popular(self):
-        return self.filter(num_faves__gt=50).exclude(mime_type__in=settings.MOVIE_FILE_TYPES.keys()).order_by('?')
+        return self.filter(num_faves__gt=20).exclude(mime_type__in=settings.MOVIE_FILE_TYPES.keys()).order_by('?')
 
     def get_queryset(self):
         return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False).exclude(artist__is_artist=False)
