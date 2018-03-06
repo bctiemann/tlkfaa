@@ -225,8 +225,8 @@ class User(AbstractUser):
     profile_pic_id = models.IntegerField(null=True, blank=True)
     profile_pic_ext = models.CharField(max_length=5, blank=True)
     banner = models.ForeignKey('Banner', null=True, blank=True)
-    old_banner_id = models.IntegerField(null=True, blank=True)
-    old_banner_ext = models.CharField(max_length=5, blank=True)
+#    old_banner_id = models.IntegerField(null=True, blank=True)
+#    old_banner_ext = models.CharField(max_length=5, blank=True)
     example_pic = models.ForeignKey('Picture', null=True, blank=True)
     suspension_message = models.TextField(blank=True)
     auto_approve = models.BooleanField(default=False)
@@ -378,8 +378,8 @@ ORDER BY fanart_user.sort_name
     def banner_url(self):
         if self.banner:
             return self.banner.picture.url
-        elif self.old_banner_id:
-            return '{0}Artwork/banners/{1}.{2}'.format(settings.MEDIA_URL, self.old_banner_id, self.old_banner_ext)
+#        elif self.old_banner_id:
+#            return '{0}Artwork/banners/{1}.{2}'.format(settings.MEDIA_URL, self.old_banner_id, self.old_banner_ext)
         return None
 
     @property
