@@ -919,7 +919,7 @@ class Character(models.Model):
         elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.s.jpg'.format(settings.MEDIA_ROOT, self.id)):
-                    return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id_orig)
+                    return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
             return CHARACTER_PLACEHOLDER_IMG
         else:
             return CHARACTER_PLACEHOLDER_IMG
@@ -933,7 +933,7 @@ class Character(models.Model):
         elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
                 if os.path.exists('{0}/images/canon_characters/{1}.p.jpg'.format(settings.MEDIA_ROOT, self.id)):
-                    return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id_orig)
+                    return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
             return CHARACTER_PLACEHOLDER_IMG
         else:
             return CHARACTER_PLACEHOLDER_IMG
