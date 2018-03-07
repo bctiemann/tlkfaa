@@ -112,7 +112,7 @@
         <li><a href="{% url "help" %}" rel="shadowbox;width=500;height=600">Help</a></li>
     </ul>
     <div class="footertext">
-    <p>Web design &copy; 1995-{% now "Y" %} <a href="mailto:btman@lionking.org">Brian Tiemann</a></p>
+    <p>Web design &copy; 1995-{% now "Y" %} <a href="mailto:{{ admin_email }}">{{ admin_name }}</a></p>
     </div>
 </div>
 
