@@ -265,7 +265,7 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
         logger.info(self.cleaned_data)
         username = self.cleaned_data["username"]
         email = self.cleaned_data["email"]
-        logger.info(username, email)
+        logger.info('{0} {1}'.format(username, email))
         for user in self.get_users(email=email, username=username):
             if not domain_override:
                 current_site = get_current_site(request)
