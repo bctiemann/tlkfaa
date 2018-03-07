@@ -1163,7 +1163,10 @@ class ArtistGalleryView(ArtistView):
         context = super(ArtistView, self).get_context_data(**kwargs)
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
-        context['folder'] = models.Folder.objects.filter(pk=self.request.GET.get('folder_id', None)).first()
+        try:
+            context['folder'] = models.Folder.objects.filter(pk=self.request.GET.get('folder_id', None)).first()
+        except ValueError:
+            raise Http404
 
         subview = kwargs.get('subview', None)
         if subview:
