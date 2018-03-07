@@ -3,7 +3,7 @@
 
 <BODY
    BGCOLOR="D7E2E4"
-   BACKGROUND=/images/background.jpg
+   BACKGROUND="{% static "images/background.jpg" %}"
    LINK="#FF0000"
    ALINK="#009900"
    VLINK="#000066">
@@ -23,4 +23,4 @@ available.<P>
 
 <BR><BR>
 
-<I>Maintained by <A HREF="mailto:btman\@lionking.org">Brian Tiemann</A></I>
+<I>Maintained by <A HREF="mailto:{{ admin_email }}">{{ admin_name }}</A></I>

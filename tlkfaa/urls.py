@@ -184,3 +184,7 @@ if settings.DEBUG:
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler500 = lambda request: fanart_views.ErrorHandler500.as_view()(request)
+handler404 = lambda request: fanart_views.ErrorHandler404.as_view()(request)
+handler403 = lambda request: fanart_views.ErrorHandler403.as_view()(request)

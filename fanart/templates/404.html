@@ -1,7 +1,7 @@
 {% load static %}
 <TITLE>404 - File not found!</TITLE>
 
-<BODY BGCOLOR="D7E2E4" BACKGROUND="/images/background.jpg" LINK="#FF0000" ALINK="#009900" VLINK="#000066">
+<BODY BGCOLOR="D7E2E4" BACKGROUND="{% static "images/background.jpg" %}" LINK="#FF0000" ALINK="#009900" VLINK="#000066">
 
 <A HREF="/"><IMG ALIGN=RIGHT SRC="{% static "images/404.gif" %}" WIDTH=250 HEIGHT=301 
 BORDER=0></A>
@@ -18,5 +18,5 @@ the listing of all choices available.<P>
 
 <BR><BR>
 
-<I>Maintained by <A HREF="mailto:btman\@lionking.org">Brian Tiemann</A></I>
+<I>Maintained by <A HREF="mailto:{{ admin_email }}">{{ admin_name }}</A></I>
 
