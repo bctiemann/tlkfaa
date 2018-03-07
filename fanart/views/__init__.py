@@ -61,6 +61,9 @@ class ErrorHandler403(TemplateView):
 class LoginView(LoginView):
     form_class = forms.LoginForm
 
+    def get(self, request, *args, **kwargs):
+        return redirect('home')
+
     def form_invalid(self, form):
         self.request.session['login_failed'] = True
         return redirect('home')
