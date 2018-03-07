@@ -28,3 +28,7 @@ MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT'
 
 EMAIL_HOST = 'mail.lionking.org'
 
+SITE_EMAIL = 'fanart@lionking.org'
+DEBUG_EMAIL = 'btman@mac.com'
+ADMIN_EMAIL = 'btman@lionking.org'
+
