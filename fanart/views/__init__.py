@@ -48,21 +48,13 @@ THREE_MONTHS = 90
 ONE_MONTH = 30
 
 
-class ErrorHandler(TemplateView):
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(ErrorHandler, self).get_context_data(*args, **kwargs)
-        context['admin_email'] = settings.ADMIN_EMAIL
-        context['admin_name'] = settings.ADMIN_NAME
-        return context
-
-class ErrorHandler500(ErrorHandler):
+class ErrorHandler500(TemplateView):
     template_name = '500.html'
 
-class ErrorHandler404(ErrorHandler):
+class ErrorHandler404(TemplateView):
     template_name = '404.html'
 
-class ErrorHandler403(ErrorHandler):
+class ErrorHandler403(TemplateView):
     template_name = '403.html'
 
 
@@ -752,14 +744,6 @@ class UsernameAwarePasswordResetView(PasswordResetView):
 
 class HashedPasswordResetConfirmView(PasswordResetConfirmView):
     form_class = forms.HashedSetPasswordForm
-
-
-class PasswordResetDoneView(PasswordResetDoneView):
-
-    def get_context_data(self, **kwargs):
-        context = super(PasswordResetDoneView, self).get_context_data(**kwargs)
-        context['admin_email'] = settings.ADMIN_EMAIL
-        return context
 
 
 class GuidelinesView(TemplateView):
@@ -1690,5 +1674,4 @@ class PrivacyView(TemplateView):
 
 class HelpView(TemplateView):
     template_name = 'fanart/help.html'
-
 
