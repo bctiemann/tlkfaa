@@ -32,6 +32,9 @@ def send_email(recipients,
     if settings.DEBUG:
         recipients = [settings.DEBUG_EMAIL]
 
+    context['admin_email'] = settings.ADMIN_EMAIL
+    context['admin_name'] = settings.ADMIN_NAME
+
     plaintext = get_template(text_template)
     htmly = get_template(html_template)
     connection = mail.get_connection()

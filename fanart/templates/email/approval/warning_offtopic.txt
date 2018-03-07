@@ -9,6 +9,6 @@ Guidelines with future uploaded art.
 
   Thank you for understanding!
 
---Brian Tiemann
+--{{ admin_name }}
 fanart.lionking.org
 

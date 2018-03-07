@@ -19,6 +19,6 @@ will be sent this e-mail and be allowed to create the next contest instead.
 Please feel free to e-mail me at {{ admin_email }} if you have any
 questions or concerns. Congratulations!
 
---Brian Tiemann
+--{{ admin_name }}
 lionking.org administrator
 

@@ -12,6 +12,6 @@ accepted the picture, and it will now appear on their ArtWall. To view this sect
 
 Thank you!
 
---Brian Tiemann
+--{{ admin_name }}
 lionking.org administrator
 

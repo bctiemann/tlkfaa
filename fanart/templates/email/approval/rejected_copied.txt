@@ -22,6 +22,6 @@ http://fanart.lionking.org/, and I encourage you to
 contribute any fan-art that meets these guidelines. Thank you for
 understanding!
 
---Brian Tiemann
+--{{ admin_name }}
 fanart.lionking.org
 
