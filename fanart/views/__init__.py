@@ -1164,7 +1164,7 @@ class ArtistGalleryView(ArtistView):
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
         try:
-            context['folder'] = models.Folder.objects.filter(pk=self.request.GET.get('folder_id', None)).first()
+            context['folder'] = models.Folder.objects.filter(pk=self.request.GET.get('folder_id', None), user=artist).first()
         except ValueError:
             raise Http404
 
