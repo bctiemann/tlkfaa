@@ -763,7 +763,7 @@ class Picture(models.Model):
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
 
     def __unicode__(self):
-        return '{0} {1}'.format(self.id, self.filename)
+        return '{0}: {1} {2}'.format(self.artist.username, self.id, self.filename)
 
 
 class Folder(models.Model):
