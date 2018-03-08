@@ -11,7 +11,11 @@
     {% include "includes/head_statics.html" %}
 
     <script type="text/javascript">
+    {% if request.user.is_authenticated %}
     var tooltips_enabled = {{ request.user.tooltips_enabled|yesno:"true,false,true" }};
+    {% else %}
+    var tooltips_enabled = true;
+    {% endif %}
     </script>
 
 </head>
