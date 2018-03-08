@@ -273,13 +273,15 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
             </tr>
             <tr>
                 <td class="label"></td>
-                <td class="data inputlabels"><input type="checkbox" name="commissions" id="commissions" value="1" {% if user.commissions_open %}checked{% endif %} /> <label for="commissions">Accepting requests or commissions</label></td>
+                <td class="data inputlabels">
+                    <input type="checkbox" name="commissions" id="commissions" value="1" {% if user.commissions_open %}checked{% endif %} /> <label for="commissions">Accepting requests or commissions</label>
+                </td>
                 <td class="legend"></td>
             </tr>
             <tr>
-                <td class="label">Popup Previews</td>
-                <td class="data">
-                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /><br />
+                <td class="label"></td>
+                <td class="data inputlabels">
+                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /> <label for="tooltips_enabled">Popup Previews</label>
                 </td>
                 <td class="legend"></td>
             </tr>
@@ -419,9 +421,9 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="legend"></td>
             </tr>
             <tr>
-                <td class="label">Popup Previews</td>
+                <td class="label"></td>
                 <td class="data">
-                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /><br />
+                    <input type="checkbox" name="tooltips_enabled" id="tooltips_enabled" value="1" {% if user.tooltips_enabled %}checked{% endif %} /> <label for="tooltips_enabled">Popup Previews</label><br />
                 </td>
                 <td class="legend"></td>
             </tr>
