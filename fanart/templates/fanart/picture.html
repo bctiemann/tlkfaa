@@ -181,6 +181,12 @@
 
     </div>
 
+<script type="text/javascript">
+if (typeof(window.history.replaceState) !== "undefined") {
+    window.history.replaceState(null, null, '{% url "picture" picture_id=picture.id %}{{ picture.filename }}');
+}
+</script>
+
 {% endif %}
 
 {% endblock %}

@@ -86,8 +86,8 @@ urlpatterns = [
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
     url(r'^Artists/(?P<dir_name>[^/]+)/(?P<filename>[^/]+)$', fanart_views.PictureRedirectByPathView.as_view(), name='picture-redirect'),
 
-    url(r'^picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
+    url(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
     url(r'^contest/(?P<contest_id>[0-9]+)/$', fanart_views.ContestView.as_view(), name='contest'),
     url(r'^contest/(?P<contest_id>[0-9]+)/entry/create/$', fanart_views.ContestEntryCreateView.as_view(), name='contest-entry-create'),
