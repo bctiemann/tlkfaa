@@ -915,7 +915,7 @@ textarea {
 }
 textarea.comment {
 	width: 90%;
-	max-width: 700px;
+/*	max-width: 700px;*/
 	height: 80px;
 	padding: 20px;
 	font-family: Verdana, sans-serif;
