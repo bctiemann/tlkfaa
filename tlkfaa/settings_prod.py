@@ -32,3 +32,4 @@ SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
 ADMIN_EMAIL = 'btman@lionking.org'
 
+RECAPTCHA_ENABLED = True

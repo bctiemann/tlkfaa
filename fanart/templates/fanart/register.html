@@ -83,7 +83,9 @@
                 <p>Failure to abide by these terms may result in the suspension or removal of your profile, at the discretion of the TLKFAA administration.</p>
             </div>
 
+            {% if recaptcha_enabled %}
             <div class="g-recaptcha" style="margin: 30px 100px;" data-sitekey="{{ recaptcha_site_key }}"></div>
+            {% endif %}
 
             <div class="pageinfo">
                 <p>By clicking the "Register" button you state that you have read and will adhere to the above Terms of Use.<p>
