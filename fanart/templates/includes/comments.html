@@ -76,10 +76,10 @@
     {% csrf_token %}
     <div class="commenttext commentreply">
         Comment:<br />
-        <textarea class="comment" name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
+        <textarea class="comment top-level" name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
         <input type="hidden" name="hash" id="hash" value="{{ hash }}" />
-        <div class="commentbuttons">
-            <button type="button" class="small" onClick="postReply({{ picture.id }},0)">Post</button>
+        <div class="replybuttons">
+            <button type="button" class="" onClick="postReply({{ picture.id }},0)">Post</button>
         </div>
     </div>
 </form>
