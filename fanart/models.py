@@ -526,6 +526,10 @@ ORDER BY fanart_user.sort_name
             if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
                 process_images.apply_async(('fanart.models', 'User', self.id, 'profile'), countdown=20)
 
+    def delete(self, *args, **kwargs):
+        shutil.rmtree(self.absolute_dir_name, ignore_errors=False)
+        super(User, self).delete(*args, **kwargs)
+
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
