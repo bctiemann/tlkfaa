@@ -109,13 +109,17 @@ class Command(BaseCommand):
 
                 for shout in user.shout_set.all():
                     print shout
-                    print shout.comment
+                    print shout.comment.encode('utf8')
                     shout.user = master_user
                     shout.save()
 
                 for vote in user.contestvote_set.all():
                     vote.user = master_user
                     vote.save()
+
+                for claim in user.claim_set.all():
+                    claim.user = master_user
+                    claim.save()
 
                 for fave_artist in user.favorite_set.filter(artist__isnull=False):
                     defaults = {
