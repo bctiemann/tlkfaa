@@ -18,6 +18,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tlkfaa.settings")
 #application = get_wsgi_application()
 
 env_variables_to_pass = [
+    'DB_NAME_TLKFAA',
+    'DB_USER_TLKFAA',
     'DB_PASS_TLKFAA',
     'DB_HOST_TLKFAA',
     'DB_PORT_TLKFAA',

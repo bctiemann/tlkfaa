@@ -11,8 +11,8 @@ ALLOWED_HOSTS = ['fanart-dj.lionking.org', 'fanart.lionking.org']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tlkfaa',
-        'USER': 'tlkfaa',
+        'NAME': os.environ['DB_NAME_TLKFAA'],
+        'USER': os.environ['DB_USER_TLKFAA'],
         'PASSWORD': os.environ['DB_PASS_TLKFAA'],
         'HOST': os.environ['DB_HOST_TLKFAA'],
         'PORT': os.environ['DB_PORT_TLKFAA'],
