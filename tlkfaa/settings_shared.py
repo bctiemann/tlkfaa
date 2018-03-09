@@ -312,7 +312,6 @@ RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_ENABLED = False
 
 # Celery
-CELERY_BROKER_URL = 'amqp://tlkfaa:5zPM}XLh^Zgm-cAM@localhost:5672/tlkfaa'
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_ACCEPT_CONTENT = ['pickle']

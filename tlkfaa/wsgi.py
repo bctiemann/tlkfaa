@@ -27,6 +27,7 @@ env_variables_to_pass = [
     'SECRET_KEY',
     'RECAPTCHA_SITE_KEY',
     'RECAPTCHA_SECRET_KEY',
+    'CELERY_BROKER_URL',
 ]
 
 def application(environ, start_response):

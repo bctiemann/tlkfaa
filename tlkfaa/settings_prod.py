@@ -33,3 +33,6 @@ DEBUG_EMAIL = 'btman@mac.com'
 ADMIN_EMAIL = 'btman@lionking.org'
 
 RECAPTCHA_ENABLED = True
+
+CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+
