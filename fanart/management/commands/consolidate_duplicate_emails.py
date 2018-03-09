@@ -103,7 +103,7 @@ class Command(BaseCommand):
 
                 for comment in user.picturecomment_set.all():
                     print comment
-                    print comment.comment
+                    print comment.comment.encode('utf8')
                     comment.user = master_user
                     comment.save()
 
