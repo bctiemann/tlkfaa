@@ -527,7 +527,7 @@ ORDER BY fanart_user.sort_name
                 process_images.apply_async(('fanart.models', 'User', self.id, 'profile'), countdown=20)
 
     def delete(self, *args, **kwargs):
-        shutil.rmtree(self.absolute_dir_name, ignore_errors=False)
+        shutil.rmtree(self.absolute_dir_name, ignore_errors=True)
         super(User, self).delete(*args, **kwargs)
 
     def __unicode__(self):
