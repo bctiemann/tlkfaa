@@ -1,11 +1,11 @@
 {% for fave in user.favorite_pictures|slice:"0:12" %}
 
 <a class="" 
-    href="{{ MEDIA_URL }}Artwork/Artists/{{ fave.picture.artist.dir_name }}/{{ fave.picture.filename }}?{{ fave.picture.id }}" 
+    href="{{ fave.picture.url }}?{{ fave.picture.id }}"
     title="{{ fave.picture.filename }} by {{ fave.picture.artist.username }}" 
     rel="shadowbox[favepics]"><img class="favepic" 
-        src="{{ MEDIA_URL }}Artwork/Artists/{{ fave.picture.artist.dir_name }}/{{ fave.picture.basename }}.s.jpg" 
-        width="60" 
+        src="{{ fave.picture.thumbnail_url }}"
+        width="{{ THUMB_SIZE.small }}" 
         height="{{ fave.picture.thumb_height }}" 
 /></a>
 
