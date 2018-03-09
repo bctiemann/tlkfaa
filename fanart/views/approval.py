@@ -118,10 +118,10 @@ class PendingApproveView(ApprovalAPIView):
         pending.approved_by = request.user
         pending.save()
 
-        new_comments = request.POST.get('newcomments')
-        if new_comments:
-            pending.artist.comments += '{0}\n\n{1}'.format(timezone.now().strftime('%Y-%m-%d'), new_comments)
-            pending.artist.save()
+#        new_comments = request.POST.get('newcomments')
+#        if new_comments:
+#            pending.artist.comments += '{0}\n\n{1}'.format(timezone.now().strftime('%Y-%m-%d'), new_comments)
+#            pending.artist.save()
 
         send_email = False
         if request.POST.get('warn_ot'):
