@@ -19,6 +19,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tlkfaa.settings")
 
 env_variables_to_pass = [
     'DB_PASS_TLKFAA',
+    'DB_HOST_TLKFAA',
+    'DB_PORT_TLKFAA',
     'DJANGO_SETTINGS_MODULE',
     'SECRET_KEY',
     'RECAPTCHA_SITE_KEY',

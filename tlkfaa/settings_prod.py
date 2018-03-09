@@ -14,8 +14,8 @@ DATABASES = {
         'NAME': 'tlkfaa',
         'USER': 'tlkfaa',
         'PASSWORD': os.environ['DB_PASS_TLKFAA'],
-        'HOST': '10.0.0.2',
-        'PORT': '3306',
+        'HOST': os.environ['DB_HOST_TLKFAA'],
+        'PORT': os.environ['DB_PORT_TLKFAA'],
         'OPTIONS': {
             'init_command': 'SET character_set_connection=utf8mb4, collation_connection=utf8mb4_general_ci',
             'charset': 'utf8mb4',
