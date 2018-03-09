@@ -99,6 +99,7 @@ class UserPaneMixin(object):
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
+        context['THUMB_SIZE'] = settings.THUMB_SIZE
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
 
@@ -581,7 +582,8 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
         context['page_number'] = context['favorite_pictures_paginator'].num_pages - context['favorite_pictures'].number + 1
 
         context['pages_link'] = utils.PagesLink(len(favorite_pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
-        context['THUMB_SIZE'] = settings.THUMB_SIZE
+
+        logger.info(context)
 
         return context
 
