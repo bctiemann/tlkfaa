@@ -4,7 +4,7 @@ Its purpose is to allow fans of Disney's *The Lion King* to create and share the
 innovative collaborative features.
 
 ## History ##
-Prior to the creation of the TLKFAA proper (with its own domain at https://fanart.lionking.org), the Image Archive section
+Prior to the creation of the TLKFAA proper (with its own subdomain at https://fanart.lionking.org), the Image Archive section
 of The Lion King WWW Archive (http://lionking.org) contained a "fan-art" section, featuring the work of one or two dozen 
 artists. The pages of this site were manually edited into static HTML.
 
@@ -39,7 +39,7 @@ that was patently unavailable in the stacks used for the previous designs.
 
 Most especially, Django allows the site for the first time to be built around the modern development pattern of a local
 dev environment, a central code repo, and one or more staging/production instances to which code can be deployed via 
-a CI/CD pipeline. The TLKFAA can now be cloned to a local dev environment and set up using familiar Django setup methods,
+a CI/CD pipeline. The TLKFAA can now be cloned to a local dev workstation and set up using familiar Django setup methods,
 and is no longer anchored to its one and only production instance.
 
 The future of the TLKFAA community might be one in which interest in the subject matter continues to slowly wane; but
