@@ -606,6 +606,11 @@ div#upcoming_birthdays {
 	left: 840px;
 	width: 160px;
 }
+.birthdays-scroll {
+	height: 200px;
+	overflow-y: scroll;
+	overflow-y: scroll;
+}
 .upcoming-birthday {
 	margin: 10px 0px;
 }

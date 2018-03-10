@@ -128,13 +128,13 @@ SELECT `id`, `username`, `birth_date`, `dir_name`, `show_birthdate_age`, `num_pi
             YEAR(CURDATE())-YEAR(birth_date)+1
         ) YEAR
     ) AS `next_birthday`,
-    DATEDIFF(DATE_ADD(
+    CAST((DATEDIFF(DATE_ADD(
         birth_date,
         INTERVAL IF(DAYOFYEAR(birth_date) >= DAYOFYEAR(CURDATE()),
             YEAR(CURDATE())-YEAR(birth_date),
             YEAR(CURDATE())-YEAR(birth_date)+1
         ) YEAR
-    ), birth_date) / 365 AS `age`
+    ), birth_date) / 365) AS UNSIGNED INTEGER) AS `age`
 FROM `fanart_user`
 WHERE
     `birth_date` IS NOT NULL

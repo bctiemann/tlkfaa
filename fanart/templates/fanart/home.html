@@ -51,6 +51,7 @@
 
     <div class="banner-block" id="upcoming_birthdays">
         <h3>Upcoming Birthdays</h3>
+        <div class="birthdays-scroll">
         {% for birthday in upcoming_birthdays %}
             <div class="upcoming-birthday">
                 <p class="float-right">{{ birthday.next_birthday|date:"M j" }}</p>
@@ -61,6 +62,7 @@
                 </p>
             </div>
         {% endfor %}
+        </div>
     </div>
 
 </div>
