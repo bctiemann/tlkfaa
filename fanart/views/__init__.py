@@ -125,6 +125,7 @@ class HomeView(UserPaneMixin, TemplateView):
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
         context['recently_active_artists'] = models.User.objects.recently_active(self.request)
 
+        context['upcoming_birthdays'] = models.User.objects.upcoming_birthdays()
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
 
         context['login_failed'] = self.request.session.get('login_failed')

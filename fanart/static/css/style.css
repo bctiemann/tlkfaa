@@ -512,7 +512,7 @@ div.grassgradient {
 
 div.frontpagebanners {
 	position: relative;
-	width: 900px;
+	width: 1040px;
 	height: 265px;
 	margin: 0px auto 0px auto;
 	z-index: 2;
@@ -522,9 +522,7 @@ div.frontpagebanners h3 {
 	color: #889;
 	margin: 0px 0px 2px 0px;
 }
-div#adminannouncements,
-div#bulletins,
-div.current-contest {
+div.banner-block {
 	position: absolute;
 	width: 280px;
 	height: 220px;
@@ -602,6 +600,19 @@ div.current-contest .contest-theme {
 	margin: 4px auto;
 	min-width: 100%;
 	font-size: 10px;
+}
+
+div#upcoming_birthdays {
+	left: 840px;
+	width: 160px;
+}
+.upcoming-birthday {
+	margin: 10px 0px;
+}
+.birthday-age {
+	color: #888;
+	font-size: 8px;
+	margin-left: 5px;
 }
 
 div.birthday {

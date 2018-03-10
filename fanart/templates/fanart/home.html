@@ -13,7 +13,7 @@
 
 <div class="frontpagebanners">
 
-    <div id="adminannouncements">
+    <div class="banner-block" id="adminannouncements">
         <h3>Admin Announcements</h3>
         <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll">
         {% include "includes/admin_announcements.html" %}
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div id="bulletins">
+    <div class="banner-block" id="bulletins">
         <h3>Bulletins</h3>
         <div id="bulletins_inner" class="bulletinsinner bulletinsstatic">
         {% include "includes/bulletins.html" %}
@@ -34,7 +34,7 @@
     </div>
 
     {% if current_contest %}
-    <div class="current-contest">
+    <div class="banner-block current-contest">
         <h3>Current Art Contest</h3>
         <p class="contest-title"><a href="{% url "contest" contest_id=current_contest.id %}">{{ current_contest.title }}</a></p>
 	<div class="contest-theme">
@@ -48,6 +48,20 @@
         {% endif %}
     </div>
     {% endif %}
+
+    <div class="banner-block" id="upcoming_birthdays">
+        <h3>Upcoming Birthdays</h3>
+        {% for birthday in upcoming_birthdays %}
+            <div class="upcoming-birthday">
+                <p class="float-right">{{ birthday.next_birthday|date:"M j" }}</p>
+                <p><a href="{% url "artist" dir_name=birthday.dir_name %}">{{ birthday.username }}</a>
+                {% if birthday.show_birthdate_age %}
+                    <span class="birthday-age">{{ birthday.age }}</span>
+                {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
 
 </div>
 
