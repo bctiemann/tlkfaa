@@ -1515,3 +1515,11 @@ class ModNote(models.Model):
 
     class Meta:
         ordering = ['date_created']
+
+
+class RevisionLog(models.Model):
+    date_created = models.DateField(null=True, blank=True, default=timezone.now)
+    entry = models.TextField(blank=True)
+
+#    def __unicode__(self):
+#        return self.date_created

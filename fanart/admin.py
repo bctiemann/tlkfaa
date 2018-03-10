@@ -201,3 +201,7 @@ class FeaturedArtistPictureAdmin(admin.ModelAdmin):
 
 admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAdmin)
 
+class RevisionLogAdmin(admin.ModelAdmin):
+    list_display = ('date_created', 'entry',)
+admin.site.register(fanart_models.RevisionLog, RevisionLogAdmin)
+
