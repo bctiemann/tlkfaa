@@ -84,7 +84,7 @@
 <div id="alerts">
 
 {% for gift in user.open_gifts_received %}
-<div class="requestalert">Pending ArtWall submission from <a href="/ApproveRequest.jsp?requestid=${request.requestid}&hash=${request.hash}">{{ gift.sender.username }}</a></div>
+<div class="requestalert">Pending ArtWall submission from <a href="{% url "approve-request" hash=gift.hash %}">{{ gift.sender.username }}</a></div>
 {% endfor %}
 
 {% if user.claims_ready.exists %}
