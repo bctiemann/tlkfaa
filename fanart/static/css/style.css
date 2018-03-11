@@ -2872,9 +2872,8 @@ video {
 .log-entry {
 	text-align: left;
 	font-size: 14px;
-	margin-bottom: 20px;
 	width: 80%;
-	margin: 0px auto 20px auto;
+	margin: 0px auto 40px auto;
 }
 .log-entry .entry-date {
 	font-size: 16px;
