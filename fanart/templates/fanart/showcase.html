@@ -88,14 +88,6 @@
                 {% for picture in showcase.pictures|slice:":20" %}
                     <div class="offertile picturetile">
                         <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picture.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
-
-{% comment %}
-			<script type="text/javascript">
-			  $('a#picturetile_${picture.pictureid}').wTooltip({
-			    ajax: "/ajax_tooltip_picture.jsp?pictureid=${picture.pictureid}"
-			  });
-			</script>
-{% endcomment %}
                     </div>
                 {% endfor %}
             </div>
