@@ -118,23 +118,43 @@ class FanartUserManager(UserManager):
 
     def upcoming_birthdays(self):
         with connection.cursor() as cursor:
-            query = """
-SELECT `id`, `username`, `birth_date`,
+            try:
+                query = """
+SELECT `id`, `username`, `birth_date`, `dir_name`, `show_birthdate_age`, `num_pictures`,
     DATE_ADD(
         birth_date,
         INTERVAL IF(DAYOFYEAR(birth_date) >= DAYOFYEAR(CURDATE()),
             YEAR(CURDATE())-YEAR(birth_date),
             YEAR(CURDATE())-YEAR(birth_date)+1
         ) YEAR
-    ) AS `next_birthday`
+    ) AS `next_birthday`,
+    CAST((DATEDIFF(DATE_ADD(
+        birth_date,
+        INTERVAL IF(DAYOFYEAR(birth_date) >= DAYOFYEAR(CURDATE()),
+            YEAR(CURDATE())-YEAR(birth_date),
+            YEAR(CURDATE())-YEAR(birth_date)+1
+        ) YEAR
+    ), birth_date) / 365) AS UNSIGNED INTEGER) AS `age`
 FROM `fanart_user`
 WHERE
     `birth_date` IS NOT NULL
+    AND `show_birthdate` = 1
+    AND `is_artist` = 1
+    AND `num_pictures` > 0
 HAVING
     `next_birthday` BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
 ORDER BY `next_birthday`
 """
-            cursor.execute(query, [])
+                cursor.execute(query, [])
+            except:
+                query = """
+SELECT `id`, `username`, `birth_date`, `birth_date` as `next_birthday`, `dir_name`, `show_birthdate_age`, 35 AS `age`
+FROM `fanart_user`
+WHERE
+    `birth_date` IS NOT NULL
+ORDER BY `next_birthday`
+"""
+                cursor.execute(query, [])
             result = dictfetchall(cursor)
         return result
 
