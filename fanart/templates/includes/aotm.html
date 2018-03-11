@@ -36,12 +36,9 @@
 {% endif %}
 
 {% if user.is_authenticated %}
-<c:if test="${loggedin == 1}">
 <div id="aotmvote">
-<jsp:include page="/ajax_aotmvote.jsp" />
 {% include "includes/aotm_vote.html" %}
 </div>
-</c:if>
 {% endif %}
 
 <br clear="all" />
