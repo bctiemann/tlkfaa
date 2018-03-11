@@ -111,45 +111,9 @@
 
 <div class="featurebox">
 
-
-{% comment %}
-<div class="birthday clearAfter">
-	<sql:query var="qryBdayToday">
-	SELECT *,
-	YEAR(birthdate) AS bdyear,
-	DATEDIFF(DATE_ADD(NOW(),INTERVAL 180 DAY),birthdate) as daysdiff
-	FROM artists
-	WHERE MONTH(birthdate)=MONTH(NOW())
-	AND DAY(birthdate)=DAY(NOW())
-	AND active=true
-	AND enabled=true
-	AND numpictures>0
-	AND showbirthdate=true
-	ORDER BY artistname
-	</sql:query>
-
-	<c:if test="${qryBdayToday.rowCount > 0}">
-	<div>Happy birthday to:</div>
-	<table>
-	<c:forEach var="bdartist" items="${qryBdayToday.rows}">
-		<tr>
-		<td><a href="/Artists/${bdartist.dirname}/">${bdartist.artistname}</a></td>
-		<td><c:if test="${bdartist.showbirthdate_age == true && bdartist.bdyear > 0}"><fmt:formatNumber value="${bdartist.daysdiff / 365}" type="number" pattern="###" /></c:if></td>
-		</tr>
-	</c:forEach>
-	</table>
-	</c:if>
-	<div class="birthdaylink"><a href="pop_birthdays.jsp" rel="shadowbox;width=500;height=600">Upcoming Birthdays</a></div>
-<br clear="all" />
-</div>
-{% endcomment %}
-
 {% include "includes/aotm.html" %}
 
 </div>
 
 {% endblock %}
-
-<jsp:include page="inc_root/inc_lowerlayout.jsp" />
-<jsp:include page="inc_root/inc_footer.jsp" />
 
