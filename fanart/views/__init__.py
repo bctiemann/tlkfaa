@@ -397,6 +397,17 @@ class FeaturedArtistsView(UserPaneMixin, TemplateView):
         return context
 
 
+class RevisionLogView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/revision_log.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RevisionLogView, self).get_context_data(**kwargs)
+
+        context['entries'] = models.RevisionLog.objects.all().order_by('-date_created')
+
+        return context
+
+
 class ContestsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/contests.html'
 

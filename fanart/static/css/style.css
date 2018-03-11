@@ -560,6 +560,7 @@ div#bulletinsmore {
 	position: absolute;
 	left: 20px;
 	top: 204px;
+	width: 260px;
 }
 div#bulletinsmore {
 }
@@ -2868,3 +2869,14 @@ video {
 	display: block;
 }
 
+.log-entry {
+	text-align: left;
+	font-size: 14px;
+	margin-bottom: 20px;
+	width: 80%;
+	margin: 0px auto 20px auto;
+}
+.log-entry .entry-date {
+	font-size: 16px;
+	font-weight: bold;
+}

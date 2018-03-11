@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
     url(r'^Featured/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    url(r'^revision_log/$', fanart_views.RevisionLogView.as_view(), name='revision-log'),
 
     url(r'^about/$', fanart_views.AboutView.as_view(), name='about'),
     url(r'^tos/$', fanart_views.TermsOfServiceView.as_view(), name='tos'),

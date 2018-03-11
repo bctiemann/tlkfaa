@@ -16,20 +16,21 @@
     <div class="banner-block" id="adminannouncements">
         <h3>Admin Announcements</h3>
         <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll">
-        {% include "includes/admin_announcements.html" %}
+            {% include "includes/admin_announcements.html" %}
         </div>
         <div id="adminannouncementsmore">
-        <button class="small" onClick="getMoreAdminAnnouncements(adminannouncementsshown,10)">More</button>
+            <a class="float-right" href="{% url "revision-log" %}">Revision Log</a>
+            <button class="small" onClick="getMoreAdminAnnouncements(adminannouncementsshown,10)">More</button>
         </div>
     </div>
 
     <div class="banner-block" id="bulletins">
         <h3>Bulletins</h3>
         <div id="bulletins_inner" class="bulletinsinner bulletinsstatic">
-        {% include "includes/bulletins.html" %}
+            {% include "includes/bulletins.html" %}
         </div>
         <div id="bulletinsmore">
-        <button class="small" onClick="getMoreBulletins(bulletinsshown,10)">More</button>
+            <button class="small" onClick="getMoreBulletins(bulletinsshown,10)">More</button>
         </div>
     </div>
 

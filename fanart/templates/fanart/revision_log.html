@@ -1,0 +1,32 @@
+{% extends "fanart/base.html" %}
+{% load bbcode_tags %}
+
+{% block page_title %} &mdash; Revision Log{% endblock %}
+
+{% block activetab_home %}active{% endblock %}
+
+{% block grass %}
+{% include "fanart/grass_home.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+<h1>Revision Log</h1>
+
+<div class="featurebox">
+
+{% for entry in entries %}
+    <div class="log-entry">
+        <p class="entry-date">{{ entry.date_created }}</p>
+        <div class="entry-text">
+            {{ entry.entry|bbcode|safe }}
+        </div>
+    </div>
+{% endfor %}
+
+</div>
+
+{% endblock %}
+
