@@ -1,6 +1,4 @@
 {% extends "fanart/base.html" %}
-{% load humanize %}
-{% load bbcode_tags %}
 
 {% block page_title %} &mdash; Characters{% endblock %}
 
@@ -14,122 +12,56 @@
 
 {% block content %}
 
-<h1>Characters</h1>
-
-<div class="featurebox">
-
-<div class="selector">
-    <a class="{% if mode == "canon" %}selected{% endif %}" href="{% url "characters" mode="canon" %}">Canon Characters</a>
-    <a class="{% if mode == "fan" %}selected{% endif %}" href="{% url "characters" mode="fan" %}">Fan Characters</a>
-    <a class="{% if mode == "mosttagged" %}selected{% endif %}" href="{% url "characters" mode="mosttagged" %}">Most Tagged</a>
-    <a class="{% if mode == "recentlytagged" %}selected{% endif %}" href="{% url "characters" mode="recentlytagged" %}">Recently Tagged</a>
+<div class="pagenav">
 </div>
 
-{% if mode == "canon" %}
 
-    <h3>Canon Characters</h3>
+<div class="featurebox featureboxwide">
+    <div class="itemlistheaders" id="charactersheaders">
 
-    {% for character in characters %}
-        <div class="character">
-        <table>
-            <tr>
-                <td class="thumb">
-                    <a href="{% url "character" character_id=character.id %}">
-                        <img class="thumb characterpic" src="{{ character.preview_url }}" />
-                    </a>
-                </td>
-                <td class="fullwidth">
-                    <p class="charactername">
-                        <a href="{% url "character" character_id=character.id %}">{{ character.name }}</a>
-                    </p>
-                    <p class="characterinfo">
-                        Debut: <i>{{ character.story_title }}</i>
-                    </p>
-                    <p class="characterinfo">
-                        Tagged in {{ character.num_pictures|intcomma }} pictures
-                    </p>
-                    <div class="characterdesc">
-                        {{ character.description|bbcode|safe }}
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('canon', {{ per_page }})">
+                <h2 class="itemlist {% if list == "canon" %}itemlist_selected{% endif %}" id="characterslisth2_canon">Canon</h2>
+            </a>
         </div>
-    {% endfor %}
 
-{% elif mode == "fan" %}
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('newest', {{ per_page }})">
+                <h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="characterslisth2_newest">Newest</h2>
+            </a>
+        </div>
 
-    <h3>Original Fan Characters</h3>
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('byspecies', {{ per_page }})">
+                <h2 class="itemlist {% if list == "byspecies" %}itemlist_selected{% endif %}" id="characterslisth2_byspecies">By Species</h2>
+            </a>
+        </div>
 
-    Artist: <input id="artist_pick_search" onFocus="this.value=''" />
-    Species: <input id="species_pick_search" onFocus="this.value=''" />
-    Name: <input id="character_pick_search" onFocus="this.value=''" />
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('mosttagged', {{ per_page }})">
+                <h2 class="itemlist {% if list == "mosttagged" %}itemlist_selected{% endif %}" id="characterslisth2_mosttagged">Most Tagged</h2>
+            </a>
+        </div>
 
-    {{ pages_link.pages_nav|safe }}
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('recentlytagged', {{ per_page }})">
+                <h2 class="itemlist {% if list == "recentlytagged" %}itemlist_selected{% endif %}" id="characterslisth2_recentlytagged">Recently Tagged</h2>
+            </a>
+        </div>
 
-    <div id="characterlist">
-    {% for character in characters %}
-        {% include "includes/character.html" %}
-    {% endfor %}
-    {% if not characters %}
-
-        <h2>Most Popular Species</h2>
-
-        {% for species in popular_species %}
-            <div class="species">
-                <a href="{% url "characters" mode="fan" %}?match=exact&list=species&term={{ species.species }}">{{ species.species }}</a> ({{ species.num_characters }})
-            </div>
-        {% endfor %}
-
-    {% endif %}
+        <div class="itemlist">
+            <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('search',0)">
+                <h2 class="itemlist {% if list == "search" or list == "tag" or list == "character" %}itemlist_selected{% endif %}" id="characterslisth2_search">Search</h2>
+            </a>
+        </div>
     </div>
+    <br clear="left" />
 
-    {{ pages_link.pages_nav|safe }}
-
-{% elif mode == "mosttagged" %}
-
-    <h3>Most Tagged Characters</h3>
-
-    {{ pages_link.pages_nav|safe }}
-
-    <div id="characterlist">
-        {% for character in characters %}
-            {% include "includes/character.html" %}
-        {% endfor %}
+    <div id="characters">
+        {% include "includes/characters-list.html" %}
     </div>
-
-    {{ pages_link.pages_nav|safe }}
-
-{% elif mode == "recentlytagged" %}
-
-    <h3>Recently Tagged Characters</h3>
-
-    {{ pages_link.pages_nav|safe }}
-
-    <div id="characterlist">
-    {% for character in characters %}
-        {% include "includes/character.html" %}
-    {% endfor %}
-    </div>
-
-    {{ pages_link.pages_nav|safe }}
-
-{% elif artist %}
-
-    <h3>Characters Owned by {{ artist.username }}</h3>
-
-    {{ pages_link.pages_nav|safe }}
-
-    <div id="characterlist">
-    {% for character in characters %}
-        {% include "includes/character.html" %}
-    {% endfor %}
-    </div>
-
-    {{ pages_link.pages_nav|safe }}
-
-{% endif %}
 
 </div>
+
 
 {% endblock %}

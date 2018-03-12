@@ -194,6 +194,7 @@ class ArtistsView(UserPaneMixin, TemplateView):
                 artists = artists.filter(id__isnull=True)
 
         context['list'] = list
+        context['per_page'] = settings.ARTISTS_PER_PAGE
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
         context['initial'] = initial
@@ -272,8 +273,9 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 artwork = artwork.filter(id__isnull=True)
 
         context['list'] = list
-        context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
-        context['next_start'] = start + settings.ARTISTS_PER_PAGE
+        context['per_page'] = settings.ARTWORK_PER_PAGE
+        context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
+        context['next_start'] = start + settings.ARTWORK_PER_PAGE
         context['initial'] = initial
         context['artwork'] = artwork[start:start + context['count']]
 
@@ -286,20 +288,29 @@ class CharactersView(UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(CharactersView, self).get_context_data(**kwargs)
 
+        default_characters_view = settings.DEFAULT_CHARACTERS_VIEW
+
         dir_name = kwargs.get('dir_name', None)
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
 
-        mode = kwargs.get('mode', None)
-        if not mode in ['canon', 'fan', 'mosttagged', 'recentlytagged', 'charactername'] and not dir_name:
-            mode = 'canon'
+        list = kwargs.get('list', self.request.GET.get('list', default_characters_view))
+        if not list in models.characters_tabs and not dir_name:
+            list = default_characters_view
+
+        mode = list
+
+        start = int(self.request.GET.get('start', 0))
+        initial = self.request.GET.get('initial', None)
 
         characters = models.Character.objects.all()
         if dir_name:
             characters = characters.filter(owner=context['artist']).order_by('name')
-        elif mode == 'canon':
+        elif list == 'canon':
             characters = characters.filter(is_canon=True).order_by('-num_pictures')
-        elif mode == 'fan':
+        elif list == 'newest':
+            characters = characters.order_by('-date_created')
+        elif list == 'fan':
             term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'contains')
             if term:
@@ -322,24 +333,30 @@ class CharactersView(UserPaneMixin, TemplateView):
             else:
                 context['popular_species'] = characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
                 characters = characters.filter(id__isnull=True)
-        elif mode == 'mosttagged':
+        elif list == 'mosttagged':
             characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')
-        elif mode == 'recentlytagged':
+        elif list == 'recentlytagged':
             characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
 
-        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
-        try:
-            page = int(self.request.GET.get('page', 1))
-        except ValueError:
-            page = 1
-        try:
-            characters_page = context['characters_paginator'].page(page)
-        except EmptyPage:
-            characters_page = context['characters_paginator'].page(1)
+#        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
+#        try:
+#            page = int(self.request.GET.get('page', 1))
+#        except ValueError:
+#            page = 1
+#        try:
+#            characters_page = context['characters_paginator'].page(page)
+#        except EmptyPage:
+#            characters_page = context['characters_paginator'].page(1)
 
-        context['mode'] = mode
-        context['characters'] = characters_page
-        context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+        context['list'] = list
+        context['per_page'] = settings.CHARACTERS_PER_PAGE
+#        context['characters'] = characters_page
+#        context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+
+        context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
+        context['next_start'] = start + settings.CHARACTERS_PER_PAGE
+        context['initial'] = initial
+        context['characters'] = characters[start:start + context['count']]
 
         return context
 
@@ -1356,6 +1373,10 @@ class ArtistsListView(ArtistsView):
 
 class ArtworkListView(ArtworkView):
     template_name = 'includes/artwork-list.html'
+
+
+class CharactersListView(CharactersView):
+    template_name = 'includes/characters-list.html'
 
 
 class CharactersAutocompleteView(APIView):

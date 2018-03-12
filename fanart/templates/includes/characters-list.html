@@ -1,0 +1,9 @@
+{% for character in characters %}
+
+    {% include "includes/character.html" %}
+
+    {% if forloop.counter == count %}
+        <button onClick="getMoreCharacters({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
+    {% endif %}
+
+{% endfor %}

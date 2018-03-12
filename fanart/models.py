@@ -37,6 +37,7 @@ MOVIE_ICON_IMG = '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
 
 artists_tabs = ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']
 artwork_tabs = ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character']
+characters_tabs = ['canon', 'newest', 'byspecies' 'mosttagged', 'recentlytagged', 'charactername']
 
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)
@@ -1222,6 +1223,11 @@ class PictureCharacter(models.Model):
     pending = models.ForeignKey('Pending', null=True, blank=True)
     character = models.ForeignKey('Character', null=True, blank=True)
     date_tagged = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def save(self, update_thumbs=False, *args, **kwargs):
+        self.character.date_tagged = timezone.now()
+        self.character.save()
+        super(PictureCharacter, self).save(*args, **kwargs)
 
 
 class Tag(models.Model):

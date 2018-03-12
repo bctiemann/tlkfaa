@@ -7,6 +7,8 @@ var ArtistList = new Array();
 var artistlistopen;
 var ArtworkList = new Array();
 var artworklistopen;
+var CharactersList = new Array();
+var characterslistopen;
 var banneropen = false;
 var adminannouncementsshown = 1;
 var bulletinsshown = 5;
@@ -2612,6 +2614,38 @@ function listArtwork(list,count) {
       if (typeof(window.history.replaceState) !== "undefined") {
         queryStr = queryParts.join('&');
         window.history.replaceState('', '', '/Artwork/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+      }
+    });
+  });
+}
+
+function listCharacters(list,count) {
+  var url = '/characters/' + list + '/';
+  params = [];
+  if ((list == 'search' || list == 'tag') && count > 0) {
+    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+  }
+  var queryParts = [];
+  params.forEach(function(e){
+    queryParts.push(e.name + '=' + e.value);
+  });
+  queryPartsWithCount = queryParts.slice();
+  queryPartsWithCount.push('count=' + count);
+  queryStr = queryPartsWithCount.join('&');
+  url += '?' + queryStr;
+  $('#characters').slideUp('fast',function() {
+    $('#characters').load(url,function() {
+//      Shadowbox.clearCache();
+//      Shadowbox.setup('td.thumb a');
+//      $('#artwork_'+list).slideDown('fast');
+      setupTooltipPreview();
+      $('#characters').slideDown('fast');
+      characterslistopen = list;
+      $('h2.itemlist').removeClass('itemlist_selected');
+      $('#characterslisth2_'+list).addClass('itemlist_selected');
+      if (typeof(window.history.replaceState) !== "undefined") {
+        queryStr = queryParts.join('&');
+        window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
       }
     });
   });

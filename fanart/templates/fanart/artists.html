@@ -47,43 +47,43 @@
         <div class="itemlistheaders" id="artistheaders">
 
             <div class="itemlist">
-                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('newest',10)">
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('newest', {{ per_page }})">
                     <h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="artistlisth2_newest">Newest</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive',10)">
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive', {{ per_page }})">
                     <h2 class="itemlist {% if list == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated',10)">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated', {{ per_page }})">
                     <h2 class="itemlist {% if list == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive',10)">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive', {{ per_page }})">
                     <h2 class="itemlist {% if list == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific',10)">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific', {{ per_page }})">
                     <h2 class="itemlist {% if list == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('random',5)">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('random', 5)">
                     <h2 class="itemlist {% if list == "random" %}itemlist_selected{% endif %}" id="artistlisth2_random">Randomly Selected</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('search',0)">
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('search', 0)">
                     <h2 class="itemlist {% if list == "search" %}itemlist_selected{% endif %}" id="artistlisth2_search">Search</h2>
                 </a>
             </div>
