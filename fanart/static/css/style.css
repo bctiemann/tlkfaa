@@ -1268,6 +1268,30 @@ div.privatepicture {
 	background-image: url('../images/private-bg.png');
 }
 
+div.species {
+	background-color: rgba(242, 246, 252, 0.8);
+	padding: 20px;
+	border-radius: 5px;
+	border: 2px solid #b2b6b7;
+	font-family: 'Assistant', sans-serif;	
+}
+.species-name {
+	font-size: 36px;
+	color: #b2b6b7;
+}
+.species-count {
+	font-size: 12px;
+}
+.species-heading a:link,
+.species-heading a:hover,
+.species-heading a:visited {
+	color: #b2b6b7;
+}
+.species .characters {
+	max-width: 700px;
+	text-align: right;
+}
+
 .addfavorites {
 	float: right;
 	background-image: url('../images/starEmpty.gif');

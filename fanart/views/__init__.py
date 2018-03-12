@@ -310,28 +310,39 @@ class CharactersView(UserPaneMixin, TemplateView):
             characters = characters.filter(is_canon=True).order_by('-num_pictures')
         elif list == 'newest':
             characters = characters.order_by('-date_created')
-        elif list == 'fan':
+        elif list == 'byspecies':
             term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'contains')
             if term:
-                list = self.request.GET.get('list', None)
-                if not list in ['artist', 'species', 'charactername']:
-                    list = 'charactername'
-                characters = characters.filter(owner__is_active=True).order_by('name')
-                if list == 'artist':
-                    characters = characters.filter(owner__id=term)
-                elif list == 'species':
-                    if match_type == 'exact':
-                        characters = characters.filter(species=term)
-                    else:
-                        characters = characters.filter(species__icontains=term)
-                elif list == 'charactername':
-                    if match_type == 'exact':
-                        characters = characters.filter(name=term)
-                    else:
-                        characters = characters.filter(name__icontains=term)
+                if match_type == 'exact':
+                    characters = characters.filter(species=term)
+                else:
+                    characters = characters.filter(species__icontains=term)
+#                list = self.request.GET.get('list', None)
+#                if not list in ['artist', 'byspecies', 'charactername']:
+#                    list = 'charactername'
+#                characters = characters.filter(owner__is_active=True).order_by('name')
+#                if list == 'artist':
+#                    characters = characters.filter(owner__id=term)
+#                elif list == 'byspecies':
+#                    print 'foo'
+#                    if match_type == 'exact':
+#                        characters = characters.filter(species=term)
+#                    else:
+#                        characters = characters.filter(species__icontains=term)
+#                elif list == 'charactername':
+#                    if match_type == 'exact':
+#                        characters = characters.filter(name=term)
+#                    else:
+#                        characters = characters.filter(name__icontains=term)
+                print characters
             else:
-                context['popular_species'] = characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]
+                context['popular_species'] = []
+                # Fill up the species box with a bunch of characters, sorted by popularity
+                for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]:
+                    species['characters'] = characters.filter(species=species['species']).order_by('-num_pictures')[0:20]
+                    context['popular_species'].append(species)
+                # Empty out the character list
                 characters = characters.filter(id__isnull=True)
         elif list == 'mosttagged':
             characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')

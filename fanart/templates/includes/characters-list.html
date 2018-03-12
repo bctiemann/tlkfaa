@@ -1,3 +1,24 @@
+{% load humanize %}
+
+{% for species in popular_species %}
+
+    <div class="species group">
+        <ul class="characters group">
+        {% for character in species.characters %}
+            <li>
+                <a href="{% url "character" character_id=character.id %}" class="previewPopupTrigger" type="character" itemid="{{ character.id }}"><img class="thumb characterpic smallthumb" src="{{ character.thumbnail_url }}" /></a>
+                <p class="charactername"><a href="{% url "character" character_id=character.id %}">{{ character.name }}</a></p>
+                <p class="characterowner">{% if character.owner == None %}(Canon){% else %}{{ character.owner.username }}{% endif %}</p>
+            </li>
+        {% endfor %}
+        </ul>
+
+        <div class="species-name species-heading"><a href="{% url "characters" list="byspecies" %}?term={{ species.species }}">{{ species.species }}</a></div>
+        <div class="species-count species-heading"><a href="{% url "characters" list="byspecies" %}?term={{ species.species }}">{{ species.num_characters }} character{{ species.num_characters|pluralize }}</a></div>
+    </div>
+
+{% endfor %}
+
 {% for character in characters %}
 
     {% include "includes/character.html" %}

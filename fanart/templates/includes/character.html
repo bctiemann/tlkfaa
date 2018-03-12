@@ -11,7 +11,7 @@
         <p class="charactername">
             <a href="{% url "character" character_id=character.id %}">{{ character.name }}</a>
         </p>
-        {% if character.owner %}
+        {% if character.owner and not character.is_canon %}
             <p class="characterinfo">
             {% if character.owner.is_artist and character.owner.dir_name %}
                 Owner: <a href="{% url "artist" dir_name=character.owner.dir_name %}">{{ character.owner.username }}</a>
