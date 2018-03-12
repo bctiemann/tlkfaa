@@ -1059,6 +1059,7 @@ div.pagenav {
 div.featurebox {
 	zoom: 1;
 	position: relative;
+	z-index: 2;
 	background-color: #d5d9df;
 	background-color: rgba(213,217,223,0.6);
 	padding: 20px;
