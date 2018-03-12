@@ -2692,6 +2692,26 @@ function getMoreArtwork(start,list,count,term,obj) {
   ArtworkList[list] = start;
 }
 
+function getMoreCharacters(start,list,count,term,obj) {
+//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
+  var url = '/characters/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
+  $.ajax({ url: url, success: function(data) {
+//    $('#artwork_'+list).append(data);
+    $('#characters').append(data);
+//    Shadowbox.setup('td.thumb a');
+    obj.style.display='none';
+    setupTooltipPreview();
+    if (typeof(window.history.replaceState) !== "undefined") {
+      var termstr = '';
+      if (term != '') {
+        termstr = "&term="+term;
+      }
+      window.history.replaceState('', '', '/Characters/' + list + '/?start=' + start + termstr);
+    }
+  }});
+  CharactersList[list] = start;
+}
+
 function doSearch(mode) {
 
 }
