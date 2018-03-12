@@ -36,6 +36,8 @@
 
         <div class="picture standalone">
 
+            <a target="_blank" href="{{ picture.url }}">{{ picture.filename }}</a>
+
             {% if picture.mime_type == 'application/x-shockwave-flash' %}
                 <object class="inlinemovie" width="{{ picture.video_width }}" height="{{ picture.video_height }}">
                     <param name="movie" value="{{ picture.url }}">
@@ -104,7 +106,6 @@
                             {% endif %}
                         </li>
                         <li>{{ picture.date_uploaded|date }}</li>
-                        <li><a title="{{ picture.filename }}" href="{{ picture.url }}" class="tooltip">Direct link</a></li>
                         <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
                         <li>{{ picture.file_size|filesizeformat }}</li>
                         <li>{{ picture.picturecomment_set.count }} comment{{ picture.picturecomment_set.count|pluralize }}</li>
