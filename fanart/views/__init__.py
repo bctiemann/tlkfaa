@@ -324,6 +324,7 @@ class CharactersView(UserPaneMixin, TemplateView):
 #                else:
 #                    characters = characters.filter(species__icontains=term)
                 list_type = self.request.GET.get('list', None)
+                logger.info('Character search ({0}): {1}'.format(list_type, term))
                 if not list_type in ['artist', 'species', 'charactername']:
                     list = 'charactername'
                 characters = characters.filter(owner__is_active=True).order_by('name')
