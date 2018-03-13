@@ -2653,7 +2653,9 @@ function listCharacters(list,count) {
         setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
         var speciesUrl = '/characters/species/';
         $('#species_list').append($('.spinner'));
-        $('#species_list').load(speciesUrl);
+        $('#species_list').load(speciesUrl, function() {
+          setupTooltipPreview();
+        });
       }
     });
   });
