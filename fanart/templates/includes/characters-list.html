@@ -1,3 +1,4 @@
+{% load static %}
 {% load humanize %}
 
 {% if list == "search" and show_search_box %}
@@ -6,6 +7,7 @@
     Species: <input id="species_pick_search" onFocus="this.value=''" />
     Name: <input id="character_pick_search" onFocus="this.value=''" />
 
+    <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div id="species_list"></div>
 
 {% endif %}
