@@ -346,7 +346,7 @@ class CharactersView(UserPaneMixin, TemplateView):
             else:
                 context['popular_species'] = []
                 # Fill up the species box with a bunch of characters, sorted by popularity
-                for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:50]:
+                for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:20]:
                     species['characters'] = characters.filter(species=species['species']).order_by('-num_pictures')[0:20]
                     context['popular_species'].append(species)
                 # Empty out the character list
