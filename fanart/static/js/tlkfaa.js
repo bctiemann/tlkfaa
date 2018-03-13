@@ -2651,6 +2651,8 @@ function listCharacters(list,count) {
         setupAutocompleteArtist('search',"updateCharacterList('artist',ui.item.artistid,1);");
         setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
         setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
+        var speciesUrl = '/characters/species/';
+        $('#species_list').load(speciesUrl);
       }
     });
   });

@@ -343,14 +343,6 @@ class CharactersView(UserPaneMixin, TemplateView):
                 if start > 0:
                     context['show_search_box'] = False
                 context['term'] = term
-            else:
-                context['popular_species'] = []
-                # Fill up the species box with a bunch of characters, sorted by popularity
-                for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:20]:
-                    species['characters'] = characters.filter(species=species['species']).order_by('-num_pictures')[0:20]
-                    context['popular_species'].append(species)
-                # Empty out the character list
-                characters = characters.filter(id__isnull=True)
 
 #        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
 #        try:
@@ -1394,6 +1386,21 @@ class ArtworkListView(ArtworkView):
 
 class CharactersListView(CharactersView):
     template_name = 'includes/characters-list.html'
+
+
+class CharactersSpeciesView(TemplateView):
+    template_name = 'includes/species-list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CharactersSpeciesView, self).get_context_data(**kwargs)
+
+        characters = models.Character.objects.all()
+        context['popular_species'] = []
+        # Fill up the species box with a bunch of characters, sorted by popularity
+        for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:20]:
+            species['characters'] = characters.filter(species=species['species']).order_by('-num_pictures')[0:20]
+            context['popular_species'].append(species)
+        return context    
 
 
 class CharactersAutocompleteView(APIView):
