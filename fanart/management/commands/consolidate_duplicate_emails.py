@@ -29,14 +29,18 @@ class Command(BaseCommand):
         else:
             email_list = [u['email'] for u in models.User.objects.values('email').annotate(num_email=Count('email')).filter(num_email__gt=1).order_by('-num_email')]
 
+        print('{0} emails duplicated.'.format(len(email_list)))
+
         for email in email_list:
 
             print('')
             print(email)
             matching_users = models.User.objects.filter(email=email)
 
+            valid_user_ids = []
             for user in matching_users:
 
+                valid_user_ids.append(user.id)
                 user_row = '{is_artist}\t{user_id}\t{username}'.format(
                     is_artist = 'Artist' if user.is_artist else '      ',
                     user_id = user.id,
@@ -90,13 +94,22 @@ class Command(BaseCommand):
             while master_user_id == None:
                 try:
                     master_user_id = int(master_user_id_input)
+                    if not master_user_id in valid_user_ids:
+                        master_user_id = None
+                        raise ValueError
                 except ValueError:
                     print 'Invalid input value.'
                     master_user_id_input = raw_input('Enter ID of user to consolidate into, or Enter to skip: ')
                     if master_user_id_input == '':
-                        continue
+                        break
+
+            if not master_user_id:
+                continue
 
             master_user = models.User.objects.get(pk=master_user_id)
+
+            print master_user
+            return
 
             for user in matching_users.exclude(pk=master_user_id):
                 print user
