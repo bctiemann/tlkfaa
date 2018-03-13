@@ -366,7 +366,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def adoptable_claims_ready(self):
-        return self.adoptable_claims_received.filter(offer__is_visible=True, date_fulfilled__isnull=False)
+        return self.adoptable_claims_received.filter(offer__is_visible=True, offer__is_active=True, date_fulfilled__isnull=False)
 #        return TradingClaim.objects.filter(offer__type='adoptable', user=self, offer__is_visible=True, date_fulfilled__isnull=False).order_by('-date_posted')
 
     @property
