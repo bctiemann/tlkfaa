@@ -91,7 +91,9 @@
 	<div class="newforme">
 	<h3>New for You</h3>
         {% for claim in user.claims_ready %}
-            {% include "trading_tree/for_you.html" %}
+            {% if claim.offer.is_active and claim.offer.is_visible %}
+                {% include "trading_tree/for_you.html" %}
+            {% endif %}
         {% endfor %}
 	</div>
 {% endif %}
