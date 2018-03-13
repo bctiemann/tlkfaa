@@ -2908,8 +2908,8 @@ video {
 .spinner {
 	display: none;
 }
-#species .spinner {
+#species_list .spinner {
 	display: block;
-	width: 100px;
+	width: 48px;
 	margin: 30px auto;
 }
