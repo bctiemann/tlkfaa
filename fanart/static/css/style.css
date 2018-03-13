@@ -822,6 +822,7 @@ div.am_tabs {
 	font-weight: bold;
 }
 div.am_tabs a {
+	position: relative;
 	color: #445;
 	text-decoration: none;
 	display: block;
@@ -2754,7 +2755,7 @@ table.contentpane .infotable td {
 	font-weight: bold;
 }
 
-.newpics-badge {
+.badge {
 	position: absolute;
 	top: -10px;
 	background-color: #b65eff;
@@ -2762,17 +2763,22 @@ table.contentpane .infotable td {
 	display: inline-block;
 	padding: 3px 5px;
 	border-radius: 9px;
+	font-weight: normal;
 	font-size: 11px;
 	line-height: 12px;
 	min-width: 8px;
 	text-align: center;
 }
-.foldericon .newpics-badge {
+.foldericon .badge {
 	right: 20px;
 }
-.folder .newpics-badge {
+.folder .badge {
 	left: 40px;
 	top: 4px;
+}
+.badge.unread-pms {
+	top: -8px;
+	left: 10px;
 }
 
 .archive-link {

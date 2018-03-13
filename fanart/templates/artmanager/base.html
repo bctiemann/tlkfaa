@@ -33,7 +33,12 @@
             <a href="{% url "artmanager:artwall" %}" class="{% if page == "artwall" %}selected{% endif %}">ArtWall</a>
             <a href="{% url "artmanager:characters" %}" class="{% if page == "characters" %}selected{% endif %}">Characters</a>
             <a href="{% url "artmanager:customize" %}" class="sectionend {% if page == "customize" %}selected{% endif %}">Gallery Appearance</a>
-            <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">Private Messages</a>
+            <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">
+                {% if user.unread_received_pms_count > 0 %}
+                    <div class="badge unread-pms">{{ user.unread_received_pms_count }}</div>
+                {% endif %}
+                Private Messages
+            </a>
             <a href="{% url "artmanager:trading-tree" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "trading-tree" or page == "trading-tree-for-you" %}selected{% endif %}">Trading Tree</a>
             <a href="{% url "artmanager:coloring-cave" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "coloring-cave" %}selected{% endif %}">Coloring Cave</a>
             <a href="{% url "artmanager:contests" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "contests" %}selected{% endif %}">Contests</a>

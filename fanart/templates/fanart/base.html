@@ -49,7 +49,7 @@
                     <li class="tab artwork {% block activetab_artwork %}{% endblock %}">
                         <a href="{% url "artwork" %}">
                         {% if request.user.unviewedpicture_set.count > 0 %}
-                            <div class="newpics-badge">{{ request.user.unviewedpicture_set.count }}</div>
+                            <div class="badge">{{ request.user.unviewedpicture_set.count }}</div>
                         {% endif %}
                         </a>
                     </li>

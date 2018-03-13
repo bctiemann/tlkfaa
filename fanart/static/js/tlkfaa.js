@@ -2188,7 +2188,7 @@ console.log(folders);
 
         if (folders[i].newpics_total > 0) {
             folderLi.append($('<span>', {
-                class: 'newpics-badge',
+                class: 'badge',
                 html: folders[i].newpics_total,
             }));
         }
