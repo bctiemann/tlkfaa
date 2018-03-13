@@ -20,7 +20,7 @@ Logged in as
 <a class="button smallbutton" href="{% url "logout" %}">Log out</a>
 
 {% if user.unread_received_pms_count > 0 %}
-<div class="unread-pms">{{ user.unread_received_pms_count }} unread PM{{ user.unread_received_pms_count|pluralize }}</div>
+<div class="unread-pms"><a href="{% url "artmanager:private-msgs" %}">{{ user.unread_received_pms_count }} unread PM{{ user.unread_received_pms_count|pluralize }}</a></div>
 {% else %}
 <div class="unread-pms no-unread">No unread PMs</div>
 {% endif %}
