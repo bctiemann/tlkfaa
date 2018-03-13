@@ -1620,7 +1620,7 @@ console.log(url);
 }
 
 function updateCharacterList(list,term,page) {
-  var url = '/Characters/fan/?list=' + list + '&term=' + escape(term) + '&page=' + page
+  var url = '/Characters/search/?list=' + list + '&term=' + escape(term) + '&page=' + page
 //  var url = "/ajax_listcharacters.jsp?mode=fan&list="+list+"&term="+escape(term)+"&page="+page;
   window.location = url;
 //  $('#characterlist').load(url);
@@ -2646,6 +2646,11 @@ function listCharacters(list,count) {
       if (typeof(window.history.replaceState) !== "undefined") {
         queryStr = queryParts.join('&');
         window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+      }
+      if (list == 'search') {
+        setupAutocompleteArtist('search',"updateCharacterList('artist',ui.item.artistid,1);");
+        setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
+        setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
       }
     });
   });

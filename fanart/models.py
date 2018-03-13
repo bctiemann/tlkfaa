@@ -35,9 +35,9 @@ CHARACTER_PLACEHOLDER_IMG = '{0}images/blank_characterthumb.jpg'.format(settings
 MOVIE_ICON_IMG = '{0}images/movie_icon.gif'.format(settings.STATIC_URL)
 
 
-artists_tabs = ['name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search']
-artwork_tabs = ['unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character']
-characters_tabs = ['canon', 'newest', 'byspecies', 'mosttagged', 'recentlytagged', 'charactername']
+artists_tabs = ('name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search')
+artwork_tabs = ('unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character')
+characters_tabs = ('canon', 'newest', 'mosttagged', 'recentlytagged', 'charactername', 'artist', 'search')
 
 def get_media_path(instance, filename):
     return '{0}/{1}'.format(instance.id, filename)

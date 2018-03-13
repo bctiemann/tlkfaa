@@ -310,32 +310,39 @@ class CharactersView(UserPaneMixin, TemplateView):
             characters = characters.filter(is_canon=True).order_by('-num_pictures')
         elif list == 'newest':
             characters = characters.order_by('-date_created')
-        elif list == 'byspecies':
+        elif list == 'mosttagged':
+            characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')
+        elif list == 'recentlytagged':
+            characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
+        elif list == 'search':
+            context['show_search_box'] = True
             term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'contains')
             if term:
-                if match_type == 'exact':
-                    characters = characters.filter(species=term)
-                else:
-                    characters = characters.filter(species__icontains=term)
-#                list = self.request.GET.get('list', None)
-#                if not list in ['artist', 'byspecies', 'charactername']:
-#                    list = 'charactername'
-#                characters = characters.filter(owner__is_active=True).order_by('name')
-#                if list == 'artist':
-#                    characters = characters.filter(owner__id=term)
-#                elif list == 'byspecies':
-#                    print 'foo'
-#                    if match_type == 'exact':
-#                        characters = characters.filter(species=term)
-#                    else:
-#                        characters = characters.filter(species__icontains=term)
-#                elif list == 'charactername':
-#                    if match_type == 'exact':
-#                        characters = characters.filter(name=term)
-#                    else:
-#                        characters = characters.filter(name__icontains=term)
+#                if match_type == 'exact':
+#                    characters = characters.filter(species=term)
+#                else:
+#                    characters = characters.filter(species__icontains=term)
+                list_type = self.request.GET.get('list', None)
+                if not list_type in ['artist', 'species', 'charactername']:
+                    list = 'charactername'
+                characters = characters.filter(owner__is_active=True).order_by('name')
+                if list_type == 'artist':
+                    characters = characters.filter(owner__id=term)
+                elif list_type == 'species':
+                    if match_type == 'exact':
+                        characters = characters.filter(species=term)
+                    else:
+                        characters = characters.filter(species__icontains=term)
+                elif list_type == 'charactername':
+                    if match_type == 'exact':
+                        characters = characters.filter(name=term)
+                    else:
+                        characters = characters.filter(name__icontains=term)
                 print characters
+                if start > 0:
+                    context['show_search_box'] = False
+                context['term'] = term
             else:
                 context['popular_species'] = []
                 # Fill up the species box with a bunch of characters, sorted by popularity
@@ -344,10 +351,6 @@ class CharactersView(UserPaneMixin, TemplateView):
                     context['popular_species'].append(species)
                 # Empty out the character list
                 characters = characters.filter(id__isnull=True)
-        elif list == 'mosttagged':
-            characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')
-        elif list == 'recentlytagged':
-            characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
 
 #        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
 #        try:
@@ -358,6 +361,9 @@ class CharactersView(UserPaneMixin, TemplateView):
 #            characters_page = context['characters_paginator'].page(page)
 #        except EmptyPage:
 #            characters_page = context['characters_paginator'].page(1)
+
+
+        context['start'] = start
 
         context['list'] = list
         context['per_page'] = settings.CHARACTERS_PER_PAGE
@@ -1413,7 +1419,7 @@ class SpeciesAutocompleteView(APIView):
     def get(self, request, term):
         response = {'specieses': []}
 
-        for species in models.Character.objects.filter(species__icontains=term).values('species').annotate(num=Count('species'))[0:20]:
+        for species in models.Character.objects.filter(species__icontains=term).values('species').annotate(num=Count('species')).order_by('-num')[0:20]:
             response['specieses'].append({
                 'species': species['species'],
                 'num': species['num'],
