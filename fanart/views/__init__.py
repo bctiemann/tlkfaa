@@ -343,6 +343,8 @@ class CharactersView(UserPaneMixin, TemplateView):
                 if start > 0:
                     context['show_search_box'] = False
                 context['term'] = term
+            else:
+                characters = characters.filter(id__isnull=True)
 
 #        context['characters_paginator'] = Paginator(characters, settings.CHARACTERS_PER_PAGE)
 #        try:
