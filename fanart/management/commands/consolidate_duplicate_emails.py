@@ -19,10 +19,16 @@ class Command(BaseCommand):
                     dest='email',
                     default=None,
                     help='Email address to consolidate')
+        parser.add_argument('--skip_merge_artists',
+                    dest='skip_merge_artists',
+                    action='store_true',
+                    default=False,
+                    help='Skip emails with multiple artist accounts')
 
     def handle(self, *args, **options):
 
         email = options.get('email')
+        skip_merge_artists = options.get('skip_merge_artists')
 
         if email:
             email_list = [email]
@@ -38,8 +44,11 @@ class Command(BaseCommand):
             matching_users = models.User.objects.filter(email=email)
 
             valid_user_ids = []
+            artist_accounts = []
             for user in matching_users:
 
+                if user.is_artist:
+                    artist_accounts.append(user)
                 valid_user_ids.append(user.id)
                 user_row = '{is_artist}\t{user_id}\t{username}'.format(
                     is_artist = 'Artist' if user.is_artist else '      ',
@@ -86,6 +95,10 @@ class Command(BaseCommand):
 
                 print user_row
 
+            if skip_merge_artists and len(artist_accounts) > 1:
+                print 'Multiple artist accounts found; skipping'
+                continue
+
             master_user_id_input = raw_input('\nEnter ID of user to consolidate into, or Enter to skip: ')
             if master_user_id_input == '':
                 continue
@@ -107,9 +120,6 @@ class Command(BaseCommand):
                 continue
 
             master_user = models.User.objects.get(pk=master_user_id)
-
-            print master_user
-            return
 
             for user in matching_users.exclude(pk=master_user_id):
                 print user

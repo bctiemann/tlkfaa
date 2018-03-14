@@ -33,7 +33,7 @@ class Command(BaseCommand):
 #        'do_tags': True,
 #        'do_approvers': True,
 #        'do_sketcheradmins': True,
-#        'do_requests': True,
+        'do_requests': True,
 #        'do_imclients': True,
 #        'do_imids': True,
 #        'do_newpics': True,
@@ -45,7 +45,7 @@ class Command(BaseCommand):
 #        'do_contests': True,
 #        'do_contestpics': True,
 #        'do_contestvotes': True,
-        'do_pms': True,
+#        'do_pms': True,
 #        'do_specials': True,
 #        'do_votes': True,
 #        'do_customicons': True,
@@ -154,9 +154,9 @@ class Command(BaseCommand):
 
         if 'do_users' in self.enabled:
 #            c.execute("""SELECT * FROM users where userid=1""")
-            c.execute("""SELECT * FROM users""")
-            for user in c.fetchall():
-#            for user in []:
+#            c.execute("""SELECT * FROM users""")
+#            for user in c.fetchall():
+            for user in []:
                 print user
                 u = fanart_models.User.objects.create_user(
                     id_orig = user['userid'],
@@ -182,7 +182,8 @@ class Command(BaseCommand):
                 u.password = user['passwd']
                 u.save()
 #            c.execute("""SELECT * FROM artists WHERE userid=%s""", (user.id,))
-            c.execute("""SELECT * FROM artists""")
+#            c.execute("""SELECT * FROM artists""")
+            c.execute("""SELECT * FROM artists where artistid=955""")
 #            artist = c.fetchone()
             for artist in c.fetchall():
                 if artist['userid']:
@@ -396,7 +397,8 @@ class Command(BaseCommand):
                     pass
 
         if 'do_characters' in self.enabled:
-            c.execute("""SELECT * FROM characters""")
+#            c.execute("""SELECT * FROM characters""")
+            c.execute("""SELECT * FROM characters where artistid=955""")
             for ch in c.fetchall():
                 print ch
 
@@ -633,7 +635,8 @@ class Command(BaseCommand):
                     pass
 
         if 'do_requests' in self.enabled:
-            c.execute("""SELECT * FROM requests""")
+#            c.execute("""SELECT * FROM requests""")
+            c.execute("""SELECT * FROM requests where recptid=955""")
             for a in c.fetchall():
                 print a
                 try:
