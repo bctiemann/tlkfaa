@@ -20,6 +20,7 @@ import os
 import re
 import shutil
 from PIL import Image
+from pwd import getpwnam
 
 from fanart.utils import dictfetchall, make_dir_name, upperfirst
 from fanart.tasks import process_images
@@ -495,6 +496,14 @@ ORDER BY fanart_user.sort_name
     @property
     def absolute_dir_name(self):
         return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, self.dir_name)
+
+    def create_dir(self):
+        try:
+            os.mkdir(self.absolute_dir_name)
+            www_uid = getpwnam(settings.WWW_USER).pw_uid
+            os.chown(self.absolute_dir_name, www_uid, -1)
+        except OSError:
+            pass
 
     def change_dir_name(self):
         new_dir_name = make_dir_name(self.username)

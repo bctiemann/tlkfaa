@@ -144,6 +144,30 @@ class Command(BaseCommand):
                     claim.user = master_user
                     claim.save()
 
+                for offers in user.offer_set.all():
+                    offer.user = master_user
+                    offer.save()
+
+                for picture in user.picture_set.all():
+                    picture.artist = master_user
+                    picture.save()
+
+                for character in user.character_set.all():
+                    character.owner = master_user
+                    character.save()
+
+                for folder in user.folder_set.all():
+                    folder.user = master_user
+                    folder.save()
+
+                for gift_sent in user.giftpicture_set.all():
+                    gift_sent.sender = master_user
+                    gift_sent.save()
+
+                for gift_rcvd in user.gifts_received.all():
+                    gift_rcvd.recipient = master_user
+                    gift_rcvd.save()
+
                 for fave_artist in user.favorite_set.filter(artist__isnull=False):
                     defaults = {
                         'is_visible': fave_artist.is_visible,
