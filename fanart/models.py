@@ -1544,7 +1544,7 @@ class ModNote(models.Model):
 
 
 class RevisionLog(models.Model):
-    date_created = models.DateField(null=True, blank=True, default=timezone.now)
+    date_created = models.DateTimeField(null=True, blank=True, default=timezone.now)
     entry = models.TextField(blank=True)
 
 #    def __unicode__(self):
