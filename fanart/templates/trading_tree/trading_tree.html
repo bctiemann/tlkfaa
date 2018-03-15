@@ -82,11 +82,11 @@ if (thumbsGenerated == false) {
         {% for offer in offers %}
 
             <div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
-                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="120" height="{{ offer.thumb_height }}" /></a><br />
+                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="{{ offer.thumb_width }}" height="{{ offer.thumb_height }}" /></a><br />
                 {% if offer.artist %}
                     <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
                 {% endif %}
-		{{ offer.title }}<br />
+		<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}">{{ offer.title }}</a><br />
                 {{ offer.date_posted|date }}<br />
                 {% if offer.type == "icon" %}
                     {{ offer.claim_set.count }} request{{ offer.claim_set.count|pluralize }}, {{ offer.open_claims.count }} open

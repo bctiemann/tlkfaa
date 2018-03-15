@@ -363,3 +363,13 @@ MOVIE_FILE_TYPES = {
     'video/mp4': 'mp4',
 }
 
+SPINNER_IMG = 'images/loading_spinner.gif'
+BLANKDOT_IMG = 'images/blankdot.gif'
+CHARACTER_PLACEHOLDER_IMG = 'images/blank_characterthumb.jpg'
+MOVIE_ICON_IMG = 'images/movie_icon.gif'
+
+SPINNER_IMG_URL = '{0}{1}'.format(STATIC_URL, SPINNER_IMG)
+BLANKDOT_IMG_URL = '{0}{1}'.format(STATIC_URL, BLANKDOT_IMG)
+CHARACTER_PLACEHOLDER_IMG_URL = '{0}{1}'.format(STATIC_URL, CHARACTER_PLACEHOLDER_IMG)
+MOVIE_ICON_IMG_URL = '{0}{1}'.format(STATIC_URL, MOVIE_ICON_IMG)
+
