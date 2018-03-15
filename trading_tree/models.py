@@ -17,6 +17,7 @@ import uuid
 import datetime
 import os
 import re
+from PIL import Image
 
 from fanart import models as fanart_models
 from fanart.utils import dictfetchall
@@ -114,13 +115,17 @@ class Offer(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/offers/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_IMG
+        if self.picture:
+            return settings.SPINNER_IMG_URL
+        return settings.CHARACTER_PLACEHOLDER_IMG_URL
 
     @property
     def preview_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/offers/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_IMG
+        if self.picture:
+            return settings.SPINNER_IMG_URL
+        return settings.CHARACTER_PLACEHOLDER_IMG_URL
 
     @property
     def thumbnail_created(self):
@@ -146,7 +151,8 @@ class Offer(models.Model):
     def thumb_height(self):
         if self.height and self.width:
             return int(self.height * settings.THUMB_SIZE['offer'] / self.width)
-        return 0
+        placeholder_img = Image.open('{0}/{1}'.format(settings.STATIC_ROOT, settings.CHARACTER_PLACEHOLDER_IMG))
+        return int(placeholder_img.height * settings.THUMB_SIZE['offer'] / placeholder_img.width)
 
     @property
     def thumb_height_x2(self):
@@ -219,13 +225,13 @@ class Claim(models.Model):
     def thumbnail_url(self):
         if os.path.exists(self.thumbnail_path):
             return '{0}Artwork/claims/{1}.s.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_IMG
+        return settings.SPINNER_IMG_URL
 
     @property
     def preview_url(self):
         if os.path.exists(self.preview_path):
             return '{0}Artwork/claims/{1}.p.{2}'.format(settings.MEDIA_URL, self.id, self.thumbnail_extension)
-        return fanart_models.SPINNER_IMG
+        return settings.SPINNER_IMG_URL
 
     @property
     def thumbnail_created(self):

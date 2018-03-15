@@ -1260,9 +1260,10 @@ class CreateAdoptableOfferView(LoginRequiredMixin, CreateView):
             shutil.copyfile(offer.character.profile_picture.preview_path, offer.thumbnail_path)
         elif offer.character.profile_coloring_picture:
             shutil.copyfile(offer.character.profile_coloring_picture.preview_path, offer.thumbnail_path)
-        im = Image.open(offer.thumbnail_path)
-        offer.width = im.width
-        offer.height = im.height
+        if offer.picture:
+            im = Image.open(offer.thumbnail_path)
+            offer.width = im.width
+            offer.height = im.height
 
         super(CreateAdoptableOfferView, self).form_valid(form)
 
