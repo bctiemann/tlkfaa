@@ -52,7 +52,7 @@
                             {{ pm.recipient.username }}
                         {% endif %}
                     </td>
-                    <td><a href="{% url "pm" pm_id=pm.id %}" rel="shadowbox[pms_${param._}];width=500;height=600">{{ pm.subject }}</a></td>
+                    <td><a href="{% url "pm" pm_id=pm.id %}" rel="shadowbox[pms_${param._}];width=500;height=600">{{ pm.subject|default:"(Empty subject)" }}</a></td>
                     <td class="date">{{ pm.date_sent|date }}</td>
                 </tr>
 
