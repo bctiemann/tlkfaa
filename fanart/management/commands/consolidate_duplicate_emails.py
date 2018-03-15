@@ -145,7 +145,7 @@ class Command(BaseCommand):
                     claim.user = master_user
                     claim.save()
 
-                for offers in user.offer_set.all():
+                for offer in user.offer_set.all():
                     offer.user = master_user
                     offer.save()
 
