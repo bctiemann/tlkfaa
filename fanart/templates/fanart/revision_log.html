@@ -19,7 +19,7 @@
 
 {% for entry in entries %}
     <div class="log-entry">
-        <p class="entry-date">{{ entry.date_created }}</p>
+        <p class="entry-date">{{ entry.date_created|date:"SHORT_DATE_FORMAT" }}</p>
         <div class="entry-text">
             {{ entry.entry|bbcode|safe }}
         </div>
