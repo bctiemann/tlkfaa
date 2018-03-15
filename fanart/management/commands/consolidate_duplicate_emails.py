@@ -5,6 +5,7 @@ from django.db.models import Count
 
 import os
 import unicodedata, re
+import pprint
 
 import logging
 logger = logging.getLogger(__name__)
@@ -188,7 +189,8 @@ class Command(BaseCommand):
 
                 print user.absolute_dir_name
 
-                user.delete()
+                deletion_result = user.delete()
+                pprint.pprint(deletion_result)
 
 #-Folders: 7
 #Featured artist pictures: 8

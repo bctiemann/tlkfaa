@@ -558,7 +558,7 @@ ORDER BY fanart_user.sort_name
 
     def delete(self, *args, **kwargs):
         shutil.rmtree(self.absolute_dir_name, ignore_errors=True)
-        super(User, self).delete(*args, **kwargs)
+        return super(User, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
