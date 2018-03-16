@@ -34,7 +34,7 @@ class Command(BaseCommand):
         if email:
             email_list = [email]
         else:
-            email_list = [u['email'] for u in models.User.objects.values('email').annotate(num_email=Count('email')).filter(num_email__gt=1).order_by('-num_email')]
+            email_list = [u['email'] for u in models.User.objects.values('email').annotate(num_email=Count('email')).filter(num_email__gt=1).order_by('-num_email', 'email')]
 
         print('{0} emails duplicated.'.format(len(email_list)))
 
