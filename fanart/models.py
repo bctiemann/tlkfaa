@@ -545,6 +545,11 @@ ORDER BY fanart_user.sort_name
 
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+
+        if not os.path.exists(self.absolute_dir_name):
+            self.create_dir()
+            logger.info('Creating {0}'.format(self.absolute_dir_name))
+
         super(User, self).save(*args, **kwargs)
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'User', self.id, 'small'), countdown=20)
