@@ -887,7 +887,7 @@ class PostCommentView(CreateView):
         comment.save()
 
         picture = form.cleaned_data['picture']
-        if picture.artist.email_comments:
+        if picture.artist.email_comments and self.request.user != picture.artist:
             email_context = {
                 'user': self.request.user,
                 'picture': picture,
