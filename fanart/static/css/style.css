@@ -931,7 +931,8 @@ textarea {
 	width: 400px;
 	height: 200px;
 }
-textarea.comment {
+textarea.comment,
+textarea.pm {
 	width: 90%;
 /*	max-width: 700px;*/
 	height: 80px;
@@ -943,8 +944,8 @@ textarea.comment {
 	margin: 10px;
 }
 textarea.pm {
-	width: 300px;
 	height: 200px;
+	margin: 10px 0px;
 }
 
 div.pageinfo {
@@ -2051,9 +2052,14 @@ table.pms th {
 	padding: 3px 5px;
 	border-bottom: 1px solid #cdd5d7;
 }
+table.pms tr.pm-row:hover {
+	cursor: pointer;
+	background-color: #9fc2d7;
+}
 table.pms td {
 	padding: 5px;
 	height: 16px;
+	vertical-align: middle;
 }
 table.pms th.status,
 table.pms td.status {
@@ -2077,6 +2083,45 @@ table.pms tr.unviewed td {
 	font-weight: bold;
 }
 
+.pm {
+	font-size: 12px;
+	margin: 20px 10px;
+	padding: 10px 40px 40px 40px;
+	background-color: #fff;
+	border-radius: 10px;
+}
+.pm.sender {
+	background-color: #9fc2d7;
+}
+.pmsubject {
+	font-family: 'Assistant', sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	border-bottom: 1px solid #ddd;
+}
+.pm.sender .pmsubject {
+	border-color: #555;
+}
+.pmpartner {
+	float: right;
+	clear: right;
+	font-size: 9px;
+	margin-right: 10px;
+}
+.pmtext {
+	margin: 16px 0px;
+}
+#pm_reply {
+	display: none;
+}
+
+input.error {
+	outline: 1px solid #f00;
+}
+.field-error {
+	margin-left: 10px;
+	display: none;
+}
 
 img.profilepic {
 	float: right;

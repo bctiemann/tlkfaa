@@ -7,9 +7,9 @@
 <h2>Private Messages</h2>
 
 <div class="selector">
-    <a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('in',1,'all',1,1)">Inbox</a>
-    <a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('out',1,'all',1,1)">Sent</a>
-    <a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="javascript:nop()" onClick="refreshPMBox('trash',1,'all',1,1)">Trash</a>
+    <a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="in" %}">Inbox</a>
+    <a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="out" %}">Sent</a>
+    <a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="trash" %}">Trash</a>
 </div>
 
 {% if not user.is_paid %}
@@ -17,16 +17,26 @@
         <p>Sending and receiving new private messages is a feature only available to paid Premium members.</p>
     </div>
 {% else %}
-    <a href="{% url "pm-user" %}" rel="shadowbox;width=500;height=600">New private message</a>
+    <a href="javascript:nop();" onClick="newPM();">New private message</a>
 {% endif %}
 
 
-<div id="pms"></div>
+<div id="pms">
+{% if pm or new_pm %}
+    {% include "includes/pm.html" %}
+{% endif %}
+</div>
 <div id="pmstatus"></div>
 
 <script type="text/javascript">
-refreshPMBox('in',1,'all',1,1);
 var pageParams = {};
+
+{% if pm %}
+{% elif recipient %}
+    newPM({{ recipient.id }});
+{% else %}
+    refreshPMBox('{{ box }}',1,'all',1,1);
+{% endif %}
 </script>
 
 {% endblock %}

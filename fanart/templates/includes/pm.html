@@ -1,49 +1,42 @@
-{% extends "fanart/base_popup.html" %}
 {% load bbcode_tags %}
-
-{% block content %}
-
 
 {% if pm %}
 
-    <script type="text/javascript">
-        var pageParams = window.parent.pageParams;
-        refreshPMBox(pageParams.pmbox, pageParams.page, pageParams.viewmode, pageParams.showpages, pageParams.showstatus, window.parent);
-    </script>
+    {% for pm in pm.thread %}
 
-    {% if pm.sender == user and pm.recipient != user %}
-
-        <h3>Your {% if pm.reply_to %}reply{% else %}message{% endif %} to {{ pm.recipient.username }}:</h3>
-
-        {% if pm.reply_to %}
-            This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}">this message.</a>
-        {% endif %}
+    {% if pm.sender == user and pm.recipient != user and False %}
 
         {% include "includes/pm_content.html" %}
 
     {% else %}
 
-        <h3>Private Message from {{ pm.sender.username }}:</h3>
-
-        {% if pm.reply_to %}
-            This is a reply to <a href="{% url "pm" pm_id=pm.reply_to.id %}">this message.</a>
-        {% endif %}
-
         {% include "includes/pm_content.html" %}
 
-        {% if not blocked %}
-            <h3>Reply:</h3>
+        {% if not blocked and pm.is_latest_reply %}
+            <div class="replybuttons">
+                <button id="show_pm_reply" type="button" onClick="showPMReply();">Reply</button>
+            </div>
 
-            <form method="post" action="{% url "pm-create" %}">
-                <textarea name="message" class="pm">{{ pm.quoted_message }}</textarea><br />
-                <button type="submit">Send</button>
-                <input type="hidden" name="reply_to" value="{{ pm.id }}" />
-                <input type="hidden" name="recipient" value="{{ pm.sender.id }}" />
-                {% csrf_token %}
-            </form>
+            <div id="pm_reply">
+                <h3>Reply:</h3>
+
+                <form method="post" action="{% url "pm-create" %}">
+                    <textarea name="message" class="pm"></textarea><br />
+                    <div class="replybuttons">
+                        <button type="button" onClick="hidePMReply();">Cancel</button>
+                        <button type="submit">Send</button>
+                    </div>
+                    <input type="hidden" name="reply_to" value="{{ pm.id }}" />
+                    <input type="hidden" name="sender" id="sender" value="{{ user.id }}" />
+                    <input type="hidden" name="recipient" value="{% if pm.sender == user %}{{ pm.recipient.id }} {% else %}{{ pm.sender.id }}{% endif %}" />
+                    {% csrf_token %}
+                </form>
+            </div>
         {% endif %}
 
     {% endif %}
+
+    {% endfor %}
 
 {% else %}
 
@@ -66,10 +59,10 @@
                     <td class="data">
                         {% if recipient %}
                             {{ recipient.username }}
-                            <input type="hidden" name="recptid" value="${recptid}" validate="hasvalue" message="You must specify a recipient." />
                         {% else %}
-                            <input name="recpt" id="recpt" validate="hasvalue" message="You must specify a recipient." />
+                            <input name="recpt" id="recpt" validate="hasvalue" message="You must specify a recipient." onBlur="validatePMRecipient();" />
                         {% endif %}
+                        <span class="field-error" id="recipient_error"></span>
                     </td>
                 </tr>
                 <tr>
@@ -80,12 +73,15 @@
                     <td class="label"></td>
                     <td class="data">
                         <textarea name="message" class="pm">{{ shout.quoted_comment }}</textarea><br />
-                        <button type="button" onClick="validateForm('pm_new','document.pm_new.submit()')">Send</button>
+                        <div class="replybuttons">
+                            <button type="button" onClick="validateForm('pm_new','document.pm_new.submit()')">Send</button>
+                        </div>
                     </td>
                 </tr>
             </table>
             <input type="hidden" name="pmid" value="{{ pm.id }}" />
-            <input type="hidden" name="recipient" id="recipient" value="{{ recipient.id }}" />
+            <input type="hidden" name="sender" id="sender" value="{{ user.id }}" />
+            <input type="hidden" name="recipient" id="recipient" value="{{ recipient.id }}" validate="hasvalue" message="You must specify a recipient." />
             {% csrf_token %}
 
         </form>
@@ -93,6 +89,3 @@
     {% endif %}
 
 {% endif %}
-
-
-{% endblock %}

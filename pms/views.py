@@ -102,18 +102,27 @@ class PMCreateView(LoginRequiredMixin, CreateView):
     model = PrivateMessage
     form_class = forms.PMForm
 
+    def form_invalid(self, form):
+        raise Http404
+
     def form_valid(self, form):
         pm = form.save(commit=False)
         pm.sender = self.request.user
+        if pm.sender == pm.recipient:
+            raise Http404
+        pm.save()
+        pm.root_pm = pm
         if pm.reply_to:
             pm.reply_to.date_replied = timezone.now()
             pm.reply_to.save()
             pm.subject = pm.reply_to.subject
             if not pm.subject.startswith('Re: '):
                 pm.subject = 'Re: {0}'.format(pm.subject)
+            pm.root_pm = pm.reply_to.root_pm
         pm.save()
 
         recipient = form.cleaned_data['recipient']
+        print recipient
         if recipient.email_pms:
             email_context = {'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
@@ -129,7 +138,7 @@ class PMCreateView(LoginRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse('pm-success', kwargs={'pm_id': self.object.id})
+        return reverse('artmanager:private-msgs', kwargs={'box': 'out'})
 
 
 class PMSuccessView(PMView):

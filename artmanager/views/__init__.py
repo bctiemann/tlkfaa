@@ -32,6 +32,7 @@ from fanart.forms import AjaxableResponseMixin
 from artmanager import forms
 from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
+from pms.models import PrivateMessage
 
 import json
 import hashlib
@@ -1140,7 +1141,25 @@ class PrivateMessagesView(ArtManagerPaneView):
         context = super(PrivateMessagesView, self).get_context_data(**kwargs)
 
         context['pms'] = self.request.user.pms_received.all()
-        context['box'] = 'in'
+        box = kwargs.get('box') or 'in'
+        pm_id = kwargs.get('pm_id', None)
+        if pm_id:
+            pm = get_object_or_404(PrivateMessage, (Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=pm_id)
+            if pm.sender == self.request.user:
+                box = 'out'
+            if (pm.sender == self.request.user and pm.deleted_by_sender) or (pm.recipient == self.request.user and pm.deleted_by_recipient):
+                box = 'trash'
+            context['pm'] = pm
+
+            for thread_pm in pm.thread:
+                if thread_pm.recipient == self.request.user and thread_pm.date_viewed == None:
+                    thread_pm.date_viewed = timezone.now()
+                    thread_pm.save()
+
+        context['box'] = box
+        recipient_id = kwargs.get('recipient_id', None)
+        if recipient_id:
+            context['recipient'] = get_object_or_404(models.User, pk=self.kwargs['recipient_id'])
 
         return context
 
