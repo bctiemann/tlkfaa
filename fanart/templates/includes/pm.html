@@ -4,15 +4,9 @@
 
     {% for pm in pm.thread %}
 
-    {% if pm.sender == user and pm.recipient != user and False %}
-
         {% include "includes/pm_content.html" %}
 
-    {% else %}
-
-        {% include "includes/pm_content.html" %}
-
-        {% if not blocked and pm.is_latest_reply %}
+        {% if not blocked and forloop.counter == 1 %}
             <div class="replybuttons">
                 <button id="show_pm_reply" type="button" onClick="showPMReply();">Reply</button>
             </div>
@@ -33,8 +27,6 @@
                 </form>
             </div>
         {% endif %}
-
-    {% endif %}
 
     {% endfor %}
 
