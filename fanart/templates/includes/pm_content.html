@@ -3,7 +3,13 @@
 
 <div class="pm {% if pm.sender == user %}sender{% elif pm.recipient == user %}recipient{% endif %}">
     <div class="picdate">Sent {{ pm.date_sent|date:"SHORT_DATETIME_FORMAT" }}, {{ pm.date_sent|timesince }} ago</div>
-    <div class="pmpartner">{% if pm.sender == user %}To {{ pm.recipient.username }}{% else %}From {{ pm.sender.username }}{% endif %}</div>
+    <div class="pmpartner">
+        {% if pm.sender == user %}
+            To <a href="{% url "artist" dir_name=pm.recipient.dir_name %}">{{ pm.recipient.username }}</a>
+        {% else %}
+            From <a href="{% url "artist" dir_name=pm.sender.dir_name %}">{{ pm.sender.username }}</a>
+        {% endif %}
+    </div>
     <div class="pmsubject">{{ pm.subject|bbcode|safe }}</div>
     <div class="pmtext">
         {{ pm.message|bbcode|safe }}
