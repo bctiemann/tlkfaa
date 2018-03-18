@@ -624,8 +624,6 @@ class FavoritePicturesView(UserPaneMixin, TemplateView):
 
         context['pages_link'] = utils.PagesLink(len(favorite_pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
-        logger.info(context)
-
         return context
 
 
