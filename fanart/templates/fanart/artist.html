@@ -259,7 +259,7 @@ The specified artist's gallery is not publicly visible.
                         {% if user.is_authenticated %}
 			<tr>
 			<td class="label"></td>
-			<td class="data"><a href="{% url "pm-user" recipient_id=artist.id %}" rel="shadowbox;width=500;height=600">Send Private Message</a></td>
+			<td class="data"><a href="{% url "artmanager:private-msgs-user" recipient_id=artist.id %}">Send Private Message</a></td>
 			</tr>
                         {% endif %}
 			</table>

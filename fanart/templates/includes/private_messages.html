@@ -7,9 +7,9 @@
 
     <div class="globalactionslink">
         {% if box == "trash" %}
-            <a href="javascript:nop()" onClick="movePMs('restore','${box}')">Restore Selected</a>
+            <a href="javascript:nop();" onClick="movePMs('restore','${box}')">Restore Selected</a>
         {% else %}
-            <a href="javascript:nop()" onClick="movePMs('delete','${box}')">Delete Selected</a>
+            <a href="javascript:nop();" onClick="movePMs('delete','${box}')">Delete Selected</a>
         {% endif %}
     </div>
 {% endif %}
@@ -32,14 +32,14 @@
 
             {% for pm in pms %}
 
-                <tr class="{% if pm.date_viewed %}viewed{% else %}unviewed{% endif %}">
+                <tr class="pm-row {% if pm.date_viewed %}viewed{% else %}unviewed{% endif %}">
                     {% if showstatus %}
-                        <td class="status">
+                        <td class="status clickable" pm_id="{{ pm.id }}">
                             {% if pm.date_replied %}<img src="{% static "images/replied_icon.png" %}" />{% endif %}
                         </td>
                         <td class="select"><input type="checkbox" name="select_{{ pm.id }}" id="select_{{ pm.id }}" value="1" /></td>
                     {% endif %}
-                    <td>
+                    <td class="clickable" pm_id="{{ pm.id }}">
                         {% if box == "trash" %}
                             {% if pm.recipient == user %}
                                 From {{ pm.sender.username }}
@@ -52,8 +52,8 @@
                             {{ pm.recipient.username }}
                         {% endif %}
                     </td>
-                    <td><a href="{% url "pm" pm_id=pm.id %}" rel="shadowbox[pms_${param._}];width=500;height=600">{{ pm.subject|default:"(Empty subject)" }}</a></td>
-                    <td class="date">{{ pm.date_sent|date }}</td>
+                    <td class="clickable" pm_id="{{ pm.id }}">{{ pm.subject|default:"(Empty subject)" }}</td>
+                    <td class="date clickable" pm_id="{{ pm.id }}">{{ pm.date_sent|date }}</td>
                 </tr>
 
                 <script type="text/javascript">

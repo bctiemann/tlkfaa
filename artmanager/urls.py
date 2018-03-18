@@ -75,7 +75,9 @@ urlpatterns = [
     url(r'^customize/$', artmanager_views.CustomizeView.as_view(), name='customize'),
     url(r'^customize/banner_preview/$', artmanager_views.BannerPreviewView.as_view(), name='customize-banner-preview'),
 
-    url(r'^private_msgs/$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
+    url(r'^private_msgs/(?:(?P<box>(in|out|trash))/)?$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
+    url(r'^private_msgs/(?:(?P<pm_id>[0-9]+)/)?$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs'),
+    url(r'^private_msgs/user/(?:(?P<recipient_id>[0-9]+)/)?$', artmanager_views.PrivateMessagesView.as_view(), name='private-msgs-user'),
 
     url(r'^trading_tree/(?:(?P<offer_type>(icon|adoptable))/)?$', artmanager_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^trading_tree/for_you/(?:(?P<offer_type>(icon|adoptable))/)?', artmanager_views.TradingTreeForYouView.as_view(), name='trading-tree-for-you'),

@@ -279,7 +279,7 @@ function getMoreShouts(artistid,offset,obj) {
 function getAotmForm() {
   var url = '/aotm/vote/form/';
   $('#aotmvote').load(url,function() {
-    setupAutocompleteArtist('aotm',"doAotmVote(ui.item.artistid);");
+    setupAutocompleteArtist($('input#artist_pick_aotm'),"doAotmVote(ui.item.artistid);");
   });
 }
 
@@ -763,7 +763,7 @@ function setupRequest(pictureid) {
 //  var url = "/ajax_request.jsp?pictureid="+pictureid;
   var url = '/ArtManager/artwork/picture/' + pictureid + '/gift/form/';
   $('#editpicture_'+pictureid).load(url,function() {
-    setupAutocompleteArtist(pictureid, 'setRequestRecipient(ui.item.artistid)');
+    setupAutocompleteArtist($('input#artist_pick_' + pictureid), 'setRequestRecipient(ui.item.artistid)');
 //    $('div.actions_menu').hide();
   });
 }
@@ -1506,7 +1506,7 @@ function parseBBCode(intext) {
 }
 
 function setupAutocompleteArtist(obj,selectfn) {
-  $("input#artist_pick_"+obj).autocomplete({
+  obj.autocomplete({
     source: function(request, response) {
       $.ajax({
 //        url: "/ajax_ac_artists.jsp",
@@ -2648,7 +2648,7 @@ function listCharacters(list,count) {
         window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
       }
       if (list == 'search') {
-        setupAutocompleteArtist('search',"updateCharacterList('artist',ui.item.artistid,1);");
+        setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
         setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
         setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
         var speciesUrl = '/characters/species/';
@@ -2839,6 +2839,55 @@ function updateContest(contestid, fnc, params) {
     });
 }
 
+function newPM(recipient_id) {
+    var url = '/pm/user/';
+    if (recipient_id) {
+        url += recipient_id + '/';
+    }
+    $('#pms').load(url, function(data) {
+        setupAutocompleteArtist($('input#recpt'), 'validatePMRecipient()');
+    });
+}
+
+function validatePMRecipient() {
+    var recpt_name = $('input#recpt').val();
+    if (recpt_name) {
+        var url = '/artists-ac/' + recpt_name + '/';
+        $.getJSON(url, function(data) {
+            if (data.artists.length == 0) {
+                $('#recipient_error').html('Recipient not found. Please use the autocomplete drop-down to select a recipient.').show();
+                $('#recpt').addClass('error');
+                $('#recipient').val('');
+            } else if (data.artists[0].userid == parseInt($('#sender').val())) {
+                $('#recipient_error').html('You cannot send a Private Message to yourself.').show();
+                $('#recpt').addClass('error');
+                $('#recipient').val('');
+            } else {
+                $('#recipient_error').hide();
+                $('#recpt').removeClass('error');
+                $('#recipient').val(data.artists[0].userid);
+            }
+        });
+    }
+}
+
+function showPM(pm_id) {
+    var url = '/ArtManager/private_msgs/' + pm_id + '/';
+    window.location.href = url;
+}
+
+function showPMReply() {
+    $('#show_pm_reply').fadeOut(10, function() {
+        $('#pm_reply').slideDown(100, function() {});
+    });
+}
+
+function hidePMReply() {
+    $('#pm_reply').slideUp(100, function() {
+        $('#show_pm_reply').show();
+    });
+}
+
 function refreshPMBox(pmbox,page,viewmode,showpages,showstatus,w) {
   if (!w) {
     w = window;
@@ -2847,9 +2896,12 @@ function refreshPMBox(pmbox,page,viewmode,showpages,showstatus,w) {
 //  var url = "ajax_pms.jsp?op=privatemsgs&page="+page+"&box="+pmbox+"&viewmode="+viewmode+"&showpages="+showpages+"&showstatus="+showstatus;
   var url = '/pms/' + pmbox + '/?op=privatemsgs&page='+page+"&box="+pmbox+"&viewmode="+viewmode+"&showpages="+showpages+"&showstatus="+showstatus;
   $('#pms',w.document).load(url,function() {
-    S.setup('#pms table a');
+//    S.setup('#pms table a');
     $('div.selector a',w.document).removeClass('selected');
     $('div.selector a#sel_'+pmbox,w.document).addClass('selected');
+    $('.pms tr.pm-row td.clickable').click(function() {
+        showPM($(this).attr('pm_id'));
+    });
   });
 }
 
@@ -2937,7 +2989,7 @@ $(document).ready(function() {
       }
     },
   });
-  setupAutocompleteArtist('search',"updateCharacterList('artist',ui.item.artistid,1);");
+  setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
   setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
   setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
 
