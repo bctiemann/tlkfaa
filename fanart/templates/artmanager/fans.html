@@ -37,7 +37,7 @@
                     {{ fan.user.username }}
                 {% endif %}
             </td>
-            <td class="date">{{ fan.date_added|date:"m/d/Y" }}<fmt:formatDate value="${fan.added}" type="date" pattern="M/d/yyyy" /></td>
+            <td class="date">{{ fan.date_added|date:"m/d/Y" }}</td>
             <td class="comment">
                 {{ fan.latest_shout.comment|bbcode|safe }}
             </td>
