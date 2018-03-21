@@ -2,5 +2,7 @@
 
 <p>You have received a new Private Message from {{ sender.username }}.</p>
 
-<p>Please visit <a href="{{ base_url }}">{{ base_url }}</a> and check your PMs in ArtManager.</p>
+<p><b>{{ pm.subject }}</b></p>
+
+<p><a href="{{ base_url }}{% url "artmanager:private-msgs" pm_id=pm.id %}">{{ base_url }}{% url "artmanager:private-msgs" pm_id=pm.id %}</a></p>
 
