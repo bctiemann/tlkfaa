@@ -1036,6 +1036,10 @@ div.error h3 {
 div.error p {
 	margin-bottom: 10px;
 }
+td.error {
+	width: 40%;
+	color: red;
+}
 
 div#newname_form {
 	display: none;
@@ -2115,7 +2119,8 @@ table.pms tr.unviewed td {
 	display: none;
 }
 
-input.error {
+input.error,
+textarea.error {
 	outline: 1px solid #f00;
 }
 .field-error {

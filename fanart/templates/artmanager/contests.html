@@ -26,7 +26,7 @@
             </tr>
             <tr>
                 <td class="label">Theme/Description</td>
-                <td class="data"><textarea name="description" id="description_new"></textarea></td>
+                <td class="data"><textarea name="description" id="description_new" validate="hasvalue" message="You must enter a theme or description."></textarea></td>
             </tr>
             <tr>
                 <td class="label">Rules</td>
@@ -69,7 +69,7 @@ $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
                 </tr>
                 <tr>
                     <td class="label">Theme/Description</td>
-                    <td class="data"><textarea name="description" id="description_{{ contest.id }}">{{ contest.description }}</textarea></td>
+                    <td class="data"><textarea name="description" id="description_{{ contest.id }}" validate="hasvalue" message="You must enter a theme or description.">{{ contest.description }}</textarea></td>
                 </tr>
                 <tr>
                     <td class="label">Rules</td>

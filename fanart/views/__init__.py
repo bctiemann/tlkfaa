@@ -545,7 +545,7 @@ class ContestVoteView(CreateView):
 class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
     model = models.Contest
     template_name = 'fanart/contest_setup.html'
-    form_class = forms.ContestForm
+    form_class = forms.GlobalContestForm
 
     def get_context_data(self, **kwargs):
         context = super(ContestSetupView, self).get_context_data(**kwargs)
@@ -573,6 +573,16 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
 
         contest = form.save(commit=False)
         contest.creator = self.request.user
+        contest.type = 'global'
+        contest.allow_voting = True
+
+#        length_days = int(self.request.POST.get('length_days', 7))
+        length_days = int(form.cleaned_data['length_days'])
+        tonight = timezone.now().replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=1)
+        contest.date_start = tonight
+        date_end = tonight + timedelta(days=length_days)
+        contest.date_end = date_end
+
         contest.save()
 
         response = super(ContestSetupView, self).form_valid(form)

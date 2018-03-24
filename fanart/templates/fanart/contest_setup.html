@@ -3,103 +3,78 @@
 
 {% block content %}
 
-<%--
-NewContest.jsp
-Winner of the previous site-wide contest can log in and set up the next contest.
---%>
+<h1>Create New Contest</h1>
 
-<jsp:include page="inc_root/inc_header.jsp" />
-<%@ include file="inc_root/inc_functions.jsp" %>
+<div class="am_panel">
+    <div class="am_tabs">
+        <a href="{% url "contest-setup" %}" class="selected">New Contest</a>
+    </div>
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+    <div class="am_content">
 
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+        <h2>New Contest</h2>
 
-<sql:setDataSource dataSource="jdbc/Fanart" />
+        <div class="pageinfo">
+            <p>
+                Congratulations, <b>{{ request.user.username }}</b>, on winning the <b>{{ latest_contest.title }}</b> contest! You can now set up the next contest using the form below.
+            </p>
+            <p>
+                Choose a "theme" for artists to use in creating new pictures. This theme can be any subject or challenge you wish; however, all pictures submitted
+                <i>will</i> have to be on-topic and subject to the Guidelines of the Archive!
+            </p>
+        </div>
 
-<c:set var="days_before_forfeit" value="3" />
+        <form method="POST" action="{% url "contest-setup" %}">
+            <table class="formtable">
+                <tr>
+                    <td class="label">Contest Title</td>
+                    <td><input name="title" {% if form.errors.title %}class="error"{% endif %} value="{{ form.title.value|default_if_none:"" }}" maxlength="64" style="width: 300px;" /></td>
+                    <td class="error">{{ form.errors.title }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Theme/Description</td>
+                    <td><textarea name="description" {% if form.errors.description %}class="error"{% endif %}>{{ form.description.value|default_if_none:"" }}</textarea></td>
+                    <td class="error">{{ form.errors.description }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Rules (optional)</td>
+                    <td><textarea name="rules">{{ form.rules.value|default_if_none:"" }}</textarea></td>
+                    <td class="error">{{ form.errors.rules }}</td>
+                </tr>
+                <tr>
+                    <td class="label">{{ form.length_days.label }}</td>
+                    <td>
+                        {{ form.length_days }}
+                    </td>
+                    <td class="error">{{ form.errors.length_days }}</td>
+                </tr>
+                <tr>
+                    <td class="label">{{ form.allow_multiple_entries.label }}</td>
+                    <td>
+                        {{ form.allow_multiple_entries }}
+                    </td>
+                    <td class="error">{{ form.errors.allow_multiple_entries }}</td>
+                </tr>
+                <tr>
+                    <td class="label">{{ form.allow_anonymous_entries.label }}</td>
+                    <td>
+                        {{ form.allow_anonymous_entries }}
+                    </td>
+                    <td class="error">{{ form.errors.allow_anonymous_entries }}</td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td>
+                        <input class="button" type="submit" value="Begin New Contest" />
+                    </td>
+                    <td class="error"></td>
+                </tr>
+            </table>
+            <input type="hidden" name="fnc" value="create" />
+            {% csrf_token %}
+        </form>
 
-		<h1>Create New Contest</h1>
-
-		<div class="am_panel">
-		<div class="am_tabs">
-		<a href="/NewContest.jsp" class="selected">New Contest</a>
-		</div>
-		<div class="am_content">
-
-			<h2>New Contest</h2>
-
-					<div class="pageinfo">
-
-					<p>
-					Congratulations, <b>{{ request.user.username }}</b>, on winning the <b>{{ latest_contest.title }}</b> contest! You can now set up the next contest using the form below.
-					</p>
-
-					<p>
-					Choose a "theme" for artists to use in creating new pictures. This theme can be any subject or challenge you wish; however, all pictures submitted
-					<i>will</i> have to be on-topic and subject to the Guidelines of the Archive!
-					</p>
-
-					</div>
-
-					<form method="POST" action="{% url "contest-setup" %}">
-					<table class="formtable">
-						<tr>
-							<td class="label">Contest Title</td>
-							<td><input name="title" value="{{ form.title.value|default_if_none:"" }}" maxlength="64" style="width: 300px;" /></td>
-						</tr>
-						<tr>
-							<td class="label">Theme/Description</td>
-							<td><textarea name="description">{{ form.description.value|default_if_none:"" }}</textarea></td>
-						</tr>
-						<tr>
-							<td class="label">Rules (optional)</td>
-							<td><textarea name="rules">{{ form.rules.value|default_if_none:"" }}</textarea></td>
-						</tr>
-						<tr>
-							<td class="label">Contest Length</td>
-							<td>
-								<select name="length_days">
-									<option value="7" {% if form.length_days.value == 7 %}selected{% endif %}>1 week</option>
-									<option value="14" {% if form.length_days.value == 14 %}selected{% endif %}>2 weeks</option>
-									<option value="21" {% if form.length_days.value == 21 %}selected{% endif %}>3 weeks</option>
-									<option value="42" {% if form.length_days.value == 42 %}selected{% endif %}>6 weeks</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td class="label">Allow artists to submit more than one picture?</td>
-							<td>
-								<select name="allowmultiple">
-									<option value="1" {% if form.allow_multiple_entries.value == True %}selected{% endif %}>Yes</option>
-									<option value="0" {% if form.allow_multiple_entries.value == False %}selected{% endif %}>No</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td class="label">Anonymous entries?</td>
-							<td>
-								<select name="anonymous">
-									<option value="1" {% if form.allow_anonymous_entries.value == True %}selected{% endif %}>Yes</option>
-									<option value="0" {% if form.allow_anonymous_entries.value == False %}selected{% endif %}>No</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td class="label"></td>
-							<td>
-								<input class="button" type="submit" value="Begin New Contest" />
-							</td>
-						</tr>
-					</table>
-					<input type="hidden" name="fnc" value="create" />
-                                        {% csrf_token %}
-					</form>
-
-		</div>
-		</div>
+    </div>
+</div>
 
 {% endblock %}

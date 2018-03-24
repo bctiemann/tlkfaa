@@ -142,6 +142,30 @@ class ContestForm(forms.ModelForm):
         fields = ['title', 'description', 'rules']
 
 
+class GlobalContestForm(ContestForm):
+    LENGTH_DAYS_CHOICES = (
+        (7, '1 week'),
+        (14, '2 weeks'),
+        (21, '3 weeks'),
+        (42, '6 weeks'),
+    )
+    TRUE_FALSE_CHOICES = (
+        (True, 'Yes'),
+        (False, 'No')
+    )
+
+    length_days = forms.ChoiceField(choices = LENGTH_DAYS_CHOICES, label='Contest Length', 
+                              initial=7, widget=forms.Select(), required=True)
+    allow_multiple_entries = forms.ChoiceField(choices = TRUE_FALSE_CHOICES, label='Allow artists to submit more than one picture?', 
+                              initial=True, widget=forms.Select(), required=True)
+    allow_anonymous_entries = forms.ChoiceField(choices = TRUE_FALSE_CHOICES, label='Anonymous entries?', 
+                              initial=False, widget=forms.Select(), required=True)
+
+    class Meta:
+        model = models.Contest
+        fields = ['title', 'description', 'rules', 'allow_multiple_entries', 'allow_anonymous_entries']
+
+
 class AotmVoteForm(forms.ModelForm):
 
     class Meta:
