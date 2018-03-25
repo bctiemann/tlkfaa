@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 {% load bbcode_tags %}
 
 <form name="approveform_{{ pending.id }}" id="approveform_{{ pending.id }}" method="POST" enctype="multipart/form-data">
@@ -71,7 +72,7 @@ $(function () {
                 </div>
             </td>
             <td class="info">
-                <div class="pendingdate">{{ pending.date_uploaded|date }} &nbsp; <a href="javascript:nop()" onClick="showInfo({{ pending.id }})">show info</a></div>
+                <div class="pendingdate">{{ pending.date_uploaded|timesince }} &nbsp; <a href="javascript:nop()" onClick="showInfo({{ pending.id }})">show info</a></div>
                 <div class="pendinginfo" id="pendinginfo_{{ pending.id }}">{{ pending.remote_host }}<br />{{ pending.user_agent }}</div>
                 {% if pending.folder %}<div class="pendingfolder picfolder"><a target="_blank" href="{% url "artist-gallery" dir_name=pending.artist.dir_name %}?folder_id={{ pending.folder.id }}">{{ pending.folder.name }}</a></div>{% endif %}
                 <div class="pendingtitle">{{ pending.title|bbcode|safe }}</div>
