@@ -405,6 +405,10 @@ ORDER BY fanart_user.sort_name
         return None
 
     @property
+    def has_profile_pic(self):
+        return self.profile_picture != '' or self.profile_pic_id > 0
+
+    @property
     def profile_pic_url(self):
         if self.profile_picture:
             if self.profile_pic_resized:

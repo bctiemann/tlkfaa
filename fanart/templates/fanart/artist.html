@@ -268,7 +268,7 @@ The specified artist's gallery is not publicly visible.
 
 		<table class="artist_profile"><tr><td>
 
-                {% if artist.profile_pic_url %}
+                {% if artist.has_profile_pic %}
 		<img class="profilepic" src="{{ artist.profile_pic_url }}" />
                 {% endif %}
 
