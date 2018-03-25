@@ -671,6 +671,7 @@ div.userbox input {
 	font-size: 10px;
 	margin: 0px;
 	padding: 0px;
+	max-width: 100px;
 }
 /*
 div.userbox table {

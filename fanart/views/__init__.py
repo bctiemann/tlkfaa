@@ -489,7 +489,7 @@ class ContestView(UserPaneMixin, DetailView):
         return context
 
 
-class ContestEntryCreateView(CreateView):
+class ContestEntryCreateView(LoginRequiredMixin, CreateView):
     model = models.ContestEntry
     form_class = forms.ContestEntryForm
     template_name = 'fanart/contest.html'
@@ -512,7 +512,7 @@ class ContestEntryCreateView(CreateView):
         return response
 
 
-class ContestEntryDeleteView(DeleteView):
+class ContestEntryDeleteView(LoginRequiredMixin, DeleteView):
     model = models.ContestEntry
 
     def get_object(self):
@@ -526,7 +526,7 @@ class ContestEntryDeleteView(DeleteView):
         return reverse('contest', kwargs={'contest_id': self.object.contest.id})
 
 
-class ContestVoteView(CreateView):
+class ContestVoteView(LoginRequiredMixin, CreateView):
     model = models.ContestVote
     form_class = forms.ContestVoteForm
     template_name = 'fanart/contest.html'
@@ -883,7 +883,7 @@ class CommentsView(TemplateView):
         return context
 
 
-class PostCommentView(CreateView):
+class PostCommentView(LoginRequiredMixin, CreateView):
     model = models.PictureComment
     form_class = forms.PictureCommentForm
     template_name = 'includes/comments.html'
@@ -917,7 +917,7 @@ class PostCommentView(CreateView):
         return response
 
 
-class CommentDetailView(DetailView):
+class CommentDetailView(LoginRequiredMixin, DetailView):
     model = models.PictureComment
     form_class = forms.PictureCommentForm
     template_name = 'includes/comments.html'
@@ -939,7 +939,7 @@ class CommentDetailView(DetailView):
             return response
 
 
-class EditCommentView(UpdateView):
+class EditCommentView(LoginRequiredMixin, UpdateView):
     model = models.PictureComment
     form_class = forms.PictureCommentUpdateForm
     template_name = 'includes/comments.html'
@@ -958,7 +958,7 @@ class EditCommentView(UpdateView):
 #        return context
 
 
-class DeleteCommentView(UpdateView):
+class DeleteCommentView(LoginRequiredMixin, UpdateView):
     model = models.PictureComment
     form_class = forms.PictureCommentDeleteForm
     template_name = 'includes/comments.html'
@@ -998,7 +998,7 @@ class ShoutsView(TemplateView):
         return context
 
 
-class PostShoutView(CreateView):
+class PostShoutView(LoginRequiredMixin, CreateView):
     model = models.Shout
     form_class = forms.ShoutForm
     template_name = 'includes/shouts.html'
@@ -1034,7 +1034,7 @@ class PostShoutView(CreateView):
         return JsonResponse(response)
 
 
-class DeleteShoutView(APIView):
+class DeleteShoutView(LoginRequiredMixin, APIView):
 
     def post(self, request, shout_id):
         response = {'success': False}
@@ -1071,7 +1071,7 @@ class ToggleFaveView(APIView):
         return Response(response)
 
 
-class ToggleVisibleView(AjaxableResponseMixin, UpdateView):
+class ToggleVisibleView(AjaxableResponseMixin, LoginRequiredMixin, UpdateView):
     model = models.Favorite
     form_class = forms.VisibleFaveForm
 
@@ -1463,7 +1463,7 @@ class ArtistsAutocompleteView(APIView):
         return Response(response)
 
 
-class PicturePickerView(TemplateView):
+class PicturePickerView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/pick_picture.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -1542,7 +1542,7 @@ class SocialMediaIdentitiesView(TemplateView):
         return context
 
 
-class AddSocialMediaIdentityView(CreateView):
+class AddSocialMediaIdentityView(LoginRequiredMixin, CreateView):
     model = models.SocialMediaIdentity
     form_class = forms.SocialMediaIdentityForm
 
@@ -1558,7 +1558,7 @@ class AddSocialMediaIdentityView(CreateView):
         return reverse('social-media-identities', kwargs={})
 
 
-class RemoveSocialMediaIdentityView(DeleteView):
+class RemoveSocialMediaIdentityView(LoginRequiredMixin, DeleteView):
     model = models.SocialMediaIdentity
 
     def get_object(self):
