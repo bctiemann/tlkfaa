@@ -1044,8 +1044,10 @@ class CharacterUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'artmanager/character_form.html'
 
     def get_object(self):
+        character = get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+        logger.info('{0} updated character {1}'.format(self.request.user, character))
         logger.info(self.request.POST)
-        return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
+        return character
 
     def get_success_url(self):
         return reverse('artmanager:character-detail', kwargs={'character_id': self.object.id})
