@@ -350,10 +350,10 @@ class PendingUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'artmanager/pending_form.html'
 
     def get_object(self):
-        logger.info(self.request.POST)
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
     def form_valid(self, form):
+        logger.info('{0} updated {1}'.format(self.request.user, self.object))
         logger.info(self.request.POST)
 
         self.object.folder = models.Folder.objects.filter(pk=self.request.POST.get('folder'), user=self.request.user).first()
