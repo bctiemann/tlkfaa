@@ -258,7 +258,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 if list == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
                 elif list == 'tag':
-                    logger.info('Artwork search: {0}'.format(term.encode('utf8')))
+                    logger.info('Artwork search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term.encode('utf8')))
                     tag = models.Tag.objects.filter(tag=term).first()
                     if tag:
                         artwork = tag.picture_set.all().order_by('-num_faves')
@@ -1132,7 +1132,7 @@ class PictureView(UserPaneMixin, TemplateView):
             context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
 
-        logger.info('{0} {1} viewing picture {2} via {3}'.format(self.request.user, self.request.META['REMOTE_ADDR'], picture, self.template_name))
+        logger.debug('{0} {1} viewing picture {2} via {3}'.format(self.request.user, self.request.META['REMOTE_ADDR'], picture, self.template_name))
         context['video_types'] = settings.MOVIE_FILE_TYPES.keys()
         return context
 
