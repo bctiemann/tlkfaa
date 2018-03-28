@@ -32,7 +32,7 @@ SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
 ADMIN_EMAIL = 'btman@lionking.org'
 
-ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
+ADMINS = [(ADMIN_NAME, DEBUG_EMAIL)]
 
 RECAPTCHA_ENABLED = True
 
