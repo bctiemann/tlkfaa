@@ -32,6 +32,8 @@ SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
 ADMIN_EMAIL = 'btman@lionking.org'
 
+ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
+
 RECAPTCHA_ENABLED = True
 
 CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
