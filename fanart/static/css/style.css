@@ -2688,8 +2688,12 @@ div.sketcherusers {
 div.sketcheruser {
 	background-color: #fff;
 	border: 1px solid #eee;
+	border-width: 1px 1px 0px 1px;
 	width: 180px;
 	padding: 3px;
+}
+div.sketcheruser:last-child {
+	border-width: 1px 1px 1px 1px;
 }
 div.sketcheruser span.usernumber {
 	color: #888;
