@@ -161,6 +161,9 @@ class ArtistsView(UserPaneMixin, TemplateView):
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
         one_month_ago = timezone.now() - timedelta(days=180)
         if list == 'name':
+            if not initial:
+                raise Http404
+
             artists = artists.filter(username__istartswith=initial).order_by('username')
             context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
             try:
