@@ -13,7 +13,7 @@
         {% endfor %}
         </ul>
 
-        <div class="species-name species-heading"><a href="{% url "characters" list="search" %}?match=exact&list=species&term={{ species.species }}">{{ species.species }}</a></div>
+        <div class="species-name species-heading"><a href="{% url "characters" list="search" %}?match=exact&list=species&term={{ species.species }}">{{ species.species|capfirst }}</a></div>
         <div class="species-count species-heading"><a href="{% url "characters" list="search" %}?match=exact&list=species&term={{ species.species }}">{{ species.num_characters }} character{{ species.num_characters|pluralize }}</a></div>
     </div>
 
