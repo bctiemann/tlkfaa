@@ -6,17 +6,25 @@ var checkThumbs = function() {
     var url = '/admin/approve/thumb_status/';
     $.getJSON(url, function(data) {
         var continueChecking = false;
+
         for (pending_id in data) {
-            $('#pendinghumb_' + pending_id).attr('src', data[pending_id].thumbnail_url);
+            if ($('img#pendingthumb_' + pending_id).attr('src') != data[pending_id].preview_url) {
+                $('img#pendingthumb_' + pending_id).attr('src', data[pending_id].preview_url);
+            }
             if (!data[pending_id].thumbnail_done) {
                 continueChecking = true;
             }
         }
         if (!continueChecking) {
             clearInterval(refreshThumbsInterval);
+console.log(refreshThumbsInterval);
         }
+
+
     });
 };
+
+refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 </script>
 
 {% for pending in pending_pictures %}
