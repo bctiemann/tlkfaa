@@ -175,7 +175,6 @@ urlpatterns = [
     url(r'^profile-pic/remove/$', fanart_views.RemoveProfilePicView.as_view(), name='remove-profile-pic'),
 
     url(r'^banner/upload/$', fanart_views.UploadBannerView.as_view(), name='upload-banner'),
-    url(r'^banner/upload/status/$', fanart_views.BannerStatusView.as_view(), name='banner-status'),
     url(r'^banner/remove/$', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
 
     url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),

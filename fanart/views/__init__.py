@@ -1694,19 +1694,6 @@ class UploadBannerView(CreateView):
         return context
 
 
-class BannerStatusView(APIView):
-
-    def get(self, request):
-        response = {}
-        if request.user.profile_picture:
-            response = {
-                'url': request.user.profile_pic_url,
-                'thumbnail_url': request.user.profile_pic_thumbnail_url,
-                'thumbnail_done': request.user.profile_pic_thumbnail_created,
-            }
-        return Response(response)
-
-
 class RemoveBannerView(DeleteView):
     model = models.Banner
 
