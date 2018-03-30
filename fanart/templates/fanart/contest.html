@@ -57,9 +57,11 @@
             </tr>
             <tr>
                 <td>Deadline:</td>
-                <td>Midnight after {{ contest.date_end|date:"SHORT_DATE_FORMAT" }}<br />
+                <td>Midnight before {{ contest.date_end|date:"SHORT_DATE_FORMAT" }}<br />
                     {% if contest.is_ended %}
                         <b>(Contest is over)</b>
+                    {% elif contest.days_left == 0 %}
+                        <b>({{ contest.hours_left }} hour{{ contest.hours_left|pluralize }} left)</b>
                     {% else %}
                         <b>({{ contest.days_left }} day{{ contest.days_left|pluralize }} left)</b>
                     {% endif %}

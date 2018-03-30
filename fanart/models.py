@@ -1378,6 +1378,10 @@ class Contest(models.Model):
         return (self.date_end - timezone.now()).days
 
     @property
+    def hours_left(self):
+        return (self.date_end - timezone.now()).seconds / 3600
+
+    @property
     def winning_entries(self):
         entries = self.contestentry_set.all().order_by('?')
         if self.is_ended:

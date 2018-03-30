@@ -44,6 +44,8 @@
         <p>{{ current_contest.contestentry_set.count }} entr{{ current_contest.contestentry_set.count|pluralize:"y,ies" }}</p>
         {% if current_contest.is_ended %}
             Winner: {{ current_contest.get_winner.picture.artist.username }}
+        {% elif current_contest.days_left == 0 %}
+            <b>({{ current_contest.hours_left }} hour{{ current_contest.hours_left|pluralize }} left)</b>
         {% else %}
             <p><b>({{ current_contest.days_left }} day{{ current_contest.days_left|pluralize }} left)</b></p>
         {% endif %}
