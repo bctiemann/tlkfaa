@@ -141,13 +141,12 @@ $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
                 </tr>
             </table>
         </form>
+
+    <a href="javascript:nop()" onClick="showContestEntries({{ contest.id }});">Show entries ({{ contest.contestentry_set.count }})</a>
+    <div id="contest_entries_{{ contest.id }}">
     </div>
 
-    {% for entry in contest.contestentry_set.all %}
-        {% with picture=entry.picture %}
-            {% include "includes/picture.html" %}
-        {% endwith %}
-    {% endfor %}
+    </div>
 
 {% endfor %}
 

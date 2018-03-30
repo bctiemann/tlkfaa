@@ -121,3 +121,11 @@ class ContestDeleteView(LoginRequiredMixin, DeleteView):
 
         return JsonResponse(response)
 
+
+class ContestEntriesView(LoginRequiredMixin, DetailView):
+    model = models.Contest
+    template_name = 'artmanager/contest_entries.html'
+
+    def get_object(self):
+        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
+

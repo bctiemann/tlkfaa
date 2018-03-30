@@ -2839,6 +2839,11 @@ function updateContest(contestid, fnc, params) {
     });
 }
 
+function showContestEntries(contestid) {
+    var url = '/ArtManager/contests/' + contestid + '/entries/';
+    $('#contest_entries_' + contestid).load(url);
+}
+
 function newPM(recipient_id) {
     var url = '/pm/user/';
     if (recipient_id) {

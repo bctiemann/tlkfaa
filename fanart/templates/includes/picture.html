@@ -34,7 +34,7 @@
 
 {% if contest and not contest.is_ended %}
 <div class="picvote">
-{% if contest.allow_voting %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture({{ contest.id }},{{ entry.id }})" /> Vote for this picture{% endif %}
+{% if contest.allow_voting and not hide_vote_widget %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture({{ contest.id }},{{ entry.id }})" /> Vote for this picture{% endif %}
 {% if entry.picture.artist == user or contest.creator == user %}<button type="button" class="small" onClick="removeContestPic({{ entry.id }})">Remove</button>{% endif %}
 </div>
 {% endif %}

@@ -1,0 +1,6 @@
+{% for entry in contest.contestentry_set.all %}
+    {% with picture=entry.picture hide_vote_widget=True %}
+        {% include "includes/picture.html" %}
+    {% endwith %}
+{% endfor %}
+
