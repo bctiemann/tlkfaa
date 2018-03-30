@@ -3,80 +3,92 @@
 
 
 <div class="picture {% view_picture picture user %} {% if not picture.is_public %}privatepicture{% endif %}">
-{% if picture.date_deleted == None %}
-<table>
-<tr>
-<td class="thumb"><a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ picture.preview_url }}" /></a></td>
-<td class="fullwidth picturedetails">
+    {% if picture.date_deleted == None %}
+        <table>
+            <tr>
+                <td class="thumb">
+                    <a href="{% url "picture" picture_id=picture.id %}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}"><img class="thumb" height="${thumbheight*2}" src="{{ picture.preview_url }}" /></a>
+                </td>
+                <td class="fullwidth picturedetails">
 
-{% if user.is_authenticated %}
-<a class="addfavorites {% is_favorite_picture picture user %}" id="togglefavepicture_{{ picture.id }}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite Picture"></a>
-{% endif %}
+                    {% if user.is_authenticated %}
+                        <a class="addfavorites {% is_favorite_picture picture user %}" id="togglefavepicture_{{ picture.id }}" href="javascript:nop()" onClick="toggleFave({{ picture.id }},'picture')" title="Favorite Picture"></a>
+                    {% endif %}
 
-<div class="picturedetails">
+                    <div class="picturedetails">
 
-<div class="picnumber">{% pic_number pic_number pictures.number pictures_paginator.per_page %}</div>
-<div class="picdate">{{ picture.date_uploaded }}</div>
-<div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
-    {% if picture.folder %}
-        <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
-    {% else %}
-        <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
+                        <div class="picnumber">{% pic_number pic_number pictures.number pictures_paginator.per_page %}</div>
+                        <div class="picdate">{{ picture.date_uploaded }}</div>
+                        <div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
+                        {% if picture.folder %}
+                            <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
+                        {% else %}
+                            <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}"><div class="picfolder">Main Folder</div></a>
+                        {% endif %}
+                        {% if contest and contest.is_ended and entry.votes > 0 %}
+                            <p class="contest-place {% if place == 1 %}first-place{% endif %}">#{{ place }}: {{ entry.votes }} vote{{ entry.votes|pluralize }}</p>
+                        {% endif %}
+
+                        <div class="pictitle">
+                            {{ picture.title|bbcode|safe }}
+                        </div>
+
+                        {% if contest and not contest.is_ended %}
+                            <div class="picvote">
+                                {% if contest.allow_voting and not hide_vote_widget %}
+                                    <input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture({{ contest.id }},{{ entry.id }})" /> Vote for this picture
+                                {% endif %}
+                                {% if entry.picture.artist == user or contest.creator == user %}
+                                    <button type="button" class="small" onClick="removeContestPic({{ entry.id }})">Remove</button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <ul class="characters group">
+                            {% for pc in picture.picturecharacter_set.all %}
+                                <li>
+                                    <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
+                                    <p class="charactername"><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></p>
+                                    <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="tags">
+                            {% for tag in picture.tags.all %}
+                                <a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag }}">{{ tag }}</a>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="picinfo">
+                    <div class="picinfowrapper">
+                        <div class="picinfo">
+                            <div class="picinfodata piclink">
+                                {% if picture.allow_comments %}
+                                    <a href="javascript:nop()" onClick="toggleComments({{ picture.id }})">comments ({{ picture.picturecomment_set.count }})</a>
+                                {% endif %}
+                            </div>
+                            <div class="picinfodata piclink">
+                                <a href="{% url "picture" picture_id=picture.id %}">link</a>
+                            </div>
+                            <div class="picinfodata">{{ picture.width }} x {{ picture.height }}</div>
+                            <div class="picinfodata">{{ picture.file_size|filesizeformat }}</div>
+                            <div class="picinfodata pictype">{{ picture.type }}</div>
+                            {% if picture.fans.count > 0 %}
+                                <div class="picinfodata">{{ picture.fans.count }} fave{{ picture.fans.count|pluralize }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+            </tr>   
+        </table>
     {% endif %}
-
-{% if contest and contest.is_ended and entry.votes > 0 %}
-	<p class="contest-place {% if place == 1 %}first-place{% endif %}">#{{ place }}: {{ entry.votes }} vote{{ entry.votes|pluralize }}</p>
-{% endif %}
-
-<div class="pictitle">
-{{ picture.title|bbcode|safe }}
-</div>
-
-{% if contest and not contest.is_ended %}
-<div class="picvote">
-{% if contest.allow_voting and not hide_vote_widget %}<input type="radio" {% if my_vote.entry == entry %}checked{% endif %} onClick="votePicture({{ contest.id }},{{ entry.id }})" /> Vote for this picture{% endif %}
-{% if entry.picture.artist == user or contest.creator == user %}<button type="button" class="small" onClick="removeContestPic({{ entry.id }})">Remove</button>{% endif %}
-</div>
-{% endif %}
-
-<ul class="characters group">
-{% for pc in picture.picturecharacter_set.all %}
-    <li>
-        <a href="{% url "character" character_id=pc.character.id %}" class="previewPopupTrigger" type="character" itemid="{{ pc.character.id }}"><img class="thumb characterpic smallthumb" src="{{ pc.character.thumbnail_url }}" /></a>
-        <p class="charactername"><a href="{% url "character" character_id=pc.character.id %}">{{ pc.character.name }}</a></p>
-        <p class="characterowner">{% if pc.character.owner == None %}(Canon){% else %}{{ pc.character.owner.username }}{% endif %}</p>
-    </li>
-{% endfor %}
-</ul>
-
-<div class="tags">
-{% for tag in picture.tags.all %}
-	<a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag }}">{{ tag }}</a>
-{% endfor %}
-</div>
-
-</div>
-
-</td>
-</tr>
-<tr>
-<td></td>
-<td class="picinfo">
-<div class="picinfowrapper">
-<div class="picinfo">
-<div class="picinfodata piclink">{% if picture.allow_comments %}<a href="javascript:nop()" onClick="toggleComments({{ picture.id }})">comments ({{ picture.picturecomment_set.count }})</a>{% endif %}</div>
-<div class="picinfodata piclink"><a href="{% url "picture" picture_id=picture.id %}">link</a></div>
-<div class="picinfodata">{{ picture.width }} x {{ picture.height }}</div>
-<div class="picinfodata">{{ picture.file_size|filesizeformat }}</div>
-<div class="picinfodata pictype">{{ picture.type }}</div>
-{% if picture.fans.count > 0 %}
-<div class="picinfodata">{{ picture.fans.count }} fave{{ picture.fans.count|pluralize }}</div>
-{% endif %}
-</div>
-</td>
-</tr>   
-</table>
-{% endif %}
 
     <div class="inlinecomments" id="comments_{{ picture.id }}"></div>
 
