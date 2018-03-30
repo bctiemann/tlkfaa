@@ -328,7 +328,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def unread_comments(self):
-        return PictureComment.objects.filter(picture__artist=self, is_received=False).order_by('-date_posted')
+        return PictureComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
 
     @property
     def unread_shouts(self):
