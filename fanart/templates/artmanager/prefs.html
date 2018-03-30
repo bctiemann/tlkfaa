@@ -427,6 +427,18 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                 <td class="legend">Must be a real, working address</td>
             </tr>
             <tr>
+                <td class="label">Time Zone</td>
+                <td class="data">
+                    {% get_current_timezone as TIME_ZONE %}
+                    <select name="timezone" id="timezone">
+                        {% for tz in timezones %}
+                            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="legend"></td>
+            </tr>
+            <tr>
                 <td class="label">Send Email Notifications For</td>
                 <td class="data">
                     <input type="checkbox" name="emailpms" id="emailpms" value="1" {% if user.email_pms %}checked{% endif %} /> <label for="emailpms"><b>Private Messages</b></label><br />

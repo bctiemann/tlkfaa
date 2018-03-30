@@ -34,7 +34,7 @@ class ProfilePrefsForm(PrefsForm):
 
     class Meta:
         model = models.User
-        fields = ['email_pms', 'tooltips_enabled']
+        fields = ['email_pms', 'tooltips_enabled', 'timezone']
 
 
 class UserModeForm(forms.ModelForm):
