@@ -1,5 +1,6 @@
 {% extends "artmanager/base.html" %}
 {% load bbcode_tags %}
+{% load tz %}
 
 {# 26472 #}
 
@@ -249,6 +250,18 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         <h3 class="sectionheader">Preferences</h3>
 
         <table class="formtable">
+            <tr>
+                <td class="label">Time Zone</td>
+                <td class="data">
+                    {% get_current_timezone as TIME_ZONE %}
+                    <select name="timezone" id="timezone">
+                        {% for tz in timezones %}
+                            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="legend"></td>
+            </tr>
             <tr>
                 <td class="label">Allow</td>
                 <td class="data">

@@ -39,6 +39,7 @@ import hashlib
 import os
 import shutil
 from PIL import Image
+import pytz
 
 import logging
 logger = logging.getLogger(__name__)
@@ -93,6 +94,7 @@ class PrefsView(LoginRequiredMixin, UserPaneMixin, DetailView):
         context = super(PrefsView, self).get_context_data(**kwargs)
 
         context['social_medias'] = models.SocialMedia.objects.all()
+        context['timezones'] = pytz.common_timezones
 
         return context
 
@@ -170,6 +172,8 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
             user.email = new_email
 
         user.save()
+
+        self.request.session['django_timezone'] = self.request.POST['timezone']
 
         return response
 

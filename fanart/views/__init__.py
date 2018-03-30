@@ -64,6 +64,10 @@ class LoginView(LoginView):
     def get(self, request, *args, **kwargs):
         return redirect('home')
 
+    def form_valid(self, form):
+        self.request.session['django_timezone'] = form.get_user().timezone
+        return super(LoginView, self).form_valid(form)
+
     def form_invalid(self, form):
         self.request.session['login_failed'] = True
         return redirect('home')

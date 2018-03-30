@@ -2528,6 +2528,7 @@ function updatePrefs(fnc) {
         location: $('#location').val(),
         occupation: $('#occupation').val(),
         website: $('#website').val(),
+        timezone: $('#timezone').val(),
         allow_shouts: $('#allowshouts').prop('checked'),
         allow_comments: $('#allowcomments').prop('checked'),
         email_shouts: $('#emailshouts').prop('checked'),

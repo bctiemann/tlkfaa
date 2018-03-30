@@ -26,7 +26,7 @@ class PrefsForm(forms.ModelForm):
         model = models.User
         fields = ['description', 'is_public', 'show_email', 'birth_date', 'show_birthdate', 'show_birthdate_age',
             'gender', 'location', 'occupation', 'website',
-            'allow_shouts', 'allow_comments', 'email_shouts', 'email_comments', 'email_pms',
+            'timezone', 'allow_shouts', 'allow_comments', 'email_shouts', 'email_comments', 'email_pms',
             'show_coloring_cave', 'commissions_open', 'tooltips_enabled']
 
 
