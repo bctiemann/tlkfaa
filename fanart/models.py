@@ -252,10 +252,6 @@ class User(AbstractUser):
     example_pic = models.ForeignKey('Picture', null=True, blank=True)
     suspension_message = models.TextField(blank=True)
     auto_approve = models.BooleanField(default=False)
-    allow_sketcher = models.BooleanField(default=True)
-    sketcher_banned = models.DateTimeField(null=True, blank=True)
-    sketcher_banned_by = models.ForeignKey('User', null=True, blank=True)
-    sketcher_ban_reason = models.TextField(blank=True)
     is_approver = models.BooleanField(default=False)
     is_sketcher_mod = models.BooleanField(default=False)
 
