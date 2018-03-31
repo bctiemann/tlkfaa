@@ -492,6 +492,10 @@ ORDER BY fanart_user.sort_name
     def absolute_dir_name(self):
         return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, self.dir_name)
 
+    @property
+    def allow_sketcher(self):
+        return not self.ban_set.exists()
+
     def create_dir(self):
         try:
             os.mkdir(self.absolute_dir_name)
