@@ -15,3 +15,4 @@ class Ban(models.Model):
     user = models.ForeignKey('fanart.User')
     date_banned = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     banned_by = models.ForeignKey('fanart.user', related_name='sketcher_banned_users')
+    ban_reason = models.TextField(blank=True, default='')
