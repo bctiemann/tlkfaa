@@ -125,7 +125,7 @@ class HomeView(UserPaneMixin, TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
 
         context['current_contest'] = models.Contest.objects.filter(type='global', is_active=True, date_start__lt=timezone.now()).order_by('-date_created').first()
-        context['admin_announcements'] = [models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted').first()]
+        context['admin_announcements'] = models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted')[0:3]
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
         context['recently_active_artists'] = models.User.objects.recently_active(self.request)
 
