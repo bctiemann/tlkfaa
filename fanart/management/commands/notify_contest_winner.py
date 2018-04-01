@@ -32,6 +32,7 @@ class Command(BaseCommand):
                         'base_url': settings.SERVER_BASE_URL,
                         'url': reverse('contest-setup'),
                         'admin_email': settings.ADMIN_EMAIL,
+                        'is_runner_up': entry != latest_contest.winning_entries[0],
                     }
                     text_template = 'email/contest_winner.txt'
                     html_template = 'email/contest_winner.html'

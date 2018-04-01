@@ -1,9 +1,19 @@
+{% if entry.is_runner_up %}
+Congratulations! Your entry of {{ entry.picture.filename }} into the
+Archive-Wide Art Contest "{{ contest.title }}"
+received {{ vote_percent }}% of the votes. You're a runner-up! ...And
+the winner has not yet responded to this email.
+
+This means you are entitled to choose the theme for the next contest.
+Please go to the following URL to set up the contest rules:
+{% else %}
 Congratulations! Your entry of {{ entry.picture.filename }} into the
 Archive-Wide Art Contest "{{ contest.title }}"
 received {{ vote_percent }}% of the votes, making it the winning entry!
 
 Winning the contest entitles you to choose the theme for the next contest.
 Please go to the following URL to set up the contest rules:
+{% endif %}
 
 {{ base_url }}{% url "contest-setup" %}
 
