@@ -841,8 +841,12 @@ class Folder(models.Model):
         for folder in self.folder_set.all():
             folder.parent = self.parent
             folder.save()
+
         if self.parent:
-            self.parent.user.refresh_picture_ranks(refresh_folder=True, folder=self.parent)
+            self.parent.refresh_picture_ranks()
+            self.parent.refresh_num_pictures()
+        else:
+            self.user.refresh_main_folder_picture_ranks()
         super(Folder, self).delete(*args, **kwargs)
 
     def __unicode__(self):
