@@ -1414,7 +1414,7 @@ class ContestEntry(models.Model):
         return self.contestvote_set.count()
 
     @property
-    def is_runner_up(self);
+    def is_runner_up(self):
         return self != self.contest.winning_entries[0]
 
     def get_absolute_url(self):
