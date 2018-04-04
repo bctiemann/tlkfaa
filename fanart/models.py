@@ -1413,6 +1413,10 @@ class ContestEntry(models.Model):
     def num_votes(self):
         return self.contestvote_set.count()
 
+    @property
+    def is_runner_up(self);
+        return self != self.contest.winning_entries[0]
+
     def get_absolute_url(self):
         return reverse('contest', kwargs={'contest_id': self.contest.id})
 
