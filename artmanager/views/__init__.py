@@ -240,6 +240,9 @@ class UploadFileView(LoginRequiredMixin, CreateView):
 
         logger.info(self.request.POST)
 
+        if not 'picture' in self.request.FILES:
+            raise Http404
+
         if not self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys() + settings.IMAGE_FILE_TYPES.keys():
             response['message'] = 'Invalid file type. Valid types are: {0}'.format(', '.join(settings.IMAGE_FILE_TYPES.values() + settings.MOVIE_FILE_TYPES.values()))
             return JsonResponse(response)
