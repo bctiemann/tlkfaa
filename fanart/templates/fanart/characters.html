@@ -21,31 +21,31 @@
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('canon', {{ per_page }})">
-                <h2 class="itemlist {% if list == "canon" %}itemlist_selected{% endif %}" id="characterslisth2_canon">Canon</h2>
+                <h2 class="itemlist {% if tab_selected == "canon" %}itemlist_selected{% endif %}" id="characterslisth2_canon">Canon</h2>
             </a>
         </div>
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('newest', {{ per_page }})">
-                <h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="characterslisth2_newest">Newest</h2>
+                <h2 class="itemlist {% if tab_selected == "newest" %}itemlist_selected{% endif %}" id="characterslisth2_newest">Newest</h2>
             </a>
         </div>
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('mosttagged', {{ per_page }})">
-                <h2 class="itemlist {% if list == "mosttagged" %}itemlist_selected{% endif %}" id="characterslisth2_mosttagged">Most Tagged</h2>
+                <h2 class="itemlist {% if tab_selected == "mosttagged" %}itemlist_selected{% endif %}" id="characterslisth2_mosttagged">Most Tagged</h2>
             </a>
         </div>
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('recentlytagged', {{ per_page }})">
-                <h2 class="itemlist {% if list == "recentlytagged" %}itemlist_selected{% endif %}" id="characterslisth2_recentlytagged">Recently Tagged</h2>
+                <h2 class="itemlist {% if tab_selected == "recentlytagged" %}itemlist_selected{% endif %}" id="characterslisth2_recentlytagged">Recently Tagged</h2>
             </a>
         </div>
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listCharacters('search',0)">
-                <h2 class="itemlist {% if list == "search" or list == "tag" or list == "character" %}itemlist_selected{% endif %}" id="characterslisth2_search">Search</h2>
+                <h2 class="itemlist {% if tab_selected == "search" %}itemlist_selected{% endif %}" id="characterslisth2_search">Search</h2>
             </a>
         </div>
     </div>

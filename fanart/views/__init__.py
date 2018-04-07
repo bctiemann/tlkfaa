@@ -306,6 +306,7 @@ class CharactersView(UserPaneMixin, TemplateView):
             list = default_characters_view
 
         mode = list
+        tab_selected = list
 
         start = int(self.request.GET.get('start', 0))
         initial = self.request.GET.get('initial', None)
@@ -313,6 +314,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         characters = models.Character.objects.all()
         if dir_name:
             characters = characters.filter(owner=context['artist']).order_by('name')
+            tab_selected = 'search'
         elif list == 'canon':
             characters = characters.filter(is_canon=True).order_by('-num_pictures')
         elif list == 'newest':
@@ -368,6 +370,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         context['start'] = start
 
         context['list'] = list
+        context['tab_selected'] = tab_selected
         context['per_page'] = settings.CHARACTERS_PER_PAGE
 #        context['characters'] = characters_page
 #        context['pages_link'] = utils.PagesLink(len(characters), settings.CHARACTERS_PER_PAGE, characters_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
