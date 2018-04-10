@@ -1674,7 +1674,7 @@ class UploadBannerView(CreateView):
         response = {'success': False}
 
         if not form.cleaned_data['picture']:
-            response['message'] = = 'No picture was uploaded.'
+            response['message'] = 'No picture was uploaded.'
             return JsonResponse(response)
 
         logger.info(self.request.FILES)
