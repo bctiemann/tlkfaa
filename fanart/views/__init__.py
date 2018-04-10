@@ -1673,6 +1673,10 @@ class UploadBannerView(CreateView):
     def form_valid(self, form):
         response = {'success': False}
 
+        if not form.cleaned_data['picture']:
+            response['message'] = = 'No picture was uploaded.'
+            return JsonResponse(response)
+
         logger.info(self.request.FILES)
         logger.info(form.cleaned_data)
         logger.info(form.cleaned_data['picture'].size)
