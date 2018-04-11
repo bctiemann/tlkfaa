@@ -151,19 +151,20 @@ class AcceptClaimView(UpdateView):
             self.object.date_fulfilled = timezone.now()
         elif self.object.offer.type == 'adoptable':
 
-            comment_append = ''
-            if self.object.offer.character.profile_picture:
-                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
-            elif self.object.offer.character.profile_coloring_picture:
-                comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/ColoringCave/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_coloring_picture.id)
+            if self.object.offer.character:
+                comment_append = ''
+                if self.object.offer.character.profile_picture:
+                    comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
+                elif self.object.offer.character.profile_coloring_picture:
+                    comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/ColoringCave/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_coloring_picture.id)
 
-            self.object.offer.character.owner = self.request.user
-            self.object.offer.character.profile_picture = None
-            self.object.offer.character.profile_coloring_picture = None
-            self.object.offer.character.date_adopted = timezone.now()
-            self.object.offer.character.adopted_from = self.object.offer.artist
-            self.object.offer.character.description += comment_append
-            self.object.offer.character.save()
+                self.object.offer.character.owner = self.request.user
+                self.object.offer.character.profile_picture = None
+                self.object.offer.character.profile_coloring_picture = None
+                self.object.offer.character.date_adopted = timezone.now()
+                self.object.offer.character.adopted_from = self.object.offer.artist
+                self.object.offer.character.description += comment_append
+                self.object.offer.character.save()
 
             self.object.offer.is_active = False
             self.object.offer.is_visible = False
