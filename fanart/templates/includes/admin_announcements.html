@@ -2,9 +2,12 @@
 {% for announcement in admin_announcements %}
 {% if announcement %}
 
-<div class="bulletinlink">
-    <div class="bulletindate">{{ announcement.date_posted|date }}</div>
-    <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=announcement.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ announcement.title }}</a></p>
+<div class="bulletinlink" bulletin_id="{{ announcement.id }}">
+    <div class="bulletin-title-block">
+        <div class="bulletindate">{{ announcement.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
+        <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=announcement.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ announcement.title }}</a></p>
+    </div>
+
     {{ announcement.bulletin|bbcode|safe }}
 </div>
 

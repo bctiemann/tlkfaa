@@ -3,7 +3,11 @@
 
 {% block content %}
 
-<h3>Bulletin posted by {{ bulletin.user.username }}:</h3>
+{% if bulletin.is_admin %}
+    <h3>Admin announcement posted by {{ bulletin.user.username }}:</h3>
+{% else %}
+    <h3>Bulletin posted by {{ bulletin.user.username }}:</h3>
+{% endif %}
 
 <div class="msgtitle">
     {{ bulletin.title }}

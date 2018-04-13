@@ -568,21 +568,30 @@ div.bulletinlink {
 	margin-bottom: 10px;
 	font-size: 10px;
 	clear: left;
+	padding: 8px;
+	border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0);
+}
+div.bulletinlink:hover {
+	background-color: #f0f0ff;
+	border-color: #e0e0ff;
+	cursor: pointer;
+}
+.bulletin-title-block {
+	margin-bottom: 10px;
 }
 p.bulletintitle {
-	margin-bottom: 4px;
 }
 .bulletintitle a {
 	font-weight: bold;
 }
 div.bulletinname {
-	float: right;
 	font-size: 9px;
-	margin: 0px 10px;
 }
 div.bulletindate {
 	float: right;
 	font-size: 9px;
+	color: #666;
 }
 img.bulletinprofilepic {
 	width: 30px;

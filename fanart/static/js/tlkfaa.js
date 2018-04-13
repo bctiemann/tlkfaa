@@ -263,7 +263,10 @@ function getMoreBulletins(start,count) {
     bulletinsshown += count;    
     $('#bulletins_inner').append(data);
 //    $('#bulletins').animate({scrollTop: 10000},1000);
-    Shadowbox.setup('#bulletins_inner a.bulletinlink');
+//    Shadowbox.setup('#bulletins_inner a.bulletinlink');
+    $('.bulletinlink').click(function() {
+      showBulletin($(this).attr('bulletin_id'));
+    });
   }});
 }
 
@@ -2877,6 +2880,16 @@ function validatePMRecipient() {
     }
 }
 
+function showBulletin(bulletin_id) {
+    var url = '/bulletin/' + bulletin_id;
+    Shadowbox.open({
+        player: 'iframe',
+        content: url,
+        width: 500,
+        height: 600
+    });
+}
+
 function showPM(pm_id) {
     var url = '/ArtManager/private_msgs/' + pm_id + '/';
     window.location.href = url;
@@ -3038,6 +3051,10 @@ $(document).ready(function() {
         }
       });
     }
+  });
+
+  $('.bulletinlink').click(function() {
+    showBulletin($(this).attr('bulletin_id'));
   });
 
   $('.tooltip').tooltip();

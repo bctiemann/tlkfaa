@@ -1,10 +1,13 @@
 {% load bbcode_tags %}
 {% for bulletin in bulletins %}
 
-<div class="bulletinlink">
-    <div class="bulletindate">{{ bulletin.date_posted|date }}</div>
-    <div class="bulletinname"><a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a></div>
-    <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=bulletin.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
+<div class="bulletinlink" bulletin_id="{{ bulletin.id }}">
+    <div class="bulletin-title-block">
+        <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=bulletin.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
+        <div class="bulletindate">{{ bulletin.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
+        <div class="bulletinname"><a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a></div>
+    </div>
+
     {% if bulletin.user.profile_pic_thumbnail_url %}
         <img class="bulletinprofilepic" src="{{ bulletin.user.profile_pic_thumbnail_url }}" />
     {% endif %}
