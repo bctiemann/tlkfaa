@@ -5,7 +5,7 @@
 
 {% for mod_note in artist.modnotes_received.all %}
     <div class="mod-note">
-        <p class="date-created">{{ mod_note.date_created|timesince }} ago by {{ mod_note.moderator.username }}</p>
+        <p class="date-created">{{ mod_note.date_created|timesince }} ago by {{ mod_note.moderator.username|default:"(unknown)" }}</p>
         <p>{{ mod_note.note|bbcode|safe }}</p>
     </div>
 {% endfor %}
