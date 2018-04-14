@@ -1,7 +1,7 @@
 {% load bbcode_tags %}
 {% for bulletin in bulletins %}
 
-<div class="bulletinlink" bulletin_id="{{ bulletin.id }}">
+<div class="bulletinlink group" bulletin_id="{{ bulletin.id }}">
     <div class="bulletin-title-block">
         <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=bulletin.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
         <div class="bulletindate">{{ bulletin.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
