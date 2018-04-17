@@ -1099,6 +1099,11 @@ class ToggleBlockView(APIView):
         response = {}
         is_blocked = True
         blocked_user = get_object_or_404(models.User, pk=user_id)
+
+        if blocked_user == self.request.user:
+            response['success'] = True
+            return Response(response)
+
         block, is_created = models.Block.objects.get_or_create(user=request.user, blocked_user=blocked_user)
         if not is_created:
             block.delete()

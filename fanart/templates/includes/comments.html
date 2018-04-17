@@ -84,6 +84,10 @@
     </div>
 </form>
 
+{% elif current_user_is_blocked %}
+
+    <p class="comment-error">You are blocked from commenting on this artist's pictures.</p>
+
 {% endif %}
 
 

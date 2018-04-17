@@ -1547,6 +1547,11 @@ div.replybuttons {
 	text-align: right;
 }
 
+.comment-error {
+	margin: 20px 100px;
+	color: #666;
+}
+
 div.bulletin,
 div.contest {
 	border-bottom: 1px solid #cdd5d7;

@@ -302,6 +302,10 @@ The specified artist's gallery is not publicly visible.
                 </form>
                 </div>
         </c:if>
+                {% elif current_user_is_blocked %}
+
+                    <p class="comment-error">You are blocked from sending roars to this artist.</p>
+
                 {% endif %}
 
 		<div class="shouts" id="shouts">
