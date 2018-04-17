@@ -943,7 +943,7 @@ textarea {
 }
 textarea.comment,
 textarea.pm {
-	width: 90%;
+	width: 93%;
 /*	max-width: 700px;*/
 	height: 80px;
 	padding: 20px;
@@ -956,6 +956,7 @@ textarea.pm {
 textarea.pm {
 	height: 200px;
 	margin: 10px 0px;
+	margin-left: 10px;
 }
 
 div.pageinfo {
@@ -1476,6 +1477,7 @@ div.commenttext {
 	position: relative;
 	background-color: #fff;
 	padding: 10px;
+	padding-bottom: 30px;
 	border-style: solid;
 	border-width: 0px 1px 1px 1px;
 	border-color: #d5d9df;
@@ -2769,10 +2771,8 @@ div.othercharacters {
 	float: right;
 }
 
-.shout-text {
-	margin-left: 10px;
-	width: 600px;
-	padding: 10px;
+textarea.shout-text {
+	margin-left: 20px;
 	background-image: url('../images/roar_icon.png');
 	background-repeat: no-repeat;
 	background-size: auto 100%;
