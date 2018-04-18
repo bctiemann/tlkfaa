@@ -11,7 +11,8 @@ var CharactersList = new Array();
 var characterslistopen;
 var banneropen = false;
 var adminannouncementsshown = 1;
-var bulletinsshown = 5;
+var bulletinsshown = 0;
+var bulletinsLoad = 5;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
 
@@ -261,7 +262,7 @@ function getMoreBulletins(start,count) {
   $.ajax({ url: url, success: function(data) {
     $('#bulletins_inner').addClass('bulletinsscroll');
     bulletinsshown += count;    
-    $('#bulletins_inner').append(data);
+    $('#bulletins_inner').find('.bulletins_content').append(data);
 //    $('#bulletins').animate({scrollTop: 10000},1000);
 //    Shadowbox.setup('#bulletins_inner a.bulletinlink');
     $('.bulletinlink').click(function() {
@@ -3053,8 +3054,11 @@ $(document).ready(function() {
     }
   });
 
-  $('.bulletinlink').click(function() {
-    showBulletin($(this).attr('bulletin_id'));
+  getMoreBulletins(0, bulletinsLoad);
+  $('.bulletinsinner').scroll(function(e) {
+    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+      getMoreBulletins(bulletinsshown, bulletinsLoad);
+    }
   });
 
   $('.tooltip').tooltip();
