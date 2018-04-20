@@ -179,12 +179,12 @@ class PendingRejectView(ApprovalAPIView):
             html_template = 'email/approval/rejected_reupload.html'
             send_email = True
 
-        attachments = []
-        with open(pending.picture.path) as file:
-            image_data = file.read()
-        attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
-
         if send_email:
+            attachments = []
+            with open(pending.picture.path) as file:
+                image_data = file.read()
+            attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
+
             email_context = {'pending': pending}
             tasks.send_email.delay(
                 recipients = [pending.artist.email],
