@@ -157,8 +157,6 @@ class PendingRejectView(ApprovalAPIView):
         response = {'success': True}
         pending = get_object_or_404(models.Pending, pk=pending_id)
 
-        pending.delete()
-
         send_email = False
         if request.POST.get('reason') == 'copied':
             subject = 'Fan Art Submission (unable to accept)'
@@ -181,16 +179,24 @@ class PendingRejectView(ApprovalAPIView):
             html_template = 'email/approval/rejected_reupload.html'
             send_email = True
 
+        attachments = []
+        with open(pending.picture.path) as file:
+            image_data = file.read()
+        attachments.append((pending.picture.name, image_data, pending.mime_type))
+
         if send_email:
             email_context = {'pending': pending}
             tasks.send_email.delay(
-                recipients=[pending.artist.email],
-                subject=subject,
-                context=email_context,
-                text_template=text_template,
-                html_template=html_template,
-                bcc=[settings.DEBUG_EMAIL]
+                recipients = [pending.artist.email],
+                subject = subject,
+                context = email_context,
+                text_template = text_template,
+                html_template = html_template,
+                bcc = [settings.DEBUG_EMAIL],
+                attachments = attachments,
             )
+
+        pending.delete()
 
         logger.info(request.POST)
         return Response(response)
