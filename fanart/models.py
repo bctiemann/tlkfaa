@@ -1390,7 +1390,7 @@ class Contest(models.Model):
         entries = self.contestentry_set.all().order_by('?')
         if self.is_ended:
             entries = entries.annotate(votes=Count('contestvote')).order_by('-votes', 'date_entered')
-        return entries[0:20]
+        return entries
 
     @property
     def total_votes(self):

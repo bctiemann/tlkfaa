@@ -1,5 +1,5 @@
-{% for entry in contest.contestentry_set.all %}
-    {% with picture=entry.picture hide_vote_widget=True %}
+{% for entry in contest.winning_entries %}
+    {% with picture=entry.picture place=forloop.counter hide_vote_widget=True %}
         {% include "includes/picture.html" %}
     {% endwith %}
 {% endfor %}
