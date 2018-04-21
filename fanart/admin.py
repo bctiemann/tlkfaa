@@ -51,6 +51,26 @@ class PictureAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Picture, PictureAdmin)
 
 
+class PendingAdmin(admin.ModelAdmin):
+    list_display = ('filename', 'artist', 'date_uploaded',)
+    list_filter = ()
+    readonly_fields = ('artist', 'approved_by',)
+#    inlines = (PictureCharacterInline,)
+    artist_id_for_formfield = None
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.artist_id_for_formfield = obj.artist_id
+        return super(PendingAdmin, self).get_form(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'folder':
+            kwargs['queryset'] = fanart_models.Folder.objects.filter(user=self.artist_id_for_formfield)
+        return super(PendingAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+admin.site.register(fanart_models.Pending, PendingAdmin)
+
+
 class FolderAdmin(admin.ModelAdmin):
     list_display = ('name', 'user',)
     list_filter = ()
