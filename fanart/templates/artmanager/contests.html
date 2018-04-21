@@ -133,6 +133,8 @@ $('#deadline_pick_new').datepicker("option", "dateFormat", "m/d/yy");
                     <td colspan="2" class="buttons">
                         {% if contest.is_cancelled %}
                             (Cancelled)
+                        {% elif contest.is_ended %}
+                            <button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Remove Contest</button>
                         {% else %}
                             <button type="button" onClick="applyContest(form,{{ contest.id }},'unpublish')">Unpublish and Edit Contest</button>
                             <button type="button" onClick="applyContest(form,{{ contest.id }},'cancel')">Cancel Contest</button>
