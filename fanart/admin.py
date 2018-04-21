@@ -66,6 +66,8 @@ class PendingAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'folder':
             kwargs['queryset'] = fanart_models.Folder.objects.filter(user=self.artist_id_for_formfield)
+        if db_field.name == 'replaces_picture':
+            kwargs['queryset'] = fanart_models.Picture.objects.filter(artist=self.artist_id_for_formfield)
         return super(PendingAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(fanart_models.Pending, PendingAdmin)
