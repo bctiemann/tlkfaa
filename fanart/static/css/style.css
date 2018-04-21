@@ -546,8 +546,11 @@ div#bulletins {
 div.bulletinsinner {
 	margin: 5px;
 	padding: 5px 10px 5px 5px;
-	height: 158px;
+	height: 170px;
 	overflow: auto;
+}
+div.bulletinsinner.without-footer {
+	height: 180px;
 }
 div.bulletinsstatic {
 	overflow: hidden;
@@ -559,7 +562,7 @@ div#adminannouncementsmore,
 div#bulletinsmore {
 	position: absolute;
 	left: 20px;
-	top: 204px;
+	top: 214px;
 	width: 260px;
 }
 div#bulletinsmore {
@@ -581,6 +584,9 @@ div.bulletinlink:hover {
 	margin-bottom: 10px;
 }
 p.bulletintitle {
+	font-size: 11px;
+	font-weight: bold;
+	color: #3d3070;
 }
 .bulletintitle a {
 	font-weight: bold;

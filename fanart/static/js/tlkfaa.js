@@ -12,6 +12,7 @@ var characterslistopen;
 var banneropen = false;
 var adminannouncementsshown = 1;
 var bulletinsshown = 0;
+var adminAnnouncementsLoad = 3;
 var bulletinsLoad = 5;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
@@ -3058,6 +3059,17 @@ $(document).ready(function() {
   $('.bulletinsinner').scroll(function(e) {
     if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
       getMoreBulletins(bulletinsshown, bulletinsLoad);
+    }
+  });
+
+  getMoreAdminAnnouncements(0, adminAnnouncementsLoad);
+  $('.bulletinsinner').scroll(function(e) {
+    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+      if ($(this).attr('bulletin_type') == 'admin_announcements') {
+        getMoreAdminAnnouncements(adminannouncementsshown, adminAnnouncementsLoad);
+      } else {
+        getMoreBulletins(bulletinsshown, bulletinsLoad);
+      }
     }
   });
 

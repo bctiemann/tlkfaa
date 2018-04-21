@@ -4,7 +4,7 @@
 
 <div class="bulletinlink group" bulletin_id="{{ bulletin.id }}">
     <div class="bulletin-title-block">
-        <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=bulletin.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ bulletin.title }}</a></p>
+        <p class="bulletintitle">{{ bulletin.title }}</p>
         <div class="bulletindate">{{ bulletin.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
         <div class="bulletinname"><a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a></div>
     </div>

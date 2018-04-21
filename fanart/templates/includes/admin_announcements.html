@@ -5,7 +5,7 @@
 <div class="bulletinlink" bulletin_id="{{ announcement.id }}">
     <div class="bulletin-title-block">
         <div class="bulletindate">{{ announcement.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
-        <p class="bulletintitle"><a href="{% url "bulletin" bulletin_id=announcement.id %}" rel="shadowbox[Bulletins];width=500;height=600">{{ announcement.title }}</a></p>
+        <p class="bulletintitle">{{ announcement.title }}</p>
     </div>
 
     {{ announcement.bulletin|bbcode|safe }}
