@@ -98,6 +98,7 @@ class Command(BaseCommand):
                 for watcher in pending.artist.fans.all():
                     uvp = models.UnviewedPicture.objects.create(
                         picture = picture,
+                        artist = picture.artist,
                         user = watcher.user,
                     )
 
