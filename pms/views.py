@@ -102,6 +102,9 @@ class PMCreateView(LoginRequiredMixin, CreateView):
     model = PrivateMessage
     form_class = forms.PMForm
 
+    def get(self, *args, **kwargs):
+        return redirect('artmanager:private-msgs')
+
     def form_invalid(self, form):
         raise Http404
 
