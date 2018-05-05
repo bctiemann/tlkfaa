@@ -113,11 +113,11 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
 
     try:
         im = Image.open(image_path)
+        im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
     except IOError, e:
         logger.error(e)
+        mail.mail_admins('Image processing error', e.message)
         return None, None
-
-    im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
 
     if getattr(picture_object, 'THUMBNAILS_JPEG', True) == True:
         format = 'JPEG'
