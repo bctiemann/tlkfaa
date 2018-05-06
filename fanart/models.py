@@ -1466,6 +1466,7 @@ class Showcase(models.Model):
 class Vote(models.Model):
     voter = models.ForeignKey('User', null=True, blank=True, related_name='votes_cast')
     artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received')
+    date_voted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class CustomIcon(models.Model):
