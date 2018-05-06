@@ -169,7 +169,7 @@ class Offer(models.Model):
         return reverse('offer', kwargs={'offer_id': self.id})
 
     def __unicode__(self):
-        return '{0}'.format(self.id)
+        return 'Offer {0}'.format(self.id)
 
 
 class Claim(models.Model):
@@ -265,7 +265,7 @@ class Claim(models.Model):
         return reverse('upload-claim', kwargs={'claim_id': self.id})
 
     def __unicode__(self):
-        return '{0}'.format(self.id)
+        return 'Claim {0}'.format(self.id)
 
 #    class Meta:
 #        ordering = ['date_posted']
