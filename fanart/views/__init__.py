@@ -103,6 +103,8 @@ class UserPaneMixin(object):
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
+        context['favorite_artists'] = self.request.user.favorite_artists
+
         context['THUMB_SIZE'] = settings.THUMB_SIZE
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
