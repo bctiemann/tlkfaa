@@ -1468,6 +1468,8 @@ class Vote(models.Model):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received')
     date_voted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
+    # Count votes:
+    # models.User.objects.filter(featured__isnull=True).values('id', 'username').annotate(num_votes=Count('votes_received')).filter(num_votes__gt=0).order_by('-num_votes')
 
 class CustomIcon(models.Model):
     user = models.ForeignKey('User', null=True, blank=True)
