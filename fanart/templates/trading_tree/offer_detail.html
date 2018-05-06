@@ -6,7 +6,14 @@
 </div>
 
 {% if object.character %}
-Character: <a href="{% url "character" character_id=object.character.id %}">{{ object.character.name }}</a>
+    {% if object.character.date_deleted %}
+        Character: <b>{{ object.character.name }}</b>
+        <p class="offer-character-description">
+        {{ object.character.description|bbcode|safe }}
+        </p>
+    {% else %}
+        Character: <a href="{% url "character" character_id=object.character.id %}">{{ object.character.name }}</a>
+    {% endif %}
 {% endif %}
 
 <div class="offercomment">{{ object.comment|bbcode|safe }}</div>
