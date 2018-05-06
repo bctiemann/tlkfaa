@@ -82,12 +82,10 @@ class UserPaneMixin(object):
         adoptables_mine_start_date = timezone.now() - timedelta(days=30)
         community_art_data['icons'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
         community_art_data['icons_today'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
-        if self.request.user.is_authenticated:
-            community_art_data['icons_mine'] = Claim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
+        community_art_data['icons_mine'] = Claim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
         community_art_data['adoptables'] = Offer.objects.filter(type='adoptable', is_active=True, is_visible=True, date_posted__gt=adoptables_publish_start_date)
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
-        if self.request.user.is_authenticated:
-            community_art_data['adoptables_mine'] = Claim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
+        community_art_data['adoptables_mine'] = Claim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
         community_art_data['coloring_bases'] = Base.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 
@@ -103,8 +101,10 @@ class UserPaneMixin(object):
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated:
-            context['favorite_artists'] = self.request.user.favorite_artists
+        if not self.request.user.is_authenticated:
+            return context
+
+        context['favorite_artists'] = self.request.user.favorite_artists
 
         context['THUMB_SIZE'] = settings.THUMB_SIZE
         context['community_art_data'] = self.get_community_art_data()
