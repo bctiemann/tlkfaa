@@ -1,5 +1,6 @@
 from django.contrib import admin
 from fanart import models as fanart_models
+from django_extensions.admin import ForeignKeyAutocompleteAdmin
 
 import logging
 logger = logging.getLogger(__name__)
@@ -10,7 +11,8 @@ class PictureCharacterInline(admin.TabularInline):
     extra = 1
 
 
-class UserAdmin(admin.ModelAdmin):
+#class UserAdmin(admin.ModelAdmin):
+class UserAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('id', 'username', 'num_pictures', 'date_joined',)
     search_fields = ('username', 'email',)
     readonly_fields = ()
@@ -31,7 +33,8 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.User, UserAdmin)
 
 
-class PictureAdmin(admin.ModelAdmin):
+#class PictureAdmin(admin.ModelAdmin):
+class PictureAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
     readonly_fields = ('artist', 'approved_by', 'tags')
@@ -202,14 +205,23 @@ class ShowcaseAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Showcase, ShowcaseAdmin)
 
 
-class FeaturedArtistAdmin(admin.ModelAdmin):
+#class FeaturedArtistAdmin(admin.ModelAdmin):
+class FeaturedArtistAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('artist', 'month_featured',)
-    readonly_fields = ('artist',)
+#    readonly_fields = ('artist',)
+    related_search_fields = {
+        'artist': ('username',),
+    }
 admin.site.register(fanart_models.FeaturedArtist, FeaturedArtistAdmin)
 
-class FeaturedArtistPictureAdmin(admin.ModelAdmin):
+#class FeaturedArtistPictureAdmin(admin.ModelAdmin):
+class FeaturedArtistPictureAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('featured_artist', 'picture',)
-    readonly_fields = ('featured_artist', 'picture',)
+#    readonly_fields = ('featured_artist', 'picture',)
+    related_search_fields = {
+        'featured_artist': ('artist__username',),
+        'picture': ('filename',),
+    }
 
 #    def get_form(self, request, obj=None, **kwargs):
 #        if obj:

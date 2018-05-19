@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
 #    'debug_toolbar',
     'precise_bbcode',
+    'django_extensions',
 
     'fanart',
     'trading_tree',
