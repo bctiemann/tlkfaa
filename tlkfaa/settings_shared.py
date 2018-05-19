@@ -78,8 +78,8 @@ MIDDLEWARE_CLASSES = [
     'tlkfaa.middleware.TimezoneMiddleware',
 ]
 
-#STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'fanart.storage.ManifestStaticFilesStorageNonStrict'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'fanart.storage.ManifestStaticFilesStorageNonStrict'
 
 ROOT_URLCONF = 'tlkfaa.urls'
 
