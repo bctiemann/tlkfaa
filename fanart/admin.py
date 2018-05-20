@@ -37,7 +37,13 @@ admin.site.register(fanart_models.User, UserAdmin)
 class PictureAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
-    readonly_fields = ('artist', 'approved_by', 'tags')
+    readonly_fields = ('tags',)
+#    readonly_fields = ('artist', 'approved_by', 'tags')
+    related_search_fields = {
+        'artist': ('username',),
+        'approved_by': ('username',),
+        'tags': ('tag'),
+    }
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
 
@@ -50,6 +56,11 @@ class PictureAdmin(ForeignKeyAutocompleteAdmin):
         if db_field.name == 'folder':
             kwargs['queryset'] = fanart_models.Folder.objects.filter(user=self.artist_id_for_formfield)
         return super(PictureAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+#    def get_related_filter(self, model, request):
+#        print 'foobar'
+#        logger.info('fooobar')
+#        return None
 
 admin.site.register(fanart_models.Picture, PictureAdmin)
 
