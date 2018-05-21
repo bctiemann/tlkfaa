@@ -20,6 +20,7 @@ class ViewPictureNode(template.Node):
         picture = self.picture.resolve(context)
         user = self.user.resolve(context)
 
+        # TODO: Should figure out a way to return "newpic" if unviewed without deleting
         is_unviewed = False
         if user.is_authenticated:
             items_deleted, object_deletions = UnviewedPicture.objects.filter(picture=picture, user=user).delete()

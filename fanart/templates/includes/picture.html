@@ -2,7 +2,7 @@
 {% load picture_tags %}
 
 
-<div class="picture {% view_picture picture user %} {% if not picture.is_public %}privatepicture{% endif %}">
+<div class="picture {% if view_unviewed_picture != False %}{% view_picture picture user %}{% endif %} {% if not picture.is_public %}privatepicture{% endif %}">
     {% if picture.date_deleted == None %}
         <table>
             <tr>
