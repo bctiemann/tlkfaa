@@ -174,7 +174,7 @@ class PendingRejectView(ApprovalAPIView):
             html_template = 'email/approval/rejected_inappropriate.html'
             send_email = True
         if request.POST.get('reason') == 'reupload':
-            subject = 'Fan Art Submission (please re-upload {0})'.format(pending.filename)
+            subject = 'Fan Art Submission (please re-upload {0})'.format(pending.filename.encode('utf8'))
             text_template = 'email/approval/rejected_reupload.txt'
             html_template = 'email/approval/rejected_reupload.html'
             send_email = True
@@ -341,7 +341,7 @@ class AutoApprovalView(AjaxableResponseMixin, ApprovalUpdateView):
         logger.info(message)
 
         email_context = {'message': message}
-        subject = 'TLKFAA: Auto-approval granted to {0}'.format(self.object.username)
+        subject = 'TLKFAA: Auto-approval granted to {0}'.format(self.object.username.encode('utf8'))
         tasks.send_email.delay(
             recipients=[settings.ADMIN_EMAIL],
             subject=subject,

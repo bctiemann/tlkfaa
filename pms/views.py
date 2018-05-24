@@ -120,7 +120,7 @@ class PMCreateView(LoginRequiredMixin, CreateView):
             pm.reply_to.save()
             pm.subject = pm.reply_to.subject
             if not pm.subject.startswith('Re: '):
-                pm.subject = 'Re: {0}'.format(pm.subject)
+                pm.subject = 'Re: {0}'.format(pm.subject.encode('utf8'))
             pm.root_pm = pm.reply_to.root_pm
         pm.save()
 
@@ -130,7 +130,7 @@ class PMCreateView(LoginRequiredMixin, CreateView):
             email_context = {'pm': pm, 'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
                 recipients=[recipient.email],
-                subject='TLKFAA Private Message from {0}'.format(self.request.user.username),
+                subject='TLKFAA Private Message from {0}'.format(self.request.user.username.encode('utf8')),
                 context=email_context,
                 text_template='email/pm_sent.txt',
                 html_template='email/pm_sent.html',
