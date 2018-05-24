@@ -1575,5 +1575,8 @@ class RevisionLog(models.Model):
     date_created = models.DateTimeField(null=True, blank=True, default=timezone.now)
     entry = models.TextField(blank=True)
 
+    def is_recent(self):
+        return (timezone.now() - self.date_created).days < settings.REVISION_LOG_RECENT_DAYS
+
 #    def __unicode__(self):
 #        return self.date_created

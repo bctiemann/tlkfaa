@@ -2994,3 +2994,7 @@ video {
 	width: 48px;
 	margin: 30px auto;
 }
+
+.revision-log-recent {
+	font-weight: bold;
+}

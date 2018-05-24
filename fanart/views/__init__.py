@@ -131,6 +131,7 @@ class HomeView(UserPaneMixin, TemplateView):
         context['admin_announcements'] = models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted')[0:3]
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[0:5]
         context['recently_active_artists'] = models.User.objects.recently_active(self.request)
+        context['last_revision_log'] = models.RevisionLog.objects.order_by('-date_created').first()
 
         context['upcoming_birthdays'] = models.User.objects.upcoming_birthdays()
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
