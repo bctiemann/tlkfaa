@@ -674,7 +674,7 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
             email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
                 recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
+                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username.encode('utf8')),
                 context=email_context,
                 text_template='email/gift_accepted.txt',
                 html_template='email/gift_accepted.html',
@@ -688,7 +688,7 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
             email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
                 recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
+                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username.encode('utf8')),
                 context=email_context,
                 text_template='email/gift_rejected.txt',
                 html_template='email/gift_rejected.html',
