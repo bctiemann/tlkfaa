@@ -49,7 +49,7 @@ def send_email(recipients,
                 msg.attach(**attachment)
 
         msg.send()
-        logger.info('Sending email "{0}" to {1}...'.format(subject, recipient))
+        logger.info('Sending email "{0}" to {1}...'.format(subject.encode('utf8'), recipient))
 
     connection.close()
 
