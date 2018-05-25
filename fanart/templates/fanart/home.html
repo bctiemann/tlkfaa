@@ -1,6 +1,7 @@
 {% extends "fanart/base.html" %}
 {% load bbcode_tags %}
 {% load humanize %}
+{% load util_tags %}
 
 {% block activetab_home %}active{% endblock %}
 
@@ -19,7 +20,7 @@
         <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll" bulletin_type="admin_announcements"></div>
         <div id="adminannouncementsmore">
             {% if last_revision_log.is_recent %}
-                <a class="float-right revision-log-recent" href="{% url "revision-log" %}">Revision Log (updated {{ last_revision_log.date_created|timesince }} ago)</a>
+                <a class="float-right revision-log-recent" href="{% url "revision-log" %}">Revision Log (updated {{ last_revision_log.date_created|timesince|upto:"," }} ago)</a>
             {% else %}
                 <a class="float-right" href="{% url "revision-log" %}">Revision Log</a>
             {% endif %}
