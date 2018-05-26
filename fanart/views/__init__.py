@@ -1598,11 +1598,12 @@ class UploadProfilePicView(UpdateView):
         return user
 
     def form_invalid(self, form):
-        response = {'success': False}
+        response = {'success': False, 'errors': form.errors}
+        logger.error(form.errors.as_data())
         return JsonResponse(response)
 
     def form_valid(self, form):
-        response = {'success': False}
+        response = {'success': True}
 
         logger.info(self.request.FILES)
 #        self.object.picture = self.request.FILES['picture']

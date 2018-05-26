@@ -150,6 +150,9 @@ $(function () {
         dropZone: null,
         done: function (e, data) {
 console.log(data);
+            if (!data.result.success) {
+                alert(data.result.errors.profile_picture);
+            }
             clearInterval(refreshThumbsInterval);
             refreshThumbsInterval = setInterval('checkThumbs()', 1000);
         },
