@@ -1093,7 +1093,8 @@ div.featurebox {
 	border-radius: 10px;
 }
 div.featureboxwide {
-	min-width: 770px;
+/*	min-width: 770px;*/
+	min-width: 1080px;
 }
 div.featurebox.front-page {
 	float: left;
@@ -1467,12 +1468,6 @@ div.removecc {
 }
 div.expanded {
 	display: block;
-}
-
-div.shouts {
-	text-align: left;
-	width: 80%;
-	margin: 0px auto;
 }
 
 div.comment {
@@ -2777,13 +2772,6 @@ div.othercharacters {
 	float: right;
 }
 
-textarea.shout-text {
-	margin-left: 20px;
-	background-image: url('../images/roar_icon.png');
-	background-repeat: no-repeat;
-	background-size: auto 100%;
-}
-
 .unread-pms {
 	margin-top: 10px;
 	font-weight: bold;
@@ -2997,4 +2985,36 @@ video {
 
 .revision-log-recent {
 	font-weight: bold;
+}
+
+.shouts-box {
+	float: right;
+/*	width: 25%;*/
+	width: 300px;
+}
+.shouts-container {
+	margin-top: 10px;
+	height: 600px;
+	overflow: scroll;
+	text-align: left;
+}
+
+div.shouts {
+	text-align: left;
+/*	width: 80%;*/
+	margin: 0px auto;
+}
+
+textarea.shout-text {
+	width: 240px;
+	background-image: url('../images/roar_icon.png');
+	background-repeat: no-repeat;
+	background-size: auto 100%;
+}
+.shout .commenttext table {
+	width: auto;
+}
+.shouts-count {
+	text-align: left;
+	margin-left: 20px;
 }

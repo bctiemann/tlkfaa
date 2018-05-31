@@ -277,16 +277,12 @@ The specified artist's gallery is not publicly visible.
 		</div>
 
 		</td></tr></table>
-	</div>
-
-	<br clear="all" />
 
 	</div>
-
 
         {% if artist.allow_shouts %}
 
-		<div class="featurebox">
+            <div class="shouts-box">
 
 		<div id="blockstatus"></div>
 
@@ -294,8 +290,7 @@ The specified artist's gallery is not publicly visible.
         <c:if test="${offset == 0 && loggedin == 1 && qryBlocked.rowCount == 0}">
                 <div class="commenttext commentreply shouts">
                 <form name="commentform" onSubmit="return false">
-                Roar:<br />
-                <textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}"></textarea>
+                <textarea class="comment shout-text" name="shouttext" id="shouttext_{{ artist.id }}" placeholder="Roar to {{ artist.username }}"></textarea>
                 <div class="commentbuttons">
                 <button type="button" class="small" onClick="postShout({{ artist.id }},0)">Post</button>
                 </div>
@@ -308,19 +303,31 @@ The specified artist's gallery is not publicly visible.
 
                 {% endif %}
 
-		<div class="shouts" id="shouts">
+                <div class="shouts-count">
+                    {{ artist.shouts_received.count }} roar{{ artist.shouts_received.count|pluralize }}
+                </div>
+		<div class="shouts-container" id="shouts" artistid="{{ artist.id }}">
 
-                {% include "includes/shouts.html" %}
+{#                {% include "includes/shouts.html" %}#}
 
 		</div>
 
+{% comment %}
                 {% if artist.shouts_received.count > 10 %}
 			<button onClick="getMoreShouts({{ artist.id }},10,this)">Show all {{ artist.shouts_received.count }} roars</button>
                 {% endif %}
+{% endcomment %}
 
-		</div>
+            </div>
 
         {% endif %}
+
+
+
+	<br clear="all" />
+
+	</div>
+
 
 {% endblock %}
 

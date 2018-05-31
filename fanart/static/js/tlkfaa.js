@@ -12,8 +12,10 @@ var characterslistopen;
 var banneropen = false;
 var adminannouncementsshown = 1;
 var bulletinsshown = 0;
+var shoutsshown = 0;
 var adminAnnouncementsLoad = 3;
 var bulletinsLoad = 5;
+var shoutsLoad = 10;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
 
@@ -272,12 +274,13 @@ function getMoreBulletins(start,count) {
   }});
 }
 
-function getMoreShouts(artistid,offset,obj) {
+function getMoreShouts(artistid,start,count) {
 //  var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
-  var url = '/shouts/' + artistid + '/?offset=' + offset;
+  var url = '/shouts/' + artistid + '/?offset=' + start + '&count=' + count;
   $.ajax({ url: url, success: function(data) {
     $('#shouts').append(data);
-    obj.style.display='none';
+    shoutsshown += count;
+//    obj.style.display='none';
   }});
 }
 
@@ -3070,6 +3073,13 @@ $(document).ready(function() {
       } else {
         getMoreBulletins(bulletinsshown, bulletinsLoad);
       }
+    }
+  });
+
+  getMoreShouts($('.shouts-container').attr('artistid'), 0, shoutsLoad);
+  $('.shouts-container').scroll(function(e) {
+    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+      getMoreShouts($('.shouts-container').attr('artistid'), shoutsshown, shoutsLoad);
     }
   });
 
