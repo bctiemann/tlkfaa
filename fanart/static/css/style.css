@@ -3018,3 +3018,6 @@ textarea.shout-text {
 	text-align: left;
 	margin-left: 20px;
 }
+.shout img {
+	max-width: 100%;
+}
