@@ -1007,7 +1007,7 @@ class ShoutsView(TemplateView):
         context['shouts'] = artist.shouts_received.order_by('-date_posted')[start:end]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
-            context['shouts'] = context['shouts'].filter(id=shout_id)
+            context['shouts'] = artist.shouts_received.filter(id=shout_id)
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
         context['hash'] = uuid.uuid4()
