@@ -763,8 +763,8 @@ class GiftPictureSendView(APIView):
             }
             tasks.send_email.delay(
                 recipients=[recipient.email],
-                subject='TLKFAA ArtWall submission from {0}'.format(request.user.username.encode('utf8')),
                 context=email_context,
+                subject=u'TLKFAA ArtWall submission from {0}'.format(request.user.username),
                 text_template='email/gift_sent.txt',
                 html_template='email/gift_sent.html',
                 bcc=[settings.DEBUG_EMAIL]
