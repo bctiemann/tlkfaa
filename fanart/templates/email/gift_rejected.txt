@@ -1,6 +1,8 @@
 You recently submitted an Art Trade/Request to {{ giftpicture.recipient.username }}. This is to let you know that the recipient has not
 accepted the picture, and it will not appear on their ArtWall.
 
+{{ base_url }}{% url "picture" picture_id=giftpicture.picture.id %}
+
 {% if giftpicture.reply_message %}
 {{ giftpicture.recipient.username }} sent the following reply:
 ----------------------------------------------------------------------------------------------------------

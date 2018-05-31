@@ -3,6 +3,10 @@ You recently submitted an Art Trade/Request to {{ giftpicture.recipient.username
 accepted the picture, and it will not appear on their ArtWall. 
 </p>
 
+<p>
+{{ base_url }}{% url "picture" picture_id=giftpicture.picture.id %}
+</p>
+
 {% if giftpicture.reply_message %}
 <p>
 {{ giftpicture.recipient.username }} sent the following reply:
