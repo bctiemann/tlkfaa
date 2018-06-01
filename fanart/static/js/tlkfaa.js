@@ -18,6 +18,11 @@ var bulletinsLoad = 5;
 var shoutsLoad = 10;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
+var scrollIsLoading = {
+    bulletins: false,
+    adminAnnouncements: false,
+    shouts: false,
+};
 
 $.ajaxSetup ({
     // Disable caching of AJAX responses */
@@ -249,39 +254,52 @@ function toggleUserBox(boxname) {
 }
 
 function getMoreAdminAnnouncements(start,count) {
-  var url = "/admin_announcements/"+count+"/"+start+"/";
+  if (!scrollIsLoading.adminAnnouncements) {
+    scrollIsLoading.adminAnnouncements = true;
+    var url = "/admin_announcements/"+count+"/"+start+"/";
 console.log(url);
-  $.ajax({ url: url, success: function(data) {
-    $('#adminannouncements_inner').addClass('bulletinsscroll');
-    adminannouncementsshown += count;    
-    $('#adminannouncements_inner').append(data);
-//    $('#adminannouncements').animate({scrollTop: 10000},1000);
-//    Shadowbox.setup('#bulletins a.bulletinlink');
-  }});
+    $.ajax({ url: url, success: function(data) {
+      $('#adminannouncements_inner').addClass('bulletinsscroll');
+      adminannouncementsshown += count;    
+      $('#adminannouncements_inner').append(data);
+//      $('#adminannouncements').animate({scrollTop: 10000},1000);
+//      Shadowbox.setup('#bulletins a.bulletinlink');
+      scrollIsLoading.adminAnnouncements = false;
+    }});
+  }
 }
 
 function getMoreBulletins(start,count) {
-  var url = "/bulletins/"+count+"/"+start+"/";
-  $.ajax({ url: url, success: function(data) {
-    $('#bulletins_inner').addClass('bulletinsscroll');
-    bulletinsshown += count;    
-    $('#bulletins_inner').find('.bulletins_content').append(data);
-//    $('#bulletins').animate({scrollTop: 10000},1000);
-//    Shadowbox.setup('#bulletins_inner a.bulletinlink');
-    $('.bulletinlink').click(function() {
-      showBulletin($(this).attr('bulletin_id'));
-    });
-  }});
+  if (!scrollIsLoading.bulletins) {
+    scrollIsLoading.bulletins = true;
+    var url = "/bulletins/"+count+"/"+start+"/";
+    $.ajax({ url: url, success: function(data) {
+      $('#bulletins_inner').addClass('bulletinsscroll');
+      bulletinsshown += count;    
+      $('#bulletins_inner').find('.bulletins_content').append(data);
+//      $('#bulletins').animate({scrollTop: 10000},1000);
+//      Shadowbox.setup('#bulletins_inner a.bulletinlink');
+      $('.bulletinlink').click(function() {
+        showBulletin($(this).attr('bulletin_id'));
+      });
+      scrollIsLoading.bulletins = false;
+    }});
+  }
 }
 
 function getMoreShouts(artistid,start,count) {
-//  var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
-  var url = '/shouts/' + artistid + '/?offset=' + start + '&count=' + count;
-  $.ajax({ url: url, success: function(data) {
-    $('#shouts').append(data);
-    shoutsshown += count;
-//    obj.style.display='none';
-  }});
+console.log(scrollIsLoading);
+  if (!scrollIsLoading.shouts) {
+    scrollIsLoading.shouts = true;
+//    var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
+    var url = '/shouts/' + artistid + '/?offset=' + start + '&count=' + count;
+    $.ajax({ url: url, success: function(data) {
+      $('#shouts').append(data);
+      shoutsshown += count;
+//      obj.style.display='none';
+      scrollIsLoading.shouts = false;
+    }});
+  }
 }
 
 function getAotmForm() {
