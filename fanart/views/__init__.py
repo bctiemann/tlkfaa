@@ -1075,6 +1075,8 @@ class ToggleFaveView(APIView):
                 is_fave = False
             response['picture_id'] = picture.id
             response['is_fave'] = is_fave
+            picture.refresh_num_faves()
+            picture.artist.refresh_num_faves()
         elif fave_type == 'artist':
             artist = get_object_or_404(models.User, pk=object_id, is_artist=True)
             is_fave = True
@@ -1084,6 +1086,7 @@ class ToggleFaveView(APIView):
                 is_fave = False
             response['artist_id'] = artist.id
             response['is_fave'] = is_fave
+            artist.refresh_num_faves()
         return Response(response)
 
 

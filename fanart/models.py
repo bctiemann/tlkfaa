@@ -547,6 +547,14 @@ ORDER BY fanart_user.sort_name
         self.num_characters = self.character_set.count()
         self.save()
 
+    def refresh_num_faves(self):
+        self.num_faves = self.fans.count()
+        num_favepics = 0
+        for picture in self.picture_set.all():
+            num_favepics += picture.num_faves
+        self.num_favepics = num_favepics
+        self.save()
+
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
 
@@ -799,6 +807,10 @@ class Picture(models.Model):
             self.artist.refresh_main_folder_picture_ranks()
 
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
+
+    def refresh_num_faves(self):
+        self.num_faves = self.fans.count()
+        self.save()
 
     def __unicode__(self):
         return '{0}: {1} {2}'.format(self.artist.username, self.id, self.filename)
