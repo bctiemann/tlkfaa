@@ -1004,7 +1004,6 @@ class ShoutsView(TemplateView):
         start = int(self.request.GET.get('offset', 0))
         count = int(self.request.GET.get('count', 0))
         end = start + count
-        logger.info(end)
         context['shouts'] = artist.shouts_received.order_by('-date_posted')[start:end]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
