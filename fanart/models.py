@@ -267,7 +267,7 @@ class User(AbstractUser):
     @property
     def get_example_pic(self):
         if self.example_pic:
-            return self.example.pic
+            return self.example_pic
         return self.picture_set.filter(date_deleted__isnull=True, is_public=True).order_by('?').first()
 
     @property
