@@ -897,8 +897,16 @@ class PictureComment(BaseComment):
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)
 
 
+class ShoutManager(models.Manager):
+
+    def get_queryset(self):
+        return super(ShoutManager, self).get_queryset().exclude(is_deleted=True)
+
+
 class Shout(BaseComment):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received')
+
+    objects = ShoutManager()
 
     @property
     def quoted_comment(self):
