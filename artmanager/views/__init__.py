@@ -1168,7 +1168,7 @@ class PrivateMessagesView(ArtManagerPaneView):
         context['box'] = box
         recipient_id = kwargs.get('recipient_id', None)
         if recipient_id:
-            context['recipient'] = get_object_or_404(models.User, pk=self.kwargs['recipient_id'])
+            context['recipient'] = get_object_or_404(models.User, pk=recipient_id)
 
         return context
 

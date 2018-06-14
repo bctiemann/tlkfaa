@@ -33,7 +33,7 @@ var pageParams = {};
 
 {% if pm %}
 {% elif recipient %}
-    newPM({{ recipient.id }});
+    newPM({{ recipient.id }}, '{{ request.GET.urlencode }}');
 {% else %}
     refreshPMBox('{{ box }}',1,'all',1,1);
 {% endif %}

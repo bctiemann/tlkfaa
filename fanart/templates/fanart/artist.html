@@ -256,7 +256,7 @@ The specified artist's gallery is not publicly visible.
 			<td class="label">Accepting Requests or Commissions</td>
 			<td class="data">{{ artist.accepting_commissions|yesno|capfirst }}</td>
 			</tr>
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and artist != user %}
 			<tr>
 			<td class="label"></td>
 			<td class="data"><a href="{% url "artmanager:private-msgs-user" recipient_id=artist.id %}">Send Private Message</a></td>

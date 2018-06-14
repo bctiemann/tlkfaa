@@ -32,7 +32,14 @@
 
 {% else %}
 
-    {% if blocked %}
+    {% if recipient == request.user %}
+
+        <div class="error">
+            <h3>An error occurred</h3>
+            <p>You cannot send a PM to yourself.</p>
+        </div>
+
+    {% elif blocked %}
 
         <div class="error">
             <h3>An error occurred</h3>
@@ -59,7 +66,7 @@
                 </tr>
                 <tr>
                     <td class="label">Subject</td>
-                    <td class="data"><input name="subject" id="subject" maxlength="255" validate="hasvalue" message="You must enter a subject." /></td>
+                    <td class="data"><input name="subject" id="subject" maxlength="255" validate="hasvalue" message="You must enter a subject." {% if shout %}value="Re: Your Roar"{% endif %}" /></td>
                 </tr>
                 <tr>
                     <td class="label"></td>

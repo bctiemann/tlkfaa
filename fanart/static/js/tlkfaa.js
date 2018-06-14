@@ -257,7 +257,6 @@ function getMoreAdminAnnouncements(start,count) {
   if (!scrollIsLoading.adminAnnouncements) {
     scrollIsLoading.adminAnnouncements = true;
     var url = "/admin_announcements/"+count+"/"+start+"/";
-console.log(url);
     $.ajax({ url: url, success: function(data) {
       $('#adminannouncements_inner').addClass('bulletinsscroll');
       adminannouncementsshown += count;    
@@ -288,7 +287,6 @@ function getMoreBulletins(start,count) {
 }
 
 function getMoreShouts(artistid,start,count) {
-console.log(scrollIsLoading);
   if (!scrollIsLoading.shouts) {
     scrollIsLoading.shouts = true;
 //    var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
@@ -336,6 +334,8 @@ function doAotmVote(artistid) {
 }
 
 function replyPM(recptid,shoutid) {
+    window.location.href = '/ArtManager/private_msgs/user/' + recptid + '/?shout_id=' + shoutid;
+/*
   Shadowbox.open({
     player: 'iframe',
 //    content: '/pop_viewpm.jsp?recptid='+recptid+'&replytoshout='+shoutid,
@@ -343,6 +343,7 @@ function replyPM(recptid,shoutid) {
     width: 500,
     height: 600
   })
+*/
 }
 
 function changeArtistName(name,sortname) {
@@ -2871,11 +2872,12 @@ function showContestEntries(contestid) {
     $('#contest_entries_' + contestid).load(url);
 }
 
-function newPM(recipient_id) {
+function newPM(recipient_id, query_str) {
     var url = '/pm/user/';
     if (recipient_id) {
         url += recipient_id + '/';
     }
+    url += '?' + query_str;
     $('#pms').load(url, function(data) {
         setupAutocompleteArtist($('input#recpt'), 'validatePMRecipient()');
     });
@@ -3094,12 +3096,14 @@ $(document).ready(function() {
     }
   });
 
+  if ($('.shouts-container').length) {
   getMoreShouts($('.shouts-container').attr('artistid'), 0, shoutsLoad);
   $('.shouts-container').scroll(function(e) {
     if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
       getMoreShouts($('.shouts-container').attr('artistid'), shoutsshown, shoutsLoad);
     }
   });
+  }
 
   $('.tooltip').tooltip();
   setupTooltipPreview();

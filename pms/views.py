@@ -172,6 +172,10 @@ class PMUserView(LoginRequiredMixin, TemplateView):
             context['recipient'] = get_object_or_404(models.User, pk=self.kwargs['recipient_id'])
             context['blocked'] = models.Block.objects.filter(user=context['recipient'], blocked_user=self.request.user).exists()
 
+            shout_id = self.request.GET.get('shout_id', None)
+            if shout_id:
+                context['shout'] = get_object_or_404(models.Shout, pk=shout_id, artist=self.request.user)
+
         return context
 
 
