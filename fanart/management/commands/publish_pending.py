@@ -134,7 +134,11 @@ class Command(BaseCommand):
             html_template = 'email/approval/approved.html'
 
             if pending.notify_on_approval:
-                email_context = {'pending': pending}
+                email_context = {
+                    'pending': pending,
+                    'picture': picture,
+                    'base_url': settings.SERVER_BASE_URL,
+                }
                 tasks.send_email.delay(
                     recipients=[pending.artist.email],
                     subject=subject,

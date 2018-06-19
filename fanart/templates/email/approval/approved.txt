@@ -7,6 +7,8 @@ accepted and added to your collection.
           
 Filename: {{ pending.filename }}
 Title: {{ pending.title }}
+
+{{ base_url }}{% url "picture" picture_id=picture.id %}
         
   Thank you!
      
