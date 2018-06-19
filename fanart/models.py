@@ -564,7 +564,7 @@ ORDER BY fanart_user.sort_name
 
         super(User, self).save(*args, **kwargs)
         if update_thumbs:
-            process_images.apply_async(('fanart.models', 'User', self.id, 'small'), countdown=20)
+            process_images('fanart.models', 'User', self.id, 'small')
             if self.profile_width > settings.THUMB_SIZE['profile'] or self.profile_height > settings.THUMB_SIZE['profile']:
                 process_images.apply_async(('fanart.models', 'User', self.id, 'profile'), countdown=20)
 
