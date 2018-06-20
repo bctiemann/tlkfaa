@@ -1284,11 +1284,14 @@ class CreateAdoptableOfferView(LoginRequiredMixin, CreateView):
         offer.type = 'adoptable'
         offer.save(update_thumbs=False)
 
+        update_size = False
         if offer.character.profile_picture:
             shutil.copyfile(offer.character.profile_picture.preview_path, offer.thumbnail_path)
+            update_size = True
         elif offer.character.profile_coloring_picture:
             shutil.copyfile(offer.character.profile_coloring_picture.preview_path, offer.thumbnail_path)
-        if offer.picture:
+            update_size = True
+        if update_size:
             im = Image.open(offer.thumbnail_path)
             offer.width = im.width
             offer.height = im.height
