@@ -6,6 +6,12 @@ from django.db import migrations, models
 import uuid
 
 
+def set_hash(apps, schema_editor):
+    Offer = apps.get_model('trading_tree', 'Offer')
+    for offer in Offer.objects.all():
+        offer.hash = uuid.uuid4()
+        offer.save()
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -18,4 +24,5 @@ class Migration(migrations.Migration):
             name='hash',
             field=models.UUIDField(blank=True, db_index=True, default=uuid.uuid4, editable=False, null=True),
         ),
+        migrations.RunPython(set_hash, reverse_code=migrations.RunPython.noop)
     ]
