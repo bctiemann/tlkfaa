@@ -58,6 +58,7 @@ class Offer(models.Model):
     THUMBNAILS_JPEG = True
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True, editable=False, db_index=True)
     artist = models.ForeignKey('fanart.User', null=True, blank=True)
     type = models.CharField(max_length=10, choices = TYPE_CHOICES, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -177,6 +178,7 @@ class Claim(models.Model):
     THUMBNAILS_JPEG = True
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
+    hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True, editable=False, db_index=True)
     offer = models.ForeignKey('Offer', null=True, blank=True)
     user = models.ForeignKey('fanart.User', null=True, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
