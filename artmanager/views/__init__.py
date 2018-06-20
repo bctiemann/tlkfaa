@@ -1280,6 +1280,11 @@ class CreateAdoptableOfferView(LoginRequiredMixin, CreateView):
         logger.info(self.request.FILES)
 
         offer = form.save(commit=False)
+
+        if offer.character.is_up_for_adoption:
+            response['message'] = 'Character is already up for adoption.'
+            return JsonResponse(response)
+
         offer.artist = self.request.user
         offer.type = 'adoptable'
         offer.save(update_thumbs=False)

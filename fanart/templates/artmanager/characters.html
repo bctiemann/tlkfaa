@@ -68,7 +68,7 @@
                     <div class="characteredit">
                         <a href="javascript:nop()" onClick="setupEditCharacter({{ character.id }})">edit</a>
                         <a href="javascript:nop()" onClick="deleteCharacter({{ character.id }})">delete</a>
-                        {% if character.adoption_offer %}
+                        {% if character.is_up_for_adoption %}
                             <a href="{% url "artmanager:trading-tree" offer_type="adoptable" %}?offer_id={{ character.adoption_offer.id }}">Up for adoption</a>
                         {% else %}
                             <a href="{% url "artmanager:trading-tree" offer_type="adoptable" %}?character_id={{ character.id }}">adopt out</a>

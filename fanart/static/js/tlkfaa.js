@@ -932,6 +932,8 @@ function postAdoptableOffer() {
     $.post(url, params, function(data) {
         if (data.success) {
             window.location.href = '/ArtManager/trading_tree/adoptable/?offer_id=' + data.offer_id;
+        } else {
+            alert(data.message);
         }
     });
 }

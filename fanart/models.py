@@ -1004,6 +1004,10 @@ class Character(models.Model):
     def adoption_offer(self):
         return self.offer_set.filter(is_active=True, is_visible=True).first()
 
+    @property
+    def is_up_for_adoption(self):
+        return self.offer_set.filter(is_active=True, is_visible=True).exists()
+
     def refresh_num_pictures(self):
         self.num_pictures = self.picturecharacter_set.count()
         self.save()
