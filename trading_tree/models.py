@@ -162,7 +162,7 @@ class Offer(models.Model):
     def save(self, update_thumbs=True, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         super(Offer, self).save(*args, **kwargs)
-        if update_thumbs:
+        if update_thumbs and self.type == 'icon':
             process_images.apply_async(('trading_tree.models', 'Offer', self.id, 'offer'), countdown=20)
             process_images.apply_async(('trading_tree.models', 'Offer', self.id, 'large'), countdown=20)
 
