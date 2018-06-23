@@ -737,7 +737,7 @@ class GiftPictureSendView(APIView):
 
         recipient_id = request.POST.get('recipient')
         if json.loads(request.POST.get('all_fans')):
-            recipients = [r.id for r in request.user.fans.filter(is_visible=True)]
+            recipients = [r.user.id for r in request.user.fans.filter(is_visible=True)]
         elif recipient_id:
             recipients.append(recipient_id)
 
