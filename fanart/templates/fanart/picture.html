@@ -138,7 +138,9 @@
                             <li>Sent to:</li>
                         {% endif %}
                         {% for gp in picture.giftpicture_set.all %}
-                            <li><a href="{% url "artist" dir_name=gp.recipient.dir_name %}">{{ gp.recipient.username }}</a></li>
+                            {% if gp.is_active %}
+                                <li><a href="{% url "artist" dir_name=gp.recipient.dir_name %}">{{ gp.recipient.username }}</a></li>
+                            {% endif %}
                         {% endfor %}
 
                     </ul>
