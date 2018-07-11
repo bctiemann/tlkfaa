@@ -1127,7 +1127,7 @@ class PictureRedirectByIDView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         picture_id = self.request.GET.get('pictureid')
-        if picture_id and not picture_id.isnumeric():
+        if not picture_id or not picture_id.isnumeric():
             raise Http404
         picture = get_object_or_404(models.Picture, pk=picture_id, date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         return reverse('picture', kwargs={'picture_id': picture.id})
