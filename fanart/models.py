@@ -209,6 +209,7 @@ class User(AbstractUser):
     is_artist = models.BooleanField(default=True, help_text='Controls whether user has a visible artist page and has access to artist modules in ArtManager, or simply a Profile for following others.')
     is_public = models.BooleanField(default=True, help_text='Controls whether user\'s art page is publicly visible to unauthenticated users')
     is_paid = models.BooleanField(default=True)
+    is_under_probation = models.BooleanField(default=False)
     num_pictures = models.IntegerField(default=0)
     num_faves = models.IntegerField(default=0)
     num_favepics = models.IntegerField(default=0)

@@ -68,6 +68,9 @@ $(function () {
                     <p><a href="mailto:{{ pending.artist.email }}?subject=Fan-art upload ({{ pending.sanitized_basename }}.{{ pending.extension }})">email</a></p>
                     {% if pending.notify_approval %}<p>notify</p>{% endif %}
                     <p><a href="javascript:nop()" onClick="showModNotes({{ pending.artist.id }})">mod notes</a> ({{ pending.artist.modnotes_received.count }})</p>
+                    {% if pending.artist.is_under_probation %}
+                        <a href="javascript:nop()" onClick="showModNotes({{ pending.artist.id }})"><p class="probation-warning">PROBATION</p></a>
+                    {% endif %}
                     {% if not pending.artist.auto_approve %}<p><a href="javascript:nop()" onClick="autoApproval({{ pending.artist.id }})">auto-approval</a></p>{% endif %}
                 </div>
             </td>

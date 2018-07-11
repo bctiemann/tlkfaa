@@ -121,4 +121,12 @@ textarea.new-note {
 	font-size: 10px;
 	color: #888;
 }
-
+.probation-warning {
+	letter-spacing: 0.05em;
+	font-weight: bold;
+	background-color: #000;
+	color: #fff;
+	text-align: center;
+	border-radius: 2px;
+	padding: 5px;
+}
