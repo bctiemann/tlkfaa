@@ -250,3 +250,11 @@ class RevisionLogAdmin(admin.ModelAdmin):
     list_display = ('date_created', 'entry',)
 admin.site.register(fanart_models.RevisionLog, RevisionLogAdmin)
 
+class ModNoteAdmin(ForeignKeyAutocompleteAdmin):
+    list_display = ('date_created', 'artist', 'moderator',)
+    related_search_fields = {
+        'artist': ('username',),
+        'moderator': ('username',),
+    }
+admin.site.register(fanart_models.ModNote, ModNoteAdmin)
+
