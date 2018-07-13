@@ -136,6 +136,7 @@ FROM `fanart_user`
 WHERE
     `birth_date` IS NOT NULL
     AND `show_birthdate` = 1
+    AND `is_active` = 1
     AND `is_artist` = 1
     AND `num_pictures` > 0
 HAVING
@@ -168,6 +169,7 @@ ORDER BY `next_birthday`
         user.is_artist = is_artist
         user.save()
         return user
+
 
 class User(AbstractUser):
     GENDER_CHOICES = (
