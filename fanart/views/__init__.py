@@ -922,7 +922,7 @@ class PostCommentView(LoginRequiredMixin, CreateView):
                 context=email_context,
                 text_template='email/comment_posted.txt',
                 html_template='email/comment_posted.html',
-                bcc=[settings.DEBUG_EMAIL]
+#                bcc=[settings.DEBUG_EMAIL]
             )
 
         logger.info('User {0} posted comment {1} ({2}).'.format(self.request.user, comment.id, picture))
