@@ -179,11 +179,13 @@ class SocialMediaAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.SocialMedia, SocialMediaAdmin)
 
 
-class SocialMediaIdentityAdmin(admin.ModelAdmin):
+class SocialMediaIdentityAdmin(ForeignKeyAutocompleteAdmin):
     list_display = ('user', 'social_media', 'identity',)
     list_filter = ()
-    readonly_fields = ('user',)
-    user_id_for_formfield = None
+    related_search_fields = {
+        'user': ('username', 'email',),
+    }
+
 admin.site.register(fanart_models.SocialMediaIdentity, SocialMediaIdentityAdmin)
 
 
