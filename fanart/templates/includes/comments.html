@@ -58,7 +58,7 @@
                             {% endif %}
                         {% endif %}
                         <button type="button" class="small" id="replybutton_{{ comment.id }}" onclick="doReply({{ picture.id }},{{ comment.id }})">Reply</button>
-                        {% if picture.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.id }})">Delete</button>{% endif %}
+                        {% if picture.artist == user or comment.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.id }})">Delete</button>{% endif %}
                         {% if comment.user == user %}<button type="button" class="small" onClick="setupEditComment({{ picture.id }},{{ comment.id }})">Edit</button>{% endif %}
                     </div>
                 {% endif %}
