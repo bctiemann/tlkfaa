@@ -1876,7 +1876,9 @@ function setupEditComment(pictureid,commentid) {
 //    $.getJSON('/api/comment.jsp?commentid=' + commentid, function(data) {
     $.getJSON('/comment/' + commentid + '/detail/', function(data) {
         if (data.success) {
+            $('#comment_'+commentid+' .commentbuttons').fadeOut('fast');
             $('#commenttext_' + commentid + ' .comment-edited').empty();
+            $('#commenttext_' + commentid + ' .comment-text-hidden').html($('#commenttext_' + commentid + ' .comment-text').html());
             $('#commenttext_' + commentid + ' .comment-text').empty().append($('<textarea>', {
                 id: 'commentedit_' + commentid,
                 html: data.comment.comment,
@@ -1887,6 +1889,14 @@ function setupEditComment(pictureid,commentid) {
                 pictureid: pictureid,
                 click: function() {
                     editComment($(this).attr('pictureid'), $(this).attr('commentid'));
+                },
+            })).append($('<button>', {
+                class: 'small',
+                html: 'Cancel',
+                commentid: commentid,
+                pictureid: pictureid,
+                click: function() {
+                    cancelEditComment($(this).attr('pictureid'), $(this).attr('commentid'));
                 },
             }));
         }
@@ -1904,6 +1914,15 @@ function editComment(pictureid,commentid) {
         $('#comments_'+pictureid).html(response_html);
     });
 }
+
+function cancelEditComment(pictureid,commentid) {
+  $('#comment_'+commentid+' .commentbuttons').fadeIn('fast');
+//$('#commenttext_' + commentid + ' .comment-text')
+  $('#commenttext_'+commentid + ' .comment-text').html($('#commenttext_'+commentid + ' .comment-text-hidden').html());//.slideUp('fast',function() {
+//    document.getElementById('replybutton_'+commentid).onclick = function() { postReply(pictureid,commentid) };
+//  });
+}
+
 
 function deleteComment(pictureid,commentid,artmanagerview) {
   $('#dialog_confirm_text').html("Are you sure you want to delete this comment?");

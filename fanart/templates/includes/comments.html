@@ -18,7 +18,7 @@
         </div>
         <div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %} {% if comment.user == comment.picture.artist %}op{% endif %}" id="commenttext_{{ comment.id }}">
             <div class="commentprofilepic">
-                {% if comment.user.profile_pic_id and not comment.is_deleted %}
+                {% if comment.user.profile_pic_url and not comment.is_deleted %}
                     {% if comment.user.is_artist %}
                         <a href="{% url "artist" dir_name=comment.user.dir_name %}"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
                     {% else %}
@@ -30,6 +30,7 @@
                 Comment deleted.
             {% else %}
                 <table><tr><td>
+                    <div class="comment-text-hidden"></div>
                     <div class="comment-text">
                         {{ comment.comment|bbcode|safe }}
                     </div>
