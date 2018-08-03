@@ -309,7 +309,7 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
             if extra_email_context is not None:
                 context.update(extra_email_context)
             logger.info(user.email)
-            logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
+            logger.info('Sending password recovery email to {0} - {1}'.format(user.username.encode('utf8'), user.email))
             tasks.send_email.delay(
                 recipients=[user.email],
                 subject='TLKFAA: Password Recovery',
