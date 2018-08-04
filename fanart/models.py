@@ -822,9 +822,18 @@ class Picture(models.Model):
         deleted_filename = '.'.join([self.basename, str(hash), self.extension])
         deleted_thumbnail_filename = '.'.join([self.basename, str(hash), 's', self.thumbnail_extension])
         deleted_preview_filename = '.'.join([self.basename, str(hash), 'p', self.thumbnail_extension])
-        os.rename(self.path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_filename))
-        os.rename(self.thumbnail_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_thumbnail_filename))
-        os.rename(self.preview_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_preview_filename))
+        try:
+            os.rename(self.path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_filename))
+        except OSError:
+            pass
+        try:
+            os.rename(self.thumbnail_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_thumbnail_filename))
+        except OSError:
+            pass
+        try:
+            os.rename(self.preview_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_preview_filename))
+        except OSError:
+            pass
 
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
 
