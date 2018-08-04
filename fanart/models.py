@@ -507,6 +507,14 @@ ORDER BY fanart_user.sort_name
         except OSError:
             pass
 
+    def create_deleted_dir(self):
+        try:
+            os.mkdir(os.path.join(self.absolute_dir_name, 'deleted'))
+            www_uid = getpwnam(settings.WWW_USER).pw_uid
+            os.chown(os.path.join(self.absolute_dir_name, 'deleted'), www_uid, -1)
+        except OSError:
+            pass
+
     def change_dir_name(self):
         new_dir_name = make_dir_name(self.username)
 #        new_dir_name = re.sub('&#[0-9]+;', 'x', self.username)
@@ -808,6 +816,15 @@ class Picture(models.Model):
             self.folder.refresh_num_pictures()
         else:
             self.artist.refresh_main_folder_picture_ranks()
+
+        self.artist.create_deleted_dir()
+        hash = uuid.uuid4()
+        deleted_filename = '.'.join([self.basename, str(hash), self.extension])
+        deleted_thumbnail_filename = '.'.join([self.basename, str(hash), 's', self.thumbnail_extension])
+        deleted_preview_filename = '.'.join([self.basename, str(hash), 'p', self.thumbnail_extension])
+        os.rename(self.path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_filename))
+        os.rename(self.thumbnail_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_thumbnail_filename))
+        os.rename(self.preview_path, os.path.join(self.artist.absolute_dir_name, 'deleted', deleted_preview_filename))
 
         logger.info('Picture {0} by {1} was deleted.'.format(self, self.artist))
 
