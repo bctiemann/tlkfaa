@@ -43,7 +43,7 @@ def tree_to_list(items, sort_by=None, parent_field='parent', omit=[], reverse=Fa
         root = roots[0]
         del roots[0]
 
-        if not omit or not root.obj.id in omit:
+        if not omit or not root.id in omit:
             items_sorted.append(root)
             children = sorted(root.children, key=lambda k: getattr(k, sort_by), reverse=True)
             for child in children:
