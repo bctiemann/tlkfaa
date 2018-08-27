@@ -1479,7 +1479,7 @@ class ArtistsAutocompleteView(APIView):
 
         startswith_queryset = models.User.objects.filter(is_artist=True, is_active=True, username__istartswith=term)
         contains_queryset = models.User.objects.filter(is_artist=True, is_active=True, username__icontains=term)
-        full_queryset = list(chain(startswith_queryset, contains_queryset))
+        full_queryset = list(set(chain(startswith_queryset, contains_queryset)))
         for artist in full_queryset[0:20]:
             response['artists'].append({
                 'name': artist.username,
