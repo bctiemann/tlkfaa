@@ -34,6 +34,7 @@ from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
 
 from datetime import timedelta
+from itertools import chain
 import uuid
 import json
 import random
@@ -1476,7 +1477,10 @@ class ArtistsAutocompleteView(APIView):
     def get(self, request, term):
         response = {'artists': []}
 
-        for artist in models.User.objects.filter(is_artist=True, is_active=True, username__icontains=term)[0:20]:
+        startswith_queryset = models.User.objects.filter(is_artist=True, is_active=True, username__istartswith=term)
+        contains_queryset = models.User.objects.filter(is_artist=True, is_active=True, username__icontains=term)
+        full_queryset = list(chain(startswith_queryset, contains_queryset))
+        for artist in full_queryset[0:20]:
             response['artists'].append({
                 'name': artist.username,
                 'artistid': artist.id,
