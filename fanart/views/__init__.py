@@ -298,7 +298,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
         try:
             context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
         except ValueError:
-            context['count'] = settings.ARTWORK_PER_PAGE)
+            context['count'] = settings.ARTWORK_PER_PAGE
         context['next_start'] = start + settings.ARTWORK_PER_PAGE
         context['initial'] = initial
         context['artwork'] = artwork[start:start + context['count']]
