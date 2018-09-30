@@ -279,7 +279,10 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 elif list == 'character':
                     character_pictures = models.Picture.objects.all()
                     for character_id in term.split(','):
-                        character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
+                        try:
+                            character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
+                        except ValueError:
+                            character_pictures = character_pictures.none()
                         artwork = character_pictures.order_by('-picturecharacter__date_tagged')
             else:
                 artwork = artwork.filter(id__isnull=True)
