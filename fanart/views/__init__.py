@@ -239,8 +239,14 @@ class ArtworkView(UserPaneMixin, TemplateView):
         if not list in models.artwork_tabs:
             list = default_artwork_view
 
-        start = int(self.request.GET.get('start', 0))
-        initial = self.request.GET.get('initial', None)
+        try:
+            start = int(self.request.GET.get('start', 0))
+        except ValueError:
+            start = 0
+        try:
+            initial = self.request.GET.get('initial', None)
+        except ValueError:
+            initial = None
 
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
@@ -289,7 +295,10 @@ class ArtworkView(UserPaneMixin, TemplateView):
 
         context['list'] = list
         context['per_page'] = settings.ARTWORK_PER_PAGE
-        context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
+        try:
+            context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
+        except ValueError:
+            context['count'] = settings.ARTWORK_PER_PAGE)
         context['next_start'] = start + settings.ARTWORK_PER_PAGE
         context['initial'] = initial
         context['artwork'] = artwork[start:start + context['count']]
