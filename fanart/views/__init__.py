@@ -765,7 +765,7 @@ class RegisterView(FormView):
             r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
             result = r.json()
             if not result['success']:
-                logger.info('ReCAPTCHA failure for {0} ({1}), ip {2}'.format(form.cleaned_data['username'], form.cleaned_data['email'], self.request.META['REMOTE_ADDR']))
+                logger.info('ReCAPTCHA failure for {0} ({1}), ip {2}'.format(form.cleaned_data['username'].encode('utf8'), form.cleaned_data['email'], self.request.META['REMOTE_ADDR']))
                 ajax_response = {
                     'success': False,
                     'errors': {'recaptcha': ['ReCAPTCHA failure. Please click the "I\'m not a robot" box.']},
