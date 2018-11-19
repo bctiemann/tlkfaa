@@ -279,7 +279,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
                     logger.info('Artwork search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term.encode('utf8')))
                     tag = models.Tag.objects.filter(tag=term).first()
                     if tag:
-                        artwork = tag.picture_set.all().order_by('-num_faves')
+                        artwork = tag.picture_set.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0).order_by('-num_faves')
                     else:
                         artwork = artwork.filter(id__isnull=True)
                 elif list == 'character':
