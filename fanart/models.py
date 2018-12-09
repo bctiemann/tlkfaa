@@ -22,7 +22,7 @@ import shutil
 from PIL import Image
 from pwd import getpwnam
 
-from fanart.utils import dictfetchall, make_dir_name, upperfirst
+from fanart.utils import dictfetchall, make_dir_name, upperfirst, sizeof_fmt
 from fanart.tasks import process_images
 
 import logging
@@ -1264,6 +1264,24 @@ class Pending(models.Model):
     @property
     def requires_approval(self):
         return Pending.objects.requiring_approval().filter(pk=self.pk).exists()
+
+    @property
+    def approval_required_reasons(self):
+        reasons = []
+        if not self.requires_approval:
+            return reasons
+        if self.force_approve:
+            reasons.append('Picture is voluntarily marked for manual approval.')
+        if self.width > settings.APPROVAL_TRIGGER_WIDTH:
+            reasons.append('Width is greater than {0} px.'.format(settings.APPROVAL_TRIGGER_WIDTH))
+        if self.height > settings.APPROVAL_TRIGGER_HEIGHT:
+            reasons.append('Height is greater than {0} px.'.format(settings.APPROVAL_TRIGGER_HEIGHT))
+        if self.file_size > settings.APPROVAL_TRIGGER_SIZE:
+            approval_trigger_size_humanized = sizeof_fmt(settings.APPROVAL_TRIGGER_SIZE)
+            reasons.append('Size is greater than {0}.'.format(approval_trigger_size_humanized))
+        if self.is_movie:
+            reasons.append('Movie files must be manually approved.')
+        return reasons
 
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})

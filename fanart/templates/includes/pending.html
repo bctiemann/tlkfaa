@@ -27,6 +27,12 @@
                     {% if pending.size_warning %}
                         <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
                     {% endif %}
+                    {% if pending.approval_required_reasons %}
+                        <h4>Requires approval:</h4>
+                    {% endif %}
+                    {% for approval_trigger in pending.approval_required_reasons %}
+                        <p><img src="{% static "images/warning.png" %}" /> {{ approval_trigger }}</p>
+                    {% endfor %}
                     <br />
                 </div>
             </td>

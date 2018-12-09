@@ -1711,6 +1711,10 @@ div.picturestats {
 	line-height: 13px;
 	padding: 2px;
 }
+div.picturestats h4 {
+	margin-top: 3px;
+	font-size: 10px;
+}
 td.picturedetails,
 td.artistdetails {
 	position: relative;
