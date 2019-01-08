@@ -9,3 +9,7 @@ inconvenience!
 --{{ admin_name }}
 fanart.lionking.org
 
+--------
+
+{{ pending.title }}
+

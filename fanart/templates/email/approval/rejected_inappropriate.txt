@@ -17,3 +17,7 @@ that meets these guidelines. Thank you for understanding!
 --{{ admin_name }}
 fanart.lionking.org
 
+--------
+
+{{ pending.title }}
+

@@ -25,3 +25,6 @@ understanding!
 --{{ admin_name }}
 fanart.lionking.org
 
+--------
+
+{{ pending.title }}
