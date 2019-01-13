@@ -156,5 +156,5 @@ class DeleteShoutForm(forms.ModelForm):
 class DeleteCommentForm(forms.ModelForm):
 
     class Meta:
-        model = models.PictureComment
+        model = models.ThreadedComment
         fields = []

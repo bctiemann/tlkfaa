@@ -896,14 +896,14 @@ class BulletinsView(TemplateView):
 
 
 class CommentsView(TemplateView):
-    model = models.PictureComment
+    model = models.ThreadedComment
     template_name = 'includes/comments.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(CommentsView, self).get_context_data(*args, **kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
-        context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
         context['hash'] = uuid.uuid4()
@@ -911,8 +911,8 @@ class CommentsView(TemplateView):
 
 
 class PostCommentView(LoginRequiredMixin, CreateView):
-    model = models.PictureComment
-    form_class = forms.PictureCommentForm
+    model = models.ThreadedComment
+    form_class = forms.ThreadedCommentForm
     template_name = 'includes/comments.html'
 
     def form_valid(self, form):
@@ -945,12 +945,12 @@ class PostCommentView(LoginRequiredMixin, CreateView):
 
 
 class CommentDetailView(LoginRequiredMixin, DetailView):
-    model = models.PictureComment
-    form_class = forms.PictureCommentForm
+    model = models.ThreadedComment
+    form_class = forms.ThreadedCommentForm
     template_name = 'includes/comments.html'
 
     def get_object(self):
-        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+        return get_object_or_404(models.ThreadedComment, pk=self.kwargs['comment_id'], user=self.request.user)
 
     def get(self, request, *args, **kwargs):
         response = super(CommentDetailView, self).get(request, *args, **kwargs)
@@ -967,17 +967,17 @@ class CommentDetailView(LoginRequiredMixin, DetailView):
 
 
 class EditCommentView(LoginRequiredMixin, UpdateView):
-    model = models.PictureComment
-    form_class = forms.PictureCommentUpdateForm
+    model = models.ThreadedComment
+    form_class = forms.ThreadedCommentUpdateForm
     template_name = 'includes/comments.html'
 
     def get_object(self):
-        return get_object_or_404(models.PictureComment, pk=self.kwargs['comment_id'], user=self.request.user)
+        return get_object_or_404(models.ThreadedComment, pk=self.kwargs['comment_id'], user=self.request.user)
 
     def form_valid(self, form):
         self.object.date_edited = timezone.now()
-        super(EditCommentView, self).form_valid(form)
-        return redirect('comments', picture_id=self.object.picture.id)
+        return super(EditCommentView, self).form_valid(form)
+#        return redirect('comments', picture_id=self.object.picture.id)
 
 #    def get_context_data(self, *args, **kwargs):
 #        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
@@ -986,19 +986,20 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
 
 
 class DeleteCommentView(LoginRequiredMixin, UpdateView):
-    model = models.PictureComment
-    form_class = forms.PictureCommentDeleteForm
+    model = models.ThreadedComment
+    form_class = forms.ThreadedCommentDeleteForm
     template_name = 'includes/comments.html'
 
     def get_object(self):
         logger.info('get_object')
-        return get_object_or_404(models.PictureComment, Q(user=self.request.user) | Q(picture__artist=self.request.user), pk=self.kwargs['comment_id'])
+        return get_object_or_404(models.ThreadedComment, Q(user=self.request.user) | Q(picture__artist=self.request.user), pk=self.kwargs['comment_id'])
 
     def form_valid(self, form):
         logger.info('delete')
         self.object.is_deleted = True
-        super(DeleteCommentView, self).form_valid(form)
-        return redirect('comments', picture_id=self.object.picture.id)
+        return super(DeleteCommentView, self).form_valid(form)
+#        return self.object.get_absolute_url()
+#        return redirect('comments', picture_id=self.object.picture.id)
 
 #    def get_context_data(self, *args, **kwargs):
 #        context = super(EditCommentView, self).get_context_data(*args, **kwargs)
@@ -1162,7 +1163,7 @@ class PictureView(UserPaneMixin, TemplateView):
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
-        context['comments'] = utils.tree_to_list(models.PictureComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         context['hash'] = uuid.uuid4()
         if self.request.user.is_authenticated:
             context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
@@ -1764,8 +1765,47 @@ class BulletinView(DetailView):
     model = models.Bulletin
     template_name = 'includes/bulletin.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(BulletinView, self).get_context_data(**kwargs)
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(bulletin=self.object), sort_by='date_posted', parent_field='reply_to')
+        return context
+
     def get_object(self):
         return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], is_published=True)
+
+
+class PostBulletinReplyView(LoginRequiredMixin, CreateView):
+    model = models.ThreadedComment
+    form_class = forms.ThreadedCommentForm
+    template_name = 'includes/comments.html'
+
+    def form_valid(self, form):
+        logger.info(form.cleaned_data)
+        comment = form.save(commit=False)
+        comment.user = self.request.user
+        comment.save()
+
+        bulletin = form.cleaned_data['bulletin']
+        if bulletin.user.email_comments and self.request.user != bulletin.user:
+            email_context = {
+                'user': self.request.user,
+                'bulletin': bulletin,
+                'comment': comment,
+                'base_url': settings.SERVER_BASE_URL,
+            }
+            tasks.send_email.delay(
+                recipients=[bulletin.user.email],
+                subject='TLKFAA: New Bulletin Reply Posted',
+                context=email_context,
+                text_template='email/bulletin_comment_posted.txt',
+                html_template='email/bulletin_comment_posted.html',
+#                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        logger.info('User {0} posted bulletin comment {1} ({2}).'.format(self.request.user, comment.id, bulletin.id))
+
+        response = super(PostBulletinReplyView, self).form_valid(form)
+        return response
 
 
 class AboutView(TemplateView):

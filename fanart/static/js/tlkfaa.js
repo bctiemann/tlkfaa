@@ -1856,6 +1856,19 @@ function postReply(pictureid,commentid) {
   });
 }
 
+function postBulletinReply(bulletinid,commentid) {
+  var reply;
+  if (commentid == 0) {
+    reply = document.getElementById('replytext_bulletin_'+bulletinid).value;
+  } else {
+    reply = document.getElementById('replytext_'+commentid).value;
+  }
+  var url = '/bulletin/' + bulletinid + '/reply/';
+  $.post(url,{ op: "post", bulletin: bulletinid, picture: null, reply_to: commentid || null, comment: reply, hash: $('#hash').val() },function(response_html) {
+    $('#comments_'+bulletinid).html(response_html);
+  });
+}
+
 function postShout(artistid) {
   var shout;
   shout = document.getElementById('shouttext_'+artistid).value;
@@ -2928,12 +2941,17 @@ function validatePMRecipient() {
 
 function showBulletin(bulletin_id) {
     var url = '/bulletin/' + bulletin_id;
+    $('#dialog_bulletin').load(url, function() {
+        $('#dialog_bulletin').dialog('open');
+    });
+/*
     Shadowbox.open({
         player: 'iframe',
         content: url,
         width: 500,
         height: 600
     });
+*/
 }
 
 function showPM(pm_id) {
@@ -3128,6 +3146,20 @@ $(document).ready(function() {
 
   $('.tooltip').tooltip();
   setupTooltipPreview();
+
+    $('#dialog_bulletin').dialog({
+//      title: 'Bulletin',
+      resizable: false,
+      modal: true,
+      autoOpen: false,
+      width: '70%',
+      maxHeight: 600,
+      buttons: {
+        "Close": function() {
+          $(this).dialog('close');
+        }
+      }
+    });
 
     if ($('#folders').length > 0) {
         getFolderTree($('#folders').attr('artistid'), $('#folders').attr('folderid'), true, false, displayFolders);

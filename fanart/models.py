@@ -327,7 +327,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def unread_comments(self):
-        return PictureComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
+        return ThreadedComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
 
     @property
     def unread_shouts(self):
@@ -911,15 +911,18 @@ class BaseComment(models.Model):
         abstract = True
 
 
-class PictureComment(BaseComment):
-    picture = models.ForeignKey('Picture')
-    reply_to = models.ForeignKey('PictureComment', null=True, blank=True, related_name='replies')
+class ThreadedComment(BaseComment):
+    picture = models.ForeignKey('Picture', null=True, blank=True)
+    bulletin = models.ForeignKey('Bulletin', null=True, blank=True)
+    reply_to = models.ForeignKey('ThreadedComment', null=True, blank=True, related_name='replies')
 
     @property
     def num_replies(self):
         return self.replies.count()
 
     def get_absolute_url(self):
+        if self.bulletin:
+            return reverse('bulletin', kwargs={'bulletin_id': self.bulletin.id})
         return reverse('comments', kwargs={'picture_id': self.picture.id})
 
     def __unicode__(self):
@@ -946,6 +949,21 @@ class Shout(BaseComment):
 
     def __unicode__(self):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
+
+
+class BulletinComment(BaseComment):
+    bulletin = models.ForeignKey('Bulletin')
+    reply_to = models.ForeignKey('BulletinComment', null=True, blank=True, related_name='replies')
+
+    @property
+    def num_replies(self):
+        return self.replies.count()
+
+    def get_absolute_url(self):
+        return reverse('bulletin', kwargs={'bulletin_id': self.bulletin.id})
+
+    def __unicode__(self):
+        return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.bulletin, self.bulletin.user.username)
 
 
 class CharacterManager(models.Manager):

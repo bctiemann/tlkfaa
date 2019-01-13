@@ -1,7 +1,9 @@
-{% extends "fanart/base_popup.html" %}
+{#{% extends "fanart/base_popup.html" %}#}
 {% load bbcode_tags %}
 
 {% block content %}
+
+<div id="comments_{{ bulletin.id }}">
 
 {% if bulletin.is_admin %}
     <h3>Admin announcement posted by {{ bulletin.user.username }}:</h3>
@@ -15,6 +17,12 @@
 
 <div class="pm">
     {{ bulletin.bulletin|bbcode|safe }}
+</div>
+
+{% include "includes/comments.html" %}
+{% with bulletin as picture %}
+{% endwith %}
+
 </div>
 
 {% endblock %}
