@@ -951,21 +951,6 @@ class Shout(BaseComment):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
 
 
-class BulletinComment(BaseComment):
-    bulletin = models.ForeignKey('Bulletin')
-    reply_to = models.ForeignKey('BulletinComment', null=True, blank=True, related_name='replies')
-
-    @property
-    def num_replies(self):
-        return self.replies.count()
-
-    def get_absolute_url(self):
-        return reverse('bulletin', kwargs={'bulletin_id': self.bulletin.id})
-
-    def __unicode__(self):
-        return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.bulletin, self.bulletin.user.username)
-
-
 class CharacterManager(models.Manager):
 
     def get_queryset(self):
