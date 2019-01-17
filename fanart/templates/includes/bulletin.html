@@ -19,9 +19,9 @@
     {{ bulletin.bulletin|bbcode|safe }}
 </div>
 
-{% include "includes/comments.html" %}
-{% with bulletin as picture %}
-{% endwith %}
+{% if bulletin.allow_replies %}
+    {% include "includes/comments.html" %}
+{% endif %}
 
 </div>
 
