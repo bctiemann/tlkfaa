@@ -1415,6 +1415,7 @@ class Bulletin(models.Model):
     bulletin = models.TextField(blank=True)
     is_admin = models.BooleanField(default=False)
     show_email = models.BooleanField(default=False)
+    allow_replies = models.BooleanField(default=True)
 
     def get_absolute_url(self):
         return reverse('bulletin', kwargs={'bulletin_id': self.id})

@@ -143,7 +143,7 @@ class BulletinForm(forms.ModelForm):
 
     class Meta:
         model = models.Bulletin
-        fields = ['title', 'bulletin']
+        fields = ['title', 'bulletin', 'allow_replies']
 
 
 class DeleteShoutForm(forms.ModelForm):

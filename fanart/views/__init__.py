@@ -992,7 +992,7 @@ class DeleteCommentView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         logger.info('get_object')
-        return get_object_or_404(models.ThreadedComment, Q(user=self.request.user) | Q(picture__artist=self.request.user), pk=self.kwargs['comment_id'])
+        return get_object_or_404(models.ThreadedComment, Q(user=self.request.user) | Q(picture__artist=self.request.user) | Q(bulletin__user=self.request.user), pk=self.kwargs['comment_id'])
 
     def form_valid(self, form):
         logger.info('delete')

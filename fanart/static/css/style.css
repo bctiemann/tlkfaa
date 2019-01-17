@@ -2695,6 +2695,10 @@ div.dialog {
 	display: none;
 }
 
+.no-titlebar .ui-dialog-titlebar {
+	display: none;
+}
+
 img.placeholdericon {
 	border: 1px solid #000;
 }
