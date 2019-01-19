@@ -606,6 +606,21 @@ img.bulletinprofilepic {
 	margin: 2px 8px 2px 2px;
 }
 
+/* Bulletin dialog */
+
+#dialog_bulletin h3 {
+	margin-bottom: 10px;
+}
+#dialog_bulletin .bulletin-date {
+	float: right;
+	font-size: 11px;
+}
+#dialog_bulletin .bulletin-title {
+	font-size: 16px;
+	margin: 30px 50px 0px 50px;
+}
+
+
 div.current-contest {
 	left: 640px;
 	width: 160px;

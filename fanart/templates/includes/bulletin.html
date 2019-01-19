@@ -5,13 +5,22 @@
 
 <div id="comments_{{ bulletin.id }}">
 
-{% if bulletin.is_admin %}
-    <h3>Admin announcement posted by {{ bulletin.user.username }}:</h3>
-{% else %}
-    <h3>Bulletin posted by {{ bulletin.user.username }}:</h3>
-{% endif %}
-
-<div class="msgtitle">
+<div class="bulletin-title">
+    <p class="bulletin-date">{{ bulletin.date_posted|date }}</p>
+    <div class="commentprofilepic">
+        {% if bulletin.user.is_artist and bulletin.user.profile_pic_thumbnail_url %}
+            <a href="{% url "artist" dir_name=bulletin.user.dir_name %}"><img src="{{ bulletin.user.profile_pic_thumbnail_url }}" /></a>
+        {% endif %}
+    </div>
+    {% if bulletin.is_admin %}
+        <h3>Admin announcement posted by <a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a>:</h3>
+    {% else %}
+        {% if bulletin.user.is_artist %}
+            <h3>Bulletin posted by <a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a>:</h3>
+        {% else %}
+            <h3>Bulletin posted by {{ bulletin.user.username }}:</h3>
+        {% endif %}
+    {% endif %}
     {{ bulletin.title }}
 </div>
 
