@@ -21,6 +21,10 @@
                 <td class="data"><textarea name="bulletin" id="bulletin_new" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
             </tr>
             <tr>
+                <td class="label">Allow Replies</td>
+                <td class="data"><input type="checkbox" checked name="allow_replies" id="allow_replies_new" value="1" /></td>
+            </tr>
+            <tr>
                 <td colspan="2" class="buttons">
                     <button type="button" onClick="validateForm('bulletinform_new','postBulletin()')">Post</button>
                 </td>
@@ -48,6 +52,10 @@
                 <tr>
                     <td class="label">Bulletin</td>
                     <td class="data"><textarea name="bulletin" id="bulletin_{{ bulletin.id }}" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="label">Allow Replies</td>
+                    <td class="data"><input type="checkbox" {% if bulletin.allow_replies %}checked{% endif %} name="allow_replies" id="allow_replies_{{ bulletin.id }}" value="1" /></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="buttons">

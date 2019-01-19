@@ -90,27 +90,35 @@ class VisibleFaveForm(forms.ModelForm):
         fields = ['is_visible']
 
 
-class PictureCommentForm(forms.ModelForm):
+class ThreadedCommentForm(forms.ModelForm):
     comment = forms.CharField(label='Comment:')
 
     class Meta:
-        model = models.PictureComment
-        fields = ['user', 'picture', 'reply_to', 'comment', 'hash']
+        model = models.ThreadedComment
+        fields = ['user', 'picture', 'bulletin', 'reply_to', 'comment', 'hash']
 
 
-class PictureCommentUpdateForm(forms.ModelForm):
+class ThreadedCommentUpdateForm(forms.ModelForm):
     comment = forms.CharField(label='Comment:')
 
     class Meta:
-        model = models.PictureComment
+        model = models.ThreadedComment
         fields = ['comment']
 
 
-class PictureCommentDeleteForm(forms.ModelForm):
+class ThreadedCommentDeleteForm(forms.ModelForm):
 
     class Meta:
-        model = models.PictureComment
+        model = models.ThreadedComment
         fields = []
+
+
+#class BulletinCommentForm(forms.ModelForm):
+#    comment = forms.CharField(label='Comment:')
+
+#    class Meta:
+#        model = models.BulletinComment
+#        fields = ['user', 'bulletin', 'reply_to', 'comment', 'hash']
 
 
 class ShoutForm(forms.ModelForm):

@@ -550,7 +550,7 @@ function removeClaimPic(claimid) {
 function toggleSelectAll(sel,myselitems) {
   if (!myselitems) { myselitems = selitems; }
   for (i = myselitems.length - 1; i >= 0; i--) {
-    document.getElementById('select_'+myselitems[i]).checked = sel.checked;
+    document.getElementById('select_'+myselitems[i]).prop('checked') = sel.checked;
   }
 }
 
@@ -1681,6 +1681,7 @@ function postBulletin() {
     var params = {
         title: $('#title_new').val(),
         bulletin: $('#bulletin_new').val(),
+        allow_replies: $('#allow_replies_new').prop('checked'),
     };
     $.post(url, params, function(data) {
         if (data.success) {
@@ -1694,6 +1695,7 @@ function updateBulletin(bulletinid) {
     var params = {
         title: $('#title_' + bulletinid).val(),
         bulletin: $('#bulletin_' + bulletinid).val(),
+        allow_replies: $('#allow_replies_' + bulletinid).prop('checked'),
     };
     $.post(url, params, function(data) {
         if (data.success) {
@@ -1853,6 +1855,19 @@ function postReply(pictureid,commentid) {
   var url = '/comments/' + pictureid + '/reply/';
   $.post(url,{ op: "post", picture: pictureid, reply_to: commentid || null, comment: reply, hash: $('#hash').val() },function(response_html) {
     $('#comments_'+pictureid).html(response_html);
+  });
+}
+
+function postBulletinReply(bulletinid,commentid) {
+  var reply;
+  if (commentid == 0) {
+    reply = document.getElementById('replytext_bulletin_'+bulletinid).value;
+  } else {
+    reply = document.getElementById('replytext_'+commentid).value;
+  }
+  var url = '/bulletin/' + bulletinid + '/reply/';
+  $.post(url,{ op: "post", bulletin: bulletinid, picture: null, reply_to: commentid || null, comment: reply, hash: $('#hash').val() },function(response_html) {
+    $('#comments_'+bulletinid).html(response_html);
   });
 }
 
@@ -2819,7 +2834,7 @@ function createContest() {
         description: $('#description_new').val(),
         rules: $('#rules_new').val(),
         date_end: $('#deadline_pick_new').val(),
-        allow_voting: $('#allow_voting_new').checked,
+        allow_voting: $('#allow_voting_new').prop('checked'),
     };
     $.post(url, params, function(data) {
         if (data.success) {
@@ -2928,12 +2943,17 @@ function validatePMRecipient() {
 
 function showBulletin(bulletin_id) {
     var url = '/bulletin/' + bulletin_id;
+    $('#dialog_bulletin').load(url, function() {
+        $('#dialog_bulletin').dialog('open');
+    });
+/*
     Shadowbox.open({
         player: 'iframe',
         content: url,
         width: 500,
         height: 600
     });
+*/
 }
 
 function showPM(pm_id) {
@@ -3128,6 +3148,21 @@ $(document).ready(function() {
 
   $('.tooltip').tooltip();
   setupTooltipPreview();
+
+    $('#dialog_bulletin').dialog({
+//      title: 'Bulletin',
+      resizable: false,
+      modal: true,
+      autoOpen: false,
+      width: '70%',
+      maxHeight: 600,
+      dialogClass: 'no-titlebar',
+      buttons: {
+        "Close": function() {
+          $(this).dialog('close');
+        }
+      }
+    });
 
     if ($('#folders').length > 0) {
         getFolderTree($('#folders').attr('artistid'), $('#folders').attr('folderid'), true, false, displayFolders);

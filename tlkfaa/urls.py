@@ -162,6 +162,7 @@ urlpatterns = [
     url(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     url(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='bulletins'),
     url(r'^bulletin/(?P<bulletin_id>[0-9]+)/$', fanart_views.BulletinView.as_view(), name='bulletin'),
+    url(r'^bulletin/(?P<bulletin_id>[0-9]+)/reply/$', fanart_views.PostBulletinReplyView.as_view(), name='post-bulletin-reply'),
 
     url(r'^aotm/vote/$', fanart_views.AotmVoteView.as_view(), name='aotm-vote'),
     url(r'^aotm/vote/form/$', fanart_views.AotmVoteFormView.as_view(), name='aotm-vote-form'),

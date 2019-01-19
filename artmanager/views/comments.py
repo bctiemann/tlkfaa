@@ -59,7 +59,7 @@ class CommentsView(ArtManagerPaneView):
                 comment_type = 'sent'
 
         if comment_type == 'received':
-            comments = models.PictureComment.objects.filter(picture__artist=self.request.user).order_by('-date_posted')
+            comments = models.ThreadedComment.objects.filter(picture__artist=self.request.user).order_by('-date_posted')
             show_all = False
             if self.request.GET.get('show_all') == '1':
                 show_all = True
@@ -67,7 +67,7 @@ class CommentsView(ArtManagerPaneView):
                 comments = comments.filter(is_received=False)
             context['show_all'] = show_all
         elif comment_type == 'sent':
-            comments = self.request.user.picturecomment_set.all().order_by('-date_posted')
+            comments = self.request.user.threadedcomment_set.all().order_by('-date_posted')
 
         context['comments_paginator'] = Paginator(comments, settings.COMMENTS_PER_PAGE_ARTMANAGER)
         try:
@@ -94,11 +94,11 @@ class MarkCommentsReadView(APIView):
             if not comment_id:
                 continue
             try:
-                comment = models.PictureComment.objects.get(pk=comment_id, picture__artist=request.user)
+                comment = models.ThreadedComment.objects.get(pk=comment_id, picture__artist=request.user)
                 comment.is_received = True
                 comment.save()
                 logger.info(comment.id)
-            except models.PictureComment.DoesNotExist:
+            except models.ThreadedComment.DoesNotExist:
                 pass
         response['success'] = True
         return Response(response)
@@ -108,7 +108,7 @@ class CommentDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/comment.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.PictureComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+        return get_object_or_404(models.ThreadedComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
 
     def get_context_data(self, **kwargs):
         context = super(CommentDetailView, self).get_context_data(**kwargs)
@@ -117,12 +117,12 @@ class CommentDetailView(LoginRequiredMixin, DetailView):
 
 
 class CommentDeleteView(LoginRequiredMixin, UpdateView):
-    model = models.PictureComment
+    model = models.ThreadedComment
     form_class = forms.DeleteCommentForm
     template_name = 'artmanager/comment.html'
 
     def get_object(self):
-        return get_object_or_404(models.PictureComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+        return get_object_or_404(models.ThreadedComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
 
     def form_valid(self, form):
         self.object.is_deleted = True
