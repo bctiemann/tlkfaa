@@ -1423,7 +1423,9 @@ class Bulletin(models.Model):
         return reverse('bulletin', kwargs={'bulletin_id': self.id})
 
     def __unicode__(self):
-        return '{0}: {1} {2}'.format(self.user.username, self.id, self.title)
+        if self.user:
+            return '{0}: {1} {2}'.format(self.user.username, self.id, self.title)
+        return '{0} {1}'.format(self.id, self.title)
 
 
 class Contest(models.Model):
