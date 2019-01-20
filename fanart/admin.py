@@ -109,7 +109,7 @@ admin.site.register(fanart_models.Folder, FolderAdmin)
 
 
 class ThreadedCommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'picture', 'date_posted', 'num_replies',)
+    list_display = ('user', 'picture', 'bulletin', 'date_posted', 'num_replies',)
     list_filter = ()
     readonly_fields = ('user', 'picture', 'reply_to',)
     user_id_for_formfield = None

@@ -1422,6 +1422,9 @@ class Bulletin(models.Model):
     def get_absolute_url(self):
         return reverse('bulletin', kwargs={'bulletin_id': self.id})
 
+    def __unicode__(self):
+        return '{0}: {1} {2}'.format(self.user.username, self.id, self.title)
+
 
 class Contest(models.Model):
     TYPE_CHOICES = (
