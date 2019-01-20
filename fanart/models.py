@@ -926,6 +926,8 @@ class ThreadedComment(BaseComment):
         return reverse('comments', kwargs={'picture_id': self.picture.id})
 
     def __unicode__(self):
+        if self.bulletin:
+            return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.bulletin, self.bulletin.user.username)
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)
 
 
