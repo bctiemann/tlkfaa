@@ -1768,6 +1768,7 @@ class BulletinView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(BulletinView, self).get_context_data(**kwargs)
         context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(bulletin=self.object), sort_by='date_posted', parent_field='reply_to')
+        context['hash'] = uuid.uuid4()
         return context
 
     def get_object(self):
