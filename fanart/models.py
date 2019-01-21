@@ -1419,6 +1419,10 @@ class Bulletin(models.Model):
     show_email = models.BooleanField(default=False)
     allow_replies = models.BooleanField(default=True)
 
+    @property
+    def num_replies(self):
+        return self.threadedcomment_set.count()
+
     def get_absolute_url(self):
         return reverse('bulletin', kwargs={'bulletin_id': self.id})
 
