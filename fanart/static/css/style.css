@@ -619,6 +619,14 @@ img.bulletinprofilepic {
 	font-size: 16px;
 	margin: 30px 50px 0px 50px;
 }
+#dialog_bulletin .bulletin-title .bulletin-reply-pm {
+	font-size: 12px;
+	margin-top: 8px;
+	cursor: pointer;
+}
+#dialog_bulletin .bulletin-title .bulletin-reply-pm:hover {
+	text-decoration: underline;
+}
 
 
 div.current-contest {

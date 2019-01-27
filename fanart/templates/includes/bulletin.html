@@ -22,6 +22,7 @@
         {% endif %}
     {% endif %}
     {{ bulletin.title }}
+    <p class="bulletin-reply-pm"<a href="javascript:nop();" onClick="replyPM({{ bulletin.user.id }},null,{{ bulletin.id }});">Reply PM</a></p>
 </div>
 
 <div class="pm">

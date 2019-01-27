@@ -66,12 +66,12 @@
                 </tr>
                 <tr>
                     <td class="label">Subject</td>
-                    <td class="data"><input name="subject" id="subject" maxlength="255" validate="hasvalue" message="You must enter a subject." {% if shout %}value="Re: Your Roar"{% endif %}" /></td>
+                    <td class="data"><input name="subject" id="subject" maxlength="255" validate="hasvalue" message="You must enter a subject." {% if shout %}value="Re: Your Roar"{% elif bulletin %}value="Re: {{ bulletin.title }}"{% endif %}" /></td>
                 </tr>
                 <tr>
                     <td class="label"></td>
                     <td class="data">
-                        <textarea name="message" class="pm">{{ shout.quoted_comment }}</textarea><br />
+                        <textarea name="message" class="pm">{{ shout.quoted_comment }}{{ bulletin.quoted_comment }}</textarea><br />
                         <div class="replybuttons">
                             <button type="button" onClick="validateForm('pm_new','document.pm_new.submit()')">Send</button>
                         </div>

@@ -1420,6 +1420,10 @@ class Bulletin(models.Model):
     allow_replies = models.BooleanField(default=True)
 
     @property
+    def quoted_comment(self):
+        return '\n\n\n[quote]\n{0}\n[/quote]'.format(self.bulletin)
+
+    @property
     def num_replies(self):
         return self.threadedcomment_set.count()
 

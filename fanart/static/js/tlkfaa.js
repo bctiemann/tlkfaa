@@ -333,8 +333,12 @@ function doAotmVote(artistid) {
   });
 }
 
-function replyPM(recptid,shoutid) {
-    window.location.href = '/ArtManager/private_msgs/user/' + recptid + '/?shout_id=' + shoutid;
+function replyPM(recptid,shoutid,bulletinid) {
+    if (shoutid) {
+        window.location.href = '/ArtManager/private_msgs/user/' + recptid + '/?shout_id=' + shoutid;
+    } else if (bulletinid) {
+        window.location.href = '/ArtManager/private_msgs/user/' + recptid + '/?bulletin_id=' + bulletinid;
+    }
 /*
   Shadowbox.open({
     player: 'iframe',
@@ -2914,6 +2918,7 @@ function newPM(recipient_id, query_str) {
         url += recipient_id + '/';
     }
     url += '?' + query_str;
+console.log(url);
     $('#pms').load(url, function(data) {
         setupAutocompleteArtist($('input#recpt'), 'validatePMRecipient()');
     });
