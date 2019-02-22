@@ -325,7 +325,10 @@ class CharactersView(UserPaneMixin, TemplateView):
         mode = list
         tab_selected = list
 
-        start = int(self.request.GET.get('start', 0))
+        try:
+            start = int(self.request.GET.get('start', 0))
+        except ValueError:
+            start = 0
         initial = self.request.GET.get('initial', None)
 
         characters = models.Character.objects.all()
