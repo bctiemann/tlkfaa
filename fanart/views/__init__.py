@@ -358,7 +358,10 @@ class CharactersView(UserPaneMixin, TemplateView):
                     list = 'charactername'
                 characters = characters.filter(owner__is_active=True).order_by('name')
                 if list_type == 'artist':
-                    characters = characters.filter(owner__id=term)
+                    try:
+                        characters = characters.filter(owner__id=term)
+                    except ValueError:
+                        pass
                 elif list_type == 'species':
                     if match_type == 'exact':
                         characters = characters.filter(species=term)
