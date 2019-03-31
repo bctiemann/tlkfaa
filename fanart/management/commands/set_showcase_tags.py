@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for showcase in models.Showcase.objects.all():
-            print showcase.keyword
+            print(showcase.keyword)
             tag = models.Tag.objects.get(tag=showcase.keyword)
             showcase.tag = tag
             showcase.save()

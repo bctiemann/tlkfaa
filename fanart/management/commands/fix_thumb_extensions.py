@@ -38,22 +38,22 @@ class Command(BaseCommand):
 
         for picture in models.Picture.objects.filter(pk__gte=start_id).exclude(artist_id=36222).order_by('-date_uploaded'):
 #        for picture in models.Picture.objects.filter(pk=645510).order_by('-date_uploaded'):
-            print picture, picture.date_uploaded
+            print(picture, picture.date_uploaded)
 
             image = Image.open(picture.path)
 
             if to_legacy:
-                print 'To legacy'
+                print('To legacy')
                 thumbnail_path = picture.thumbnail_path_corrected
                 preview_path = picture.preview_path_corrected
             elif from_legacy:
-                print 'From legacy'
+                print('From legacy')
                 thumbnail_path = picture.thumbnail_path_legacy
                 preview_path = picture.preview_path_legacy
 
             preview = Image.open(preview_path)
             if settings.IMAGE_FILE_TYPES[Image.MIME[preview.format]] != 'jpg':
-                print preview.format
+                print(preview.format)
                 if to_legacy:
                     preview_new = Image.new('RGB', preview.size)
                     image = Image.open(picture.path)
@@ -66,7 +66,7 @@ class Command(BaseCommand):
 #                    os.rename(picture.preview_path_legacy, picture.preview_path_corrected)
             thumbnail = Image.open(thumbnail_path)
             if settings.IMAGE_FILE_TYPES[Image.MIME[thumbnail.format]] != 'jpg':
-                print thumbnail.format
+                print(thumbnail.format)
                 if to_legacy:
                     thumbnail_new = Image.new('RGB', thumbnail.size)
                     image = Image.open(picture.path)

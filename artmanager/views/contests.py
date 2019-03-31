@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404

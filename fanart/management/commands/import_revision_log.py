@@ -43,8 +43,8 @@ class Command(BaseCommand):
                         entry_str = ' '.join(entry)
                         entry_str = entry_str.replace('<br><br>  ', '\n\n').replace('<BR><BR>  ', '\n\n').replace('<DD>', '')
                         entry_str = bbcode_parser.feed(entry_str)
-                        print entry_date
-                        print entry_str
+                        print(entry_date)
+                        print(entry_str)
                         models.RevisionLog.objects.create(date_created=entry_date, entry=entry_str)
 
                     if '<DT>' in line:

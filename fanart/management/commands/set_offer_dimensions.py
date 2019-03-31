@@ -17,12 +17,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         offers = Offer.objects.filter(picture='')
         for i, offer in enumerate(offers):
-            print i, offer
+            print(i, offer)
             path = os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.{1}'.format(offer.id, offer.extension))
             thumb_path = os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.s.jpg'.format(offer.id))
             img_path = None
 
-            print path
+            print(path)
             if os.path.exists(path):
                 img_path = path
             elif os.path.exists(thumb_path):
@@ -35,7 +35,7 @@ class Command(BaseCommand):
             except IOError:
                 continue
 
-            print im.width, im.height
+            print(im.width, im.height)
             offer.width = im.width
             offer.height = im.height
             offer.save()

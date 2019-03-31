@@ -1,5 +1,5 @@
 try:
-    from settings_shared import *
+    from tlkfaa.settings_shared import *
 except ImportError:
     pass
 

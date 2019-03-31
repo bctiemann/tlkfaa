@@ -9,7 +9,7 @@ register = template.Library()
 
 @register.filter(name='times')
 def times(number):
-    return range(number)
+    return list(range(number))
 
 @register.filter
 @stringfilter
