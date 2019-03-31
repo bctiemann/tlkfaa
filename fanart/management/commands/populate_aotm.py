@@ -28,7 +28,7 @@ class Command(BaseCommand):
         for artist in models.User.objects.filter(featured__isnull=False).exclude(featured='no').order_by('featured'):
             date_featured = datetime.datetime.strptime(artist.featured, '%Y-%m')
             aotm, created = models.FeaturedArtist.objects.get_or_create(artist=artist, date_featured=date_featured)
-            print aotm
+            print(aotm)
 
             try:
                 file = open(os.path.join(settings.MEDIA_ROOT, 'featured', artist.featured, 'intro'), 'r')
@@ -74,13 +74,13 @@ class Command(BaseCommand):
                 try:
                     picture = models.Picture.objects.get(artist=artist, filename=filename)
                 except models.Picture.DoesNotExist:
-                    print '{0} not found'.format(filename)
+                    print('{0} not found'.format(filename))
                 except models.Picture.MultipleObjectsReturned:
-                    raise Exception, 'Multiple matches for {0}'.format(filename)
+                    raise Exception('Multiple matches for {0}'.format(filename))
 
                 if picture and not file_exists:
                     if os.path.exists(file_path):
-                        raise Exception, '{0} already exists in {1}'.format(filename, artist.featured)
+                        raise Exception('{0} already exists in {1}'.format(filename, artist.featured))
                     shutil.copy(picture.path, file_dir)
                     shutil.copy(picture.thumbnail_path, file_dir)
 
@@ -94,4 +94,4 @@ class Command(BaseCommand):
                         height = 0
                     defaults = {'width': width, 'height': height, 'picture': picture}
                     aotm_pic, created = models.FeaturedArtistPicture.objects.get_or_create(featured_artist=aotm, showcase_picture='featured/{0}/{1}'.format(artist.featured, filename), defaults=defaults)
-                    print aotm_pic
+                    print(aotm_pic)

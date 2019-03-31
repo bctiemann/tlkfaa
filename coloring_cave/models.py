@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, connection
@@ -44,8 +44,8 @@ def get_coloring_thumb_path(instance, filename):
 
 class Base(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    creator = models.ForeignKey('fanart.User', null=True, blank=True, related_name='coloringbase_set')
-    picture = models.ForeignKey('fanart.Picture', null=True, blank=True, related_name='coloringbase_set')
+    creator = models.ForeignKey('fanart.User', null=True, blank=True, related_name='coloringbase_set', on_delete=models.SET_NULL)
+    picture = models.ForeignKey('fanart.Picture', null=True, blank=True, related_name='coloringbase_set', on_delete=models.SET_NULL)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
@@ -84,8 +84,8 @@ class Base(models.Model):
 
 class ColoringPicture(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    artist = models.ForeignKey('fanart.User', null=True, blank=True)
-    base = models.ForeignKey('Base', null=True, blank=True)
+    artist = models.ForeignKey('fanart.User', null=True, blank=True, on_delete=models.SET_NULL)
+    base = models.ForeignKey('Base', null=True, blank=True, on_delete=models.SET_NULL)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
     filename = models.CharField(max_length=100, blank=True)

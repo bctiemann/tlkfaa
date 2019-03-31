@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for claim in models.Claim.objects.filter(picture=''):
-            print claim
+            print(claim)
             extension = None
             for ext in ('jpg', 'png', 'gif'):
                 if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'Artwork', 'claims', '{0}.{1}'.format(claim.id, ext))):

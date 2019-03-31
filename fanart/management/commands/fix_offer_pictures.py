@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for offer in models.Offer.objects.filter(picture=''):
-            print offer
+            print(offer)
             extension = None
             for ext in ('jpg', 'png', 'gif'):
                 if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'Artwork', 'offers', '{0}.{1}'.format(offer.id, ext))):

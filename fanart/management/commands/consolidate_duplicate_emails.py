@@ -36,7 +36,7 @@ class Command(BaseCommand):
         else:
             email_list = [u['email'] for u in models.User.objects.values('email').annotate(num_email=Count('email')).filter(num_email__gt=1).order_by('-num_email', 'email')]
 
-        print('{0} emails duplicated.'.format(len(email_list)))
+        print(('{0} emails duplicated.'.format(len(email_list))))
 
         for email in email_list:
 
@@ -94,13 +94,13 @@ class Command(BaseCommand):
                 if gifts_rcvd:
                     user_row += '\t{gifts_rcvd} gifts rcvd'.format(gifts_rcvd=gifts_rcvd)
 
-                print user_row
+                print(user_row)
 
             if skip_merge_artists and len(artist_accounts) > 1:
-                print 'Multiple artist accounts found; skipping'
+                print('Multiple artist accounts found; skipping')
                 continue
 
-            master_user_id_input = raw_input('\nEnter ID of user to consolidate into, or Enter to skip: ')
+            master_user_id_input = input('\nEnter ID of user to consolidate into, or Enter to skip: ')
             if master_user_id_input == '':
                 continue
 
@@ -112,8 +112,8 @@ class Command(BaseCommand):
                         master_user_id = None
                         raise ValueError
                 except ValueError:
-                    print 'Invalid input value.'
-                    master_user_id_input = raw_input('Enter ID of user to consolidate into, or Enter to skip: ')
+                    print('Invalid input value.')
+                    master_user_id_input = input('Enter ID of user to consolidate into, or Enter to skip: ')
                     if master_user_id_input == '':
                         break
 
@@ -123,17 +123,17 @@ class Command(BaseCommand):
             master_user = models.User.objects.get(pk=master_user_id)
 
             for user in matching_users.exclude(pk=master_user_id):
-                print user
+                print(user)
 
                 for comment in user.picturecomment_set.all():
-                    print comment
-                    print comment.comment.encode('utf8')
+                    print(comment)
+                    print(comment.comment.encode('utf8'))
                     comment.user = master_user
                     comment.save()
 
                 for shout in user.shout_set.all():
-                    print shout
-                    print shout.comment.encode('utf8')
+                    print(shout)
+                    print(shout.comment.encode('utf8'))
                     shout.user = master_user
                     shout.save()
 
@@ -176,7 +176,7 @@ class Command(BaseCommand):
                         'last_viewed': fave_artist.last_viewed,
                     }
                     new_fave, created = models.Favorite.objects.get_or_create(artist=fave_artist.artist, user=master_user, defaults=defaults)
-                    print new_fave.id, created
+                    print(new_fave.id, created)
 
                 for fave_picture in user.favorite_set.filter(picture__isnull=False):
                     defaults = {
@@ -185,9 +185,9 @@ class Command(BaseCommand):
                         'last_viewed': fave_picture.last_viewed,
                     }
                     new_fave, created = models.Favorite.objects.get_or_create(picture=fave_picture.picture, user=master_user, defaults=defaults)
-                    print new_fave.id, created
+                    print(new_fave.id, created)
 
-                print user.absolute_dir_name
+                print(user.absolute_dir_name)
 
                 deletion_result = user.delete()
                 pprint.pprint(deletion_result)

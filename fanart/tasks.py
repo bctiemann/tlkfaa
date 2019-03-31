@@ -49,7 +49,7 @@ def send_email(recipients,
                 msg.attach(**attachment)
 
         msg.send()
-        logger.info(u'Sending email "{0}" to {1}...'.format(subject, recipient))
+        logger.info('Sending email "{0}" to {1}...'.format(subject, recipient))
 
     connection.close()
 
@@ -115,7 +115,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     try:
         im = Image.open(image_path)
         im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
-    except IOError, e:
+    except IOError as e:
         image_error = '{0} - {1} - {2}'.format(picture_object, e.message, image_path)
         logger.error(image_error)
         mail.mail_admins('Image processing error', image_error)
@@ -155,8 +155,8 @@ def process_images(model_class_path, model, object_id, thumb_size='small'):
     models = importlib.import_module(model_class_path)
 #    model_class = getattr(importlib.import_module(model_class_path), model)
 #    from model_app import models
-    print models
-    print model
+    print(models)
+    print(model)
     model_class = getattr(models, model)
 
     try:

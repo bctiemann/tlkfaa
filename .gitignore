@@ -1,7 +1,9 @@
 *.pyc
 logs/*
-venv/
+venv*
 static_root
 media
 work
 database.db
+.idea
+*.bak
