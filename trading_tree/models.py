@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, connection
@@ -59,7 +59,7 @@ class Offer(models.Model):
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True, editable=False, db_index=True)
-    artist = models.ForeignKey('fanart.User', null=True, blank=True)
+    artist = models.ForeignKey('fanart.User', null=True, blank=True, on_delete=models.SET_NULL)
     type = models.CharField(max_length=10, choices = TYPE_CHOICES, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     title = models.CharField(max_length=64, blank=True)
@@ -71,8 +71,8 @@ class Offer(models.Model):
     picture = models.ImageField(max_length=255, storage=fanart_models.OverwriteStorage(), height_field='height', width_field='width', upload_to=get_offers_path, null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-    character = models.ForeignKey('fanart.Character', null=True, blank=True)
-    adopted_by = models.ForeignKey('fanart.User', null=True, blank=True, related_name='trades_offered')
+    character = models.ForeignKey('fanart.Character', null=True, blank=True, on_delete=models.SET_NULL)
+    adopted_by = models.ForeignKey('fanart.User', null=True, blank=True, related_name='trades_offered', on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
     is_visible = models.BooleanField(default=True)
 
@@ -179,8 +179,8 @@ class Claim(models.Model):
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     hash = models.UUIDField(default=uuid.uuid4, null=True, blank=True, editable=False, db_index=True)
-    offer = models.ForeignKey('Offer', null=True, blank=True)
-    user = models.ForeignKey('fanart.User', null=True, blank=True)
+    offer = models.ForeignKey('Offer', null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey('fanart.User', null=True, blank=True, on_delete=models.SET_NULL)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     comment = models.TextField(blank=True)
     reference_url = models.CharField(max_length=255, blank=True)

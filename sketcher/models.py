@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models
 
@@ -12,7 +12,7 @@ class ActiveUser(models.Model):
 
 
 class Ban(models.Model):
-    user = models.ForeignKey('fanart.User')
+    user = models.ForeignKey('fanart.User', on_delete=models.CASCADE)
     date_banned = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    banned_by = models.ForeignKey('fanart.user', null=True, blank=True, related_name='sketcher_banned_users')
+    banned_by = models.ForeignKey('fanart.user', null=True, blank=True, related_name='sketcher_banned_users', on_delete=models.SET_NULL)
     ban_reason = models.TextField(blank=True, default='')

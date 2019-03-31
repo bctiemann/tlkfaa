@@ -6,3 +6,4 @@ media
 work
 database.db
 .idea
+*.bak

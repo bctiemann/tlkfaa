@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 if entry_notified:
                     continue
                 if entry.date_notified == None or (timezone.now() - entry.date_notified).days < 3:
-                    print entry, entry.num_votes
+                    print(entry, entry.num_votes)
                     entry_notified = True
                     if entry.date_notified == None:
                         entry.date_notified = timezone.now()

@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, connection
@@ -249,10 +249,10 @@ class User(AbstractUser):
 
     profile_pic_id = models.IntegerField(null=True, blank=True)
     profile_pic_ext = models.CharField(max_length=5, blank=True)
-    banner = models.ForeignKey('Banner', null=True, blank=True)
+    banner = models.ForeignKey('Banner', null=True, blank=True, on_delete=models.SET_NULL)
 #    old_banner_id = models.IntegerField(null=True, blank=True)
 #    old_banner_ext = models.CharField(max_length=5, blank=True)
-    example_pic = models.ForeignKey('Picture', null=True, blank=True)
+    example_pic = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
     suspension_message = models.TextField(blank=True)
     auto_approve = models.BooleanField(default=False)
     is_approver = models.BooleanField(default=False)
@@ -591,7 +591,7 @@ class PictureManager(models.Manager):
 
     @property
     def random_popular(self):
-        return self.filter(num_faves__gt=20).exclude(mime_type__in=settings.MOVIE_FILE_TYPES.keys()).order_by('?')
+        return self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('?')
 
     def get_queryset(self):
         return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False).exclude(artist__is_artist=False)
@@ -602,8 +602,8 @@ class Picture(models.Model):
     THUMBNAILS_JPEG = True
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    artist = models.ForeignKey('User', null=True)
-    folder = models.ForeignKey('Folder', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, on_delete=models.SET_NULL)
+    folder = models.ForeignKey('Folder', null=True, blank=True, on_delete=models.SET_NULL)
     filename = models.CharField(max_length=255, blank=True)
 #    extension = models.CharField(max_length=5, blank=True)
     title = models.TextField(blank=True)
@@ -626,7 +626,7 @@ class Picture(models.Model):
     is_public = models.BooleanField(default=True)
     rank_in_artist = models.IntegerField(default=0)
     rank_in_folder = models.IntegerField(default=0)
-    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='inserted')
+    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='inserted', on_delete=models.SET_NULL)
     keywords = models.TextField(blank=True)
     work_in_progress = models.BooleanField(default=False)
     allow_comments = models.BooleanField(default=True)
@@ -663,7 +663,7 @@ class Picture(models.Model):
 
     @property
     def is_movie(self):
-        return self.mime_type in settings.MOVIE_FILE_TYPES.keys()
+        return self.mime_type in list(settings.MOVIE_FILE_TYPES.keys())
 
     @property
     def video_width(self):
@@ -847,10 +847,10 @@ class Picture(models.Model):
 
 class Folder(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=64, blank=True)
     description = models.TextField(blank=True)
-    parent = models.ForeignKey('Folder', null=True, blank=True)
+    parent = models.ForeignKey('Folder', null=True, blank=True, on_delete=models.SET_NULL)
     num_pictures = models.IntegerField(default=0)
 
     @property
@@ -896,7 +896,7 @@ class Folder(models.Model):
 
 class BaseComment(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     comment = models.TextField(blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(null=True, blank=True)
@@ -912,9 +912,9 @@ class BaseComment(models.Model):
 
 
 class ThreadedComment(BaseComment):
-    picture = models.ForeignKey('Picture', null=True, blank=True)
-    bulletin = models.ForeignKey('Bulletin', null=True, blank=True)
-    reply_to = models.ForeignKey('ThreadedComment', null=True, blank=True, related_name='replies')
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
+    bulletin = models.ForeignKey('Bulletin', null=True, blank=True, on_delete=models.SET_NULL)
+    reply_to = models.ForeignKey('ThreadedComment', null=True, blank=True, related_name='replies', on_delete=models.SET_NULL)
 
     @property
     def num_replies(self):
@@ -938,7 +938,7 @@ class ShoutManager(models.Manager):
 
 
 class Shout(BaseComment):
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received')
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received', on_delete=models.SET_NULL)
 
     objects = ShoutManager()
 
@@ -967,13 +967,13 @@ class Character(models.Model):
     )
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    creator = models.ForeignKey('User', null=True, related_name='characters_created')
-    owner = models.ForeignKey('User', null=True, blank=True)
+    creator = models.ForeignKey('User', null=True, related_name='characters_created', on_delete=models.SET_NULL)
+    owner = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     is_canon = models.BooleanField(default=False)
-    adopted_from = models.ForeignKey('User', null=True, blank=True, related_name='characters_adopted_out')
+    adopted_from = models.ForeignKey('User', null=True, blank=True, related_name='characters_adopted_out', on_delete=models.SET_NULL)
     name = models.CharField(max_length=64, blank=True)
-    profile_picture = models.ForeignKey('Picture', null=True, blank=True)
-    profile_coloring_picture = models.ForeignKey('coloring_cave.ColoringPicture', null=True, blank=True)
+    profile_picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
+    profile_coloring_picture = models.ForeignKey('coloring_cave.ColoringPicture', null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
     species = models.CharField(max_length=64, blank=True)
     sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True)
@@ -1080,10 +1080,10 @@ class FavoriteManager(models.Manager):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='fans')
-    picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans')
-    character = models.ForeignKey('Character', null=True, blank=True, related_name='fans')
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='fans', on_delete=models.SET_NULL)
+    picture = models.ForeignKey('Picture', null=True, blank=True, related_name='fans', on_delete=models.SET_NULL)
+    character = models.ForeignKey('Character', null=True, blank=True, related_name='fans', on_delete=models.SET_NULL)
     is_visible = models.BooleanField(default=False)
     date_added = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     last_viewed = models.DateTimeField(null=True, blank=True)
@@ -1110,8 +1110,8 @@ class Pending(models.Model):
 
     THUMBNAILS_JPEG = True
 
-    artist = models.ForeignKey('User', null=True)
-    folder = models.ForeignKey('Folder', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, on_delete=models.SET_NULL)
+    folder = models.ForeignKey('Folder', null=True, blank=True, on_delete=models.SET_NULL)
     picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_pending_path, null=True, blank=True)
     filename = models.CharField(max_length=255, blank=True, default='')
 #    extension = models.CharField(max_length=5, blank=True, default='')
@@ -1127,7 +1127,7 @@ class Pending(models.Model):
     notify_on_approval = models.BooleanField(default=False)
     work_in_progress = models.BooleanField(default=False)
     allow_comments = models.BooleanField(default=True)
-    replaces_picture = models.ForeignKey('Picture', null=True, blank=True)
+    replaces_picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
     reset_upload_date = models.BooleanField(default=False)
     notify_fans_of_replacement = models.BooleanField(default=False)
     keywords = models.TextField(blank=True)
@@ -1140,7 +1140,7 @@ class Pending(models.Model):
     is_scanned = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     failed_processing = models.BooleanField(default=False)
-    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
+    approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures', on_delete=models.SET_NULL)
     locked_for_publish = models.BooleanField(default=False)
 
     objects = PendingManager()
@@ -1317,9 +1317,9 @@ class Pending(models.Model):
 
 
 class PictureCharacter(models.Model):
-    picture = models.ForeignKey('Picture', null=True, blank=True)
-    pending = models.ForeignKey('Pending', null=True, blank=True)
-    character = models.ForeignKey('Character', null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.CASCADE)
+    pending = models.ForeignKey('Pending', null=True, blank=True, on_delete=models.CASCADE)
+    character = models.ForeignKey('Character', null=True, blank=True, on_delete=models.CASCADE)
     date_tagged = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def save(self, update_thumbs=False, *args, **kwargs):
@@ -1342,9 +1342,9 @@ class Tag(models.Model):
 
 
 class GiftPicture(models.Model):
-    sender = models.ForeignKey('User', null=True, blank=True)
-    recipient = models.ForeignKey('User', null=True, blank=True, related_name='gifts_received')
-    picture = models.ForeignKey('Picture', null=True, blank=True)
+    sender = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    recipient = models.ForeignKey('User', null=True, blank=True, related_name='gifts_received', on_delete=models.SET_NULL)
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
     filename = models.CharField(max_length=100, blank=True)
     message = models.TextField(blank=True)
     reply_message = models.TextField(blank=True)
@@ -1368,8 +1368,8 @@ class SocialMedia(models.Model):
 
 
 class SocialMediaIdentity(models.Model):
-    social_media = models.ForeignKey('SocialMedia')
-    user = models.ForeignKey('User', null=True, blank=True)
+    social_media = models.ForeignKey('SocialMedia', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     identity = models.CharField(max_length=100, blank=True)
 
     def __unicode__(self):
@@ -1380,33 +1380,33 @@ class SocialMediaIdentity(models.Model):
 
 
 class UnviewedPicture(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
-    picture = models.ForeignKey('Picture', null=True, blank=True)
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='new_pictures')
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='new_pictures', on_delete=models.SET_NULL)
     date_added = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class ApprovalAccess(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     login = models.DateTimeField(null=True, blank=True)
     logout = models.DateTimeField(null=True, blank=True)
 
 
 class AdminBlog(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     message = models.TextField(blank=True)
 
 
 class ArtistName(models.Model):
-    artist = models.ForeignKey('User', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     date_changed = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     name = models.CharField(max_length=150, blank=True)
 
 
 class Block(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
-    blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocks_received')
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocks_received', on_delete=models.SET_NULL)
     date_blocked = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
@@ -1414,7 +1414,7 @@ class Block(models.Model):
 
 
 class Bulletin(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     date_posted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     is_published = models.BooleanField(default=False)
     date_published = models.DateTimeField(null=True, blank=True)
@@ -1449,7 +1449,7 @@ class Contest(models.Model):
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     type = models.CharField(max_length=16, choices=TYPE_CHOICES)
-    creator = models.ForeignKey('User', null=True, blank=True)
+    creator = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=64)
     description = models.TextField()
     rules = models.TextField(blank=True)
@@ -1503,8 +1503,8 @@ class Contest(models.Model):
 
 class ContestEntry(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
-    contest = models.ForeignKey('Contest', null=True, blank=True)
-    picture = models.ForeignKey('Picture', null=True, blank=True)
+    contest = models.ForeignKey('Contest', null=True, blank=True, on_delete=models.CASCADE)
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
     date_entered = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     date_notified = models.DateTimeField(null=True, blank=True)
 
@@ -1534,8 +1534,8 @@ class ContestEntry(models.Model):
 
 
 class ContestVote(models.Model):
-    entry = models.ForeignKey('ContestEntry', null=True, blank=True)
-    user = models.ForeignKey('User', null=True, blank=True)
+    entry = models.ForeignKey('ContestEntry', null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     date_voted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def get_absolute_url(self):
@@ -1544,7 +1544,7 @@ class ContestVote(models.Model):
 
 class Showcase(models.Model):
     keyword = models.CharField(max_length=32, blank=True)
-    tag = models.ForeignKey('Tag', null=True, blank=True)
+    tag = models.ForeignKey('Tag', null=True, blank=True, on_delete=models.SET_NULL)
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
     is_visible = models.BooleanField(default=True)
@@ -1559,15 +1559,15 @@ class Showcase(models.Model):
 
 
 class Vote(models.Model):
-    voter = models.ForeignKey('User', null=True, blank=True, related_name='votes_cast')
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received')
+    voter = models.ForeignKey('User', null=True, blank=True, related_name='votes_cast', on_delete=models.SET_NULL)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='votes_received', on_delete=models.SET_NULL)
     date_voted = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     # Count votes:
     # models.User.objects.filter(featured__isnull=True).values('id', 'username').annotate(num_votes=Count('votes_received')).filter(num_votes__gt=0).order_by('-num_votes')
 
 class CustomIcon(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True)
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     icon_id = models.IntegerField(null=True, blank=True)
     extension = models.CharField(max_length=3, blank=True)
     type = models.IntegerField(null=True, blank=True)
@@ -1588,7 +1588,7 @@ class Banner(models.Model):
 
 
 class FeaturedArtist(models.Model):
-    artist = models.ForeignKey('User')
+    artist = models.ForeignKey('User', on_delete=models.CASCADE)
     date_featured = models.DateField()
     intro_text = models.TextField(blank=True, default='')
     own_words_text = models.TextField(blank=True, default='')
@@ -1618,12 +1618,12 @@ class FeaturedArtist(models.Model):
 
 
 class FeaturedArtistPicture(models.Model):
-    featured_artist = models.ForeignKey('FeaturedArtist')
+    featured_artist = models.ForeignKey('FeaturedArtist', on_delete=models.CASCADE)
     showcase_picture = models.ImageField(max_length=255, storage=OverwriteStorage(), height_field='height', width_field='width', upload_to=get_featured_path, null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    picture = models.ForeignKey('Picture', null=True, blank=True)
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
 
     @property
     def basename(self):
@@ -1659,8 +1659,8 @@ class FeaturedArtistPicture(models.Model):
 class ModNote(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     note = models.TextField(blank=True)
-    artist = models.ForeignKey('User', null=True, blank=True, related_name='modnotes_received')
-    moderator = models.ForeignKey('User', null=True, blank=True)
+    artist = models.ForeignKey('User', null=True, blank=True, related_name='modnotes_received', on_delete=models.SET_NULL)
+    moderator = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ['date_created']

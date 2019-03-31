@@ -19,4 +19,4 @@ class Command(BaseCommand):
         standings = models.User.objects.filter(featured__isnull=True).values('id', 'username', 'last_login').annotate(num_votes=Count('votes_received')).filter(num_votes__gt=0).order_by('-num_votes')
 
         for user in standings:
-            print('{0}\t{1}\t{2}\t{3}'.format(user['num_votes'], user['last_login'].strftime('%b %d %Y'), user['id'], user['username']))
+            print(('{0}\t{1}\t{2}\t{3}'.format(user['num_votes'], user['last_login'].strftime('%b %d %Y'), user['id'], user['username'])))
