@@ -17,18 +17,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         requiring_approval = [p.id for p in models.Pending.objects.requiring_approval()]
         for pending in models.Pending.objects.all():
-            print pending.id
+            print(pending.id)
 
             if pending.id in requiring_approval:
-                print '{0} requires approval'.format(pending.id)
+                print('{0} requires approval'.format(pending.id))
                 continue
 
             if not pending.thumbnail_created or not pending.preview_created:
-                print '{0} thumbnails still processing'.format(pending.id)
+                print('{0} thumbnails still processing'.format(pending.id))
                 continue
 
             if pending.locked_for_publish:
-                print '{0} locked for publish'.format(pending.id)
+                print('{0} locked for publish'.format(pending.id))
                 continue
 
             pending.locked_for_publish = True
@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 original_preview_path = pending.replaces_picture.preview_path
 
                 picture = pending.replaces_picture
-                for key, value in defaults.iteritems():
+                for key, value in defaults.items():
                     setattr(picture, key, value)
                 if pending.reset_upload_date:
                     picture.date_uploaded = pending.date_uploaded

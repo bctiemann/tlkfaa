@@ -35,7 +35,7 @@ urlpatterns = [
         fanart_views.LoginView.as_view(),
         name='login',
     ),
-    url(r'^logout/', auth_views.logout, {'next_page': 'home'}, name='logout'),
+    url(r'^logout/', auth_views.LogoutView.as_view(), {'next_page': 'home'}, name='logout'),
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
     url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
@@ -178,7 +178,7 @@ urlpatterns = [
     url(r'^banner/upload/$', fanart_views.UploadBannerView.as_view(), name='upload-banner'),
     url(r'^banner/remove/$', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
 
-    url(r'^ArtManager/', include('artmanager.urls', 'artmanager')),
+    url(r'^ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
 ]
 
 if settings.DEBUG:

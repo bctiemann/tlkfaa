@@ -16,9 +16,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         users = models.User.objects.all()
         for i, user in enumerate(users):
-            print i, user
+            print(i, user)
             if not models.ArtistName.objects.filter(artist=user).exists():
-                print 'Backfilling...'
+                print('Backfilling...')
                 artist_name = models.ArtistName.objects.create(artist=user, name=user.username)
                 artist_name.date_changed = user.date_joined
                 artist_name.save()

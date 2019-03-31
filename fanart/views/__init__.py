@@ -264,7 +264,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
         elif list == 'prolific':
             artists = artists.order_by('-num_pictures')
         elif list == 'random':
-            random_ids = random.sample(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max']), 100)
+            random_ids = random.sample(list(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max'])), 100)
             artwork = artwork.filter(pk__in=random_ids)
         elif list in ['search', 'tag', 'character']:
             term = self.request.GET.get('term', None)
@@ -372,7 +372,7 @@ class CharactersView(UserPaneMixin, TemplateView):
                         characters = characters.filter(name=term)
                     else:
                         characters = characters.filter(name__icontains=term)
-                print characters
+                print(characters)
                 if start > 0:
                     context['show_search_box'] = False
                 context['term'] = term
@@ -588,7 +588,7 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
             raise Http404
 
         winning_entry = None
-        print latest_contest.winning_entries
+        print(latest_contest.winning_entries)
         for entry in latest_contest.winning_entries:
             if entry.date_notified:
                 winning_entry = entry
@@ -694,7 +694,7 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
             email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
                 recipients=[self.object.sender.email],
-                subject=u'TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
+                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
                 context=email_context,
                 text_template='email/gift_accepted.txt',
                 html_template='email/gift_accepted.html',
@@ -708,7 +708,7 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
             email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
             tasks.send_email.delay(
                 recipients=[self.object.sender.email],
-                subject=u'TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
+                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
                 context=email_context,
                 text_template='email/gift_rejected.txt',
                 html_template='email/gift_rejected.html',
@@ -791,7 +791,7 @@ class RegisterView(FormView):
         # Check if password complexity requirements are met
         try:
             password_valid = password_validation.validate_password(password)
-        except password_validation.ValidationError, errors:
+        except password_validation.ValidationError as errors:
             ajax_response = {
                 'success': False,
                 'errors': {'password': list(errors)},
@@ -1177,7 +1177,7 @@ class PictureView(UserPaneMixin, TemplateView):
             context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
 
         logger.debug('{0} {1} viewing picture {2} via {3}'.format(self.request.user, self.request.META['REMOTE_ADDR'], picture, self.template_name))
-        context['video_types'] = settings.MOVIE_FILE_TYPES.keys()
+        context['video_types'] = list(settings.MOVIE_FILE_TYPES.keys())
         return context
 
 
@@ -1722,7 +1722,7 @@ class UploadBannerView(CreateView):
         if form.cleaned_data['picture'].size > settings.MAX_BANNER_SIZE:
             formatted_size = filesizeformat(settings.MAX_BANNER_SIZE)
             logger.info(formatted_size)
-            response['message'] = u'File is too large. Please keep the file size under {0} for banner images.'.format(formatted_size)
+            response['message'] = 'File is too large. Please keep the file size under {0} for banner images.'.format(formatted_size)
             return JsonResponse(response)
 
         try:

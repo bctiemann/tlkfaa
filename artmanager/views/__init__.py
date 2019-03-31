@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404
@@ -145,7 +145,7 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
             # Check if password complexity requirements are met
             try:
                 password_valid = password_validation.validate_password(password)
-            except password_validation.ValidationError, errors:
+            except password_validation.ValidationError as errors:
                 ajax_response = {
                     'success': False,
                     'errors': {'password': list(errors)},
@@ -243,14 +243,14 @@ class UploadFileView(LoginRequiredMixin, CreateView):
         if not 'picture' in self.request.FILES:
             raise Http404
 
-        if not self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys() + settings.IMAGE_FILE_TYPES.keys():
-            response['message'] = 'Invalid file type. Valid types are: {0}'.format(', '.join(settings.IMAGE_FILE_TYPES.values() + settings.MOVIE_FILE_TYPES.values()))
+        if not self.request.FILES['picture'].content_type in list(settings.MOVIE_FILE_TYPES.keys()) + list(settings.IMAGE_FILE_TYPES.keys()):
+            response['message'] = 'Invalid file type. Valid types are: {0}'.format(', '.join(list(settings.IMAGE_FILE_TYPES.values()) + list(settings.MOVIE_FILE_TYPES.values())))
             return JsonResponse(response)
 
         if self.request.FILES['picture'].size > settings.MAX_UPLOAD_SIZE_HARD:
             formatted_size = filesizeformat(settings.MAX_UPLOAD_SIZE_HARD)
             logger.info(formatted_size)
-            response['message'] = u'File is too large. Please keep the file size under {0}.'.format(formatted_size)
+            response['message'] = 'File is too large. Please keep the file size under {0}.'.format(formatted_size)
             return JsonResponse(response)
 
         try:
@@ -268,7 +268,7 @@ class UploadFileView(LoginRequiredMixin, CreateView):
         pending.remote_host = self.request.META['REMOTE_ADDR']
         pending.remote_addr = self.request.META['REMOTE_ADDR']
         pending.user_agent = self.request.META['HTTP_USER_AGENT']
-        if self.request.FILES['picture'].content_type in settings.MOVIE_FILE_TYPES.keys():
+        if self.request.FILES['picture'].content_type in list(settings.MOVIE_FILE_TYPES.keys()):
             pending.is_movie = True
             update_thumbs = False
         pending.save(update_thumbs=update_thumbs)
@@ -764,7 +764,7 @@ class GiftPictureSendView(APIView):
             tasks.send_email.delay(
                 recipients=[recipient.email],
                 context=email_context,
-                subject=u'TLKFAA ArtWall submission from {0}'.format(request.user.username),
+                subject='TLKFAA ArtWall submission from {0}'.format(request.user.username),
                 text_template='email/gift_sent.txt',
                 html_template='email/gift_sent.html',
                 bcc=[settings.DEBUG_EMAIL]

@@ -1,5 +1,5 @@
 import re
-import htmlentitydefs
+import html.entities
 
 import logging
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [
-        dict(zip(columns, row))
+        dict(list(zip(columns, row)))
         for row in cursor.fetchall()
     ]
 
@@ -92,7 +92,7 @@ class PagesLink(object):
         last_page = num_pages + 1
         new_query_dict = query_dict.copy()
         new_query_dict.pop('page', None)
-        new_query_str = '&'.join([k + '=' + str(v) for k, v in new_query_dict.items()])
+        new_query_str = '&'.join([k + '=' + str(v) for k, v in list(new_query_dict.items())])
 
         if selection_type == 'text':
             if page_num > 3:
@@ -109,7 +109,7 @@ class PagesLink(object):
             elif page_num > 2:
                 pages_nav = '{0} <a href="javascript:nop()" onClick="turnPage({1},\'{2}\')">Prev</a> '.format(pages_nav, prev_page, new_query_str)
 
-        for i in xrange(page_num - 2, page_num + 3):
+        for i in range(page_num - 2, page_num + 3):
             if i > 0 and i < num_pages + 2:
                 if page_num == i:
                     if selection_type in ['text', 'ajax']:
@@ -166,15 +166,15 @@ def unescape(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return unichr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return unichr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = chr(html.entities.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text # leave as is
