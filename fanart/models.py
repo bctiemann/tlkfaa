@@ -1139,6 +1139,7 @@ class Pending(models.Model):
     force_approve = models.BooleanField(default=False)
     is_scanned = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
+    failed_processing = models.BooleanField(default=False)
     approved_by = models.ForeignKey('User', null=True, blank=True, related_name='approved_pictures')
     locked_for_publish = models.BooleanField(default=False)
 
@@ -1166,6 +1167,8 @@ class Pending(models.Model):
 
     @property
     def thumbnail_url(self):
+        if self.failed_processing:
+            return settings.FAILED_PROCESSING_IMG_URL
         if self.is_movie:
             if self.has_thumb:
                 return '{0}pending/{1}/{2}.s.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)
@@ -1176,6 +1179,8 @@ class Pending(models.Model):
 
     @property
     def preview_url(self):
+        if self.failed_processing:
+            return settings.FAILED_PROCESSING_IMG_URL
         if self.is_movie:
             if self.has_thumb:
                 return '{0}pending/{1}/{2}.p.{3}'.format(settings.MEDIA_URL, self.directory, self.sanitized_basename, self.thumbnail_extension)

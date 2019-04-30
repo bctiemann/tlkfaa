@@ -370,11 +370,13 @@ MOVIE_FILE_TYPES = {
 }
 
 SPINNER_IMG = 'images/loading_spinner.gif'
+FAILED_PROCESSING_IMG = 'images/failed_processing.png'
 BLANKDOT_IMG = 'images/blankdot.gif'
 CHARACTER_PLACEHOLDER_IMG = 'images/blank_characterthumb.jpg'
 MOVIE_ICON_IMG = 'images/movie_icon.gif'
 
 SPINNER_IMG_URL = '{0}{1}'.format(STATIC_URL, SPINNER_IMG)
+FAILED_PROCESSING_IMG_URL = '{0}{1}'.format(STATIC_URL, FAILED_PROCESSING_IMG)
 BLANKDOT_IMG_URL = '{0}{1}'.format(STATIC_URL, BLANKDOT_IMG)
 CHARACTER_PLACEHOLDER_IMG_URL = '{0}{1}'.format(STATIC_URL, CHARACTER_PLACEHOLDER_IMG)
 MOVIE_ICON_IMG_URL = '{0}{1}'.format(STATIC_URL, MOVIE_ICON_IMG)

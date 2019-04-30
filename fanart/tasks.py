@@ -119,6 +119,22 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         image_error = '{0} - {1} - {2}'.format(picture_object, e.message, image_path)
         logger.error(image_error)
         mail.mail_admins('Image processing error', image_error)
+
+        if model == 'Pending' and not picture_object.failed_processing:
+            email_context = {
+                'user': picture_object.artist,
+                'pending': picture_object,
+            }
+            send_email.delay(
+                recipients=[picture_object.artist.email],
+                subject='TLKFAA: Image processing error',
+                context=email_context,
+                text_template='email/approval/rejected_reupload.txt',
+                html_template='email/approval/rejected_reupload.html',
+            )
+            picture_object.failed_processing = True
+            picture_object.save()
+
         return None, None
 
     if getattr(picture_object, 'THUMBNAILS_JPEG', True) == True:
