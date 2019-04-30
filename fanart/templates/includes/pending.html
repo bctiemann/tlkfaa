@@ -34,6 +34,10 @@
                         <p><img src="{% static "images/warning.png" %}" /> {{ approval_trigger }}</p>
                     {% endfor %}
                     <br />
+                    {% if pending.failed_processing %}
+                        <h4>Image failed processing!</h4>
+                        <p>Please re-save or convert this image to correct any corrupt data and re-submit.</p>
+                    {% endif %}
                 </div>
             </td>
             <td class="fullwidth picturedetails">

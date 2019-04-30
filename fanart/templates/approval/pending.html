@@ -44,9 +44,13 @@ $(function () {
 
                 {% else %}
                     <input type="text" size="40" name="filename" value="{{ pending.sanitized_basename }}" />
-                    <button type="button" class="small approve" onClick="approvePicture('approve','{{ pending.id }}')">Approve</button>
-                    <div class="sendwarning"><input type="checkbox" name="warn_ot" id="warn_ot_{{ pending.id }}" value="1" /> <label for="warn_ot_{{ pending.id }}">Send off-topic warning</label></div>
-                    <div class="sendwarning"><input type="checkbox" name="warn_copied" id="warn_copied_{{ pending.id }}" value="1" /> <label for="warn_copied_{{ pending.id }}">Send originality warning</label></div>
+                    {% if pending.failed_processing %}
+                        <b>Image failed processing</b>
+                    {% else %}
+                        <button type="button" class="small approve" onClick="approvePicture('approve','{{ pending.id }}')">Approve</button>
+                        <div class="sendwarning"><input type="checkbox" name="warn_ot" id="warn_ot_{{ pending.id }}" value="1" /> <label for="warn_ot_{{ pending.id }}">Send off-topic warning</label></div>
+                        <div class="sendwarning"><input type="checkbox" name="warn_copied" id="warn_copied_{{ pending.id }}" value="1" /> <label for="warn_copied_{{ pending.id }}">Send originality warning</label></div>
+                    {% endif %}
                 {% endif %}
 		{% if pending.notes %}<div class="pendingnotes">{{ pending.notes }}</div>{% endif %}
                 <input type="hidden" name="uploadop" value="moviethumb" />
@@ -82,7 +86,7 @@ $(function () {
                 {% if pending.keywords %}<div class="pendingkeywords">Keywords: {{ pending.keywords }}</div>{% endif %}
             </td>
             <td class="resize">
-                {% if not pending.is_movie %}
+                {% if not pending.is_movie and not pending.failed_processing %}
                     <div class="imginfo"><span{% if pending.width > threshold_width or pending.height > threshold_height %} class="warning"{% endif %}>{{ pending.width }} &times; {{ pending.height }}</span> <span{% if pending.picture.size > threshold_size %} class="warning"{% endif %}>{{ pending.picture.size|filesizeformat }}</span></div>
                     w = <input type="text" size="4" name="width" value="{{ pending.width }}" /><a href="javascript:nop" onClick="document.approveform_{{ pending.id }}.width.value=1000">-</a><br />
                     h = <input type="text" size="4" name="height" value="" /><br />
@@ -92,10 +96,12 @@ $(function () {
                 {% endif %}
             </td>
             <td class="reject">
-                <input type="radio" name="reason" id="reason_copied_{{ pending.id }}" value="copied" /> <label for="reason_copied_{{ pending.id }}">Copied</label><br />
-                <input type="radio" name="reason" id="reason_ot_{{ pending.id }}" value="off-topic" /> <label for="reason_ot_{{ pending.id }}">Off-topic</label><br />
-                <input type="radio" name="reason" id="reason_inappropriate_{{ pending.id }}" value="inappropriate" /> <label for="reason_inappropriate_{{ pending.id }}">Inappropriate</label><br />
-                <input type="radio" name="reason" id="reason_reupload_{{ pending.id }}" value="reupload" /> <label for="reason_reupload_{{ pending.id }}">Re-upload</label><br />
+                {% if not pending.failed_processing %}
+                    <input type="radio" name="reason" id="reason_copied_{{ pending.id }}" value="copied" /> <label for="reason_copied_{{ pending.id }}">Copied</label><br />
+                    <input type="radio" name="reason" id="reason_ot_{{ pending.id }}" value="off-topic" /> <label for="reason_ot_{{ pending.id }}">Off-topic</label><br />
+                    <input type="radio" name="reason" id="reason_inappropriate_{{ pending.id }}" value="inappropriate" /> <label for="reason_inappropriate_{{ pending.id }}">Inappropriate</label><br />
+                    <input type="radio" name="reason" id="reason_reupload_{{ pending.id }}" value="reupload" /> <label for="reason_reupload_{{ pending.id }}">Re-upload</label><br />
+                {% endif %}
                 <input type="radio" name="reason" id="reason_delete_{{ pending.id }}" value="delete" checked /> <label for="reason_delete_{{ pending.id }}">Delete</label><br />
                 <button type="button" class="small" onClick="approvePicture('reject','{{ pending.id }}')">Reject</button>
             </td>
