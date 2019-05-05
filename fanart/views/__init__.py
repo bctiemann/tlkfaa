@@ -1685,11 +1685,12 @@ class RemoveProfilePicView(UpdateView):
         response = {'success': True}
 
         logger.info(self.object.profile_picture.name)
-        try:
-            os.remove(self.object.profile_picture.path)
-            os.remove(self.object.profile_pic_thumbnail_path)
-        except OSError:
-            pass
+        if self.object.profile_picture:
+            try:
+                os.remove(self.object.profile_picture.path)
+                os.remove(self.object.profile_pic_thumbnail_path)
+            except OSError:
+                pass
 
         self.object.profile_picture = None
         self.object.profile_width = None
