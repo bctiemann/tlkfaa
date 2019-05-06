@@ -77,7 +77,6 @@ class BulletinCreateView(LoginRequiredMixin, CreateView):
             context=email_context,
             text_template='email/bulletin_posted.txt',
             html_template='email/bulletin_posted.html',
-            bcc=[settings.DEBUG_EMAIL]
         )
 
         response = {'success': True}
