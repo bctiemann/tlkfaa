@@ -51,6 +51,9 @@ class PrivateMessage(models.Model):
     def is_latest_reply(self):
         return not self.thread.filter(reply_to=self).exists()
 
+    def __str__(self):
+        return '{0} {1} - {2}'.format(self.id, self.sender.username, self.subject)
+
     class Meta:
         ordering = ['-date_sent']
 
