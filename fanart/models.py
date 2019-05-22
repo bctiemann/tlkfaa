@@ -583,7 +583,7 @@ ORDER BY fanart_user.sort_name
         shutil.rmtree(self.absolute_dir_name, ignore_errors=True)
         return super(User, self).delete(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} - {1} - {2}'.format(self.id, self.username, self.email)
 
 
@@ -841,7 +841,7 @@ class Picture(models.Model):
         self.num_faves = self.fans.count()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0}: {1} {2}'.format(self.artist.username, self.id, self.filename)
 
 
@@ -890,7 +890,7 @@ class Folder(models.Model):
             self.user.refresh_main_folder_picture_ranks()
         super(Folder, self).delete(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1}'.format(self.id, self.name)
 
 
@@ -904,7 +904,7 @@ class BaseComment(models.Model):
     is_received = models.BooleanField(default=False)
     hash = models.CharField(max_length=36, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1}'.format(self.id, self.user.username)
 
     class Meta:
@@ -925,7 +925,7 @@ class ThreadedComment(BaseComment):
             return reverse('bulletin', kwargs={'bulletin_id': self.bulletin.id})
         return reverse('comments', kwargs={'picture_id': self.picture.id})
 
-    def __unicode__(self):
+    def __str__(self):
         if self.bulletin:
             return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.bulletin, self.bulletin.user.username)
         return '{0} {1} on {2} by {3}'.format(self.id, self.user.username, self.picture, self.picture.artist.username)
@@ -949,7 +949,7 @@ class Shout(BaseComment):
     def get_absolute_url(self):
         return reverse('shouts', kwargs={'artist_id': self.artist.id})
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
 
 
@@ -1060,7 +1060,7 @@ class Character(models.Model):
 
         logger.info('Character {0} by {1} was deleted.'.format(self, self.owner))
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1} ({2})'.format(self.id, self.name, self.owner)
 
     class Meta:
@@ -1309,7 +1309,7 @@ class Pending(models.Model):
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.directory), ignore_errors=True)
         super(Pending, self).delete(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Pending {0} - {1} - {2}'.format(self.id, self.filename, self.artist.username)
 
     class Meta:
@@ -1334,7 +1334,7 @@ class Tag(models.Model):
 #    num_pictures = models.IntegerField(null=True, blank=True)
     is_visible = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag
 
     class Meta:
@@ -1363,7 +1363,7 @@ class SocialMedia(models.Model):
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     name = models.CharField(max_length=16, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -1372,7 +1372,7 @@ class SocialMediaIdentity(models.Model):
     user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     identity = models.CharField(max_length=100, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0}: {1}'.format(self.social_media, self.identity)
 
     class Meta:
@@ -1435,7 +1435,7 @@ class Bulletin(models.Model):
     def get_absolute_url(self):
         return reverse('bulletin', kwargs={'bulletin_id': self.id})
 
-    def __unicode__(self):
+    def __str__(self):
         if self.user:
             return '{0}: {1} {2}'.format(self.user.username, self.id, self.title)
         return '{0} {1}'.format(self.id, self.title)
@@ -1497,7 +1497,7 @@ class Contest(models.Model):
     def get_absolute_url(self):
         return reverse('contest', kwargs={'contest_id': self.id})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -1529,7 +1529,7 @@ class ContestEntry(models.Model):
         verbose_name_plural = 'contest entries'
         ordering = ['-date_entered']
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1} {2}'.format(self.id, self.contest, self.picture)
 
 
@@ -1554,7 +1554,7 @@ class Showcase(models.Model):
         return Picture.objects.filter(id__in=Subquery(self.tag.picture_set.values_list('id', flat=True))).order_by('?')
 #        return Picture.objects.filter(keywords__search=self.keyword).order_by('?')
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} - {1}'.format(self.id, self.title)
 
 
@@ -1610,7 +1610,7 @@ class FeaturedArtist(models.Model):
     def analysis_text_parsed(self):
         return self.analysis_text.replace('A_NAME', self.artist.username)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1}'.format(self.month_featured, self.artist.username)
 
     class Meta:
@@ -1652,7 +1652,7 @@ class FeaturedArtistPicture(models.Model):
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'FeaturedArtistPicture', self.id, 'small'), countdown=20)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0}/{1}'.format(self.featured_artist.artist.username, self.showcase_picture.name)
 
 
@@ -1673,5 +1673,5 @@ class RevisionLog(models.Model):
     def is_recent(self):
         return (timezone.now() - self.date_created).days < settings.REVISION_LOG_RECENT_DAYS
 
-#    def __unicode__(self):
+#    def __str__(self):
 #        return self.date_created
