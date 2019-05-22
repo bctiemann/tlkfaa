@@ -1,6 +1,5 @@
 from django.contrib import admin
 from fanart import models as fanart_models
-from django_extensions.admin import ForeignKeyAutocompleteAdmin
 
 import logging
 logger = logging.getLogger(__name__)
@@ -11,8 +10,7 @@ class PictureCharacterInline(admin.TabularInline):
     extra = 1
 
 
-#class UserAdmin(admin.ModelAdmin):
-class UserAdmin(ForeignKeyAutocompleteAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'num_pictures', 'date_joined',)
     search_fields = ('username', 'email',)
     readonly_fields = ()
@@ -33,17 +31,11 @@ class UserAdmin(ForeignKeyAutocompleteAdmin):
 admin.site.register(fanart_models.User, UserAdmin)
 
 
-#class PictureAdmin(admin.ModelAdmin):
-class PictureAdmin(ForeignKeyAutocompleteAdmin):
+class PictureAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
-    readonly_fields = ('tags',)
-#    readonly_fields = ('artist', 'approved_by', 'tags')
-    related_search_fields = {
-        'artist': ('username',),
-        'approved_by': ('username',),
-        'tags': ('tag'),
-    }
+    search_fields = ('filename',)
+    autocomplete_fields = ('artist', 'approved_by', 'tags',)
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
 
@@ -106,6 +98,12 @@ class FolderAdmin(admin.ModelAdmin):
         return super(FolderAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(fanart_models.Folder, FolderAdmin)
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('tag',)
+    search_fields = ('tag',)
+admin.site.register(fanart_models.Tag, TagAdmin)
 
 
 class ThreadedCommentAdmin(admin.ModelAdmin):
@@ -187,13 +185,10 @@ class SocialMediaAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.SocialMedia, SocialMediaAdmin)
 
 
-class SocialMediaIdentityAdmin(ForeignKeyAutocompleteAdmin):
+class SocialMediaIdentityAdmin(admin.ModelAdmin):
     list_display = ('user', 'social_media', 'identity',)
     list_filter = ()
-    related_search_fields = {
-        'user': ('username', 'email',),
-    }
-
+    autocomplete_fields = ('user',)
 admin.site.register(fanart_models.SocialMediaIdentity, SocialMediaIdentityAdmin)
 
 
@@ -226,23 +221,16 @@ class ShowcaseAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Showcase, ShowcaseAdmin)
 
 
-#class FeaturedArtistAdmin(admin.ModelAdmin):
-class FeaturedArtistAdmin(ForeignKeyAutocompleteAdmin):
+class FeaturedArtistAdmin(admin.ModelAdmin):
     list_display = ('artist', 'month_featured',)
-#    readonly_fields = ('artist',)
-    related_search_fields = {
-        'artist': ('username',),
-    }
+    autocomplete_fields = ('artist',)
+    search_fields = ('username',)
 admin.site.register(fanart_models.FeaturedArtist, FeaturedArtistAdmin)
 
-#class FeaturedArtistPictureAdmin(admin.ModelAdmin):
-class FeaturedArtistPictureAdmin(ForeignKeyAutocompleteAdmin):
+
+class FeaturedArtistPictureAdmin(admin.ModelAdmin):
     list_display = ('featured_artist', 'picture',)
-#    readonly_fields = ('featured_artist', 'picture',)
-    related_search_fields = {
-        'featured_artist': ('artist__username',),
-        'picture': ('filename',),
-    }
+    autocomplete_fields = ('featured_artist', 'picture',)
 
 #    def get_form(self, request, obj=None, **kwargs):
 #        if obj:
@@ -256,15 +244,14 @@ class FeaturedArtistPictureAdmin(ForeignKeyAutocompleteAdmin):
 
 admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAdmin)
 
+
 class RevisionLogAdmin(admin.ModelAdmin):
     list_display = ('date_created', 'entry',)
 admin.site.register(fanart_models.RevisionLog, RevisionLogAdmin)
 
-class ModNoteAdmin(ForeignKeyAutocompleteAdmin):
+
+class ModNoteAdmin(admin.ModelAdmin):
     list_display = ('date_created', 'artist', 'moderator',)
-    related_search_fields = {
-        'artist': ('username',),
-        'moderator': ('username',),
-    }
+    autocomplete_fields = ('artist', 'moderator',)
 admin.site.register(fanart_models.ModNote, ModNoteAdmin)
 
