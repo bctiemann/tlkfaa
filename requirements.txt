@@ -13,6 +13,6 @@ django-debug-toolbar-request-history==0.0.5
 django-extensions==2.0.7
 Pillow==4.2.1
 django-precise-bbcode==1.2.10
-celery==4.1.0
+celery==4.2.1
 requests==2.20.0
 html2bbcode==2.3.3
