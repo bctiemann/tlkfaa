@@ -120,7 +120,7 @@ class PMCreateView(LoginRequiredMixin, CreateView):
             pm.reply_to.save()
             pm.subject = pm.reply_to.subject
             if not pm.subject.startswith('Re: '):
-                pm.subject = 'Re: {0}'.format(pm.subject.encode('utf8'))
+                pm.subject = 'Re: {0}'.format(pm.subject)
             pm.root_pm = pm.reply_to.root_pm
         pm.save()
 
