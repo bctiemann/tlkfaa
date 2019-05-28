@@ -3,9 +3,11 @@ The Lion King Fan-Art Archive is a community art site that has been in formal ex
 Its purpose is to allow fans of Disney's *The Lion King* to create and share their art, through a number of
 innovative collaborative features.
 
+The TLKFAA community has proved long-lived and enthusiastic, with traffic at the TLKFAA peaking at around 250 pieces of art uploaded per day by thousands of active users.
+
 ## History ##
 Prior to the creation of the TLKFAA proper (with its own subdomain at https://fanart.lionking.org), the Image Archive section
-of The Lion King WWW Archive (http://lionking.org) contained a "fan-art" section, featuring the work of one or two dozen 
+of The Lion King WWW Archive (http://lionking.org, dating to 1995) contained a "fan-art" section, featuring the work of one or two dozen 
 artists. The pages of this site were manually edited into static HTML. As more and more artists came to the site to submit their creative work, it became clear that a full-fledged standalone site, with automated processes for handling uploads, user accounts, and integrated browsing features was necessary.
 
 The first generation of the TLKFAA, created in 1999, was written in Perl, and underwent at least two major front-end
