@@ -229,9 +229,9 @@ class PendingResizeView(ApprovalUpdateView):
         orig_height = im.height
 
         if height:
-            im = im.resize((orig_width * height / orig_height, height), Image.ANTIALIAS)
+            im = im.resize((int(orig_width * height / orig_height), height), Image.ANTIALIAS)
         elif width:
-            im = im.resize((width, orig_height * width / orig_width), Image.ANTIALIAS)
+            im = im.resize((width, int(orig_height * width / orig_width)), Image.ANTIALIAS)
 
         im.save(self.object.picture.path, im.format, quality=quality)
         self.object.width = im.width
