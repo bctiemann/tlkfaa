@@ -23,6 +23,6 @@ class Command(BaseCommand):
             root_pm = pm
             while root_pm.reply_to:
                 root_pm = root_pm.reply_to
-            print pm.id, root_pm.id
+            print(pm.id, root_pm.id)
             pm.root_pm = root_pm
             pm.save()

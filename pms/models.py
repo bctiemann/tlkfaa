@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, connection
@@ -27,11 +27,11 @@ logger = logging.getLogger(__name__)
 
 
 class PrivateMessage(models.Model):
-    sender = models.ForeignKey('fanart.User', related_name='pms_sent')
-    recipient = models.ForeignKey('fanart.User', related_name='pms_received')
+    sender = models.ForeignKey('fanart.User', related_name='pms_sent', on_delete=models.CASCADE)
+    recipient = models.ForeignKey('fanart.User', related_name='pms_received', on_delete=models.CASCADE)
     date_sent = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    reply_to = models.ForeignKey('PrivateMessage', null=True, blank=True)
-    root_pm = models.ForeignKey('PrivateMessage', null=True, blank=True, related_name='thread_pms')
+    reply_to = models.ForeignKey('PrivateMessage', null=True, blank=True, on_delete=models.SET_NULL)
+    root_pm = models.ForeignKey('PrivateMessage', null=True, blank=True, related_name='thread_pms', on_delete=models.SET_NULL)
     subject = models.TextField(blank=True)
     message = models.TextField(blank=True)
     date_viewed = models.DateTimeField(null=True, blank=True)
@@ -50,6 +50,9 @@ class PrivateMessage(models.Model):
     @property
     def is_latest_reply(self):
         return not self.thread.filter(reply_to=self).exists()
+
+    def __str__(self):
+        return '{0} {1} - {2}'.format(self.id, self.sender.username, self.subject)
 
     class Meta:
         ordering = ['-date_sent']

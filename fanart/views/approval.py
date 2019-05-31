@@ -174,7 +174,7 @@ class PendingRejectView(ApprovalAPIView):
             html_template = 'email/approval/rejected_inappropriate.html'
             send_email = True
         if request.POST.get('reason') == 'reupload':
-            subject = u'Fan Art Submission (please re-upload {0})'.format(pending.filename)
+            subject = 'Fan Art Submission (please re-upload {0})'.format(pending.filename)
             text_template = 'email/approval/rejected_reupload.txt'
             html_template = 'email/approval/rejected_reupload.html'
             send_email = True
@@ -229,9 +229,9 @@ class PendingResizeView(ApprovalUpdateView):
         orig_height = im.height
 
         if height:
-            im = im.resize((orig_width * height / orig_height, height), Image.ANTIALIAS)
+            im = im.resize((int(orig_width * height / orig_height), height), Image.ANTIALIAS)
         elif width:
-            im = im.resize((width, orig_height * width / orig_width), Image.ANTIALIAS)
+            im = im.resize((width, int(orig_height * width / orig_width)), Image.ANTIALIAS)
 
         im.save(self.object.picture.path, im.format, quality=quality)
         self.object.width = im.width
@@ -341,7 +341,7 @@ class AutoApprovalView(AjaxableResponseMixin, ApprovalUpdateView):
         logger.info(message)
 
         email_context = {'message': message}
-        subject = u'TLKFAA: Auto-approval granted to {0}'.format(self.object.username)
+        subject = 'TLKFAA: Auto-approval granted to {0}'.format(self.object.username)
         tasks.send_email.delay(
             recipients=[settings.ADMIN_EMAIL],
             subject=subject,

@@ -120,15 +120,15 @@ class PMCreateView(LoginRequiredMixin, CreateView):
             pm.reply_to.save()
             pm.subject = pm.reply_to.subject
             if not pm.subject.startswith('Re: '):
-                pm.subject = 'Re: {0}'.format(pm.subject.encode('utf8'))
+                pm.subject = 'Re: {0}'.format(pm.subject)
             pm.root_pm = pm.reply_to.root_pm
         pm.save()
 
         recipient = form.cleaned_data['recipient']
-        print recipient
+        print(recipient)
         if recipient.email_pms:
             email_context = {'pm': pm, 'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
-            subject = u'TLKFAA Private Message from {0}'.format(self.request.user.username)
+            subject = 'TLKFAA Private Message from {0}'.format(self.request.user.username)
             tasks.send_email.delay(
                 recipients=[recipient.email],
                 subject=subject,

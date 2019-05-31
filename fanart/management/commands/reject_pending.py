@@ -46,12 +46,12 @@ class Command(BaseCommand):
             html_template = 'email/approval/rejected_inappropriate.html'
             send_email = True
         if reason == 'reupload':
-            subject = u'Fan Art Submission (please re-upload {0})'.format(pending.filename)
+            subject = 'Fan Art Submission (please re-upload {0})'.format(pending.filename)
             text_template = 'email/approval/rejected_reupload.txt'
             html_template = 'email/approval/rejected_reupload.html'
             send_email = True
 
-        print subject
+        print(subject)
 
         if send_email:
             attachments = []

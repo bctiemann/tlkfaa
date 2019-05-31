@@ -29,8 +29,8 @@ class Command(BaseCommand):
             c.execute("""SELECT * FROM artists WHERE artistid=%s""", (user.artist_id_orig,))
             for old_artist in c.fetchall():
                 if old_artist['email'] and user.email != old_artist['email']:
-                    print user
-                    print old_artist['email'].encode('utf8')
+                    print(user)
+                    print(old_artist['email'].encode('utf8'))
                     count += 1
 
 #                    replace_input = raw_input('\nUpdate email to {0} ? '.format(old_artist['email'].encode('utf8')))
@@ -42,4 +42,4 @@ class Command(BaseCommand):
                     else:
                         print('Skipping')
                     print('')
-        print count
+        print(count)

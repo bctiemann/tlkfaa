@@ -4,7 +4,7 @@ from django.utils import six, timezone
 
 import os
 import unicodedata, re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
 
 import logging
@@ -19,14 +19,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        response = urllib2.urlopen('{0}/sessions/'.format(self.base_url))
+        response = urllib.request.urlopen('{0}/sessions/'.format(self.base_url))
         session_data = json.load(response)
 
         ActiveUser.objects.all().delete()
 
         for session in session_data:
             if session['title'] == 'Sketcher Reborn':
-                response = urllib2.urlopen('{0}/sessions/{1}'.format(self.base_url, session['id']))
+                response = urllib.request.urlopen('{0}/sessions/{1}'.format(self.base_url, session['id']))
                 user_data = json.load(response)
                 for user in user_data['users']:
                     ActiveUser.objects.create(
