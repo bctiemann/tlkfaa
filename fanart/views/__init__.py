@@ -278,7 +278,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
-                context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.tag)
+                context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.num_pictures, reverse=True)
             if term:
                 context['term'] = term
                 if list == 'search':
