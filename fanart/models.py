@@ -405,7 +405,7 @@ ORDER BY fanart_user.sort_name
 
     @property
     def has_profile_pic(self):
-        return self.profile_picture != '' or self.profile_pic_id > 0
+        return self.profile_picture != '' or (self.profile_pic_id and self.profile_pic_id > 0)
 
     @property
     def profile_pic_url(self):
