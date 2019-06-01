@@ -216,13 +216,6 @@ LOGGING = {
 #        }
     },
     'loggers': {
-        # Might have to remove django.request to just '' to get the e-mail
-        # to admin on ERROR working
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
         '': {
             'handlers': ['logfile'],
             'level': 'INFO',

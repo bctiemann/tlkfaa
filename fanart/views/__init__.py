@@ -49,14 +49,14 @@ THREE_MONTHS = 90
 ONE_MONTH = 30
 
 
-class ErrorHandler500(TemplateView):
-    template_name = '500.html'
-
-class ErrorHandler404(TemplateView):
-    template_name = '404.html'
-
-class ErrorHandler403(TemplateView):
-    template_name = '403.html'
+# class ErrorHandler500(TemplateView):
+#     template_name = '500.html'
+#
+# class ErrorHandler404(TemplateView):
+#     template_name = '404.html'
+#
+# class ErrorHandler403(TemplateView):
+#     template_name = '403.html'
 
 
 class LoginView(LoginView):
