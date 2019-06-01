@@ -35,7 +35,7 @@ urlpatterns = [
         fanart_views.LoginView.as_view(),
         name='login',
     ),
-    url(r'^logout/', auth_views.LogoutView.as_view(), {'next_page': 'home'}, name='logout'),
+    url(r'^logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
     url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
