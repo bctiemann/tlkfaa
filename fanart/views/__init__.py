@@ -14,6 +14,7 @@ from django.contrib.auth import (
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
@@ -47,6 +48,13 @@ logger = logging.getLogger(__name__)
 
 THREE_MONTHS = 90
 ONE_MONTH = 30
+
+
+def favicon(request):
+    return redirect(static('images/favicon-96x96.png'))
+
+def robots(request):
+    return redirect(static('robots.txt'))
 
 
 # class ErrorHandler500(TemplateView):
