@@ -244,7 +244,7 @@ The specified artist's gallery is not publicly visible.
 			<td class="label">Website</td>
 			<td class="data">
                             {% if artist.website and artist.website != 'http://' %}
-                                <a href="{{ artist.website }}">{{ artist.website|truncatechars:30 }}</a><c:if test="${thisartist.website != ''}"><a href="${thisartist.website}">
+                                <a href="{{ artist.website }}">{{ artist.website|truncatechars:30 }}</a>
                             {% endif %}
                         </td>
 			</tr>
