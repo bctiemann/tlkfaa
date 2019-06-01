@@ -333,7 +333,7 @@ class HashedSetPasswordForm(SetPasswordForm):
         password = self.cleaned_data["new_password1"]
 
         m = hashlib.md5()
-        m.update(password)
+        m.update(password.encode('utf8'))
         password_hash = m.hexdigest()
         self.user.set_password(password_hash)
         logger.info('User {0} reset password.'.format(self.user.username))
