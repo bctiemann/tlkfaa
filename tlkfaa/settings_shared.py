@@ -189,31 +189,18 @@ LOGGING = {
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
-#            '()': 'django.utils.log.RequireDebugTrue'
         }
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
         'logfile': {
             'level':'INFO',
-#            'filters': ['require_debug_false'],
             'filters': [],
-#            'class':'logging.handlers.RotatingFileHandler',
             'class':'logging.handlers.ConcurrentRotatingFileHandler',
             'filename': Path(__file__).ancestor(2) + "/logs/django.log",
             'maxBytes': 1024*1024*64, # 64mb
             'backupCount': 5,
             'formatter': 'colored',
         },
-#        'console': {
-#            'level': 'DEBUG',
-#            'filters': ['require_debug_true'],
-#            'class': 'logging.StreamHandler',
-#        }
     },
     'loggers': {
         '': {
