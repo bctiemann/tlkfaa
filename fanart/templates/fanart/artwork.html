@@ -22,43 +22,43 @@
         {% if user.is_authenticated %}
             <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('unviewed', {{ per_page }})">
-                <h2 class="itemlist {% if list == "unviewed" %}itemlist_selected{% endif %}" id="artworklisth2_unviewed">Watched & Unviewed</h2>
+                <h2 class="itemlist {% if list_type == "unviewed" %}itemlist_selected{% endif %}" id="artworklisth2_unviewed">Watched & Unviewed</h2>
             </a>
             </div>
         {% endif %}
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newest', {{ per_page }})">
-                <h2 class="itemlist {% if list == "newest" %}itemlist_selected{% endif %}" id="artworklisth2_newest">Newest</h2>
+                <h2 class="itemlist {% if list_type == "newest" %}itemlist_selected{% endif %}" id="artworklisth2_newest">Newest</h2>
             </a>
         </div>
 
         {% if user.is_authenticated %}
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newestfaves', {{ per_page }})">
-                <h2 class="itemlist {% if list == "newestfaves" %}itemlist_selected{% endif %}" id="artworklisth2_newestfaves">Newest By Favorite Artists</h2>
+                <h2 class="itemlist {% if list_type == "newestfaves" %}itemlist_selected{% endif %}" id="artworklisth2_newestfaves">Newest By Favorite Artists</h2>
             </a>
         </div>
         {% endif %}
 
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('toprated', {{ per_page }})">
-                <h2 class="itemlist {% if list == "toprated" %}itemlist_selected{% endif %}" id="artworklisth2_toprated">Top Rated</h2>
+                <h2 class="itemlist {% if list_type == "toprated" %}itemlist_selected{% endif %}" id="artworklisth2_toprated">Top Rated</h2>
             </a>
         </div>
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('topratedrecent', {{ per_page }})">
-                <h2 class="itemlist {% if list == "topratedrecent" %}itemlist_selected{% endif %}" id="artworklisth2_topratedrecent">Top Rated Recent Uploads</h2>
+                <h2 class="itemlist {% if list_type == "topratedrecent" %}itemlist_selected{% endif %}" id="artworklisth2_topratedrecent">Top Rated Recent Uploads</h2>
             </a>
         </div>
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('random', {{ per_page }})">
-                <h2 class="itemlist {% if list == "random" %}itemlist_selected{% endif %}" id="artworklisth2_random">Randomly Selected</h2>
+                <h2 class="itemlist {% if list_type == "random" %}itemlist_selected{% endif %}" id="artworklisth2_random">Randomly Selected</h2>
             </a>
         </div>
         <div class="itemlist">
             <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('search',0)">
-                <h2 class="itemlist {% if list == "search" or list == "tag" or list == "character" %}itemlist_selected{% endif %}" id="artworklisth2_search">Search</h2>
+                <h2 class="itemlist {% if list_type == "search" or list_type == "tag" or list_type == "character" %}itemlist_selected{% endif %}" id="artworklisth2_search">Search</h2>
             </a>
         </div>
     </div>

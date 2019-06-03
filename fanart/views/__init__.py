@@ -168,16 +168,16 @@ class ArtistsView(UserPaneMixin, TemplateView):
 
         context['show_search_input'] = False
 
-        list = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
+        list_type = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
         if not list in models.artists_tabs:
-            list = settings.DEFAULT_ARTISTS_VIEW
+            list_type = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
         initial = self.request.GET.get('initial', None)
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
         one_month_ago = timezone.now() - timedelta(days=180)
-        if list == 'name':
+        if list_type == 'name':
             if not initial:
                 raise Http404
 
@@ -191,19 +191,19 @@ class ArtistsView(UserPaneMixin, TemplateView):
                 artists_page = context['artists_paginator'].page(page)
             except EmptyPage:
                 artists_page = context['artists_paginator'].page(1)
-        elif list == 'newest':
+        elif list_type == 'newest':
             artists = artists.order_by('-date_joined')
-        elif list == 'recentactive':
+        elif list_type == 'recentactive':
             artists = artists.order_by('-last_upload')
-        elif list == 'toprated':
+        elif list_type == 'toprated':
             artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list == 'topratedactive':
+        elif list_type == 'topratedactive':
             artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list == 'prolific':
+        elif list_type == 'prolific':
             artists = artists.order_by('-num_pictures')
-        elif list == 'random':
+        elif list_type == 'random':
             artists = artists.order_by('?')
-        elif list == 'search':
+        elif list_type == 'search':
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
@@ -213,13 +213,13 @@ class ArtistsView(UserPaneMixin, TemplateView):
             else:
                 artists = artists.filter(id__isnull=True)
 
-        context['list'] = list
+        context['list_type'] = list_type
         context['per_page'] = settings.ARTISTS_PER_PAGE
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
         context['initial'] = initial
         context['artists'] = artists[start:start + context['count']]
-        if list == 'name':
+        if list_type == 'name':
             context['artists'] = artists_page
             context['count'] = None
             context['pages_link'] = utils.PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
@@ -243,9 +243,9 @@ class ArtworkView(UserPaneMixin, TemplateView):
 #        if not mode in ['canon', 'fan', 'mosttagged', 'recentlytagged', 'charactername'] and not dir_name:
 #            mode = 'canon'
 
-        list = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
+        list_type = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
         if not list in models.artwork_tabs:
-            list = default_artwork_view
+            list_type = default_artwork_view
 
         try:
             start = int(self.request.GET.get('start', 0))
@@ -259,38 +259,38 @@ class ArtworkView(UserPaneMixin, TemplateView):
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         one_month_ago = timezone.now() - timedelta(days=ONE_MONTH)
-        if list == 'unviewed' and self.request.user.is_authenticated:
+        if list_type == 'unviewed' and self.request.user.is_authenticated:
             artwork = [uvp.picture for uvp in models.UnviewedPicture.objects.filter(user=self.request.user).order_by('-picture__date_uploaded')]
-        elif list == 'newest':
+        elif list_type == 'newest':
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-date_uploaded')
-        elif list == 'newestfaves' and self.request.user.is_authenticated:
+        elif list_type == 'newestfaves' and self.request.user.is_authenticated:
             artwork = artwork.filter(date_uploaded__gt=three_months_ago, artist__in=Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))).order_by('-date_uploaded')
-        elif list == 'toprated':
+        elif list_type == 'toprated':
             artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
-        elif list == 'topratedrecent':
+        elif list_type == 'topratedrecent':
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-num_faves')
-        elif list == 'prolific':
+        elif list_type == 'prolific':
             artists = artists.order_by('-num_pictures')
-        elif list == 'random':
+        elif list_type == 'random':
             random_ids = random.sample(list(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max'])), 100)
             artwork = artwork.filter(pk__in=random_ids)
-        elif list in ['search', 'tag', 'character']:
+        elif list_type in ['search', 'tag', 'character']:
             term = self.request.GET.get('term', None)
             if not term:
                 context['show_search_input'] = True
                 context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.num_pictures, reverse=True)
             if term:
                 context['term'] = term
-                if list == 'search':
+                if list_type == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
-                elif list == 'tag':
+                elif list_type == 'tag':
                     logger.info('Artwork search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term.encode('utf8')))
                     tag = models.Tag.objects.filter(tag=term).first()
                     if tag:
                         artwork = tag.picture_set.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0).order_by('-num_faves')
                     else:
                         artwork = artwork.filter(id__isnull=True)
-                elif list == 'character':
+                elif list_type == 'character':
                     character_pictures = models.Picture.objects.all()
                     for character_id in term.split(','):
                         try:
@@ -301,7 +301,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
             else:
                 artwork = artwork.filter(id__isnull=True)
 
-        context['list'] = list
+        context['list_type'] = list_type
         context['per_page'] = settings.ARTWORK_PER_PAGE
         try:
             context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
@@ -326,12 +326,12 @@ class CharactersView(UserPaneMixin, TemplateView):
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
 
-        list = kwargs.get('list', self.request.GET.get('list', default_characters_view))
+        list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
         if not list in models.characters_tabs and not dir_name:
-            list = default_characters_view
+            list_type = default_characters_view
 
-        mode = list
-        tab_selected = list
+        mode = list_type
+        tab_selected = list_type
 
         try:
             start = int(self.request.GET.get('start', 0))
@@ -343,15 +343,15 @@ class CharactersView(UserPaneMixin, TemplateView):
         if dir_name:
             characters = characters.filter(owner=context['artist']).order_by('name')
             tab_selected = 'search'
-        elif list == 'canon':
+        elif list_type == 'canon':
             characters = characters.filter(is_canon=True).order_by('-num_pictures')
-        elif list == 'newest':
+        elif list_type == 'newest':
             characters = characters.order_by('-date_created')
-        elif list == 'mosttagged':
+        elif list_type == 'mosttagged':
             characters = characters.filter(num_pictures__gt=0).order_by('-num_pictures')
-        elif list == 'recentlytagged':
+        elif list_type == 'recentlytagged':
             characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
-        elif list == 'search':
+        elif list_type == 'search':
             context['show_search_box'] = True
             term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'contains')
@@ -363,7 +363,7 @@ class CharactersView(UserPaneMixin, TemplateView):
                 list_type = self.request.GET.get('list', None)
                 logger.info('Character search ({0}): {1}'.format(list_type, term))
                 if not list_type in ['artist', 'species', 'charactername']:
-                    list = 'charactername'
+                    list_type = 'charactername'
                 characters = characters.filter(owner__is_active=True).order_by('name')
                 if list_type == 'artist':
                     try:
@@ -400,7 +400,7 @@ class CharactersView(UserPaneMixin, TemplateView):
 
         context['start'] = start
 
-        context['list'] = list
+        context['list_type'] = list_type
         context['tab_selected'] = tab_selected
         context['per_page'] = settings.CHARACTERS_PER_PAGE
 #        context['characters'] = characters_page
