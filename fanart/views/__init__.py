@@ -169,7 +169,7 @@ class ArtistsView(UserPaneMixin, TemplateView):
         context['show_search_input'] = False
 
         list_type = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
-        if not list in models.artists_tabs:
+        if not list_type in models.artists_tabs:
             list_type = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
@@ -244,7 +244,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
 #            mode = 'canon'
 
         list_type = kwargs.get('list', self.request.GET.get('list', default_artwork_view))
-        if not list in models.artwork_tabs:
+        if not list_type in models.artwork_tabs:
             list_type = default_artwork_view
 
         try:
@@ -327,7 +327,7 @@ class CharactersView(UserPaneMixin, TemplateView):
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
 
         list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
-        if not list in models.characters_tabs and not dir_name:
+        if not list_type in models.characters_tabs and not dir_name:
             list_type = default_characters_view
 
         mode = list_type
