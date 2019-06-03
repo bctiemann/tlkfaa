@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
+from django.urls import path
 
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
@@ -182,6 +183,9 @@ urlpatterns = [
     url(r'^banner/remove/$', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
 
     url(r'^ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
+
+    path('wiki/notifications/', include('django_nyt.urls')),
+    path('wiki/', include('wiki.urls'))
 ]
 
 if settings.DEBUG:
