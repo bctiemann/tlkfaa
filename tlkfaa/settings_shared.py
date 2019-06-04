@@ -52,6 +52,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
+    'fanart',
+    'trading_tree',
+    'coloring_cave',
+    'pms',
+    'artmanager',
+    'sketcher',
+
     'django.contrib.sites.apps.SitesConfig',
 #    'django.contrib.humanize.apps.HumanizeConfig',
     'django_nyt.apps.DjangoNytConfig',
@@ -68,13 +75,6 @@ INSTALLED_APPS = [
 #    'debug_toolbar',
     'precise_bbcode',
     'django_extensions',
-
-    'fanart',
-    'trading_tree',
-    'coloring_cave',
-    'pms',
-    'artmanager',
-    'sketcher',
 ]
 
 MIDDLEWARE = [
