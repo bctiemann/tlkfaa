@@ -10,7 +10,12 @@
             {% else %}
                 {{ comment.user.username }}
             {% endif %}
-            on <a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a>
+
+            {% if comment.picture %}
+                on <a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a>
+            {% elif comment.bulletin %}
+                on <b>{{ comment.bulletin.title }}</b>
+            {% endif %}
         </div>
         <div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
             <div class="commentprofilepic">
@@ -35,7 +40,11 @@
 
     <div class="commentname">
         <div class="commentdate">{{ comment.date_posted|date }}</div>
-        <a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a> by <a href="{% url "artist" dir_name=comment.picture.artist.dir_name %}">{{ comment.picture.artist.username }}</a>
+        {% if comment.picture %}
+            <a href="{% url "picture" picture_id=comment.picture.id %}#{{ comment.id }}"><img src="{{ comment.picture.thumbnail_url }}" /></a> by <a href="{% url "artist" dir_name=comment.picture.artist.dir_name %}">{{ comment.picture.artist.username }}</a>
+        {% elif comment.bulletin %}
+            <b>{{ comment.bulletin.title }}</b>
+        {% endif %}
     </div>
     <div class="commenttext {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
         <table><tr><td>
