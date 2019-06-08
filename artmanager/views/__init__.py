@@ -540,7 +540,7 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
             if keyword:
                 tag, is_created = models.Tag.objects.get_or_create(tag=keyword)
                 picture_tags.append(tag)
-        self.object.tags = picture_tags
+        self.object.tags.set(picture_tags)
         self.object.save()
 
         return response
