@@ -153,7 +153,7 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
                 return HttpResponse(json.dumps(ajax_response))
 
             m = hashlib.md5()
-            m.update(password)
+            m.update(password.encode())
             password_hash = m.hexdigest()
             user.set_password(password_hash)
             update_session_auth_hash(self.request, user)
