@@ -116,7 +116,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         im = Image.open(image_path)
         im.thumbnail((max_pixels, max_pixels * orig_height / orig_width))
     except IOError as e:
-        image_error = '{0} - {1} - {2}'.format(picture_object, e.message, image_path)
+        image_error = '{0} - {1} - {2}'.format(picture_object, e, image_path)
         logger.error(image_error)
         mail.mail_admins('Image processing error', image_error)
 
