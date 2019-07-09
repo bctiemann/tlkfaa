@@ -7,3 +7,4 @@ work
 database.db
 .idea
 *.bak
+.DS_Store
