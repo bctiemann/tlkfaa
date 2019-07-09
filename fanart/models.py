@@ -1119,8 +1119,8 @@ class Pending(models.Model):
     is_movie = models.BooleanField(default=False)
     has_thumb = models.BooleanField(default=False)
     title = models.TextField(blank=True)
-    width = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
+    width = models.IntegerField(default=0)
+    height = models.IntegerField(default=0)
     file_size = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     hash = models.UUIDField(null=True, blank=True, editable=False, db_index=True)
@@ -1219,6 +1219,8 @@ class Pending(models.Model):
 
     @property
     def dimensions_warning(self):
+        if not self.width or not self.height:
+            return False
         return self.width > settings.MAX_UPLOAD_WIDTH or self.height > settings.MAX_UPLOAD_HEIGHT
 
     @property
