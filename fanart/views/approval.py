@@ -181,7 +181,7 @@ class PendingRejectView(ApprovalAPIView):
 
         if send_email:
             attachments = []
-            with open(pending.picture.path) as file:
+            with open(pending.picture.path, 'rb') as file:
                 image_data = file.read()
             attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
 
