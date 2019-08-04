@@ -2777,21 +2777,21 @@ ul.characters .characterowner {
 	white-space: nowrap;
 }
 
-div.tags {
+#artwork div.tags {
 	margin: 20px;
 	column-count: 6;
 }
-div.tags div.tag {
+#artwork div.tags div.tag {
 	display: block;
 	margin-bottom: 8px;
 }
-div.tags a.tag {
+#artwork div.tags a.tag {
 	display: inline;
 	float: none;
 	width: 80px;
 	line-height: 20px;
 }
-a.tag span.tagcount {
+#artwork a.tag span.tagcount {
 	color: #86b071;
 }
 div.tagcolumn {
