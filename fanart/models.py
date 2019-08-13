@@ -1270,7 +1270,7 @@ class Pending(models.Model):
                 if trailing_number > highest_match:
                     highest_match = trailing_number
         if not matched_input:
-            return self.basename
+            return raw_basename
         return '{0}{1}'.format(raw_basename, highest_match + 1)
 
     @property
