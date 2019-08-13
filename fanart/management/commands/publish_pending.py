@@ -35,7 +35,7 @@ class Command(BaseCommand):
             pending.save()
 
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
-            if os.path.isfile('{0}/{1}.s.jpg'.format(pending.artist.absolute_dir_name, pending.next_unique_basename):
+            if os.path.isfile('{0}/{1}.s.jpg'.format(pending.artist.absolute_dir_name, pending.next_unique_basename)):
                 logger.error('File {0} exists; skipping.'.format(pending.next_unique_basename))
                 continue
 
