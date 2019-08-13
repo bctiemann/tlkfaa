@@ -35,10 +35,9 @@ class Command(BaseCommand):
             pending.save()
 
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
-            for existing_file in os.listdir(pending.artist.absolute_dir_name):
-                if fnmatch.fnmatch(existing_file, '{0}.*'.format(pending.next_unique_basename)):
-                    logger.error('File {0} exists, matching {1}! Skipping.'.format(existing_file, filename))
-                    continue
+            if os.path.isfile('{0}/{1}.s.jpg'.format(pending.artist.absolute_dir_name, pending.next_unique_basename):
+                logger.error('File {0} exists; skipping.'.format(pending.next_unique_basename))
+                continue
 
             pending.filename = filename
             pending.save()
