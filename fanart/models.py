@@ -1284,11 +1284,11 @@ class Pending(models.Model):
             return reasons
         if self.force_approve:
             reasons.append('Picture is voluntarily marked for manual approval.')
-        if self.width > settings.APPROVAL_TRIGGER_WIDTH:
+        if self.width and self.width > settings.APPROVAL_TRIGGER_WIDTH:
             reasons.append('Width is greater than {0} px.'.format(settings.APPROVAL_TRIGGER_WIDTH))
-        if self.height > settings.APPROVAL_TRIGGER_HEIGHT:
+        if self.height and self.height > settings.APPROVAL_TRIGGER_HEIGHT:
             reasons.append('Height is greater than {0} px.'.format(settings.APPROVAL_TRIGGER_HEIGHT))
-        if self.file_size > settings.APPROVAL_TRIGGER_SIZE:
+        if self.file_size and self.file_size > settings.APPROVAL_TRIGGER_SIZE:
             approval_trigger_size_humanized = sizeof_fmt(settings.APPROVAL_TRIGGER_SIZE)
             reasons.append('Size is greater than {0}.'.format(approval_trigger_size_humanized))
         if self.is_movie:

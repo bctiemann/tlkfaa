@@ -100,8 +100,8 @@ $(function () {
                     <input type="radio" name="reason" id="reason_copied_{{ pending.id }}" value="copied" /> <label for="reason_copied_{{ pending.id }}">Copied</label><br />
                     <input type="radio" name="reason" id="reason_ot_{{ pending.id }}" value="off-topic" /> <label for="reason_ot_{{ pending.id }}">Off-topic</label><br />
                     <input type="radio" name="reason" id="reason_inappropriate_{{ pending.id }}" value="inappropriate" /> <label for="reason_inappropriate_{{ pending.id }}">Inappropriate</label><br />
-                    <input type="radio" name="reason" id="reason_reupload_{{ pending.id }}" value="reupload" /> <label for="reason_reupload_{{ pending.id }}">Re-upload</label><br />
                 {% endif %}
+                <input type="radio" name="reason" id="reason_reupload_{{ pending.id }}" value="reupload" /> <label for="reason_reupload_{{ pending.id }}">Re-upload</label><br />
                 <input type="radio" name="reason" id="reason_delete_{{ pending.id }}" value="delete" checked /> <label for="reason_delete_{{ pending.id }}">Delete</label><br />
                 <button type="button" class="small" onClick="approvePicture('reject','{{ pending.id }}')">Reject</button>
             </td>
