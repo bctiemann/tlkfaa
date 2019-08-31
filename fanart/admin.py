@@ -214,6 +214,7 @@ class BulletinAdmin(admin.ModelAdmin):
     list_display = ('title', 'user', 'date_posted', 'is_published', 'is_admin', 'num_replies',)
     list_filter = ('is_admin',)
     readonly_fields = ('user',)
+    autocomplete_fields = ('user',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.Bulletin, BulletinAdmin)
 
