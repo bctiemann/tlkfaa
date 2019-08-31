@@ -249,7 +249,7 @@ admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAd
 
 
 class FeaturedPictureAdmin(admin.ModelAdmin):
-    list_display = ('picture',)
+    list_display = ('picture', 'date_featured',)
     autocomplete_fields = ('picture',)
     search_fields = ('artist__username',)
 admin.site.register(fanart_models.FeaturedPicture, FeaturedPictureAdmin)
