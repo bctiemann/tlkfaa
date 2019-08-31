@@ -1,0 +1,65 @@
+{% load bbcode_tags %}
+
+<style>
+.featured-picture-box {
+    text-align: left;
+}
+
+.featured-picture-box h2 {
+    margin: 10px 0px 20px 0px;
+}
+
+img.featured-picture {
+    width: 100%;
+}
+
+.commentary {
+    margin: 0 10%;
+    font-size: 14px;
+}
+
+.artist-info {
+    background-color: #c4c4c4;
+    border-radius: 4px;
+    border: 1px solid #808080;
+    text-align: center;
+    margin-left: 30px;
+    margin-bottom: 10px;
+    padding: 20px;
+}
+</style>
+
+{% if featured_picture %}
+
+<div class="featured-picture-box">
+
+    <h2>Fan-Art Spotlight</h2>
+
+    <a href="{% url "picture" picture_id=featured_picture.picture.id %}">
+        <img class="featured-picture" src="{{ featured_picture.picture.url }}" />
+    </a>
+
+    <div class="commentary">
+        <div class="picturecaption">
+            {{ featured_picture.picture.title }}
+        </div>
+        <div class="float-right artist-info">
+            {% if featured_picture.picture.artist.profile_pic_url %}
+            <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}"><img class="profilepic" src="{{ featured_picture.picture.artist.profile_pic_url }}" /></a>
+                <br clear="right" />
+            {% endif %}
+            <h3>
+                by <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}">{{ featured_picture.picture.artist.username }}</a>
+            </h3>
+        </div>
+
+        {{ featured_picture.commentary_parsed|bbcode|safe }}
+    </div>
+
+</div>
+
+<br clear="all" />
+</div>
+
+{% endif %}
+

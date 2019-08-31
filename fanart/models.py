@@ -1,5 +1,3 @@
-
-
 from django.conf import settings
 from django.db import models, connection
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
@@ -592,6 +590,12 @@ class PictureManager(models.Manager):
     @property
     def random_popular(self):
         return self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('?')
+
+    @property
+    def most_popular_recent(self):
+        date_cutoff = timezone.now() - datetime.timedelta(days=600)
+        min_faves = 10
+        return Picture.objects.filter(num_faves__gt=min_faves, date_uploaded__gt=date_cutoff).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('-num_faves')
 
     def get_queryset(self):
         return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False).exclude(artist__is_artist=False)
@@ -1656,6 +1660,23 @@ class FeaturedArtistPicture(models.Model):
 
     def __str__(self):
         return '{0}/{1}'.format(self.featured_artist.artist.username, self.showcase_picture.name)
+
+
+class FeaturedPicture(models.Model):
+    picture = models.ForeignKey('Picture', null=True, blank=True, on_delete=models.SET_NULL)
+    date_featured = models.DateField()
+    commentary = models.TextField(blank=True)
+    is_published = models.BooleanField(default=False)
+
+    @property
+    def commentary_parsed(self):
+        return self.commentary.replace('A_NAME', self.picture.artist.username)
+
+    def __str__(self):
+        return self.picture.filename
+
+    class Meta:
+        ordering = ['-date_featured']
 
 
 class ModNote(models.Model):

@@ -144,6 +144,7 @@ class HomeView(UserPaneMixin, TemplateView):
 
         context['upcoming_birthdays'] = models.User.objects.upcoming_birthdays()
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
+        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).first()
 
         context['login_failed'] = self.request.session.get('login_failed')
         self.request.session['login_failed'] = False

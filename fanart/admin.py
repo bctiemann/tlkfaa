@@ -248,6 +248,13 @@ class FeaturedArtistPictureAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.FeaturedArtistPicture, FeaturedArtistPictureAdmin)
 
 
+class FeaturedPictureAdmin(admin.ModelAdmin):
+    list_display = ('picture',)
+    autocomplete_fields = ('picture',)
+    search_fields = ('artist__username',)
+admin.site.register(fanart_models.FeaturedPicture, FeaturedPictureAdmin)
+
+
 class RevisionLogAdmin(admin.ModelAdmin):
     list_display = ('date_created', 'entry',)
 admin.site.register(fanart_models.RevisionLog, RevisionLogAdmin)
