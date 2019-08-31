@@ -324,7 +324,7 @@ ADMIN_NAME = 'Brian Tiemann'
 
 USE_L10N = False
 DATE_FORMAT = 'D n/j/Y'
-DATETIME_FORMAT = 'H:i D n/j/Y'
+# DATETIME_FORMAT = 'H:i D n/j/Y'
 SHORT_DATE_FORMAT = 'M j, Y'
 
 THUMB_SIZE = {
