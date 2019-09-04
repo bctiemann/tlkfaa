@@ -799,6 +799,13 @@ class Picture(models.Model):
     def year(self):
         return self.date_uploaded.year
 
+    @property
+    def date_featured(self):
+        featured = self.featuredpicture_set.first()
+        if featured:
+            return featured.date_featured
+        return None
+
     def get_absolute_url(self):
         return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
 
