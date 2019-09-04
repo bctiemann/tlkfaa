@@ -19,6 +19,7 @@ import re
 import shutil
 from PIL import Image
 from pwd import getpwnam
+from precise_bbcode.bbcode import get_parser
 
 from fanart.utils import dictfetchall, make_dir_name, upperfirst, sizeof_fmt
 from fanart.tasks import process_images
@@ -1309,6 +1310,11 @@ class Pending(models.Model):
         if self.is_movie:
             reasons.append('Movie files must be manually approved.')
         return reasons
+
+    @property
+    def title_parsed(self):
+        parser = get_parser()
+        return parser.render(self.title)
 
     def get_absolute_url(self):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
