@@ -795,6 +795,10 @@ class Picture(models.Model):
     def replacement_pending(self):
         return Pending.objects.filter(replaces_picture=self).exists()
 
+    @property
+    def year(self):
+        return self.date_uploaded.year
+
     def get_absolute_url(self):
         return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
 

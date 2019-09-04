@@ -31,9 +31,22 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.User, UserAdmin)
 
 
+class PictureYearFilter(admin.SimpleListFilter):
+    title = 'year'
+    parameter_name = 'year'
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.get_queryset(request)
+        for year in qs.dates('date_uploaded', 'year'):
+            yield (year.year, year.year)
+
+    def queryset(self, request, queryset):
+        return queryset.filter(date_uploaded__year=self.value())
+
+
 class PictureAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'artist', 'date_uploaded',)
-    list_filter = ()
+    list_display = ('filename', 'artist', 'date_uploaded', 'num_faves', 'year',)
+    list_filter = (PictureYearFilter,)
     search_fields = ('filename',)
     autocomplete_fields = ('artist', 'approved_by', 'tags',)
 #    inlines = (PictureCharacterInline,)
