@@ -1,0 +1,13 @@
+# Create a 3200x3200 canvas and two layers
+!version=dp:4.21.2
+!title=Sketcher Reborn
+!founder=Brian Tiemann
+#!password=plain;qwerty123
+!persistent=true
+
+0 owner users=1
+# Note: the owner command is needed to grant rights to these commands below.
+# The server will append the up to date owner list automatically.
+1 resize right=3200 bottom=3200
+1 newlayer id=0x0101 fill=#ffffff title=Background
+1 newlayer id=0x0102 title=Foreground
