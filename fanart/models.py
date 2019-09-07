@@ -1501,7 +1501,7 @@ class Contest(models.Model):
 
     @property
     def hours_left(self):
-        return (self.date_end - timezone.now()).seconds / 3600
+        return int((self.date_end - timezone.now()).seconds / 3600)
 
     @property
     def winning_entries(self):
