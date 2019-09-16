@@ -12,6 +12,10 @@ function approvePicture(fnc,pendingid) {
 //  var url = "/admin/ajax_approve.jsp?fnc=loading";
   var postform = $('#approveform_'+pendingid).serialize();
 //  $('#pending_'+pendingid).load(url,function() {
+  if (!$('#approveform_'+pendingid)[0].filename.value) {
+    alert('Must enter a filename.');
+    return;
+  }
 
   $('#pending_'+pendingid).empty();
   $('#loading_table').clone().appendTo('#pending_'+pendingid).show();
