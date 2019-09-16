@@ -5,7 +5,8 @@ $.ajaxSetup ({
     cache: false
 });
 
-function setFilename(pendingid) {
+function setFilename(pendingid, filename) {
+  $('#approveform_'+pendingid)[0].filename.value = filename;
 }
 
 function approvePicture(fnc,pendingid) {
