@@ -47,7 +47,7 @@ class PictureYearFilter(admin.SimpleListFilter):
 class PictureAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded', 'num_faves', 'year', 'date_featured',)
     list_filter = (PictureYearFilter,)
-    search_fields = ('filename',)
+    search_fields = ('filename', 'id',)
     autocomplete_fields = ('artist', 'approved_by', 'tags',)
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
