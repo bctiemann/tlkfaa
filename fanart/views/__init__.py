@@ -1640,12 +1640,18 @@ class UploadProfilePicView(UpdateView):
         return JsonResponse(response)
 
     def form_valid(self, form):
-        response = {'success': True}
+        response = {'success': False}
 
         logger.info(self.request.FILES)
 #        self.object.picture = self.request.FILES['picture']
 #        self.object.filename = self.request.FILES['picture'].name
 #        self.object.date_uploaded = timezone.now()
+
+        if not self.request.FILES['profile_picture'].content_type in list(settings.IMAGE_FILE_TYPES.keys()):
+            response['errors'] = {
+                'profile_picture': 'Invalid file type. Valid types are: {0}'.format(', '.join(list(settings.IMAGE_FILE_TYPES.values())))
+            }
+            return JsonResponse(response)
 
         try:
             if self.old_profile_picture:
@@ -1662,6 +1668,7 @@ class UploadProfilePicView(UpdateView):
 
         self.object.save(update_thumbs=True)
 
+        response['success'] = True
         return JsonResponse(response)
 
     def get_context_data(self, *args, **kwargs):
