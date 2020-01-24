@@ -27,7 +27,7 @@ STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
 #MEDIA_ROOT = '/usr/local/apache-tomcat-8.0/webapps_fanart/ROOT'
 MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
 
-EMAIL_HOST = 'mail.lionking.org'
+#EMAIL_HOST = 'mail.lionking.org'
 
 SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
@@ -39,3 +39,11 @@ RECAPTCHA_ENABLED = True
 
 CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
 
+
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

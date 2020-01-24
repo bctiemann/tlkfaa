@@ -28,6 +28,7 @@ env_variables_to_pass = [
     'RECAPTCHA_SITE_KEY',
     'RECAPTCHA_SECRET_KEY',
     'CELERY_BROKER_URL',
+    'SENDGRID_API_KEY',
 ]
 
 def application(environ, start_response):
