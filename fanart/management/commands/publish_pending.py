@@ -47,6 +47,7 @@ class Command(BaseCommand):
             defaults = {
                 'artist': pending.artist,
                 'filename': pending.filename,
+                'original_filename': pending.original_filename,
                 'title': pending.title,
                 'mime_type': pending.mime_type,
                 'width': pending.width,

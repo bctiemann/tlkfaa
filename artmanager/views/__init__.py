@@ -264,6 +264,7 @@ class UploadFileView(LoginRequiredMixin, CreateView):
         pending.folder = folder
         pending.picture = self.request.FILES['picture']
         pending.filename = self.request.FILES['picture'].name
+        pending.original_filename = self.request.FILES['picture'].name
         pending.mime_type = self.request.FILES['picture'].content_type
         pending.remote_host = self.request.META['REMOTE_ADDR']
         pending.remote_addr = self.request.META['REMOTE_ADDR']
