@@ -1273,9 +1273,13 @@ class Pending(models.Model):
 
     @property
     def next_unique_basename(self):
+        if not self.artist.picture_set.filter(filename=self.sanitized_filename).exists():
+            return self.sanitized_basename
+
         raw_basename = re.sub('[0-9]+$', '', self.sanitized_basename)
         highest_match = 0
         matched_input = False
+
         for picture in self.artist.picture_set.filter(filename__startswith=raw_basename):
             if picture.basename == self.basename:
                 matched_input = True
