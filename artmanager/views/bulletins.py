@@ -67,7 +67,11 @@ class BulletinCreateView(LoginRequiredMixin, CreateView):
 
         bulletin = form.save(commit=False)
         bulletin.user = self.request.user
-        bulletin.is_published = False
+        if settings.BULLETINS_MODERATED:
+            bulletin.is_published = False
+        else:
+            bulletin.is_published = True
+            bulletin.date_published = timezone.now()
         bulletin.save()
 
         email_context = {'user': self.request.user, 'bulletin': bulletin}
