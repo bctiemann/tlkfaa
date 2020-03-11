@@ -15,7 +15,7 @@
 
 	<c:if test="${nolist != 1}">
 	<br clear="all" />
-	<button onClick="getMoreArtists({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
+	<button onClick="getMoreArtists({{ next_start }},'{{ list_type }}',{{ count }},'{{ term }}',this)">More</button>
 	</c:if>
 
     {% endif %}

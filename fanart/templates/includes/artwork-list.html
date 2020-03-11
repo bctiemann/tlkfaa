@@ -24,7 +24,7 @@
     {% include "includes/picture.html" %}
 
     {% if forloop.counter == count %}
-        <button onClick="getMoreArtwork({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
+        <button onClick="getMoreArtwork({{ next_start }},'{{ list_type }}',{{ count }},'{{ term }}',this)">More</button>
     {% endif %}
 
 {% endfor %}
