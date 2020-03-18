@@ -1771,6 +1771,9 @@ class RemoveBannerView(DeleteView):
 
         self.object = self.get_object()
 
+        if not self.object:
+            return JsonResponse(response)
+
         logger.info(self.object.picture.name)
         try:
             os.remove(self.object.picture.path)
