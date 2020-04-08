@@ -7,7 +7,7 @@
             <td class="thumb">
                 {% if offer.type == "icon" %}
                     <a href="{{ offer.url }}" rel="shadowbox">
-                {% elif offer.type == "adoptable" %}
+                {% elif offer.type == "adoptable" and offer.character %}
                     <a href="{% url "character" character_id=offer.character.id %}">
                 {% endif %}
                 <img class="thumb offerthumb" id="offerthumb_{{ offer.id }}" src="{{ offer.thumbnail_url }}" /></a>
