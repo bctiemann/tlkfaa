@@ -323,13 +323,14 @@ class CharactersView(UserPaneMixin, TemplateView):
 
         default_characters_view = settings.DEFAULT_CHARACTERS_VIEW
 
-        dir_name = kwargs.get('dir_name', None)
+        dir_name = kwargs.get('dir_name', self.request.GET.get('dir_name', None))
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
-
-        list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
-        if not list_type in models.characters_tabs and not dir_name:
-            list_type = default_characters_view
+            list_type = 'artist'
+        else:
+            list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
+            if not list_type in models.characters_tabs and not dir_name:
+                list_type = default_characters_view
 
         mode = list_type
         tab_selected = list_type
@@ -341,7 +342,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         initial = self.request.GET.get('initial', None)
 
         characters = models.Character.objects.all()
-        if dir_name:
+        if list_type == 'artist':
             characters = characters.filter(owner=context['artist']).order_by('name')
             tab_selected = 'search'
         elif list_type == 'canon':

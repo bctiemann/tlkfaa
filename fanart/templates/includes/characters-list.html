@@ -17,7 +17,7 @@
     {% include "includes/character.html" %}
 
     {% if forloop.counter == count %}
-        <button onClick="getMoreCharacters({{ next_start }},'{{ list }}',{{ count }},'{{ term }}',this)">More</button>
+        <button onClick="getMoreCharacters({{ next_start }},'{{ list_type }}',{{ count }},'{{ term }}',this,'{{ artist.dir_name }}')">More</button>
     {% endif %}
 
 {% endfor %}
