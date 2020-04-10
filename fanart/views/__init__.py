@@ -370,6 +370,7 @@ class CharactersView(UserPaneMixin, TemplateView):
                 if list_type == 'artist':
                     try:
                         characters = characters.filter(owner__id=term)
+                        context['artist'] = get_object_or_404(models.User, is_artist=True, pk=term)
                     except ValueError:
                         pass
                 elif list_type == 'species':
