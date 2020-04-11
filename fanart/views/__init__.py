@@ -324,6 +324,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         default_characters_view = settings.DEFAULT_CHARACTERS_VIEW
 
         dir_name = kwargs.get('dir_name', self.request.GET.get('dir_name', None))
+        term = self.request.GET.get('term', None)
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
             list_type = 'artist'
@@ -331,6 +332,8 @@ class CharactersView(UserPaneMixin, TemplateView):
             list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
             if not list_type in models.characters_tabs and not dir_name:
                 list_type = default_characters_view
+            if list_type == 'artist' and term:
+                context['artist'] = get_object_or_404(models.User, is_artist=True, pk=term)
 
         mode = list_type
         tab_selected = list_type
@@ -355,7 +358,6 @@ class CharactersView(UserPaneMixin, TemplateView):
             characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
         elif list_type == 'search':
             context['show_search_box'] = True
-            term = self.request.GET.get('term', None)
             match_type = self.request.GET.get('match', 'contains')
             if term:
 #                if match_type == 'exact':
