@@ -1590,7 +1590,7 @@ function setupAutocompleteCharacter(obj,selectfn) {
         }
       })
     },
-    minLength: 3,
+    minLength: 1,
     select: function(e,ui) {
       eval(selectfn);
     }
