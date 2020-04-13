@@ -606,6 +606,10 @@ img.bulletinprofilepic {
 	margin: 2px 8px 2px 2px;
 }
 
+.bulletins_content img {
+    max-width: 100%;
+}
+
 /* Bulletin dialog */
 
 #dialog_bulletin h3 {
