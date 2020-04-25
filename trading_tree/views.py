@@ -154,9 +154,9 @@ class AcceptClaimView(UpdateView):
             if self.object.offer.character:
                 comment_append = ''
                 if self.object.offer.character.profile_picture:
-                    comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/picture/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_picture.id)
+                    comment_append = '\n\nPrevious owner\'s reference picture: {0}/picture/{1}'.format(settings.SERVER_BASE_URL, self.object.offer.character.profile_picture.id)
                 elif self.object.offer.character.profile_coloring_picture:
-                    comment_append = '\n\nPrevious owner\'s reference picture: http://{0}/ColoringCave/{1}'.format(settings.SERVER_HOST, self.object.offer.character.profile_coloring_picture.id)
+                    comment_append = '\n\nPrevious owner\'s reference picture: {0}/ColoringCave/{1}'.format(settings.SERVER_BASE_URL, self.object.offer.character.profile_coloring_picture.id)
 
                 self.object.offer.character.owner = self.request.user
                 self.object.offer.character.profile_picture = None
