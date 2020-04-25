@@ -17,3 +17,4 @@ celery==4.2.1
 requests==2.20.0
 html2bbcode==2.3.3
 wiki==0.4.4
+pyyaml==5.3.1

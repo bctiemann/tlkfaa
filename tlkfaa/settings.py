@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import sys
+import yaml
 from unipath import Path
 from colorlog import ColoredFormatter
 from cloghandler import ConcurrentRotatingFileHandler
@@ -24,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = 'dummy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -168,13 +169,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/usr/local/www/django/tlkfaa/static_root'
-#MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
+MEDIA_ROOT = '/usr/local/www/django/tlkfaa/media'
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = ''
 #MEDIA_URL = '/Artwork/Artists/'
 
 LOGIN_URL = '/'
@@ -306,9 +306,9 @@ MAX_BANNER_SIZE = 512000
 
 REVISION_LOG_RECENT_DAYS = 10
 
-RECAPTCHA_SITE_KEY = os.environ['RECAPTCHA_SITE_KEY']
-RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
-RECAPTCHA_ENABLED = False
+RECAPTCHA_SITE_KEY = None
+RECAPTCHA_SECRET_KEY = None
+RECAPTCHA_ENABLED = True
 
 # Celery
 CELERY_TASK_SERIALIZER = 'pickle'
@@ -316,11 +316,15 @@ CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_ACCEPT_CONTENT = ['pickle']
 #CELERY_ALWAYS_EAGER = True
 
+# Email
+EMAIL_HOST = 'mail.lionking.org'
 SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
-ADMIN_EMAIL = 'btman@mac.com'
+ADMIN_EMAIL = 'btman@lionking.org'
 
 ADMIN_NAME = 'Brian Tiemann'
+
+ADMINS = [(ADMIN_NAME, DEBUG_EMAIL)]
 
 USE_L10N = False
 DATE_FORMAT = 'D n/j/Y'
@@ -376,3 +380,9 @@ CHARACTER_PLACEHOLDER_IMG_URL = '{0}{1}'.format(STATIC_URL, CHARACTER_PLACEHOLDE
 MOVIE_ICON_IMG_URL = '{0}{1}'.format(STATIC_URL, MOVIE_ICON_IMG)
 
 BULLETINS_MODERATED = False
+
+
+# Local overrides from env.yaml
+with open(os.path.join(BASE_DIR, 'env.yaml')) as f:
+    local_settings = yaml.load(f, Loader=yaml.FullLoader)
+globals().update(local_settings)

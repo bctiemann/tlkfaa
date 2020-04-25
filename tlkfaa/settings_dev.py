@@ -20,4 +20,5 @@ SITE_EMAIL = 'fanart@lionking.org'
 DEBUG_EMAIL = 'btman@mac.com'
 ADMIN_EMAIL = 'btman@mac.com'
 
+RECAPTCHA_ENABLED = False
 BULLETINS_MODERATED = False

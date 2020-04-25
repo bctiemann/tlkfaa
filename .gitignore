@@ -8,3 +8,5 @@ database.db
 .idea
 *.bak
 .DS_Store
+env.yaml
+env.prod.yaml
