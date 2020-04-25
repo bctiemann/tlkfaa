@@ -1,0 +1,179 @@
+- Contest winner email script
++ Redirect for picture urls in old old format?
+
+
+- Heart for picture like instead of star (also reposition somewhere better on picture page)
+
++ ArtManager contest page, show entries via Ajax
+
++ PMs: permalink / direct link from email
+
++ Approvals: finish thumbnail spinner refresh
+
++ Convert YouTube links to embeds
+
++ Site-Wide Contests / past contests listing
+
++ Sketcher
+
+- Characters tab artwork
+
+- Banner/tabs layout redesign?
+
++ Logging
+
++ Email notifications
+
+- Contests box on artist pages
+
+- Toolbox
+
+- Favorite Artists box - sort by new pics
+
+- Multiple search term support in search (Artists/Artwork)
+
+- Alerts box on Dashboard: Admin messages?
+
+- Reformat shadowboxed picture/character picker
+        - Use 240px images, tiled
+
+- Coloring Cave: remove/restore functionality; "Line Art Removed" view for withdrawn pics
+
+- Keywords: multiple tags in search?
+
+- Search for characters (including othercharacters); need this for "More" link from character page
+        - Characters: "More" link, sort pics by date or popularity
+        - Editing pictures: parse tags for character names, tag characters
+
+- Rationalize 5 vs. 10 on random search; maybe make all fetches hard-coded to 10, or else make "count" work throughout (make sure count is limited)
+
+- Close comments from bottom
+
+- (?) When enabling/disabling an artist, update tag counts for all their pictures
+
+- Page titles
+
+- ajax_listartwork.jsp: Decide whether to echo the search terms with every "More" click or only show it at the top
+
+- Search characters by name
+
+
++ Import banners from existing banner buttons
+
++ Folder move in dialog
+
++ New logo
+
++ Autoapprove artists need acknowledgment on pending page (shows pending pics but says they'll be inserted within 10 minutes, unless flagged)
+
++ Hide upload form while uploading
+
+- JS error on approval page
+
++ Better feedback on completion of upload/delete/etc
+
++ Better feedback on completion of form-based ArtManager tabs (i.e. change prefs)
+
++ Notify on PMs
+
++ Canon character icons on picture page
+
++ PM notification on login box
+
++ Autocomplete on search artists
+
+- Tagging characters should respect tagged_on, not delete the whole list, send notification emails and fill in notified_on
+
+- Character tag logging/notification if tagged on initial upload (notify on insert?)
+
+- Set lastupload on picture deletion
+
+- Fix blank keywords (example: pictureid 640510)
+
++ Sound in Sketcher
+
++ Don't allow sending PMs to yourself
+
+- Fix next-page links for character tagged lists
+
++ past AotM archive
+
+- fix SWF display in Picture.jsp
+
+- Tooltip class for just the things that need tooltips ("follow artist", "fave picture", etc)
+
+- For the right side of the artist page: contests, Trading Tree offers, journals...?
+
++ Uploaded files not getting renamed?
+
+- Contest deadlines (see Impano's PM)
+
++ Sketcher saying you're not logged in?
+
++ Add "-background white -alpha remove" to mogrify commands
+
+- Create 240x9999 preview images for existing movie files
+
+- "With Another Character" filter should only allow matches of characters tagged with this one
+
++ Change all usernames to match artist names
+
++ Email notifications on requests/ArtWall
+
+- Email notifications on requests/ArtWall removal
+
++ Email notifications on comments
+
++ Email notifications on shouts
+
++ Add to newpics on insert
+
+- "New picture" styling for picture tiles on artist page
+
++ New contest setup page
+
+- Comment editing
+
+- Migrate text fields to BBcode by converting old embedded escaped HTML to raw HTML, and preserving old text fields temporarily
+        + Comments
+        + Shouts
+        - Bulletins
+        + Picture titles
+        + Artist descs
+        - Artist banner text/banner min
+
+- Shorten parsed URLs
+
++ Show tags in picture box
+
++
+it would also be kind of nice to have some site functionality options? like the picture previews when you hover
+over a picture really gets in the way for me and it would be nice having an option to disable that. i also kind
+of miss having it where when you click on a picture it would load it in a different window or tab or something.
+when youre looking through a whole list of new submissions to look at its kind of unproductive to have to load
+a page, go back, and load another. maybe its just that doing this or right clicking and opening in a new tab
+for every picture bugs me, but an option or 2 would be nice.
+
+theres also a bug ive encountered in the watched and unviewed tab where it doesnt show you all the pictures
+when you consecutively click the more tab as you go through them. and example would be like if i had 20 new
+submissions and i got through the 1st 10, and when i would click "more" it would say "no results" and i
+would have to refresh to see the other ten. i dont think the "newest by favorite artists" tab has this
+problem, and when you click on a picture and it takes you to that page when you click back you dont lose
+your spot from where you were looking at pictures from, so i wouldnt think that the "watched and unviewed"
+tab would be needed at all if there were just some way to differentiate pictures that you have and havent
+viewed while in the "newest by favorite artists" tab (like a different colored post background r something).
+
++
+also in the unread comments sections it also shows your own comments in there when youve replied to someone,
+which i think is pretty unnecessary and honestly gets my hopes up that someone else had commented :^(
+
++
+theres another issue in the artmanager that when youre uploading multiple pictures in a row on the page
+after you uploaded the first picture and it shows you a new upload prompt, it only gives you the option
+to post in your main folder.
+
+
+Hi Brian, it's been a while since I was properly on the archive and everything changed so much! I was
+wondering where do excepted icons go? I couldn't see any of them on my "art wall" so I was wondering if
+they go somewhere different now. Thank you in advance!
+Gracelessangel
