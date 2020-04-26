@@ -2844,6 +2844,9 @@ div.searchartist {
 	hyphens: auto;
 */
 }
+.comment-text img {
+    max-width: 100%;
+}
 .comment-edited {
 	color: #888;
 	font-style: italic;
