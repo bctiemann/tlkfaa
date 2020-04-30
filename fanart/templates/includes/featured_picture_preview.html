@@ -11,6 +11,10 @@
     max-width: 100%;
     cursor: pointer;
 }
+.sidebar-featured-preview .pic-container {
+    max-height: 200px;
+    overflow-y: hidden;
+}
 .sidebar-featured-preview .picturecaption {
     font-size: 15px;
     margin: 10px;
@@ -20,7 +24,9 @@
 {% if featured_picture %}
     <div class="sidebar-featured-preview">
         <h2>Fan-Art Spotlight</h2>
-        <img src="{{ featured_picture.picture.preview_url }}" />
+        <div class="pic-container">
+            <img src="{{ featured_picture.picture.preview_url }}" />
+        </div>
         <p>
             by <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}">{{ featured_picture.picture.artist.username }}</a>
         </p>
