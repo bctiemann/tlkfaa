@@ -1,0 +1,38 @@
+{% load bbcode_tags %}
+
+<style>
+.sidebar-featured-preview {
+    background-color: rgba(213,217,223,0.6);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+.sidebar-featured-preview img {
+    max-width: 100%;
+    cursor: pointer;
+}
+.sidebar-featured-preview .picturecaption {
+    font-size: 15px;
+    margin: 10px;
+}
+</style>
+
+{% if featured_picture %}
+    <div class="sidebar-featured-preview">
+        <h2>Fan-Art Spotlight</h2>
+        <img src="{{ featured_picture.picture.preview_url }}" />
+        <p>
+            by <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}">{{ featured_picture.picture.artist.username }}</a>
+        </p>
+        <div class="picturecaption">
+            {{ featured_picture.picture.title|bbcode|safe|truncatechars:30 }}
+        </div>
+    </div>
+{% endif %}
+
+<script type="text/javascript">
+$('.sidebar-featured-preview img').click(function() {
+    console.log('foo');
+    jumpToHash('#featured_picture');
+});
+</script>

@@ -3047,6 +3047,17 @@ function connectSketcher() {
   return false;
 }
 
+var jumpToHash = function (hash) {
+    var sectionPos;
+    targetElem = $(hash);
+    sectionPos = targetElem.offset().top;
+    if (sectionPos) {
+        $('html, body').animate({
+            scrollTop: sectionPos
+        }, 500);
+    }
+};
+
 $(document).ready(function() {
   $("input#artistlogin,input#recpt,input#blockuser,input#searchartist").autocomplete({
     source: function(request, response) {

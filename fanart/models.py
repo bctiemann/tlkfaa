@@ -106,9 +106,9 @@ class OverwriteStorage(FileSystemStorage):
 
 class FanartUserManager(UserManager):
 
-    def recently_active(self, request):
+    def recently_active(self, request=None):
         artists = self.get_queryset().filter(is_artist=True, is_active=True, num_pictures__gt=0).order_by('-last_upload')
-        if request.user.is_authenticated == False:
+        if request and request.user.is_authenticated == False:
             artists = artists.filter(is_public=True)
         return artists[0:10]
 
@@ -317,8 +317,8 @@ ORDER BY fanart_user.sort_name
 
     @property
     def recently_uploaded_pictures(self):
-        three_days_ago = timezone.now() - datetime.timedelta(days=THREE)
-        return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=three_days_ago).order_by('-date_uploaded')[0:10]
+        recent_pictures_cutoff_date = timezone.now() - datetime.timedelta(days=settings.ARTIST_RECENT_PICTURES_DAYS)
+        return self.picture_set.filter(is_public=True, date_deleted__isnull=True, date_uploaded__gt=recent_pictures_cutoff_date).order_by('-date_uploaded')[0:10]
 
     @property
     def blocked_commenters(self):
