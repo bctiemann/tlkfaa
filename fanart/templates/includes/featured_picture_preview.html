@@ -31,7 +31,7 @@
             by <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}">{{ featured_picture.picture.artist.username }}</a>
         </p>
         <div class="picturecaption">
-            {{ featured_picture.picture.title|bbcode|safe|truncatechars:30 }}
+            {{ featured_picture.picture.title|bbcode|safe|truncatechars:100 }}
         </div>
     </div>
 {% endif %}
