@@ -598,6 +598,10 @@ class PictureManager(models.Manager):
         min_faves = 10
         return Picture.objects.filter(num_faves__gt=min_faves, date_uploaded__gt=date_cutoff).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('-num_faves')
 
+    @property
+    def extensions_in_use(self):
+        return set([pic.extension for pic in self.get_queryset()])
+
     def get_queryset(self):
         return super(PictureManager, self).get_queryset().exclude(date_deleted__isnull=False).exclude(artist__is_artist=False)
 
@@ -1273,7 +1277,12 @@ class Pending(models.Model):
 
     @property
     def next_unique_basename(self):
-        if not self.artist.picture_set.filter(filename=self.sanitized_filename).exists():
+        matching_basename_exists = False
+        for extension in self.artist.picture_set.extensions_in_use:
+            filename_to_test = f'{self.sanitized_basename}.{extension}'
+            if self.artist.picture_set.filter(filename=filename_to_test).exists():
+                matching_basename_exists = True
+        if not matching_basename_exists:
             return self.sanitized_basename
 
         raw_basename = re.sub('[0-9]+$', '', self.sanitized_basename)
