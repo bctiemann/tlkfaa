@@ -1290,7 +1290,7 @@ class Pending(models.Model):
         matched_input = False
 
         for picture in self.artist.picture_set.filter(filename__startswith=raw_basename):
-            if picture.basename == self.basename:
+            if picture.basename == raw_basename:
                 matched_input = True
             match = re.match('{0}([0-9]*)'.format(raw_basename), picture.basename)
             if match:
