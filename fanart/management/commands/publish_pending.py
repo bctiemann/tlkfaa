@@ -31,14 +31,12 @@ class Command(BaseCommand):
                 print('{0} locked for publish'.format(pending.id))
                 continue
 
-            pending.locked_for_publish = True
-            pending.save()
-
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
             if os.path.isfile('{0}/{1}.s.jpg'.format(pending.artist.absolute_dir_name, pending.next_unique_basename)):
                 logger.error('File {0} exists; skipping.'.format(pending.next_unique_basename))
                 continue
 
+            pending.locked_for_publish = True
             pending.filename = filename
             pending.save()
 
