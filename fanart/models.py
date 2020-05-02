@@ -1280,7 +1280,7 @@ class Pending(models.Model):
         matching_basename_exists = False
         for extension in self.artist.picture_set.extensions_in_use:
             filename_to_test = f'{self.sanitized_basename}.{extension}'
-            if self.artist.picture_set.filter(filename=filename_to_test).exists():
+            if not matching_basename_exists and self.artist.picture_set.filter(filename=filename_to_test).exists():
                 matching_basename_exists = True
         if not matching_basename_exists:
             return self.sanitized_basename
