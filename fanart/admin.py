@@ -48,7 +48,7 @@ class PictureAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded', 'num_faves', 'year', 'date_featured',)
     list_filter = (PictureYearFilter,)
     search_fields = ('filename', 'id',)
-    autocomplete_fields = ('artist', 'approved_by', 'tags',)
+    autocomplete_fields = ('artist', 'approved_by', 'tags', 'folder',)
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
 
@@ -74,6 +74,7 @@ class PendingAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded',)
     list_filter = ()
     readonly_fields = ('artist', 'approved_by',)
+    autocomplete_fields = ('replaces_picture', 'folder',)
 #    inlines = (PictureCharacterInline,)
     artist_id_for_formfield = None
 
@@ -96,6 +97,7 @@ class FolderAdmin(admin.ModelAdmin):
     list_display = ('name', 'user',)
     list_filter = ()
     readonly_fields = ('user',)
+    search_fields = ('name',)
     user_id_for_formfield = None
 
     def get_form(self, request, obj=None, **kwargs):
