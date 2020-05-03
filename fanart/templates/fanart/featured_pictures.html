@@ -1,0 +1,55 @@
+{% extends "fanart/base.html" %}
+{% load bbcode_tags %}
+
+{% block page_title %} &mdash; Featured Artwork{% endblock %}
+
+{% block grass %}
+{% include "includes/grass_showcases.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+    <div class="toolbar">
+        <ul>
+            <li>
+                <a class="button" href="{% url "featured-artists" %}">Featured Artists</a>
+            </li>
+        </ul>
+    </div>
+
+    <h1>Featured Artwork</h1>
+
+    {% for featured_picture in featured_pictures %}
+
+        <div class="featurebox">
+
+
+            {% with picture=featured_picture.picture %}
+            {% include "includes/picture.html" %}
+            {% endwith %}
+
+            <div class="featured-picture-commentary">
+                <h2 class="float-right">Featured {{ featured_picture.date_featured }}</h2>
+                <div class="commentary-text">
+                    {{ featured_picture.commentary_parsed|bbcode|safe }}
+                </div>
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+    <style type="text/css">
+    .featured-picture-commentary {
+        text-align: left;
+        margin: 10px auto;
+        width: 60%;
+    }
+    .commentary-text {
+        clear: both;
+    }
+    </style>
+
+{% endblock %}

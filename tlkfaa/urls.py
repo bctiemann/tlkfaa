@@ -52,7 +52,8 @@ urlpatterns = [
     url(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
     url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
-    url(r'^Featured/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    url(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    url(r'^FeaturedPictures/$', fanart_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
     url(r'^revision_log/$', fanart_views.RevisionLogView.as_view(), name='revision-log'),
 
     url(r'^about/$', fanart_views.AboutView.as_view(), name='about'),

@@ -458,7 +458,7 @@ class ShowcasesView(UserPaneMixin, TemplateView):
 
 
 class FeaturedArtistsView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/featured.html'
+    template_name = 'fanart/featured_artists.html'
 
     def get_context_data(self, **kwargs):
         context = super(FeaturedArtistsView, self).get_context_data(**kwargs)
@@ -470,6 +470,15 @@ class FeaturedArtistsView(UserPaneMixin, TemplateView):
         else:
             context['featured_artists'] = models.FeaturedArtist.objects.filter(is_published=True).order_by('-date_featured')
 
+        return context
+
+
+class FeaturedPicturesView(TemplateView):
+    template_name = 'fanart/featured_pictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['featured_pictures'] = models.FeaturedPicture.objects.filter(is_published=True).all()
         return context
 
 
