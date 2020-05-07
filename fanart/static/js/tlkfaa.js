@@ -554,7 +554,7 @@ function removeClaimPic(claimid) {
 function toggleSelectAll(sel,myselitems) {
   if (!myselitems) { myselitems = selitems; }
   for (i = myselitems.length - 1; i >= 0; i--) {
-    document.getElementById('select_'+myselitems[i]).prop('checked') = sel.checked;
+    document.getElementById('select_'+myselitems[i]).checked = sel.checked;
   }
 }
 
