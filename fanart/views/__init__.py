@@ -43,6 +43,8 @@ import mimetypes
 import os
 import requests
 
+from ratelimit.mixins import RatelimitMixin
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,12 @@ class LoginView(LoginView):
         return redirect('home')
 
 
-class UserPaneMixin(object):
+class UserPaneMixin(RatelimitMixin):
+    ratelimit_key = 'ip'
+    ratelimit_rate = '10/m'
+#    ratelimit_rate = lambda r: None if self.request.user.is_authenticated else '30/m'
+    ratelimit_block = True
+    ratelimit_method = 'GET'
 
     def get_community_art_data(self):
         community_art_data = {}
