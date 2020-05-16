@@ -87,9 +87,12 @@ class LoginView(LoginView):
 class UserPaneMixin(RatelimitMixin):
     ratelimit_key = 'ip'
     ratelimit_rate = '10/m'
-#    ratelimit_rate = lambda r: None if self.request.user.is_authenticated else '30/m'
-    ratelimit_block = True
     ratelimit_method = 'GET'
+
+    def dispatch(self, request, *args, **kwargs):
+        r = super().dispatch(request, *args, **kwargs)
+        self.ratelimit_block = not request.user.is_authenticated
+        return r
 
     def get_community_art_data(self):
         community_art_data = {}
