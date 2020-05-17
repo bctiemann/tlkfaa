@@ -174,6 +174,7 @@ class User(AbstractUser):
     GENDER_CHOICES = (
         ('male', 'Male'),
         ('female', 'Female'),
+        ('non-binary', 'Non-binary'),
         ('', '(No response)'),
     )
 
@@ -226,6 +227,7 @@ class User(AbstractUser):
     featured = models.CharField(max_length=7, null=True, blank=True)
     comments = models.TextField(blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    pronouns = models.CharField(max_length=30, blank=True)
     banner_text = models.TextField(blank=True)
     banner_text_updated = models.DateTimeField(null=True, blank=True)
     banner_text_min = models.TextField(blank=True)

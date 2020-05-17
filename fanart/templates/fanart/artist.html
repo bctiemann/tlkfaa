@@ -219,6 +219,12 @@ The specified artist's gallery is not publicly visible.
 			<td class="label">Gender</td>
 			<td class="data">{{ artist.gender|capfirst }}</td>
 			</tr>
+			{% if artist.pronouns %}
+			<tr>
+			<td class="label">Pronouns</td>
+			<td class="data">{{ artist.pronouns }}</td>
+			</tr>
+			{% endif %}
 			<tr>
 			<td class="label">Location</td>
 			<td class="data">{{ artist.location }}</td>

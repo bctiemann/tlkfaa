@@ -2622,6 +2622,7 @@ function updatePrefs(fnc) {
         show_birthdate: $('#showbirthdate').prop('checked'),
         show_birthdate_age: $('#showbirthdate_age').prop('checked'),
         gender: $('#gender').val(),
+        pronouns: $('#pronouns').val(),
         location: $('#location').val(),
         occupation: $('#occupation').val(),
         website: $('#website').val(),

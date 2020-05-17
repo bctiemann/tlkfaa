@@ -229,8 +229,14 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
                         <option {% if user.gender == '' %}selected{% endif %} value="">(No Response)</option>
                         <option {% if user.gender == "male" %}selected{% endif %} value="male">Male</option>
                         <option {% if user.gender == "female" %}selected{% endif %} value="female">Female</option>
+                        <option {% if user.gender == "non-binary" %}selected{% endif %} value="non-binary">Non-binary</option>
                     </select>
                 </td>
+                <td class="legend"></td>
+            </tr>
+            <tr>
+                <td class="label">Pronouns</td>
+                <td class="data"><input type="text" class="std" name="pronouns" id="pronouns" value="{{ user.pronouns }}" /></td>
                 <td class="legend"></td>
             </tr>
             <tr>
