@@ -1,0 +1,21 @@
+{% load bbcode_tags %}
+
+<div class="shout-reply">
+    <div class="shout-reply-header">
+        <div class="shout-reply-name">
+            {% if reply.user.is_artist and reply.user.dir_name %}
+                Reply by <a href="{% url "artist" dir_name=reply.user.dir_name %}">{{ reply.user.username }}</a>
+            {% else %}
+                Reply by {{ reply.user.username }}
+            {% endif %}
+        </div>
+        <div class="fill-spacer"></div>
+        <div class="shout-reply-date">
+            {{ reply.date_posted|date }}
+        </div>
+    </div>
+    <div class="shout-reply-text comment-text">
+        {{ reply.comment|bbcode|safe }}
+    </div>
+
+</div>

@@ -129,6 +129,14 @@ class ShoutForm(forms.ModelForm):
         fields = ['user', 'artist', 'comment']
 
 
+class ShoutReplyForm(forms.ModelForm):
+    comment = forms.CharField(label='Comment:')
+
+    class Meta:
+        model = models.Shout
+        fields = ['comment']
+
+
 class ContestEntryForm(forms.ModelForm):
 
     class Meta:

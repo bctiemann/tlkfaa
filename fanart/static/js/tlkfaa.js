@@ -350,6 +350,36 @@ function replyPM(recptid,shoutid,bulletinid) {
 */
 }
 
+function replyShout(shoutId) {
+    $('#dialog_shout_reply').dialog({
+        title: 'Reply to Roar',
+        resizable: false,
+        modal: true,
+        width: '50%',
+        buttons: {
+            "Post": function() {
+                var data = {
+                    comment: $('#reply_shout').val(),
+                };
+                console.log(data);
+                var url = `/shouts/${shoutId}/reply/`;
+                $.post(url, data, function(data) {
+                console.log(data);
+                    if (data.success) {
+                        $('#reply_shout').val('');
+                        $('#dialog_shout_reply').dialog('close');
+                        var shoutUrl = `/shouts/${data.shout_id}/detail/`;
+                        $(`#shout_${data.shout_id}`).load(shoutUrl);
+                    };
+                });
+            },
+            Cancel: function() {
+                $(this).dialog('close');
+            }
+        }
+    });
+}
+
 function changeArtistName(name,sortname) {
 //  $('#tr_newname').slideDown('slow',function() {
 //    $('#tr_sortname').slideDown('slow');
@@ -1989,7 +2019,7 @@ function deleteShout(shoutid, artmanagerview) {
         if (artmanagerview) {
           var url = '/ArtManager/shouts/' + shoutid + '/delete/';
         } else {
-          var url = '/shout/' + shoutid + '/delete/';
+          var url = '/shouts/' + shoutid + '/delete/';
         }
         params = {};
         $.post(url,params,function(data) {

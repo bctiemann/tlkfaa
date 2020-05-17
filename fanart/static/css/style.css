@@ -3071,6 +3071,9 @@ textarea.shout-text {
 	background-repeat: no-repeat;
 	background-size: auto 100%;
 }
+.shout .commenttext {
+    border-bottom: 0px;
+}
 .shout .commenttext table {
 	width: auto;
 }
@@ -3080,4 +3083,27 @@ textarea.shout-text {
 }
 .shout img {
 	max-width: 100%;
+}
+.shout-replies {
+
+}
+.shout-reply {
+    padding: 10px;
+}
+.shout-reply:nth-child(odd) {
+    background-color: #f5f9ff;
+}
+.shout-reply-header {
+    display: flex;
+    color: #8a8a8a;
+}
+.shout-reply-text {
+    margin-top: 10px;
+}
+textarea.shout-reply-textarea {
+    width: 91%;
+}
+
+.fill-spacer {
+    flex-grow: 1;
 }

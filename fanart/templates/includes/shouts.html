@@ -1,53 +1,7 @@
-{% load bbcode_tags %}
+{% for shout in shouts %}
 
-        {% for shout in shouts %}
+	<div class="comment shout" id="shout_{{ shout.id }}">
+		{% include "includes/shout.html" %}
+	</div>
 
-		<div class="comment shout" id="shout_{{ shout.id }}">
-		<div class="commentname">
-                        {% if not shout.is_deleted %}
-			<div class="commentdate">{{ shout.date_posted|date }}</div>
-                        {% if shout.user.is_artist and shout.user.dir_name %}
-				<a href="{% url "artist" dir_name=shout.user.dir_name %}">{{ shout.user.username }}</a>
-                        {% else %}
-				{{ shout.user.username }}
-                        {% endif %}
-			{% if shout.user in artist.blocked_commenters %}(blocked){% endif %}
-                        {% endif %}
-		</div>
-		<div class="commenttext clearAfter {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
-			<div class="commentprofilepic">
-                        {% if shout.user.profile_pic_thumbnail_url and not shout.is_deleted %}
-                                {% if shout.user.is_artist and shout.user.dir_name %}
-                                        <a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
-                                {% else %}
-                                        <img src="{{ shout.user.profile_pic_thumbnail_url }}" />
-                                {% endif %}
-                        {% endif %}
-			</div>
-                        {% if shout.is_deleted %}
-				<table><tr><td>
-				Roar deleted.
-				</td></tr></table>
-                        {% else %}
-				<table><tr><td>
-				<div class="comment-text">
-                                        {{ shout.comment|bbcode|safe }}
-				</div>
-				</td></tr></table>
-				<div class="commentbuttons">
-                                {% if shout.artist == user %}
-                                        {% if shout.user in artist.blocked_commenters %}
-						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'unblock','shout',{{ artist.id }},{{ shout.id }})">Unblock</button>
-                                        {% else %}
-						<button type="button" class="small" onClick="blockUser({{ shout.user.id }},'block','shout',{{ artist.id }},{{ shout.id }})">Block</button>
-                                        {% endif %}
-				<button type="button" class="small" onClick="replyPM({{ shout.user.id }},{{ shout.id }})">Reply PM</button>
-                                {% endif %}
-				{% if shout.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-				</div>
-                        {% endif %}
-			<br clear="all" />
-		</div>
-		</div>
-
-        {% endfor %}
+{% endfor %}

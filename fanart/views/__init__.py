@@ -1057,7 +1057,7 @@ class ShoutsView(TemplateView):
         start = int(self.request.GET.get('offset', 0))
         count = int(self.request.GET.get('count', 0))
         end = start + count
-        context['shouts'] = artist.shouts_received.order_by('-date_posted')[start:end]
+        context['shouts'] = artist.shouts_received.filter(reply_to__isnull=True).order_by('-date_posted')[start:end]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
             context['shouts'] = artist.shouts_received.filter(id=shout_id)
@@ -1101,6 +1101,34 @@ class PostShoutView(LoginRequiredMixin, CreateView):
         response['artist_id'] = shout.artist.id
         response['success'] = True
         return JsonResponse(response)
+
+
+class ReplyShoutView(LoginRequiredMixin, CreateView):
+    model = models.Shout
+    form_class = forms.ShoutReplyForm
+    template_name = 'includes/shouts.html'
+
+    def post(self, *args, **kwargs):
+        self.shout = get_object_or_404(models.Shout, pk=kwargs['shout_id'])
+        return super().post(*args, **kwargs)
+
+    def form_valid(self, form, *args, **kwargs):
+        response = {'success': False}
+
+        reply = form.save()
+        reply.reply_to = self.shout
+        reply.user = self.request.user
+        reply.save()
+        response['shout_id'] = self.shout.id
+        response['reply_id'] = reply.id
+
+        response['success'] = True
+        return JsonResponse(response)
+
+
+class ShoutDetailView(LoginRequiredMixin, DetailView):
+    model = models.Shout
+    template_name = 'includes/shout.html'
 
 
 class DeleteShoutView(LoginRequiredMixin, APIView):

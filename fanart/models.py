@@ -930,6 +930,7 @@ class BaseComment(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['date_posted']
 
 
 class ThreadedComment(BaseComment):
@@ -960,8 +961,13 @@ class ShoutManager(models.Manager):
 
 class Shout(BaseComment):
     artist = models.ForeignKey('User', null=True, blank=True, related_name='shouts_received', on_delete=models.SET_NULL)
+    reply_to = models.ForeignKey('Shout', null=True, blank=True, related_name='replies', on_delete=models.SET_NULL)
 
     objects = ShoutManager()
+
+    @property
+    def num_replies(self):
+        return self.replies.count()
 
     @property
     def quoted_comment(self):
