@@ -202,7 +202,7 @@ admin.site.register(fanart_models.SocialMedia, SocialMediaAdmin)
 
 class SocialMediaIdentityAdmin(admin.ModelAdmin):
     list_display = ('user', 'social_media', 'identity',)
-    list_filter = ()
+    list_filter = ('social_media',)
     autocomplete_fields = ('user',)
 admin.site.register(fanart_models.SocialMediaIdentity, SocialMediaIdentityAdmin)
 
