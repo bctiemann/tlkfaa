@@ -424,7 +424,7 @@ console.log(data);
 
 function addIM(imclient,imid) {
   var myimid = imid.value;
-  myimid = myimid.replace(/[^0-9a-zA-Z_@\.-]/g,"");
+  // myimid = myimid.replace(/[^0-9a-zA-Z_@\.-]/g,"");
 //  var url="ajax_imclients.jsp?op=add&imclientid="+imclient.options[imclient.selectedIndex].value+"&imid="+myimid;
   var url = '/social_media/add/';
   var params = {
