@@ -1418,6 +1418,13 @@ class SocialMediaIdentity(models.Model):
     user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
     identity = models.CharField(max_length=100, blank=True)
 
+    @property
+    def display_identity(self):
+        if self.identity.startswith('http'):
+            url_parts = self.identity.split('/')
+            return f'<a target="_blank" href="{self.identity}">{url_parts[-1]}</a>'
+        return self.identity
+
     def __str__(self):
         return '{0}: {1}'.format(self.social_media, self.identity)
 

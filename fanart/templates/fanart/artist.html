@@ -239,8 +239,8 @@ The specified artist's gallery is not publicly visible.
 			<table class="ims">
                         {% for contact in artist.socialmediaidentity_set.all %}
 			<tr>
-			<td>{{ contact.social_media.name }}
-			<td>{{ contact.identity }}</td>
+			<td>{{ contact.social_media.name }}</td>
+			<td>{{ contact.display_identity|safe }}</td>
 			</tr>
                         {% endfor %}
 			</table>
