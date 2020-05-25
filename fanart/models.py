@@ -815,7 +815,8 @@ class Picture(models.Model):
         return None
 
     def get_absolute_url(self):
-        return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
+        # return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
+        return reverse('picture', kwargs={'picture_id': self.id})
 
     def set_deleted(self):
 
