@@ -16,6 +16,39 @@
 
 {% block content %}
 
+<style>
+.featured-picture-box {
+    text-align: left;
+    margin: 0 0%;
+    padding: 20px;
+    border: 1px solid #889;
+    border-radius: 15px;
+    background-color: #f0d5e1;
+}
+
+.featured-picture-box h2 {
+    margin: 10px 0px 20px 0px;
+}
+
+img.featured-picture {
+    width: 100%;
+}
+
+.commentary {
+    font-size: 14px;
+}
+
+.artist-info {
+    background-color: #c4c4c4;
+    border-radius: 4px;
+    border: 1px solid #808080;
+    text-align: center;
+    margin-left: 30px;
+    margin-bottom: 10px;
+    padding: 20px;
+}
+</style>
+
 {% if not picture %}
 
     <div class="error">
@@ -167,6 +200,15 @@
                         </div>
                     {% endfor %}
                 </div>
+            {% endif %}
+
+            {% if picture.date_featured %}
+            <div class="featured-picture-box">
+                <h2>Featured {{ picture.date_featured|date }}</h2>
+                <div class="commentary">
+                    {{ picture.featured_picture.commentary_parsed|bbcode|safe }}
+                </div>
+            </div>
             {% endif %}
 
             {% if picture.allow_comments and picture.artist.allow_comments %}

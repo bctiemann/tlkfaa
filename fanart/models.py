@@ -814,6 +814,10 @@ class Picture(models.Model):
             return featured.date_featured
         return None
 
+    @property
+    def featured_picture(self):
+        return self.featuredpicture_set.first()
+
     def get_absolute_url(self):
         # return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
         return reverse('picture', kwargs={'picture_id': self.id})
