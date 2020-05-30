@@ -1118,6 +1118,7 @@ class ReplyShoutView(LoginRequiredMixin, CreateView):
         reply = form.save()
         reply.reply_to = self.shout
         reply.user = self.request.user
+        reply.artist = self.shout.artist
         reply.save()
         response['shout_id'] = self.shout.id
         response['reply_id'] = reply.id
