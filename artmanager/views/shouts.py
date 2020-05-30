@@ -59,7 +59,7 @@ class ShoutsView(ArtManagerPaneView):
                 shout_type = 'sent'
 
         if shout_type == 'received':
-            shouts = self.request.user.shouts_received.all().order_by('-date_posted')
+            shouts = self.request.user.shouts_received.filter(reply_to__isnull=True).order_by('-date_posted')
             show_all = False
             if self.request.GET.get('show_all') == '1':
                 show_all = True
@@ -67,7 +67,7 @@ class ShoutsView(ArtManagerPaneView):
                 shouts = shouts.filter(is_received=False)
             context['show_all'] = show_all
         elif shout_type == 'sent':
-            shouts = self.request.user.shout_set.all().order_by('-date_posted')
+            shouts = self.request.user.shout_set.filter(reply_to__isnull=True).order_by('-date_posted')
 
         context['shouts_paginator'] = Paginator(shouts, settings.SHOUTS_PER_PAGE_ARTMANAGER)
         try:
