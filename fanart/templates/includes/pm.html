@@ -7,7 +7,15 @@
         {% include "includes/pm_content.html" %}
 
         {% if not blocked and forloop.counter == 1 %}
+
             <div class="replybuttons">
+                {% if user != pm.sender %}
+                    {% if partner_is_blocked %}
+                        <button id="show_pm_block" type="button" onClick="blockUser({{ pm.sender.id }}, 'unblock', 'pm');">Unblock</button>
+                    {% else %}
+                        <button id="show_pm_block" type="button" onClick="blockUser({{ pm.sender.id }}, 'block', 'pm');">Block</button>
+                    {% endif %}
+                {% endif %}
                 <button id="show_pm_reply" type="button" onClick="showPMReply();">Reply</button>
             </div>
 
@@ -26,6 +34,13 @@
                     {% csrf_token %}
                 </form>
             </div>
+
+        {% elif blocked %}
+
+            <div class="error">
+                <p>You have been blocked from sending private messages to this recipient.</p>
+            </div>
+
         {% endif %}
 
     {% endfor %}

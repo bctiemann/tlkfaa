@@ -2065,6 +2065,11 @@ console.log(data);
 //                Shadowbox.setup('#comments_'+itemid+' a.button');
             });
         } else if (type == 'pm') {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(he.decode(data.message));
+            }
         } else if (type == 'direct') {
             if (data.success) {
                 window.location.reload();

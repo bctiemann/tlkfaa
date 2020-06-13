@@ -1153,10 +1153,13 @@ class PrivateMessagesView(ArtManagerPaneView):
         context['pms'] = self.request.user.pms_received.all()
         box = kwargs.get('box') or 'in'
         pm_id = kwargs.get('pm_id', None)
+        partner = None
         if pm_id:
             pm = get_object_or_404(PrivateMessage, (Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=pm_id)
+            partner = pm.sender
             if pm.sender == self.request.user:
                 box = 'out'
+                partner = pm.recipient
             if (pm.sender == self.request.user and pm.deleted_by_sender) or (pm.recipient == self.request.user and pm.deleted_by_recipient):
                 box = 'trash'
             context['pm'] = pm
@@ -1170,6 +1173,12 @@ class PrivateMessagesView(ArtManagerPaneView):
         recipient_id = kwargs.get('recipient_id', None)
         if recipient_id:
             context['recipient'] = get_object_or_404(models.User, pk=recipient_id)
+            partner = context['recipient']
+
+        if partner:
+            context['blocked'] = models.Block.objects.filter(user=partner, blocked_user=self.request.user).exists()
+            context['partner_is_blocked'] = models.Block.objects.filter(blocked_user=partner,
+                                                                        user=self.request.user).exists()
 
         return context
 

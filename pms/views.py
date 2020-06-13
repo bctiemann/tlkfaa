@@ -94,6 +94,7 @@ class PMView(LoginRequiredMixin, DetailView):
 
         context['pm'] = self.object
         context['blocked'] = models.Block.objects.filter(user=context['pm'].sender, blocked_user=self.request.user).exists()
+        context['partner_is_blocked'] = models.Block.objects.filter(blocked_user=context['pm'].sender, user=self.request.user).exists()
 
         return context
 
@@ -113,6 +114,11 @@ class PMCreateView(LoginRequiredMixin, CreateView):
         pm.sender = self.request.user
         if pm.sender == pm.recipient:
             raise Http404
+
+        blocked = models.Block.objects.filter(user=pm.recipient, blocked_user=self.request.user).exists()
+        if blocked:
+            return HttpResponseForbidden('You have been blocked from sending private messages to this user.')
+
         pm.save()
         pm.root_pm = pm
         if pm.reply_to:
@@ -158,6 +164,7 @@ class PMShoutView(LoginRequiredMixin, TemplateView):
         context['shout'] = get_object_or_404(models.Shout, pk=self.kwargs['shout_id'], artist=self.request.user)
         context['recipient'] = context['shout'].user
         context['blocked'] = models.Block.objects.filter(user=context['recipient'], blocked_user=self.request.user).exists()
+        context['partner_is_blocked'] = models.Block.objects.filter(blocked_user=context['recipient'], user=self.request.user).exists()
 
         return context
 
@@ -171,6 +178,8 @@ class PMUserView(LoginRequiredMixin, TemplateView):
         if 'recipient_id' in self.kwargs and self.kwargs['recipient_id']:
             context['recipient'] = get_object_or_404(models.User, pk=self.kwargs['recipient_id'])
             context['blocked'] = models.Block.objects.filter(user=context['recipient'], blocked_user=self.request.user).exists()
+            context['partner_is_blocked'] = models.Block.objects.filter(blocked_user=context['recipient'],
+                                                                        user=self.request.user).exists()
 
             shout_id = self.request.GET.get('shout_id', None)
             bulletin_id = self.request.GET.get('bulletin_id', None)

@@ -280,3 +280,8 @@ class ModNoteAdmin(admin.ModelAdmin):
     autocomplete_fields = ('artist', 'moderator',)
 admin.site.register(fanart_models.ModNote, ModNoteAdmin)
 
+
+class BlockAdmin(admin.ModelAdmin):
+    list_display = ('user', 'blocked_user', 'date_blocked',)
+    autocomplete_fields = ('user', 'blocked_user',)
+admin.site.register(fanart_models.Block, BlockAdmin)
