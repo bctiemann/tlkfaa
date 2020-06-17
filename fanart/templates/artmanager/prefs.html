@@ -124,7 +124,7 @@ var checkThumbs = function() {
             <tr>
                 <td class="label">Profile Picture</td>
                 <td class="data">
-                    <div id="profilepic" {% if not user.profile_pic_id and not user.profile_picture %}style="display: none;"{% endif %}>
+                    <div id="profilepic" {% if not user.has_profile_pic %}style="display: none;"{% endif %}>
                         <a id="profilepic_link" href="{{ user.profile_pic_url }}" target="_blank" rel="not-shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_url }}" /></a>
                         <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
                     </div>
@@ -390,7 +390,7 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
             <tr>
                 <td class="label">Profile Picture</td>
                 <td class="data">
-                    <div id="profilepic" {% if not user.profile_pic_id and not user.profile_picture %}style="display: none;"{% endif %}>
+                    <div id="profilepic" {% if not user.has_profile_pic %}style="display: none;"{% endif %}>
                         <a id="profilepic_link" href="{{ user.profile_pic_url }}" target="_blank" rel="not-shadowbox" class="shadowbox"><img class="thumb" src="{{ user.profile_pic_url }}" /></a>
                         <a href="javascript:nop()" onClick="removeProfilePic()">remove</a>
                     </div>

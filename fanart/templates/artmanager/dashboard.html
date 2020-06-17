@@ -35,7 +35,7 @@
 	<tr>
 	<td class="label">Profile Picture</td>
 	<td class="data">
-        {% if user.profile_pic_id or user.profile_picture %}
+        {% if user.has_profile_pic %}
 		<a href="{{ user.profile_pic_url }}" rel="shadowbox"><img class="thumb" src="{{ user.profile_pic_url }}" /></a>
         {% else %}
 		(none)
@@ -135,7 +135,7 @@ var selitems_c = new Array();
         </div>
 	<div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
 		<div class="commentprofilepic">
-                {% if comment.user.profile_pic_id %}
+                {% if comment.user.has_profile_pic %}
 			<a href="{% url "artist" dir_name=comment.user.dir_name %}"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
                 {% endif %}
 		</div>
@@ -177,7 +177,7 @@ var selitems_s = new Array();
 	</div>
 	<div class="commenttext {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
 		<div class="commentprofilepic">
-                {% if shout.user.profile_pic_id %}
+                {% if shout.user.has_profile_pic %}
 			<a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
                 {% endif %}
 		</div>
