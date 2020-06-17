@@ -135,9 +135,13 @@ var selitems_c = new Array();
         </div>
 	<div class="commenttext clearAfter {% if comment.is_deleted %}commentdeleted{% endif %}" id="commenttext_{{ comment.id }}">
 		<div class="commentprofilepic">
-                {% if comment.user.has_profile_pic %}
-			<a href="{% url "artist" dir_name=comment.user.dir_name %}"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
-                {% endif %}
+			{% if comment.user.has_profile_pic %}
+				{% if comment.user.is_artist %}
+					<a href="{% url "artist" dir_name=comment.user.dir_name %}"><img src="{{ comment.user.profile_pic_thumbnail_url }}" /></a>
+				{% else %}
+					<img src="{{ comment.user.profile_pic_thumbnail_url }}" />
+				{% endif %}
+			{% endif %}
 		</div>
 		<table><tr><td>
                 {{ comment.comment|bbcode|safe }}
@@ -177,9 +181,13 @@ var selitems_s = new Array();
 	</div>
 	<div class="commenttext {% if shout.is_deleted %}commentdeleted{% endif %}" id="shouttext_{{ shout.id }}">
 		<div class="commentprofilepic">
-                {% if shout.user.has_profile_pic %}
-			<a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
-                {% endif %}
+			{% if shout.user.has_profile_pic %}
+				{% if shout.user.is_artist %}
+					<a href="{% url "artist" dir_name=shout.user.dir_name %}"><img src="{{ shout.user.profile_pic_thumbnail_url }}" /></a>
+				{% else %}
+					<img src="{{ shout.user.profile_pic_thumbnail_url }}" />
+				{% endif %}
+			{% endif %}
 		</div>
 		<table><tr><td>
                 {{ shout.comment|bbcode|safe }}
