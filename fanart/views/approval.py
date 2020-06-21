@@ -313,6 +313,9 @@ class PendingUploadThumbView(ApprovalUpdateView):
 
         self.object.has_thumb = True
         self.object.failed_processing = False
+        if not self.object.width or self.object.height:
+            self.object.width = orig_width
+            self.object.height = orig_height
         self.object.save()
         response['success'] = True
 
