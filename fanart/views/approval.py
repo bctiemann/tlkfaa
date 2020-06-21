@@ -1,3 +1,5 @@
+from PIL import UnidentifiedImageError
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -284,7 +286,12 @@ class PendingUploadThumbView(ApprovalUpdateView):
         response = {'success': False}
 
         max_pixels = settings.THUMB_SIZE['small']
-        im_thumb = Image.open(self.request.FILES['picture'])
+        try:
+            im_thumb = Image.open(self.request.FILES['picture'])
+        except UnidentifiedImageError:
+            response['message'] = 'Uploaded image failed processing.'
+            return JsonResponse(response)
+
         orig_height = im_thumb.height
         orig_width = im_thumb.width
         logger.info(im_thumb)
@@ -305,7 +312,9 @@ class PendingUploadThumbView(ApprovalUpdateView):
 #        super(UploadClaimView, self).form_valid(form)
 
         self.object.has_thumb = True
+        self.object.failed_processing = False
         self.object.save()
+        response['success'] = True
 
         return JsonResponse(response)
 

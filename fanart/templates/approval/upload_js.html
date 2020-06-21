@@ -1,0 +1,38 @@
+<input id="fileupload_{{ pending.id }}" type="file" name="picture" data-url="{% url "pending-upload-thumb" pending_id=pending.id %}">
+<div id="progress_{{ pending.id }}">
+    <div class="bar" style="width: 0%;"></div>
+</div>
+
+<script>
+$(function () {
+    $('#fileupload_{{ pending.id }}').fileupload({
+        dataType: 'json',
+        dropZone: null,
+        done: function (e, data) {
+            console.log('done');
+            console.log(data);
+            if (!data.result.success) {
+                alert(data.result.message);
+            }
+            var url = '{% url "pending-detail" pending_id=pending.id %}';
+            $('#pending_{{ pending.id }}').load(url, function() {});
+//            refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+//            $.each(data.result.files, function (index, file) {
+//                $('<p/>').text(file.name).appendTo(document.body);
+//            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress_' + {{ pending.id }} + ' .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+        error: function(e, data) {
+            console.log(data);
+        },
+    });
+});
+
+//thumbsGenerated = false;
+</script>
