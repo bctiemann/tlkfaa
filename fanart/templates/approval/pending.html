@@ -30,10 +30,7 @@
                         <div class="sendwarning"><input type="checkbox" name="warn_copied" id="warn_copied_{{ pending.id }}" value="1" /> <label for="warn_copied_{{ pending.id }}">Send originality warning</label></div>
                     {% endif %}
                 {% endif %}
-		{% if pending.notes %}<div class="pendingnotes">{{ pending.notes }}</div>{% endif %}
-                <input type="hidden" name="uploadop" value="moviethumb" />
-                <input type="hidden" name="pendingid" value="{{ pending.id }}" />
-                <input type="hidden" name="partistid" value="{{ pending.artist.id }}" />
+		        {% if pending.notes %}<div class="pendingnotes">{{ pending.notes }}</div>{% endif %}
                 {% csrf_token %}
             </td>
             <td class="thumb">
@@ -80,7 +77,7 @@
                     <input type="radio" name="reason" id="reason_inappropriate_{{ pending.id }}" value="inappropriate" /> <label for="reason_inappropriate_{{ pending.id }}">Inappropriate</label><br />
                 {% endif %}
                 <input type="radio" name="reason" id="reason_reupload_{{ pending.id }}" value="reupload" /> <label for="reason_reupload_{{ pending.id }}">Re-upload</label><br />
-                <input type="radio" name="reason" id="reason_delete_{{ pending.id }}" value="delete" checked /> <label for="reason_delete_{{ pending.id }}">Delete</label><br />
+                <input type="radio" name="reason" id="reason_delete_{{ pending.id }}" value="delete" /> <label for="reason_delete_{{ pending.id }}">Delete</label><br />
                 <button type="button" class="small" onClick="approvePicture('reject','{{ pending.id }}')">Reject</button>
             </td>
         </tr>
