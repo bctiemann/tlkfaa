@@ -404,12 +404,15 @@ class PendingThumbStatusView(APIView):
 
     def get(self, request, pending_id=None):
         response = {}
-        for pending in models.Pending.objects.all():
-            response[pending.id] = {
-                'thumbnail_url': pending.thumbnail_url,
-                'preview_url': pending.preview_url,
-                'thumbnail_done': pending.thumbnail_created,
-                'preview_done': pending.preview_created,
-            }
+        try:
+            for pending in models.Pending.objects.all():
+                response[pending.id] = {
+                    'thumbnail_url': pending.thumbnail_url,
+                    'preview_url': pending.preview_url,
+                    'thumbnail_done': pending.thumbnail_created,
+                    'preview_done': pending.preview_created,
+                }
+        except FileNotFoundError:
+            pass
         return Response(response)
 
