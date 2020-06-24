@@ -546,6 +546,9 @@ class PictureUpdateView(LoginRequiredMixin, UpdateView):
 
         return response
 
+    def get_success_url(self):
+        return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.object.id})
+
 
 class ColoringPictureUpdateView(LoginRequiredMixin, UpdateView):
     model = ColoringPicture
