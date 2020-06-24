@@ -1441,6 +1441,7 @@ div.picvote {
 }
 td.picinfo div.picinfowrapper {
 	position: relative;
+	margin-top: 16px;
 }
 div.picinfo {
 	font-size: 9px;
