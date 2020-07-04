@@ -2627,6 +2627,10 @@ div.contest .contestdeadline {
 	vertical-align: text-top;
 	border: 0px solid #000;
 }
+.contest-theme img,
+.contest-rules img {
+    max-width: 100%;
+}
 .contest-place {
 	clear: left;
 	font-weight: bold;
