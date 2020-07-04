@@ -1507,7 +1507,7 @@ class Contest(models.Model):
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     type = models.CharField(max_length=16, choices=TYPE_CHOICES)
-    creator = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey('User', null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=64)
     description = models.TextField()
     rules = models.TextField(blank=True)
