@@ -1903,3 +1903,16 @@ class PrivacyView(TemplateView):
 class HelpView(TemplateView):
     template_name = 'fanart/help.html'
 
+
+class BrowserStatsView(APIView):
+    permission_classes = ()
+
+    def post(self, request):
+        response = {}
+        models.BrowserStats.objects.create(
+            width=request.data['width'],
+            height=request.data['height'],
+            user=request.user if request.user.is_authenticated else None,
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
+        return Response(response)

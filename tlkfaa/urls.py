@@ -185,6 +185,8 @@ urlpatterns = [
     url(r'^banner/upload/$', fanart_views.UploadBannerView.as_view(), name='upload-banner'),
     url(r'^banner/remove/$', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
 
+    url(r'^browser-stats/$', fanart_views.BrowserStatsView.as_view(), name='browser-stats'),
+
     url(r'^ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
 
     path('wiki/notifications/', include('django_nyt.urls')),

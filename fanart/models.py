@@ -1750,3 +1750,11 @@ class RevisionLog(models.Model):
 
 #    def __str__(self):
 #        return self.date_created
+
+
+class BrowserStats(models.Model):
+    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    date_created = models.DateTimeField(auto_now_add=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
