@@ -20,6 +20,7 @@ import shutil
 from PIL import Image
 from pwd import getpwnam
 from precise_bbcode.bbcode import get_parser
+from user_agents import parse as parse_ua
 
 from fanart.utils import dictfetchall, make_dir_name, upperfirst, sizeof_fmt
 from fanart.tasks import process_images
@@ -1758,3 +1759,10 @@ class BrowserStats(models.Model):
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
     user_agent = models.TextField(blank=True)
+
+    @property
+    def user_agent_parsed(self):
+        return parse_ua(self.user_agent)
+
+    def __str__(self):
+        return f'{self.date_created} w={self.width} h={self.height} {self.user}'
