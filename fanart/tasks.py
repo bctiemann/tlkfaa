@@ -85,7 +85,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         orig_width = picture_object.width
     elif model == 'Pending':
         if not picture_object.picture.name:
-            image_error = 'Pending {0} has no mame; exiting'.format(picture_object)
+            image_error = 'Pending {0} has no name; exiting'.format(picture_object)
             logger.error(image_error)
             mail.mail_admins('Image processing error', image_error)
             return None, None
@@ -98,7 +98,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         orig_width = picture_object.width
     elif model == 'User':
         if not picture_object.profile_picture.name:
-            image_error = 'Profile picture {0} has no mame; exiting'.format(picture_object)
+            image_error = 'Profile picture {0} has no name; exiting'.format(picture_object)
             logger.error(image_error)
             mail.mail_admins('Image processing error', image_error)
             return None, None
@@ -114,7 +114,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
         orig_width = picture_object.profile_width
     elif model == 'FeaturedArtistPicture':
         if not picture_object.showcase_picture.name:
-            image_error = 'Featured artist picture {0} has no mame; exiting'.format(picture_object)
+            image_error = 'Featured artist picture {0} has no name; exiting'.format(picture_object)
             logger.error(image_error)
             mail.mail_admins('Image processing error', image_error)
             return None, None
