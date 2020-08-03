@@ -16,19 +16,21 @@ class Command(BaseCommand):
         if latest_contest.is_ended:
             entry_notified = False
             for entry in latest_contest.winning_entries:
+                print(entry.votes, latest_contest.total_votes)
                 if entry_notified:
                     continue
                 if entry.date_notified == None or (timezone.now() - entry.date_notified).days < 3:
-                    print(entry, entry.num_votes)
                     entry_notified = True
                     if entry.date_notified == None:
                         entry.date_notified = timezone.now()
                         entry.save()
 
+                    vote_percent = int(float(entry.votes) / float(latest_contest.total_votes) * 100) if latest_contest.total_votes else 100
+
                     email_context = {
                         'entry': entry,
                         'contest': latest_contest,
-                        'vote_percent': int(float(entry.votes) / float(latest_contest.total_votes) * 100),
+                        'vote_percent': vote_percent,
                         'base_url': settings.SERVER_BASE_URL,
                         'url': reverse('contest-setup'),
                         'admin_email': settings.ADMIN_EMAIL,
