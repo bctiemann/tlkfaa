@@ -19,6 +19,15 @@ class Command(BaseCommand):
         for pending in models.Pending.objects.all():
             print(pending.id)
 
+            try:
+                pending.picture.file
+            except FileNotFoundError:
+                pending.picture = None
+                pending.failed_processing = True
+                pending.save()
+                print('{0} file is missing; setting to failed processing'.format(pending.id))
+                continue
+
             if pending.id in requiring_approval:
                 print('{0} requires approval'.format(pending.id))
                 continue

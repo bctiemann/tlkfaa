@@ -36,7 +36,7 @@
             <td class="thumb">
                 {% if pending.is_movie and not pending.has_thumb %}
                     <a target="_blank" href="{{ pending.picture.url }}"><img id="pendingthumb_{{ pending.id }}" src="{% static "images/movie_icon.gif" %}" /></a>
-                {% else %}
+                {% elif not pending.failed_processing %}
                     <a target="_blank" href="{{ pending.picture.url }}"><img id="pendingthumb_{{ pending.id }}" src="{{ pending.thumbnail_url }}" /></a>
                 {% endif %}
             </td>

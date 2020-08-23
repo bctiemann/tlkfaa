@@ -1155,8 +1155,8 @@ class Pending(models.Model):
     is_movie = models.BooleanField(default=False)
     has_thumb = models.BooleanField(default=False)
     title = models.TextField(blank=True)
-    width = models.IntegerField(null=True, default=0)
-    height = models.IntegerField(null=True, default=0)
+    width = models.IntegerField(null=True, blank=True, default=0)
+    height = models.IntegerField(null=True, blank=True, default=0)
     file_size = models.IntegerField(null=True, blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     hash = models.UUIDField(null=True, blank=True, editable=False, db_index=True)
@@ -1350,7 +1350,8 @@ class Pending(models.Model):
 
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.info('Saving {0}, {1}'.format(self, update_thumbs))
-        self.file_size = self.picture.size
+        if self.picture:
+            self.file_size = self.picture.size
         super(Pending, self).save(*args, **kwargs)
         logger.info(self.picture)
         if update_thumbs:
