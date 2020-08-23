@@ -1746,6 +1746,7 @@ div.picturestats h4 {
 td.picturedetails,
 td.artistdetails {
 	position: relative;
+	word-break: break-all;
 }
 td.picturedetails div.picturedetails,
 td.artistdetails div.artistdetails {
