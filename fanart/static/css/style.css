@@ -1140,6 +1140,9 @@ div.featurebox.front-page {
 		padding-left: 0px;
 		padding-right: 0px;
 	}
+    div.featurebox.front-page div.picture {
+		width: 90%;
+	}
 }
 div.featurebox h2 {
 	text-align: left;
