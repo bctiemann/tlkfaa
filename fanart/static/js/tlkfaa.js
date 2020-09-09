@@ -260,7 +260,7 @@ function getMoreAdminAnnouncements(start,count) {
     $.ajax({ url: url, success: function(data) {
       $('#adminannouncements_inner').addClass('bulletinsscroll');
       adminannouncementsshown += count;    
-      $('#adminannouncements_inner').append(data);
+      $('#adminannouncements_inner').find('.bulletins_content').append(data);
 //      $('#adminannouncements').animate({scrollTop: 10000},1000);
 //      Shadowbox.setup('#bulletins a.bulletinlink');
       scrollIsLoading.adminAnnouncements = false;

@@ -18,7 +18,9 @@
     <div class="banner-block" id="adminannouncements">
         <a class="float-right" target="_blank" href="https://twitter.com/LionKingFanArt"><i class="fab fa-twitter"></i></a>
         <h3>Admin Announcements</h3>
-        <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll" bulletin_type="admin_announcements"></div>
+        <div id="adminannouncements_inner" class="bulletinsinner bulletinsscroll" bulletin_type="admin_announcements">
+            <div class="bulletins_content"></div>
+        </div>
         <div id="adminannouncementsmore">
             {% if last_revision_log.is_recent %}
                 <a class="float-right revision-log-recent" href="{% url "revision-log" %}">Revision Log (updated {{ last_revision_log.date_created|timesince|upto:"," }} ago)</a>
