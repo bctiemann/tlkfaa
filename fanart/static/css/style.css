@@ -606,7 +606,8 @@ img.bulletinprofilepic {
 	margin: 2px 8px 2px 2px;
 }
 
-.bulletins_content img {
+.bulletins_content img,
+.pm img {
     max-width: 100%;
 }
 
