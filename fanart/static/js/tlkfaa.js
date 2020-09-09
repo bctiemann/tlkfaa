@@ -263,6 +263,9 @@ function getMoreAdminAnnouncements(start,count) {
       $('#adminannouncements_inner').find('.bulletins_content').append(data);
 //      $('#adminannouncements').animate({scrollTop: 10000},1000);
 //      Shadowbox.setup('#bulletins a.bulletinlink');
+      $('.bulletinlink').click(function() {
+        showBulletin($(this).attr('bulletin_id'));
+      });
       scrollIsLoading.adminAnnouncements = false;
     }});
   }
