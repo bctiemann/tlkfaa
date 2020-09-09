@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.contrib import admin
+from django.utils import timezone
 from fanart import models as fanart_models
 
 import logging
@@ -41,12 +44,33 @@ class PictureYearFilter(admin.SimpleListFilter):
             yield (year.year, year.year)
 
     def queryset(self, request, queryset):
-        return queryset.filter(date_uploaded__year=self.value())
+        selected_year = self.value()
+        if selected_year:
+            return queryset.filter(date_uploaded__year=self.value())
+        return queryset
+
+
+class PictureRecentFilter(admin.SimpleListFilter):
+    title = 'is_recent'
+    parameter_name = 'is_recent'
+
+    RECENT_YEARS = 3
+
+    def lookups(self, request, model_admin):
+        return (
+            ('recent', f'Last {self.RECENT_YEARS} years'),
+        )
+
+    def queryset(self, request, queryset):
+        cutoff_year = (timezone.now() - timedelta(days=365 * self.RECENT_YEARS)).year
+        if self.value() == 'recent':
+            return queryset.filter(date_uploaded__year__gte=cutoff_year)
+        return queryset
 
 
 class PictureAdmin(admin.ModelAdmin):
     list_display = ('filename', 'artist', 'date_uploaded', 'num_faves', 'year', 'date_featured',)
-    list_filter = (PictureYearFilter,)
+    list_filter = (PictureYearFilter, PictureRecentFilter,)
     search_fields = ('filename', 'id',)
     autocomplete_fields = ('artist', 'approved_by', 'tags', 'folder',)
 #    inlines = (PictureCharacterInline,)
