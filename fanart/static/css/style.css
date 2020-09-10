@@ -517,6 +517,14 @@ div.frontpagebanners {
 	margin: 0px auto 0px auto;
 	z-index: 2;
 }
+@media only screen and (max-width: 1310px) {
+	div.frontpagebanners {
+		width: 800px;
+	}
+	div#upcoming_birthdays {
+		display: none;
+	}
+}
 div.frontpagebanners h3 {
 	font-size: 11px;
 	color: #889;
@@ -1129,14 +1137,14 @@ div.featurebox.front-page {
 	width: 74%;
 	margin-left: 20px;
 }
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1282px) {
     div.featurebox.front-page {
         float: none;
         width: auto;
         margin-left: auto;
     }
 }
-@media only screen and (max-width: 1440px) and (min-width: 1200px) {
+@media only screen and (max-width: 1440px) and (min-width: 1282px) {
     div.featurebox.front-page {
 		padding-left: 0px;
 		padding-right: 0px;
@@ -3018,7 +3026,7 @@ div.login-failed-banner {
 	width: 240px;
 	height: 100px;
 }
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1282px) {
     .random-popular {
         display: none;
     }
