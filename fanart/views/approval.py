@@ -80,7 +80,7 @@ class ApprovalHomeView(ApprovalTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ApprovalHomeView, self).get_context_data(**kwargs)
-        context['pending_pictures'] = models.Pending.objects.requiring_approval()[0:100]
+        context['pending_pictures'] = models.Pending.objects.filter(picture__isnull=False).requiring_approval()[0:100]
         context['threshold_width'] = settings.APPROVAL_WARNING_WIDTH
         context['threshold_height'] = settings.APPROVAL_WARNING_HEIGHT
         context['threshold_size'] = settings.APPROVAL_WARNING_SIZE
