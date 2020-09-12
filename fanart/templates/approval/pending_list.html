@@ -29,9 +29,11 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 
 {% for pending in pending_pictures %}
 
+    {% if pending.picture %}
     <div class="pending" id="pending_{{ pending.id }}">
         {% include "approval/pending.html" %}
     </div>
+    {% endif %}
 
 {% endfor %}
 

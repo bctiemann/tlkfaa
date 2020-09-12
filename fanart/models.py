@@ -1199,7 +1199,9 @@ class Pending(models.Model):
 
     @property
     def directory(self):
-        return self.picture.name.split('/')[1]
+        if self.picture:
+            return self.picture.name.split('/')[1]
+        return None
 
     @property
     def thumbnail_url(self):
@@ -1359,7 +1361,8 @@ class Pending(models.Model):
             process_images.apply_async(('fanart.models', 'Pending', self.id, 'large'), countdown=20)
 
     def delete(self, *args, **kwargs):
-        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.directory), ignore_errors=True)
+        if self.picture:
+            shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.directory), ignore_errors=True)
         super(Pending, self).delete(*args, **kwargs)
 
     def __str__(self):

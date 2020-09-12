@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
             try:
                 pending.picture.file
-            except FileNotFoundError:
+            except (FileNotFoundError, ValueError):
                 pending.picture = None
                 pending.failed_processing = True
                 pending.save()
