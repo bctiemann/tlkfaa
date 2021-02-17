@@ -112,8 +112,15 @@ Drawpile</h1>
 
 </div>
 <div class="userboxfooter" style="height: 20px;">
-<a href="https://drawpile.net/download/">Get Drawpile</a>
-<p>Join: <b><code>fanart.lionking.org:28000</code></b></p>
+{% if drawpile %}
+    <a href="{{ drawpile.download_url }}">Get Drawpile</a>
+    {% if drawpile.is_running %}
+        <p>Drawpile status: <b>Online</b></p>
+        <p>Join: <b><code>fanart.lionking.org:28000</code></b></p>
+    {% else %}
+        <p>Drawpile status: <b>Offline</b></p>
+    {% endif %}
+{% endif %}
 </div>
 </div>
 

@@ -29,7 +29,7 @@ from fanart import models, forms, utils, tasks
 from fanart.forms import AjaxableResponseMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
-from sketcher.models import ActiveUser
+from sketcher.models import ActiveUser, Drawpile
 
 from fanart.response import JSONResponse, response_mimetype
 from fanart.serialize import serialize
@@ -117,6 +117,9 @@ class UserPaneMixin(RatelimitMixin):
     def get_sketcher_users(self):
         return ActiveUser.objects.all()
 
+    def get_drawpile(self):
+        return Drawpile.objects.first()
+
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
@@ -129,6 +132,7 @@ class UserPaneMixin(RatelimitMixin):
         context['community_art_data'] = self.get_community_art_data()
         context['contests_data'] = self.get_contests_data()
 
+        context['drawpile'] = self.get_drawpile()
         sketcher_users = self.get_sketcher_users()
         context['sketcher_slots'] = []
         for slot in range(12):

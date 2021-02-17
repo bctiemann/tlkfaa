@@ -1770,3 +1770,10 @@ class BrowserStats(models.Model):
 
     def __str__(self):
         return f'{self.date_created} w={self.width} h={self.height} {self.user}'
+
+
+class ToolboxLink(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    url = models.URLField(blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    order_by = models.IntegerField(blank=True, default=0)

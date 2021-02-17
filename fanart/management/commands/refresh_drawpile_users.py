@@ -10,28 +10,39 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 
-from sketcher.models import ActiveUser
+from sketcher.models import ActiveUser, Drawpile
 
 
 class Command(BaseCommand):
 
-    base_url = 'http://localhost:8080'
-
     def handle(self, *args, **options):
 
-        response = urllib.request.urlopen('{0}/sessions/'.format(self.base_url))
-        session_data = json.load(response)
+        for drawpile in Drawpile.objects.all():
 
-        ActiveUser.objects.all().delete()
+            drawpile.last_checked_at = timezone.now()
+            try:
+                response = urllib.request.urlopen('{0}/sessions/'.format(drawpile.admin_url))
+                drawpile.is_running = True
+                drawpile.save()
+            except urllib.error.URLError as e:
+                drawpile.is_running = False
+                drawpile.status_message = e
+                drawpile.save()
+                return
 
-        for session in session_data:
-            if session['title'] == 'Sketcher Reborn':
-                response = urllib.request.urlopen('{0}/sessions/{1}'.format(self.base_url, session['id']))
-                user_data = json.load(response)
-                for user in user_data['users']:
-                    ActiveUser.objects.create(
-                        name = user['name'],
-                        ip = user['ip'],
-                        is_op = user['op'],
-                        is_mod = user['mod'],
-                    )
+            session_data = json.load(response)
+
+            ActiveUser.objects.all().delete()
+
+            for session in session_data:
+                if session['title'] == 'Sketcher Reborn':
+                    response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
+                    user_data = json.load(response)
+                    for user in user_data['users']:
+                        ActiveUser.objects.create(
+                            drawpile=drawpile,
+                            name=user['name'],
+                            ip=user['ip'],
+                            is_op=user['op'],
+                            is_mod=user['mod'],
+                        )
