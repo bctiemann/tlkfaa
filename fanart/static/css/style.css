@@ -1616,6 +1616,7 @@ div.standalone {
 }
 object.inlinemovie,
 embed.inlinemovie,
+ruffle-object,
 img.fullsize {
 	max-width: auto;
 	display: block;
