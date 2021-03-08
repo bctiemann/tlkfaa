@@ -5,6 +5,7 @@
     <table>
         <tr>
             <td class="thumb">
+                {% if pending.picture %}
                 <a href="{{ pending.picture.url }}" rel="shadowbox[pending]">
                     {% if pending.is_movie and False %}
                         <img id="pendingthumb_{{ pending.id }}" class="thumb moviethumb" src="{% static "images/movie_icon.gif" %}" />
@@ -12,27 +13,32 @@
                         <img id="pendingthumb_{{ pending.id }}" class="thumb" src="{{ pending.preview_url }}" />
                     {% endif %}
                 </a>
+                {% endif %}
                 <div class="picturestats">
                     {{ pending.date_uploaded|date }}<br />
                     {% if not pending.is_movie %}
-                        {{ pending.width }} x {{ pending.height }}
+                        {% if pending.picture %}
+                            {{ pending.width }} x {{ pending.height }}
 
-                        {% if pending.dimensions_warning %}
-                            <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}1{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                            {% if pending.dimensions_warning %}
+                                <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}1{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                            {% endif %}
                         {% endif %}
                         <br />
                     {% endif %}
 
-                    {{ pending.picture.size|filesizeformat }}
-                    {% if pending.size_warning %}
-                        <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                    {% if pending.picture %}
+                        {{ pending.picture.size|filesizeformat }}
+                        {% if pending.size_warning %}
+                            <a href="javascript:nop()" class="previewPopupTrigger" type="msg" itemid="{% if user.auto_approve %}3{% else %}2{% endif %}"><img src="{% static "images/warning.png" %}" /></a>
+                        {% endif %}
+                        {% if pending.approval_required_reasons %}
+                            <h4>Requires approval:</h4>
+                        {% endif %}
+                        {% for approval_trigger in pending.approval_required_reasons %}
+                            <p><img src="{% static "images/warning.png" %}" /> {{ approval_trigger }}</p>
+                        {% endfor %}
                     {% endif %}
-                    {% if pending.approval_required_reasons %}
-                        <h4>Requires approval:</h4>
-                    {% endif %}
-                    {% for approval_trigger in pending.approval_required_reasons %}
-                        <p><img src="{% static "images/warning.png" %}" /> {{ approval_trigger }}</p>
-                    {% endfor %}
                     <br />
                     {% if pending.failed_processing %}
                         <h4>Image failed processing!</h4>
