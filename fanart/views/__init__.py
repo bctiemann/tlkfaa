@@ -1418,7 +1418,7 @@ class ColoringPicturesView(ArtistView):
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
 
-        pictures = artist.coloringpicture_set.all()
+        pictures = artist.coloringpicture_set.order_by('-date_posted').all()
 
         context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
         try:
