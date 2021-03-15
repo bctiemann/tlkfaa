@@ -2,7 +2,7 @@
 {% for announcement in admin_announcements %}
 {% if announcement %}
 
-<div class="bulletinlink" bulletin_id="{{ announcement.id }}">
+<div class="bulletinlink group" bulletin_id="{{ announcement.id }}">
     <div class="bulletin-title-block">
         <div class="bulletindate">{{ announcement.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
         <p class="bulletintitle">{{ announcement.title }}</p>
