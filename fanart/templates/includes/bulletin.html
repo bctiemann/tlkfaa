@@ -5,6 +5,9 @@
 
 <div id="comments_{{ bulletin.id }}">
 
+<!-- Hidden helper to steal autofocus in jQuery UI dialog and ensure Esc works to dismiss -->
+<span class="ui-helper-hidden-accessible"><input type="text" autofocus /></span>
+
 <div class="bulletin-title">
     <p class="bulletin-date">{{ bulletin.date_posted|date }}</p>
     <div class="commentprofilepic">

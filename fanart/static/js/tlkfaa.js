@@ -2992,8 +2992,6 @@ function showBulletin(bulletin_id) {
     var url = '/bulletin/' + bulletin_id;
     $('#dialog_bulletin').load(url, function() {
         $('#dialog_bulletin').dialog('open');
-        $('#dialog_bulletin textarea').focus();
-        $('.dialog.ui-dialog-content').scrollTop(0);
     });
 /*
     Shadowbox.open({
