@@ -331,6 +331,10 @@ ORDER BY fanart_user.sort_name
         return Block.objects.filter(blocked_user=self, user=blocking_user).exists()
 
     @property
+    def is_blanket_blocked(self):
+        return self.is_blocked_by(None)
+
+    @property
     def unread_comments(self):
         return ThreadedComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
 
