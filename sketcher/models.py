@@ -13,6 +13,10 @@ class Drawpile(models.Model):
     admin_url = models.URLField()
     download_url = models.URLField()
 
+    @property
+    def active_users(self):
+        return self.activeuser_set.all()
+
 
 class ActiveUser(models.Model):
     drawpile = models.ForeignKey('sketcher.Drawpile', null=True, on_delete=models.CASCADE)
