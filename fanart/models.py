@@ -327,6 +327,9 @@ ORDER BY fanart_user.sort_name
     def blocked_commenters(self):
         return [b.blocked_user for b in self.blocked_by.all()]
 
+    def is_blocked_by(self, blocking_user):
+        return Block.objects.filter(blocked_user=self, user=blocking_user).exists()
+
     @property
     def unread_comments(self):
         return ThreadedComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
@@ -1468,7 +1471,7 @@ class ArtistName(models.Model):
 
 
 class Block(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by', on_delete=models.SET_NULL)
     blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocks_received', on_delete=models.SET_NULL)
     date_blocked = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 

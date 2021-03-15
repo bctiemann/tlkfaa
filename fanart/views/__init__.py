@@ -948,7 +948,7 @@ class CommentsView(TemplateView):
         context['picture'] = picture
         context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
         if self.request.user.is_authenticated:
-            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
+            context['current_user_is_blocked'] = self.request.user.is_blocked_by(picture.artist)
         context['hash'] = uuid.uuid4()
         return context
 
@@ -1066,7 +1066,7 @@ class ShoutsView(TemplateView):
         if shout_id:
             context['shouts'] = artist.shouts_received.filter(id=shout_id)
         if self.request.user.is_authenticated:
-            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
+            context['current_user_is_blocked'] = self.request.user.is_blocked_by(artist)
         context['hash'] = uuid.uuid4()
         return context
 
@@ -1081,8 +1081,7 @@ class PostShoutView(LoginRequiredMixin, CreateView):
 
         response = {'success': False}
         artist = form.cleaned_data['artist']
-        current_user_is_blocked = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
-        if current_user_is_blocked:
+        if self.request.user.is_blocked_by(artist):
             raise PermissionDenied
         shout = form.save(commit=False)
         shout.user = self.request.user
@@ -1240,7 +1239,7 @@ class PictureView(UserPaneMixin, TemplateView):
         if self.request.user.is_authenticated:
             context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
             context['fave_picture'] = models.Favorite.objects.filter(picture=picture, user=self.request.user).first()
-            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=picture.artist).exists()
+            context['current_user_is_blocked'] = self.request.user.is_blocked_by(picture.artist)
 
         logger.debug('{0} {1} viewing picture {2} via {3}'.format(self.request.user, self.request.META['REMOTE_ADDR'], picture, self.template_name))
         context['video_types'] = list(settings.MOVIE_FILE_TYPES.keys())
@@ -1327,7 +1326,7 @@ class ArtistView(UserPaneMixin, TemplateView):
         context['last_nine_coloring_pictures'] = artist.coloringpicture_set.filter(base__is_visible=True).order_by('-date_posted')[0:9]
 
         if self.request.user.is_authenticated:
-            context['current_user_is_blocked'] = models.Block.objects.filter(blocked_user=self.request.user, user=artist).exists()
+            context['current_user_is_blocked'] = self.request.user.is_blocked_by(artist)
             context['fave_artist'] = models.Favorite.objects.filter(artist=artist, user=self.request.user).first()
 
         return context
