@@ -52,11 +52,11 @@ THREE_MONTHS = 90
 ONE_MONTH = 30
 
 
-def favicon(request):
-    return redirect(static('images/favicon-96x96.png'))
-
-def robots(request):
-    return redirect(static('robots.txt'))
+# def favicon(request):
+#     return redirect(static('images/favicon-96x96.png'))
+#
+# def robots(request):
+#     return redirect(static('robots.txt'))
 
 
 # class ErrorHandler500(TemplateView):
@@ -143,6 +143,8 @@ class UserPaneMixin(RatelimitMixin):
 
         return context
 
+
+# Main tab pages
 
 class HomeView(UserPaneMixin, TemplateView):
     template_name = 'fanart/home.html'
@@ -471,6 +473,8 @@ class ShowcasesView(UserPaneMixin, TemplateView):
         return context
 
 
+# Secondary pages
+
 class FeaturedArtistsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/featured_artists.html'
 
@@ -506,6 +510,144 @@ class RevisionLogView(UserPaneMixin, TemplateView):
 
         return context
 
+
+# Current-user-targeted pages
+
+class FavoritePicturesView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/favorite_pictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FavoritePicturesView, self).get_context_data(**kwargs)
+
+        if not self.request.user.is_authenticated:
+            return context
+
+        favorite_pictures = self.request.user.favorite_pictures.order_by('date_added', 'picture__date_uploaded')
+
+        context['favorite_pictures_paginator'] = Paginator(favorite_pictures, settings.PICTURES_PER_PAGE)
+        try:
+            page = int(self.request.GET.get('page', 1))
+        except ValueError:
+            page = 1
+        reversed_page = context['favorite_pictures_paginator'].num_pages - page + 1
+
+        try:
+            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(reversed_page)
+        except EmptyPage:
+            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(context['favorite_pictures_paginator'].num_pages)
+        context['page_number'] = context['favorite_pictures_paginator'].num_pages - context['favorite_pictures'].number + 1
+
+        context['pages_link'] = utils.PagesLink(len(favorite_pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
+
+        return context
+
+
+class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
+    model = models.GiftPicture
+    template_name = 'fanart/approve_request.html'
+    form_class = forms.GiftPictureForm
+
+    def get_object(self):
+        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user, is_active=False, date_declined__isnull=True)
+
+    def get_context_data(self, **kwargs):
+        context = super(ApproveRequestView, self).get_context_data(**kwargs)
+        return context
+
+    def form_valid(self, form):
+        logger.info(self.request.POST)
+        logger.info(form.cleaned_data)
+        response = super(ApproveRequestView, self).form_valid(form)
+        if self.request.POST.get('approved'):
+            self.object.is_active = True
+            self.object.date_accepted = timezone.now()
+            self.object.save()
+
+            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+            tasks.send_email.delay(
+                recipients=[self.object.sender.email],
+                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
+                context=email_context,
+                text_template='email/gift_accepted.txt',
+                html_template='email/gift_accepted.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        elif self.request.POST.get('declined'):
+            self.object.date_declined = timezone.now()
+            self.object.save()
+
+            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+            tasks.send_email.delay(
+                recipients=[self.object.sender.email],
+                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
+                context=email_context,
+                text_template='email/gift_rejected.txt',
+                html_template='email/gift_rejected.html',
+                bcc=[settings.DEBUG_EMAIL]
+            )
+
+        return response
+
+    def get_success_url(self):
+        return reverse('approve-request-success', kwargs={'hash': self.object.hash})
+
+
+class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
+    model = models.GiftPicture
+    template_name = 'fanart/approve_request_success.html'
+    form_class = forms.GiftPictureForm
+
+    def get_object(self):
+        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
+
+
+# Sidebar boxes
+
+class UserBoxSetView(APIView):
+
+    def get(self, request, box=None, show=None):
+        response = {}
+        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'tool_box',):
+            request.session[box] = True if show == '1' else False
+        return Response(response)
+
+
+class FavoriteArtistsBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/favorite_artists.html'
+
+
+class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/favorite_pictures.html'
+
+
+class SketcherBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/sketcher.html'
+
+
+class CommunityArtBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/community_art.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommunityArtBoxView, self).get_context_data(**kwargs)
+        context['community_art_data'] = self.get_community_art_data()
+        return context
+
+
+class ContestsBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/contests.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContestsBoxView, self).get_context_data(**kwargs)
+        context['contests_data'] = self.get_contests_data()
+        return context
+
+
+class ToolBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/toolbox.html'
+
+
+# Contests
 
 class ContestsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/contests.html'
@@ -678,94 +820,7 @@ class ContestSetupSuccessView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class FavoritePicturesView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/favorite_pictures.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(FavoritePicturesView, self).get_context_data(**kwargs)
-
-        if not self.request.user.is_authenticated:
-            return context
-
-        favorite_pictures = self.request.user.favorite_pictures.order_by('date_added', 'picture__date_uploaded')
-
-        context['favorite_pictures_paginator'] = Paginator(favorite_pictures, settings.PICTURES_PER_PAGE)
-        try:
-            page = int(self.request.GET.get('page', 1))
-        except ValueError:
-            page = 1
-        reversed_page = context['favorite_pictures_paginator'].num_pages - page + 1
-
-        try:
-            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(reversed_page)
-        except EmptyPage:
-            context['favorite_pictures'] = context['favorite_pictures_paginator'].page(context['favorite_pictures_paginator'].num_pages)
-        context['page_number'] = context['favorite_pictures_paginator'].num_pages - context['favorite_pictures'].number + 1
-
-        context['pages_link'] = utils.PagesLink(len(favorite_pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
-
-        return context
-
-
-class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
-    model = models.GiftPicture
-    template_name = 'fanart/approve_request.html'
-    form_class = forms.GiftPictureForm
-
-    def get_object(self):
-        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user, is_active=False, date_declined__isnull=True)
-
-    def get_context_data(self, **kwargs):
-        context = super(ApproveRequestView, self).get_context_data(**kwargs)
-        return context
-
-    def form_valid(self, form):
-        logger.info(self.request.POST)
-        logger.info(form.cleaned_data)
-        response = super(ApproveRequestView, self).form_valid(form)
-        if self.request.POST.get('approved'):
-            self.object.is_active = True
-            self.object.date_accepted = timezone.now()
-            self.object.save()
-
-            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
-            tasks.send_email.delay(
-                recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
-                context=email_context,
-                text_template='email/gift_accepted.txt',
-                html_template='email/gift_accepted.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
-
-        elif self.request.POST.get('declined'):
-            self.object.date_declined = timezone.now()
-            self.object.save()
-
-            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
-            tasks.send_email.delay(
-                recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
-                context=email_context,
-                text_template='email/gift_rejected.txt',
-                html_template='email/gift_rejected.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
-
-        return response
-
-    def get_success_url(self):
-        return reverse('approve-request-success', kwargs={'hash': self.object.hash})
-
-
-class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
-    model = models.GiftPicture
-    template_name = 'fanart/approve_request_success.html'
-    form_class = forms.GiftPictureForm
-
-    def get_object(self):
-        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
-
+# Registration/recovery
 
 class RegisterView(FormView):
     form_class = forms.RegisterForm
@@ -873,47 +928,7 @@ class HashedPasswordResetConfirmView(PasswordResetConfirmView):
     form_class = forms.HashedSetPasswordForm
 
 
-class GuidelinesView(TemplateView):
-    template_name = 'includes/guidelines.html'
-
-
-class UserBoxSetView(APIView):
-
-    def get(self, request, box=None, show=None):
-        response = {}
-        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'tool_box',):
-            request.session[box] = True if show == '1' else False
-        return Response(response)
-
-
-class FavoriteArtistsBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/favorite_artists.html'
-
-class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/favorite_pictures.html'
-
-class SketcherBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/sketcher.html'
-
-class CommunityArtBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/community_art.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(CommunityArtBoxView, self).get_context_data(**kwargs)
-        context['community_art_data'] = self.get_community_art_data()
-        return context
-
-class ContestsBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/contests.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(ContestsBoxView, self).get_context_data(**kwargs)
-        context['contests_data'] = self.get_contests_data()
-        return context
-
-class ToolBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/toolbox.html'
-
+# Bulletins/admin announcements
 
 class AdminAnnouncementsView(TemplateView):
     template_name = 'includes/admin_announcements.html'
@@ -926,6 +941,7 @@ class AdminAnnouncementsView(TemplateView):
         context['admin_announcements'] = models.Bulletin.objects.filter(is_published=True, is_admin=True).order_by('-date_posted')[start:end]
         return context
 
+
 class BulletinsView(TemplateView):
     template_name = 'includes/bulletins.html'
 
@@ -937,6 +953,8 @@ class BulletinsView(TemplateView):
         context['bulletins'] = models.Bulletin.objects.filter(is_published=True, is_admin=False).order_by('-date_posted')[start:end]
         return context
 
+
+# Comments
 
 class CommentsView(TemplateView):
     model = models.ThreadedComment
@@ -1050,6 +1068,8 @@ class DeleteCommentView(LoginRequiredMixin, UpdateView):
 #        return context
 
 
+# Shouts (roars)
+
 class ShoutsView(TemplateView):
     model = models.Shout
     template_name = 'includes/shouts.html'
@@ -1147,6 +1167,8 @@ class DeleteShoutView(LoginRequiredMixin, APIView):
         return Response(response)
 
 
+# Faves/blocks/visibility
+
 class ToggleFaveView(APIView):
 
     def post(self, request, fave_type, object_id):
@@ -1208,6 +1230,8 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
+# Picture pages
+
 class PictureRedirectByIDView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
@@ -1253,8 +1277,11 @@ class PictureFansView(LoginRequiredMixin, DetailView):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'])
 
 
+# Tooltip popup previews
+
 class PictureTooltipView(PictureView):
     template_name = 'tooltips/picture.html'
+
 
 class ColoringPictureTooltipView(TemplateView):
     template_name = 'tooltips/coloring_picture.html'
@@ -1264,6 +1291,7 @@ class ColoringPictureTooltipView(TemplateView):
         coloring_picture = get_object_or_404(ColoringPicture, pk=kwargs['coloring_picture_id'])
         context['coloring_picture'] = coloring_picture
         return context
+
 
 class MessageTooltipView(TemplateView):
     template_name = 'tooltips/message.html'
@@ -1277,6 +1305,8 @@ class MessageTooltipView(TemplateView):
 
         return context
 
+
+# Characters
 
 class CharacterView(UserPaneMixin, TemplateView):
     template_name = 'fanart/character.html'
@@ -1307,6 +1337,8 @@ class CharacterView(UserPaneMixin, TemplateView):
 class CharacterTooltipView(CharacterView):
     template_name = 'tooltips/character.html'
 
+
+# Artists
 
 class ArtistView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artist.html'
@@ -1437,6 +1469,8 @@ class ColoringPicturesView(ArtistView):
         return context
 
 
+# Artist of the Month
+
 class AotmVoteView(LoginRequiredMixin, CreateView):
     template_name = 'includes/aotm_vote.html'
     form_class = forms.AotmVoteForm
@@ -1455,9 +1489,12 @@ class AotmVoteView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('aotm-vote')
 
+
 class AotmVoteFormView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/aotm_vote_form.html'
 
+
+# Artist page support views
 
 class FoldersView(APIView):
     permission_classes = ()
@@ -1504,6 +1541,8 @@ class ArtworkListView(ArtworkView):
     template_name = 'includes/artwork-list.html'
 
 
+# Characters page support views
+
 class CharactersListView(CharactersView):
     template_name = 'includes/characters-list.html'
 
@@ -1522,6 +1561,8 @@ class CharactersSpeciesView(TemplateView):
             context['popular_species'].append(species)
         return context    
 
+
+# Autocompletes
 
 class CharactersAutocompleteView(APIView):
     permission_classes = ()
@@ -1574,6 +1615,8 @@ class ArtistsAutocompleteView(APIView):
 
         return Response(response)
 
+
+# Pickers
 
 class PicturePickerView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/pick_picture.html'
@@ -1643,6 +1686,8 @@ class CheckNameAvailabilityView(APIView):
         return Response(response)
 
 
+# Social media mgmt views -- ArtManager?
+
 class SocialMediaIdentitiesView(TemplateView):
     template_name = 'includes/social_media.html'
 
@@ -1679,6 +1724,8 @@ class RemoveSocialMediaIdentityView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse('social-media-identities', kwargs={})
 
+
+# Profile pic mgmt views -- ArtManager?
 
 class UploadProfilePicView(UpdateView):
     model = models.User
@@ -1772,6 +1819,8 @@ class RemoveProfilePicView(UpdateView):
         return JsonResponse(response)
 
 
+# Banner mgmt views -- ArtManager?
+
 class UploadBannerView(CreateView):
     model = models.Banner
     form_class = forms.UploadBannerForm
@@ -1843,6 +1892,8 @@ class RemoveBannerView(DeleteView):
         return JsonResponse(response)
 
 
+# Bulletin mgmt views -- ArtManager?
+
 class BulletinView(DetailView):
     model = models.Bulletin
     template_name = 'includes/bulletin.html'
@@ -1889,6 +1940,12 @@ class PostBulletinReplyView(LoginRequiredMixin, CreateView):
 
         response = super(PostBulletinReplyView, self).form_valid(form)
         return response
+
+
+# Boilerplate site static pages
+
+class GuidelinesView(TemplateView):
+    template_name = 'includes/guidelines.html'
 
 
 class AboutView(TemplateView):

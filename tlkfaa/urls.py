@@ -14,8 +14,8 @@ from coloring_cave import views as coloring_cave_views
 from pms import views as pms_views
 
 urlpatterns = [
-    url(r'^favicon\.ico$', fanart_views.favicon),
-    url(r'^robots\.txt$', fanart_views.robots),
+    # url(r'^favicon\.ico$', fanart_views.favicon),
+    # url(r'^robots\.txt$', fanart_views.robots),
 
     url(r'^admin/', admin.site.urls),
 
