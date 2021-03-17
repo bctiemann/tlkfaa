@@ -16,8 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, OuterRef, Subquery, Min, Max, Count, CharField
-from django.db.models.functions import Lower
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 from django.db import connection
 from django.forms import ValidationError
 from django.template.defaultfilters import filesizeformat
@@ -48,8 +47,6 @@ from ratelimit.mixins import RatelimitMixin
 
 import logging
 logger = logging.getLogger(__name__)
-
-CharField.register_lookup(Lower, "lower")
 
 THREE_MONTHS = 90
 ONE_MONTH = 30
@@ -1699,7 +1696,10 @@ class CheckNameAvailabilityView(APIView):
         response = {'is_available': True}
         dir_name = utils.make_dir_name(username)
         response['dir_name'] = dir_name
-        response['is_available'] = not models.User.objects.filter(dir_name__lower=dir_name.lower()).exists() and dir_name not in models.artists_tabs
+        try:
+            models.validate_unique_username(dir_name)
+        except ValidationError:
+            response['is_available'] = False
         return Response(response)
 
 

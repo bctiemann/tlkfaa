@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models, connection
-from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count, CharField
+from django.db.models.functions import Lower
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 #from django.contrib.auth.models import User
@@ -27,6 +28,8 @@ from fanart.tasks import process_images
 
 import logging
 logger = logging.getLogger(__name__)
+
+CharField.register_lookup(Lower, "lower")
 
 THREE = 90
 
@@ -84,7 +87,7 @@ def get_featured_banner_path(instance, filename):
 
 def validate_unique_username(value):
     dir_name = make_dir_name(value)
-    if User.objects.filter(Q(username=value) | Q(dir_name=dir_name)).exists() or dir_name in artists_tabs:
+    if User.objects.filter(Q(username=value) | Q(dir_name__lower=dir_name.lower())).exists() or dir_name in artists_tabs:
         raise ValidationError(
             _('The name %(value)s is already in use.'),
             params={'value': value},
