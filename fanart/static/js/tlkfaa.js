@@ -1,6 +1,6 @@
 function nop() {}
 
-var globals = {};
+const globals = {};
 
 var selitems = new Array();
 var ArtistList = new Array();
@@ -24,28 +24,27 @@ var scrollIsLoading = {
     shouts: false,
 };
 
+
 $.ajaxSetup ({
     // Disable caching of AJAX responses */
     cache: false,
     error: function(data) {
-console.log(data);
         if (data.responseJSON) {
             alert(data.responseJSON.message);
-        };
+        }
     },
 });
 
-//$(document).ajaxError(function() {
-//    alert('An error occurred executing this function.');
-//  $( ".log" ).text( "Triggered ajaxError handler." );
-//});
+
+/* CSRF protection */
 
 function getCookie(name) {
-    var cookieValue = null;
+    let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
@@ -54,7 +53,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-var csrftoken = getCookie('csrftoken');
+const csrftoken = getCookie('csrftoken');
 
 function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -68,7 +67,7 @@ $.ajaxSetup({
 });
 
 
-var showUserBox = new Array();
+/* Support functions */
 
 function QueryStringToJSON() {
     var pairs = location.search.slice(1).split('&');
@@ -191,6 +190,9 @@ function validateForm(selformid,successfnc) {
   }
 }
 
+
+/* Site functionality */
+
 function registerUser() {
 //    var url = '/api/register.jsp';
     var url = '/Register/';
@@ -227,30 +229,24 @@ function refreshCharCount(sel,max,obj) {
   $('#'+obj).html(sel.value.length + " / " + max);
 }
 
-function toggleUserBox(boxname) {
-  if ($('#'+boxname+'_toggle').hasClass('toggleopen')) {
-    $('#'+boxname).slideUp('fast',function() {
-      var url = "/userbox/set/"+boxname+"/0";
-//      $('#genstatus').load(url);
-      $.getJSON(url, function(data) {
-      });
-      $('#'+boxname+'_toggle').attr("class","toggle toggleclosed");
-    });
-    showUserBox[boxname] = 0;
-  } else {
-    var boxcontenturl = "/userbox/"+boxname;
-    $('#'+boxname).load(boxcontenturl,function() {
-      $('#'+boxname+'_toggle').attr("class","toggle toggleopen");
-      Shadowbox.setup('#'+boxname+' a.thumb');
-      $('#'+boxname).slideDown('fast',function() {
-        var url = "/userbox/set/"+boxname+"/1";
-//        $('#genstatus').load(url);
-        $.getJSON(url, function(data) {
+function toggleUserBox(boxName) {
+    if ($(`#${boxName}_toggle`).hasClass('toggleopen')) {
+        $(`#${boxName}`).slideUp('fast', function() {
+            let url = `/userbox/set/${boxName}/0`;
+            $.getJSON(url, function(data) {});
+            $(`#${boxName}_toggle`).attr('class', 'toggle toggleclosed');
         });
-      });
-    });
-    showUserBox[boxname] = 1;
-  }
+    } else {
+        let boxContentUrl = `/userbox/${boxName}`;
+        $(`#${boxName}`).load(boxContentUrl, function() {
+            $(`#${boxName}_toggle`).attr('class', 'toggle toggleopen');
+            Shadowbox.setup(`#${boxName} a.thumb`);
+            $(`#${boxName}`).slideDown('fast', function() {
+                let url = `/userbox/set/${boxName}/1`;
+                $.getJSON(url, function(data) {});
+            });
+        });
+    }
 }
 
 function getMoreAdminAnnouncements(start,count) {
