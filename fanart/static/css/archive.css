@@ -209,12 +209,12 @@ img.corner {
 }
 
 .top {
-	background: url('/images/toprightcorner.gif') no-repeat top right;
+	background: url('../images/toprightcorner.gif') no-repeat top right;
 	border: 0px solid;
 }
 
 .bottom {
-	background: url('/images/bottomrightcorner.gif') no-repeat top right;
+	background: url('../images/bottomrightcorner.gif') no-repeat top right;
 	border: 0px solid;
 }
 
