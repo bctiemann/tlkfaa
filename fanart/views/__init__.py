@@ -1696,7 +1696,7 @@ class CheckNameAvailabilityView(APIView):
         response = {'is_available': True}
         dir_name = utils.make_dir_name(username)
         response['dir_name'] = dir_name
-        response['is_available'] = not models.User.objects.filter(dir_name__iequals=dir_name).exists() and dir_name not in models.artists_tabs
+        response['is_available'] = not models.User.objects.filter(dir_name__iexact=dir_name).exists() and dir_name not in models.artists_tabs
         return Response(response)
 
 
