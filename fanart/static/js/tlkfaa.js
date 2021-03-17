@@ -230,20 +230,27 @@ function refreshCharCount(sel,max,obj) {
 }
 
 function toggleUserBox(boxName) {
+    const url = `/userbox/set/`;
     if ($(`#${boxName}_toggle`).hasClass('toggleopen')) {
         $(`#${boxName}`).slideUp('fast', function() {
-            let url = `/userbox/set/${boxName}/0`;
-            $.getJSON(url, function(data) {});
+            const params = {
+                box_name: boxName,
+                is_shown: false,
+            };
+            $.post(url, params, function(data) {});
             $(`#${boxName}_toggle`).attr('class', 'toggle toggleclosed');
         });
     } else {
-        let boxContentUrl = `/userbox/${boxName}`;
+        const boxContentUrl = `/userbox/${boxName}`;
         $(`#${boxName}`).load(boxContentUrl, function() {
             $(`#${boxName}_toggle`).attr('class', 'toggle toggleopen');
             Shadowbox.setup(`#${boxName} a.thumb`);
             $(`#${boxName}`).slideDown('fast', function() {
-                let url = `/userbox/set/${boxName}/1`;
-                $.getJSON(url, function(data) {});
+                const params = {
+                    box_name: boxName,
+                    is_shown: true,
+                };
+                $.post(url, params, function(data) {});
             });
         });
     }

@@ -74,7 +74,7 @@ urlpatterns = [
     url(r'^Guidelines/$', fanart_views.GuidelinesView.as_view(), name='guidelines'),
 
     url(r'^random_popular/$', fanart_views.RandomPopularView.as_view(), name='random-popular'),
-    url(r'^userbox/set/(?P<box>[a-z_]+)/(?P<show>[01]+)$', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
+    url(r'^userbox/set/$', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
     url(r'^userbox/favorite_artists_box/$', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
     url(r'^userbox/favorite_pictures_box/$', fanart_views.FavoritePicturesBoxView.as_view(), name='favorite-pictures-box'),
     url(r'^userbox/sketcher_box/$', fanart_views.SketcherBoxView.as_view(), name='sketcher-box'),

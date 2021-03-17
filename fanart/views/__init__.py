@@ -25,7 +25,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from fanart import models, forms, utils, tasks
+from fanart import models, forms, utils, tasks, serializers
 from fanart.forms import AjaxableResponseMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
@@ -606,10 +606,24 @@ class ApproveRequestSuccessView(LoginRequiredMixin, DetailView):
 
 class UserBoxSetView(APIView):
 
-    def get(self, request, box=None, show=None):
+    user_box_names = (
+        'favorite_artists_box',
+        'favorite_pictures_box',
+        'sketcher_box',
+        'community_art_box',
+        'contests_box',
+        'tool_box',
+    )
+
+    def post(self, request):
         response = {}
-        if box in ('favorite_artists_box', 'favorite_pictures_box', 'sketcher_box', 'community_art_box', 'contests_box', 'tool_box',):
-            request.session[box] = True if show == '1' else False
+        serializer = serializers.UserBoxSerializer(data=request.POST)
+        if not serializer.is_valid():
+            response['errors'] = serializer.errors
+            return Response(response)
+        box = serializer.data['box_name']
+        if box in self.user_box_names:
+            request.session[box] = serializer.data['is_shown']
         return Response(response)
 
 
