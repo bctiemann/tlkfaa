@@ -99,19 +99,59 @@ class UserPaneMixin(RatelimitMixin):
         icons_publish_start_date = timezone.now() - timedelta(weeks=3)
         adoptables_publish_start_date = timezone.now() - timedelta(days=30*6)
         adoptables_mine_start_date = timezone.now() - timedelta(days=30)
-        community_art_data['icons'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__gt=icons_publish_start_date)
-        community_art_data['icons_today'] = Offer.objects.filter(type='icon', is_active=True, is_visible=True, date_posted__date__gte=timezone.now())
-        community_art_data['icons_mine'] = Claim.objects.filter(offer__type='icon', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=True, filename='', offer__date_posted__gt=icons_publish_start_date, user=self.request.user)
-        community_art_data['adoptables'] = Offer.objects.filter(type='adoptable', is_active=True, is_visible=True, date_posted__gt=adoptables_publish_start_date)
+        community_art_data['icons'] = Offer.objects.filter(
+            type='icon',
+            is_active=True,
+            is_visible=True,
+            date_posted__gt=icons_publish_start_date,
+        )
+        community_art_data['icons_today'] = Offer.objects.filter(
+            type='icon',
+            is_active=True,
+            is_visible=True,
+            date_posted__date__gte=timezone.now(),
+        )
+        community_art_data['icons_mine'] = Claim.objects.filter(
+            offer__type='icon',
+            offer__is_active=True,
+            offer__is_visible=True,
+            date_fulfilled__isnull=True,
+            filename='',
+            offer__date_posted__gt=icons_publish_start_date,
+            user=self.request.user,
+        )
+        community_art_data['adoptables'] = Offer.objects.filter(
+            type='adoptable',
+            is_active=True,
+            is_visible=True,
+            date_posted__gt=adoptables_publish_start_date,
+        )
         community_art_data['adoptables_unclaimed'] = community_art_data['adoptables'].filter(adopted_by__isnull=True)
-        community_art_data['adoptables_mine'] = Claim.objects.filter(offer__type='adoptable', offer__is_active=True, offer__is_visible=True, date_fulfilled__isnull=False, offer__date_posted__gt=adoptables_mine_start_date, user=self.request.user)
+        community_art_data['adoptables_mine'] = Claim.objects.filter(
+            offer__type='adoptable',
+            offer__is_active=True,
+            offer__is_visible=True,
+            date_fulfilled__isnull=False,
+            offer__date_posted__gt=adoptables_mine_start_date,
+            user=self.request.user,
+        )
         community_art_data['coloring_bases'] = Base.objects.filter(is_active=True, is_visible=True)
         return community_art_data
 
     def get_contests_data(self):
         contests_data = {}
-        contests_data['contests_new'] = models.Contest.objects.filter(type='personal', is_active=True, is_cancelled=False, date_end__gt=timezone.now()).order_by('-date_start')[0:5]
-        contests_data['contests_ending'] = models.Contest.objects.filter(type='personal', is_active=True, is_cancelled=False, date_end__gt=timezone.now()).order_by('-date_end')[0:5]
+        contests_data['contests_new'] = models.Contest.objects.filter(
+            type='personal',
+            is_active=True,
+            is_cancelled=False,
+            date_end__gt=timezone.now(),
+        ).order_by('-date_start')[0:5]
+        contests_data['contests_ending'] = models.Contest.objects.filter(
+            type='personal',
+            is_active=True,
+            is_cancelled=False,
+            date_end__gt=timezone.now(),
+        ).order_by('-date_end')[0:5]
         return contests_data
 
     def get_sketcher_users(self):
@@ -836,6 +876,20 @@ class ContestSetupSuccessView(LoginRequiredMixin, TemplateView):
 
 # Registration/recovery
 
+class CheckNameAvailabilityView(APIView):
+    permission_classes = ()
+
+    def get(self, request, username=None):
+        response = {'is_available': True}
+        dir_name = utils.make_dir_name(username)
+        response['dir_name'] = dir_name
+        try:
+            models.validate_unique_username(dir_name)
+        except ValidationError:
+            response['is_available'] = False
+        return Response(response)
+
+
 class RegisterView(FormView):
     form_class = forms.RegisterForm
     template_name = 'fanart/register.html'
@@ -858,7 +912,6 @@ class RegisterView(FormView):
                 'success': False,
                 'errors': form.errors,
             }
-#            return HttpResponse(form.errors.as_json())
             return HttpResponse(json.dumps(ajax_response))
         else:
             return response
@@ -1687,20 +1740,6 @@ class CharacterPickerView(TemplateView):
         context = super(CharacterPickerView, self).get_context_data(*args, **kwargs)
         context['characters'] = self.request.user.character_set.filter(date_deleted__isnull=True)
         return context
-
-
-class CheckNameAvailabilityView(APIView):
-    permission_classes = ()
-
-    def get(self, request, username=None):
-        response = {'is_available': True}
-        dir_name = utils.make_dir_name(username)
-        response['dir_name'] = dir_name
-        try:
-            models.validate_unique_username(dir_name)
-        except ValidationError:
-            response['is_available'] = False
-        return Response(response)
 
 
 # Social media mgmt views -- ArtManager?
