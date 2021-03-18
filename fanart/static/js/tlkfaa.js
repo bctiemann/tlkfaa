@@ -1,6 +1,10 @@
 function nop() {}
 
-const globals = {};
+const globals = {
+    adminAnnouncementsCount: 1,
+    bulletinsCount: 0,
+    shoutsCount: 0,
+};
 
 var selitems = new Array();
 var ArtistList = new Array();
@@ -10,9 +14,6 @@ var artworklistopen;
 var CharactersList = new Array();
 var characterslistopen;
 var banneropen = false;
-var adminannouncementsshown = 1;
-var bulletinsshown = 0;
-var shoutsshown = 0;
 var adminAnnouncementsLoad = 3;
 var bulletinsLoad = 5;
 var shoutsLoad = 10;
@@ -262,7 +263,7 @@ function getMoreAdminAnnouncements(start,count) {
     var url = "/admin_announcements/"+count+"/"+start+"/";
     $.ajax({ url: url, success: function(data) {
       $('#adminannouncements_inner').addClass('bulletinsscroll');
-      adminannouncementsshown += count;    
+      globals.adminAnnouncementsCount += count;
       $('#adminannouncements_inner').find('.bulletins_content').append(data);
 //      $('#adminannouncements').animate({scrollTop: 10000},1000);
 //      Shadowbox.setup('#bulletins a.bulletinlink');
@@ -280,7 +281,7 @@ function getMoreBulletins(start,count) {
     var url = "/bulletins/"+count+"/"+start+"/";
     $.ajax({ url: url, success: function(data) {
       $('#bulletins_inner').addClass('bulletinsscroll');
-      bulletinsshown += count;    
+      globals.bulletinsCount += count;
       $('#bulletins_inner').find('.bulletins_content').append(data);
 //      $('#bulletins').animate({scrollTop: 10000},1000);
 //      Shadowbox.setup('#bulletins_inner a.bulletinlink');
@@ -299,7 +300,7 @@ function getMoreShouts(artistid,start,count) {
     var url = '/shouts/' + artistid + '/?offset=' + start + '&count=' + count;
     $.ajax({ url: url, success: function(data) {
       $('#shouts').append(data);
-      shoutsshown += count;
+      globals.shoutsCount += count;
 //      obj.style.display='none';
       scrollIsLoading.shouts = false;
     }});
@@ -3185,9 +3186,9 @@ $(document).ready(function() {
   $('.bulletinsinner').scroll(function(e) {
     if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
       if ($(this).attr('bulletin_type') == 'admin_announcements') {
-        getMoreAdminAnnouncements(adminannouncementsshown, adminAnnouncementsLoad);
+        getMoreAdminAnnouncements(globals.adminAnnouncementsCount, adminAnnouncementsLoad);
       } else {
-        getMoreBulletins(bulletinsshown, bulletinsLoad);
+        getMoreBulletins(globals.bulletinsCount, bulletinsLoad);
       }
     }
   });
@@ -3196,7 +3197,7 @@ $(document).ready(function() {
   getMoreShouts($('.shouts-container').attr('artistid'), 0, shoutsLoad);
   $('.shouts-container').scroll(function(e) {
     if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
-      getMoreShouts($('.shouts-container').attr('artistid'), shoutsshown, shoutsLoad);
+      getMoreShouts($('.shouts-container').attr('artistid'), globals.shoutsCount, shoutsLoad);
     }
   });
   }
