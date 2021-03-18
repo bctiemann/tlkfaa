@@ -3181,12 +3181,6 @@ $(document).ready(function() {
   });
 
   getMoreBulletins(0, bulletinsLoad);
-  $('.bulletinsinner').scroll(function(e) {
-    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
-      getMoreBulletins(bulletinsshown, bulletinsLoad);
-    }
-  });
-
   getMoreAdminAnnouncements(0, adminAnnouncementsLoad);
   $('.bulletinsinner').scroll(function(e) {
     if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
