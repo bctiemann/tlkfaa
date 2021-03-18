@@ -4,6 +4,10 @@ const globals = {
     adminAnnouncementsCount: 1,
     bulletinsCount: 0,
     shoutsCount: 0,
+    adminAnnouncementsToLoad: 3,
+    bulletinsToLoad: 5,
+    shoutsToLoad: 10,
+    scrollBottomMargin: 20,
 };
 
 var selitems = new Array();
@@ -14,9 +18,6 @@ var artworklistopen;
 var CharactersList = new Array();
 var characterslistopen;
 var banneropen = false;
-var adminAnnouncementsLoad = 3;
-var bulletinsLoad = 5;
-var shoutsLoad = 10;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
 var scrollIsLoading = {
@@ -3181,26 +3182,29 @@ $(document).ready(function() {
     }
   });
 
-  getMoreBulletins(0, bulletinsLoad);
-  getMoreAdminAnnouncements(0, adminAnnouncementsLoad);
-  $('.bulletinsinner').scroll(function(e) {
-    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
-      if ($(this).attr('bulletin_type') == 'admin_announcements') {
-        getMoreAdminAnnouncements(globals.adminAnnouncementsCount, adminAnnouncementsLoad);
-      } else {
-        getMoreBulletins(globals.bulletinsCount, bulletinsLoad);
-      }
-    }
-  });
+    getMoreBulletins(0, globals.bulletinsToLoad);
+    getMoreAdminAnnouncements(0, globals.adminAnnouncementsToLoad);
+    $('.bulletinsinner').scroll(function(e) {
+        const bottomMargin = $(this)[0].scrollHeight - $(this).scrollTop() - globals.scrollBottomMargin;
+        if (bottomMargin < $(this).outerHeight()) {
+            if ($(this).attr('bulletin_type') === 'admin_announcements') {
+                getMoreAdminAnnouncements(globals.adminAnnouncementsCount, globals.adminAnnouncementsToLoad);
+            } else {
+                getMoreBulletins(globals.bulletinsCount, globals.bulletinsToLoad);
+            }
+        }
+    });
 
-  if ($('.shouts-container').length) {
-  getMoreShouts($('.shouts-container').attr('artistid'), 0, shoutsLoad);
-  $('.shouts-container').scroll(function(e) {
-    if ($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
-      getMoreShouts($('.shouts-container').attr('artistid'), globals.shoutsCount, shoutsLoad);
+    const shoutsContainer = $('.shouts-container');
+    if (shoutsContainer.length) {
+        getMoreShouts(shoutsContainer.attr('artistid'), 0, globals.shoutsToLoad);
+        shoutsContainer.scroll(function(e) {
+            const bottomMargin = $(this)[0].scrollHeight - $(this).scrollTop() - globals.scrollBottomMargin;
+            if (bottomMargin < $(this).outerHeight()) {
+                getMoreShouts(shoutsContainer.attr('artistid'), globals.shoutsCount, globals.shoutsToLoad);
+            }
+        });
     }
-  });
-  }
 
   $('.tooltip').tooltip();
   setupTooltipPreview();
