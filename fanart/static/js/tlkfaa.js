@@ -258,54 +258,50 @@ function toggleUserBox(boxName) {
     }
 }
 
-function getMoreAdminAnnouncements(start,count) {
-  if (!scrollIsLoading.adminAnnouncements) {
-    scrollIsLoading.adminAnnouncements = true;
-    var url = "/admin_announcements/"+count+"/"+start+"/";
-    $.ajax({ url: url, success: function(data) {
-      $('#adminannouncements_inner').addClass('bulletinsscroll');
-      globals.adminAnnouncementsCount += count;
-      $('#adminannouncements_inner').find('.bulletins_content').append(data);
-//      $('#adminannouncements').animate({scrollTop: 10000},1000);
-//      Shadowbox.setup('#bulletins a.bulletinlink');
-      $('.bulletinlink').click(function() {
-        showBulletin($(this).attr('bulletin_id'));
-      });
-      scrollIsLoading.adminAnnouncements = false;
-    }});
-  }
+function getMoreAdminAnnouncements(start, count) {
+    if (!scrollIsLoading.adminAnnouncements) {
+        scrollIsLoading.adminAnnouncements = true;
+        const url = `/admin_announcements/${count}/${start}/`;
+        $.ajax({ url: url, success: function(data) {
+            const innerDiv = $('#adminannouncements_inner');
+            innerDiv.addClass('bulletinsscroll');
+            globals.adminAnnouncementsCount += count;
+            innerDiv.find('.bulletins_content').append(data);
+            $('.bulletinlink').click(function() {
+                showBulletin($(this).attr('bulletin_id'));
+            });
+            scrollIsLoading.adminAnnouncements = false;
+        }});
+    }
 }
 
-function getMoreBulletins(start,count) {
-  if (!scrollIsLoading.bulletins) {
-    scrollIsLoading.bulletins = true;
-    var url = "/bulletins/"+count+"/"+start+"/";
-    $.ajax({ url: url, success: function(data) {
-      $('#bulletins_inner').addClass('bulletinsscroll');
-      globals.bulletinsCount += count;
-      $('#bulletins_inner').find('.bulletins_content').append(data);
-//      $('#bulletins').animate({scrollTop: 10000},1000);
-//      Shadowbox.setup('#bulletins_inner a.bulletinlink');
-      $('.bulletinlink').click(function() {
-        showBulletin($(this).attr('bulletin_id'));
-      });
-      scrollIsLoading.bulletins = false;
-    }});
-  }
+function getMoreBulletins(start, count) {
+    if (!scrollIsLoading.bulletins) {
+        scrollIsLoading.bulletins = true;
+        const url = `/bulletins/${count}/${start}/`;
+        $.ajax({ url: url, success: function(data) {
+            const innerDiv = $('#bulletins_inner');
+            innerDiv.addClass('bulletinsscroll');
+            globals.bulletinsCount += count;
+            innerDiv.find('.bulletins_content').append(data);
+            $('.bulletinlink').click(function() {
+                showBulletin($(this).attr('bulletin_id'));
+            });
+            scrollIsLoading.bulletins = false;
+        }});
+    }
 }
 
-function getMoreShouts(artistid,start,count) {
-  if (!scrollIsLoading.shouts) {
-    scrollIsLoading.shouts = true;
-//    var url = "/ajax_shouts.jsp?artistid="+artistid+"&offset="+offset;
-    var url = '/shouts/' + artistid + '/?offset=' + start + '&count=' + count;
-    $.ajax({ url: url, success: function(data) {
-      $('#shouts').append(data);
-      globals.shoutsCount += count;
-//      obj.style.display='none';
-      scrollIsLoading.shouts = false;
-    }});
-  }
+function getMoreShouts(artistId, start, count) {
+    if (!scrollIsLoading.shouts) {
+        scrollIsLoading.shouts = true;
+        const url = `/shouts/${artistId}/?offset=${start}&count=${count}`;
+        $.ajax({ url: url, success: function(data) {
+            $('#shouts').append(data);
+            globals.shoutsCount += count;
+            scrollIsLoading.shouts = false;
+        }});
+    }
 }
 
 function getAotmForm() {
