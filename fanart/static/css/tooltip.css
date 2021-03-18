@@ -57,7 +57,7 @@ table.tooltip td.picturedetails {
 }
 
 .video-preview {
-	background-image: url('../images/movie_icon.png');
+	background-image: url('/static/images/movie_icon.png');
 	width: 32px;
 	height: 32px;
 	background-size: 100% 100%;

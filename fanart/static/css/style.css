@@ -34,7 +34,7 @@ a.detected {
 }
 
 body {
-	background-image: url('../images/Painting-bg.jpg');
+	background-image: url('/static/images/Painting-bg.jpg');
 	background-position: 0 0;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -79,7 +79,7 @@ a img {
 
 .button,
 button {
-	background: #222 url('../images/alert-overlay.png') repeat-x;
+	background: #222 url('/static/images/alert-overlay.png') repeat-x;
 	display: inline-block;
 	padding: 5px 10px 6px;
 	color: #fff;
@@ -157,7 +157,7 @@ td.buttons {
 div.top {
 	position: absolute;
 	width: 100%;
-	background-image: url('../images/Top.gif');
+	background-image: url('/static/images/Top.gif');
 	z-index: 0;
 }
 div.top img#simba {
@@ -169,7 +169,7 @@ div.simbabottom {
 	float: right;
 	width: 100%;
 	height: 100px;
-	background: url('../images/AdultSimba-bottom2.gif') no-repeat top right;
+	background: url('/static/images/AdultSimba-bottom2.gif') no-repeat top right;
 	border: 0px solid;
 	z-index: 1;
 }
@@ -209,7 +209,7 @@ div.footer {
 	position: relative;
 	left: 0px;
 	bottom: 0px;
-	background-image: url('../images/Bottom.gif');
+	background-image: url('/static/images/Bottom.gif');
 	width: 100%;
 /*	height: 114px;*/
 }
@@ -272,23 +272,23 @@ table.contentpane td {
 }
 table.contentpane td.left {
 	width: 10px;
-	background-image: url('../images/shadow-left.gif');
+	background-image: url('/static/images/shadow-left.gif');
 	background-repeat: repeat-y;
 }
 table.contentpane td.right {
 	width: 10px;
-	background-image: url('../images/shadow-right.gif');
+	background-image: url('/static/images/shadow-right.gif');
 	background-repeat: repeat-y;
 }
 table.contentpane td.bottom {
-	background-image: url('../images/shadow-bottom.gif');
+	background-image: url('/static/images/shadow-bottom.gif');
 	background-repeat: repeat-x;
 }
 table.contentpane td.bottomleft {
-	background-image: url('../images/shadow-bottomleft.gif');
+	background-image: url('/static/images/shadow-bottomleft.gif');
 }
 table.contentpane td.bottomright {
-	background-image: url('../images/shadow-bottomright.gif');
+	background-image: url('/static/images/shadow-bottomright.gif');
 }
 
 table.contentpane td.content {
@@ -302,18 +302,18 @@ table.contentpane div.spacer {
 div.body {
 	position: relative;
 	background-color: #dde5e7;
-	background: url('../images/ground-gradient-100.png') repeat-x;
+	background: url('/static/images/ground-gradient-100.png') repeat-x;
 	background-color: #262f0d;
-	background-image: url('../images/jungle_bg.png');
+	background-image: url('/static/images/jungle_bg.png');
 	background-repeat: repeat-x;
 	padding: 0px 15px 15px 15px; 
 	border: 0px solid #000;
 
 /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dfeaea+0,262f0d+37 */
 background: rgb(223,234,234); /* Old browsers */
-background: url('../images/jungle_bg.png') repeat-x, -moz-linear-gradient(top,  rgba(223,234,234,1) 0%, rgba(38,47,13,1) 37%); /* FF3.6-15 */
-background: url('../images/jungle_bg.png') repeat-x, -webkit-linear-gradient(top,  rgba(223,234,234,1) 0%,rgba(38,47,13,1) 37%); /* Chrome10-25,Safari5.1-6 */
-background: url('../images/jungle_bg.png') repeat-x, linear-gradient(to bottom,  rgba(223,234,234,0) 0%,rgba(38,47,13,1) 200px); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+background: url('/static/images/jungle_bg.png') repeat-x, -moz-linear-gradient(top,  rgba(223,234,234,1) 0%, rgba(38,47,13,1) 37%); /* FF3.6-15 */
+background: url('/static/images/jungle_bg.png') repeat-x, -webkit-linear-gradient(top,  rgba(223,234,234,1) 0%,rgba(38,47,13,1) 37%); /* Chrome10-25,Safari5.1-6 */
+background: url('/static/images/jungle_bg.png') repeat-x, linear-gradient(to bottom,  rgba(223,234,234,0) 0%,rgba(38,47,13,1) 200px); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfeaea', endColorstr='#262f0d',GradientType=0 ); /* IE6-9 */
 
 	margin-top: -110px;
@@ -341,7 +341,7 @@ div.utilpage {
 	min-width: 550px;
 	min-width: 940px;
 	height: 44px;
-	background: url('../images/tabs-shadow.png') no-repeat;
+	background: url('/static/images/tabs-shadow.png') no-repeat;
 	border: 0px solid #000;
 	z-index: 2;
 	list-style-type: none;
@@ -372,51 +372,51 @@ li.tab a {
 	height: 100%;
 }
 li.tab.main {
-	background: url('../images/tab-main-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-main-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	width: 91px;
 }
 li.tab.main.active {
-	background: url('../images/tab-main-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-main-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.artists {
-	background: url('../images/tab-artists-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-artists-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.artists.active {
-	background: url('../images/tab-artists-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-artists-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.artwork {
-	background: url('../images/tab-artwork-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-artwork-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	width: 96px;
 	left: 1px;
 }
 li.tab.artwork.active {
-	background: url('../images/tab-artwork-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-artwork-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.characters {
-	background: url('../images/tab-characters-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-characters-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	left: 1px;
 }
 li.tab.characters.active {
-	background: url('../images/tab-characters-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-characters-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.tradingtree {
-	background: url('../images/tab-tradingtree-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-tradingtree-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.tradingtree.active {
-	background: url('../images/tab-tradingtree-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-tradingtree-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.coloringcave {
-	background: url('../images/tab-coloringcave-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-coloringcave-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.coloringcave.active {
-	background: url('../images/tab-coloringcave-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-coloringcave-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 li.tab.showcases {
-	background: url('../images/tab-showcases-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-showcases-inactive.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	left: -1px;
 }
 li.tab.showcases.active {
-	background: url('../images/tab-showcases-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: url('/static/images/tab-showcases-active.png') 0px 0px, linear-gradient(to bottom,  rgba(190,190,255,1) 0%,rgba(214,213,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 img#tab_main {
 /*	left: 61px;*/
@@ -441,7 +441,7 @@ img#tab_showcases {
 }
 
 div.tab.main {
-	background: url('../images/priderock.png');
+	background: url('/static/images/priderock.png');
 	height: 100px;
 	z-index: 0;
 	background-repeat: no-repeat;
@@ -456,8 +456,8 @@ div.grass {
 	position: absolute;
 	left: 0px;
 	top: 0px;
-/*	background: url('../images/ground-tile.jpg');*/
-	background: url('../images/grass.png'),;
+/*	background: url('/static/images/ground-tile.jpg');*/
+	background: url('/static/images/grass.png'),;
 
 /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#d9d9ff+0,f5f5ff+100 */
 background: rgb(217,217,255); /* Old browsers */
@@ -473,7 +473,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d9d9ff', end
 	overflow: hidden;
 }
 div.grass-tile {
-	background: url('../images/grass.png') repeat-x;
+	background: url('/static/images/grass.png') repeat-x;
 	position: absolute;
 	top: 0px;
 	width: 100%;
@@ -506,7 +506,7 @@ div.grassgradient {
 	width: 100%;
 	height: 10px;
 	height: 100px;
-	background: url('../images/ground-gradient-100.png');
+	background: url('/static/images/ground-gradient-100.png');
 	z-index: 1;
 }
 
@@ -753,7 +753,7 @@ div.userbox h1 {
 	font-size: 12px;
 	line-height: 20px;
 	background-color: #375961;
-	background: url('../images/userbox_h1_bg.png') repeat-x;
+	background: url('/static/images/userbox_h1_bg.png') repeat-x;
 	-webkit-border-radius: 7px 7px 0px 0px;
 	-moz-border-radius: 7px 7px 0px 0px;
 	border-radius: 7px 7px 0px 0px;
@@ -772,10 +772,10 @@ div.userbox h1 a.toggle {
 	margin: 3px 5px 0px 0px;
 }
 div.userbox h1 a.toggleopen {
-	background: url('../images/toggleopen.png');
+	background: url('/static/images/toggleopen.png');
 }
 div.userbox h1 a.toggleclosed {
-	background: url('../images/toggleclosed.png');
+	background: url('/static/images/toggleclosed.png');
 }
 div.userbox p {
 	margin-bottom: 8px;
@@ -904,7 +904,7 @@ div.am_tabs a:hover {
 }
 div.am_tabs a.notpaidfeature {
 	color: #667;
-	background-image: url('../images/payfeature.png');
+	background-image: url('/static/images/payfeature.png');
 	background-position: 5px 5px;
 	background-repeat: no-repeat;
 }
@@ -1175,7 +1175,7 @@ div.featurebox h2.itemlist_selected {
 }
 
 div.featurebox.tradingtree {
-	background-image: url('../images/tradingtree-bg.png');
+	background-image: url('/static/images/tradingtree-bg.png');
 	background-repeat: no-repeat;
 }
 
@@ -1334,7 +1334,7 @@ div.characternumber {
 }
 
 div.privatepicture {
-	background-image: url('../images/private-bg.png');
+	background-image: url('/static/images/private-bg.png');
 }
 
 div.species {
@@ -1363,7 +1363,7 @@ div.species {
 
 .addfavorites {
 	float: right;
-	background-image: url('../images/starEmpty.gif');
+	background-image: url('/static/images/starEmpty.gif');
 	width: 15px;
 	height: 15px;
 	display: block;
@@ -1387,20 +1387,20 @@ div.pictureheading .artistname .addfavorites {
 }
 div.pictureheading .addfavorites,
 .artist_profiletable .addfavorites {
-	background-image: url('../images/starEmpty-large.png');
+	background-image: url('/static/images/starEmpty-large.png');
 	width: 24px;
 	height: 24px;
 }
 .isfave {
-	background-image: url('../images/starFull.gif');
+	background-image: url('/static/images/starFull.gif');
 }
 div.artist_profiletable .isfave,
 div.pictureheading .isfave {
-	background-image: url('../images/starFull-large.png');
+	background-image: url('/static/images/starFull-large.png');
 }
 .addvisible {
 	float: right;
-	background-image: url('../images/eye_icon_gray.png');
+	background-image: url('/static/images/eye_icon_gray.png');
 	width: 24px;
 	height: 24px;
 	display: block;
@@ -1408,7 +1408,7 @@ div.pictureheading .isfave {
 	z-index: 2;
 }
 .isvisible {
-	background-image: url('../images/eye_icon.png');
+	background-image: url('/static/images/eye_icon.png');
 }
 
 div.picturedetails {
@@ -1432,7 +1432,7 @@ div.picartist {
 	margin-right: 20px;
 }
 div.picfolder {
-	background-image: url('../images/folder.png');
+	background-image: url('/static/images/folder.png');
 	background-size: auto 100%;
 	height: 16px;
 	background-repeat: no-repeat;
@@ -1442,7 +1442,7 @@ div.picuploaded {
 	float: right;
 }
 div.picfolder:hover {
-	background-image: url('../images/folder_hi.png');
+	background-image: url('/static/images/folder_hi.png');
 }
 div.pictitle {
 	clear: both;
@@ -2336,7 +2336,7 @@ div.bannertextinner a:hover {
 	text-decoration: underline;
 }
 div.bannertexttoggle {
-	background-image: url('../images/arrow_toggle.png');
+	background-image: url('/static/images/arrow_toggle.png');
 	background-repeat: no-repeat;
 	background-position: 10px 4px;
 	height: 12px;
@@ -2389,7 +2389,7 @@ div.folder div.foldericon {
 	width: 60px;
 	height: 44px;
 	font-size: 9px;
-	background-image: url('../images/folder.gif');
+	background-image: url('/static/images/folder.gif');
 	background-repeat: no-repeat;
 }
 div.foldertotal {
@@ -2423,7 +2423,7 @@ ul.folders {
 }
 li.folder {
 	display: inline-block;
-	background-image: url('../images/folder_large.png');
+	background-image: url('/static/images/folder_large.png');
 	background-size: 100% 100%;
 	width: 180px;
 	height: 180px;
@@ -2433,7 +2433,7 @@ li.folder {
 	transition: .2s;
 }
 li.folder:hover {
-	background-image: url('../images/folder_large_hi.png');
+	background-image: url('/static/images/folder_large_hi.png');
 }
 li.folder .foldertotal {
 	position: absolute;
@@ -2490,7 +2490,7 @@ li.folder .child-folders {
 }
 li.folder .child-folder {
 	display: inline-block;
-	background-image: url('../images/folder.png');
+	background-image: url('/static/images/folder.png');
 	background-size: 100% 100%;
 	width: 24px;
 	height: 24px;
@@ -2501,7 +2501,7 @@ li.folder .child-folder {
 	transition: .2s;
 }
 li.folder .child-folder:hover {
-	background-image: url('../images/folder_hi.png');
+	background-image: url('/static/images/folder_hi.png');
 }
 li.folder .child-folder.more-folders {
 	background-image: none;
@@ -2690,7 +2690,7 @@ div.aotm div.ownwords {
 	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.8);
 	-moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.8);
 	box-shadow: 0px 1px 3px rgba(0,0,0,0.8);
-	background-image: url('../images/quote-open.png'), url('../images/quote-close.png');
+	background-image: url('/static/images/quote-open.png'), url('/static/images/quote-close.png');
 	background-position: top left, bottom right;
 	background-repeat: no-repeat;
 }
@@ -2724,7 +2724,7 @@ div#loading {
 	display: none;
 	width: 32px;
 	height: 32px;
-	background: url('../images/loading.gif');
+	background: url('/static/images/loading.gif');
 }
 
 
@@ -3092,7 +3092,7 @@ div.shouts {
 
 textarea.shout-text {
 	width: 240px;
-	background-image: url('../images/roar_icon.png');
+	background-image: url('/static/images/roar_icon.png');
 	background-repeat: no-repeat;
 	background-size: auto 100%;
 }
