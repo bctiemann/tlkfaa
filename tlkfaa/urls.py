@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -190,14 +191,12 @@ urlpatterns = [
     url(r'^ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
 
     path('wiki/notifications/', include('django_nyt.urls')),
-    path('wiki/', include('wiki.urls'))
+    path('wiki/', include('wiki.urls')),
+
+    path('__debug__/', include(debug_toolbar.urls)),
 ]
 
 if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # handler500 = lambda request: fanart_views.ErrorHandler500.as_view()(request)
