@@ -1,7 +1,7 @@
 # base requirements
 
 Django==2.2.18
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 Unipath==1.1
 colorlog==2.6.0
 ConcurrentLogHandler==0.9.1
