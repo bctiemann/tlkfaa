@@ -10,12 +10,12 @@ const globals = {
     scrollBottomMargin: 20,
 };
 
-var selitems = new Array();
-var ArtistList = new Array();
+var selitems = [];
+var ArtistList = [];
 var artistlistopen;
-var ArtworkList = new Array();
+var ArtworkList = [];
 var artworklistopen;
-var CharactersList = new Array();
+var CharactersList = [];
 var characterslistopen;
 var banneropen = false;
 var sketcherboxIntvMs = 10000;
@@ -83,7 +83,7 @@ function QueryStringToJSON() {
 
 function validateForm(selformid,successfnc) {
   var valid = true;
-  var valmsgs = new Array();
+  var valmsgs = [];
   $('#'+selformid).find("input,textarea").each(function(i) {
     var validate = $(this).attr('validate');
     if (typeof validate !== "undefined") {
@@ -374,7 +374,7 @@ function replyShout(shoutId) {
                         $('#dialog_shout_reply').dialog('close');
                         var shoutUrl = `/shouts/${data.shout_id}/detail/`;
                         $(`#shout_${data.shout_id}`).load(shoutUrl);
-                    };
+                    }
                 });
             },
             Cancel: function() {
@@ -1162,7 +1162,7 @@ function deletePicture(pictureid) {
           $.post(url, function(data) {
               if (data.success) {
                   window.location.reload();
-              };
+              }
           });
         },
         Cancel: function() {
@@ -1194,7 +1194,7 @@ function deletePending(pendingid) {
           $.post(url, function(data) {
               if (data.success) {
                   window.location.reload();
-              };
+              }
           });
         },
         Cancel: function() {
@@ -3039,7 +3039,7 @@ function refreshPMBox(pmbox,page,viewmode,showpages,showstatus,w) {
 }
 
 function turnPage(page,queryStr) {
-  var qsParam = new Array();
+  var qsParam = [];
   var params = queryStr.split('&');
   for (var i=0; i<params.length; i++) {
     var pos = params[i].indexOf('=');

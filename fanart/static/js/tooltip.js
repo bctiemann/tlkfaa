@@ -18,6 +18,7 @@ window.viewport =
 };
 
 var setupTooltipPreview = function() {
+    console.log('setting up tooltip');
   var hideDelay = 500;  
   var currentID;
   var hideTimer = null;
@@ -53,6 +54,7 @@ var setupTooltipPreview = function() {
 
   $('body').append(container);
 
+  $('.previewPopupTrigger').off('mouseover');
   $('.previewPopupTrigger').on('mouseover', function(e)
   {
 
