@@ -1,4 +1,4 @@
-import debug_toolbar
+# import debug_toolbar
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -193,7 +193,7 @@ urlpatterns = [
     path('wiki/notifications/', include('django_nyt.urls')),
     path('wiki/', include('wiki.urls')),
 
-    path('__debug__/', include(debug_toolbar.urls)),
+    # path('__debug__/', include(debug_toolbar.urls)),
 ]
 
 if settings.DEBUG:
