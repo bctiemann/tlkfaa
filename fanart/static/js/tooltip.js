@@ -18,8 +18,7 @@ window.viewport =
 };
 
 var setupTooltipPreview = function() {
-    console.log('setting up tooltip');
-  var hideDelay = 500;  
+  var hideDelay = 500;
   var currentID;
   var hideTimer = null;
 
