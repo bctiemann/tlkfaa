@@ -145,6 +145,7 @@ var setupTooltipPreview = function() {
 
   });
 
+  $('.previewPopupTrigger').off('mouseout');
   $('.previewPopupTrigger').on('mouseout', function()
   {
       if (hideTimer)
