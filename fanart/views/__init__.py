@@ -907,6 +907,7 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         response = super(RegisterView, self).form_invalid(form)
+        logger.info(f'Registration failed: {form.data}')
         if self.request.is_ajax():
             ajax_response = {
                 'success': False,
@@ -965,6 +966,7 @@ class RegisterView(FormView):
             is_artist=form.cleaned_data['is_artist']
         )
         login(self.request, user)
+        logger.info(f'New user {user} created')
 
         # Add a historical artist name entry
         models.ArtistName.objects.create(artist=user, name=user.username)
