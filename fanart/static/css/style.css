@@ -1778,9 +1778,6 @@ td.picturedetails div.charactername {
 td.picturedetails div.charactercreated {
 	float: right;
 }
-.picturedetails .tags {
-	column-count: inherit !important;
-}
 /*
 div.editpicture textarea {
 	margin-top: 10px;
@@ -2809,7 +2806,7 @@ ul.characters .characterowner {
 	white-space: nowrap;
 }
 
-#artwork div.tags {
+#artwork div.popular-tags {
 	margin: 20px;
 	column-count: 6;
 }
