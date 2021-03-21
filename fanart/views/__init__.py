@@ -341,9 +341,9 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 context['term'] = term
                 if list_type == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
-                    logger.info('Artwork title search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term.encode('utf8')))
+                    logger.info('Artwork title search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term))
                 elif list_type == 'tag':
-                    logger.info('Artwork tag search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term.encode('utf8')))
+                    logger.info('Artwork tag search by {0} {1}: {2}'.format(self.request.user, self.request.META['REMOTE_ADDR'], term))
                     tag = models.Tag.objects.filter(tag=term).first()
                     if tag:
                         artwork = tag.picture_set.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0).order_by('-num_faves')
