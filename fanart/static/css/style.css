@@ -1779,7 +1779,7 @@ td.picturedetails div.charactercreated {
 	float: right;
 }
 .picturedetails .tags {
-	column-count: inherit;
+	column-count: inherit !important;
 }
 /*
 div.editpicture textarea {
