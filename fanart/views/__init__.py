@@ -907,7 +907,7 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         response = super(RegisterView, self).form_invalid(form)
-        logger.info(f'Registration failed: {form.data}')
+        logger.info(f'Registration failed: {form.data} {form.errors.as_json()}')
         if self.request.is_ajax():
             ajax_response = {
                 'success': False,
