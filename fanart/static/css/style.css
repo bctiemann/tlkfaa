@@ -1778,6 +1778,9 @@ td.picturedetails div.charactername {
 td.picturedetails div.charactercreated {
 	float: right;
 }
+.picturedetails .tags {
+	column-count: inherit;
+}
 /*
 div.editpicture textarea {
 	margin-top: 10px;
