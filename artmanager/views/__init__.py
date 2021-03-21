@@ -417,7 +417,7 @@ class ArtworkView(ArtManagerPaneView):
 
         folder_id = self.request.GET.get('folderid', None)
         if folder_id == 'cc':
-            pictures = self.request.user.coloringpicture_set.all()
+            pictures = self.request.user.coloringpicture_set.all().order_by('-date_posted')
             context['coloring_cave'] = True
 
         else:
