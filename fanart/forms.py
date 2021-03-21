@@ -67,7 +67,7 @@ class LoginForm(AuthenticationForm):
         raw_password = self.cleaned_data.get('password')
 
         if username is not None and raw_password:
-            logger.info('Login: {0}'.format(username.encode('utf8')))
+            logger.info('Login: {0}'.format(username))
             m.update(raw_password.encode('utf8'))
             password = m.hexdigest()
             self.user_cache = authenticate(self.request, username=username, password=password)
@@ -325,7 +325,7 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
             if extra_email_context is not None:
                 context.update(extra_email_context)
             logger.info(user.email)
-            logger.info('Sending password recovery email to {0} - {1}'.format(user.username.encode('utf8'), user.email))
+            logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
             tasks.send_email.delay(
                 recipients=[user.email],
                 subject='TLKFAA: Password Recovery',
@@ -334,6 +334,7 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
                 html_template='email/password_reset_email.html',
                 bcc=[settings.DEBUG_EMAIL]
             )
+
 
 class HashedSetPasswordForm(SetPasswordForm):
 
