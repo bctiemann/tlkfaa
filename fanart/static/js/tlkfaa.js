@@ -72,13 +72,42 @@ $.ajaxSetup({
 /* Support functions */
 
 function QueryStringToJSON() {
-    var pairs = location.search.slice(1).split('&');
-    var result = {};
+    const pairs = location.search.slice(1).split('&');
+    const result = {};
     pairs.forEach(function(pair) {
         pair = pair.split('=');
         result[pair[0]] = decodeURIComponent(pair[1] || '');
     });
     return JSON.parse(JSON.stringify(result));
+}
+
+/*
+function queryStr(ji) {
+  hu = window.location.search.substring(1);
+  gy = hu.split("&");
+  for (i=0;i<gy.length;i++) {
+    ft = gy[i].split("=");
+    if (ft[0] === ji) {
+      return ft[1];
+    }
+  }
+}
+*/
+
+function switchParam(select, param) {
+    const params = QueryStringToJSON();
+    params[param] = select.options[select.selectedIndex].value;
+    const urlparts = window.location.href.split('?');
+    const url = urlparts[0] + '?' + $.param(params);
+    window.location.href = url;
+}
+
+function compare(a,b) {
+    if (a.name > b.name)
+        return -1;
+    if (a.name < b.name)
+        return 1;
+    return 0;
 }
 
 function validateForm(selformid,successfnc) {
@@ -604,17 +633,6 @@ function toggleGuidelines() {
   }
 }
 
-function queryStr(ji) {
-  hu = window.location.search.substring(1);
-  gy = hu.split("&");
-  for (i=0;i<gy.length;i++) {
-    ft = gy[i].split("=");
-    if (ft[0] == ji) {
-      return ft[1];
-    }
-  }
-}
-
 function applyFolder(selform,fnc) {
   var c = false;
   if (fnc == 'delete') {
@@ -722,22 +740,6 @@ function switchFolder(sel) {
   window.location.href = url;
 }
 */
-
-function compare(a,b) {
-    if (a.name > b.name)
-        return -1;
-    if (a.name < b.name)
-        return 1;
-    return 0;
-}
-
-function switchParam(sel, param) {
-    var params = QueryStringToJSON();
-    params[param] = sel.options[sel.selectedIndex].value;
-    var urlparts = window.location.href.split("?");
-    var url = urlparts[0]+"?" + $.param(params);
-    window.location.href = url;
-}
 
 //function setupMove(pictureid,folderid,page) {
 function setupMove(pictureid) {
