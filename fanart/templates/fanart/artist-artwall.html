@@ -8,10 +8,12 @@
 
     {{ pages_link.pages_nav|safe }}
 
-    {% for picture in pictures reversed %}
+    {% for picture in pictures.object_list reversed %}
 
         {% with forloop.revcounter as pic_number %}
+        {% with picture.picture as picture %}
             {% include "includes/picture.html" %}
+        {% endwith %}
         {% endwith %}
 
     {% endfor %}

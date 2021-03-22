@@ -1501,12 +1501,10 @@ class ArtWallView(ArtistView):
         reversed_page = context['pictures_paginator'].num_pages - page + 1
 
         try:
-            context['gift_pictures'] = context['pictures_paginator'].page(reversed_page)
+            context['pictures'] = context['pictures_paginator'].page(reversed_page)
         except EmptyPage:
-            context['gift_pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
-
-        context['page_number'] = context['pictures_paginator'].num_pages - context['gift_pictures'].number + 1
-        context['pictures'] = [gp.picture for gp in context['gift_pictures'].object_list]
+            context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
+        context['page_number'] = context['pictures_paginator'].num_pages - context['pictures'].number + 1
 
         context['pages_link'] = utils.PagesLink(gift_pictures.count(), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
