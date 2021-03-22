@@ -1491,9 +1491,9 @@ class ArtWallView(ArtistView):
         artist = get_object_or_404(models.User, is_artist=True, dir_name=kwargs['dir_name'])
         context['artist'] = artist
 
-        pictures = [gp.picture for gp in artist.gifts_received.order_by('picture__date_uploaded').filter(is_active=True, picture__is_public=True, picture__date_deleted__isnull=True)]
+        gift_pictures = artist.gifts_received.order_by('picture__date_uploaded').filter(is_active=True, picture__is_public=True, picture__date_deleted__isnull=True)
 
-        context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
+        context['pictures_paginator'] = Paginator(gift_pictures, settings.PICTURES_PER_PAGE)
         try:
             page = int(self.request.GET.get('page', 1))
         except ValueError:
@@ -1501,12 +1501,14 @@ class ArtWallView(ArtistView):
         reversed_page = context['pictures_paginator'].num_pages - page + 1
 
         try:
-            context['pictures'] = context['pictures_paginator'].page(reversed_page)
+            context['gift_pictures'] = context['pictures_paginator'].page(reversed_page)
         except EmptyPage:
-            context['pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
-        context['page_number'] = context['pictures_paginator'].num_pages - context['pictures'].number + 1
+            context['gift_pictures'] = context['pictures_paginator'].page(context['pictures_paginator'].num_pages)
 
-        context['pages_link'] = utils.PagesLink(len(pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
+        context['page_number'] = context['pictures_paginator'].num_pages - context['gift_pictures'].number + 1
+        context['pictures'] = [gp.picture for gp in context['gift_pictures']]
+
+        context['pages_link'] = utils.PagesLink(gift_pictures.count(), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 
