@@ -439,7 +439,7 @@ function refreshNameSort(name,sortname,sel) {
 
 function checkAvail(name) {
     if (name) {
-        const url = '/check-name/' + name + '/';
+        const url = `/check-name/${name}/`;
         $.getJSON(url, function(data) {
             if (data.is_available) {
                 $('#newnameavailable').html('Available');
