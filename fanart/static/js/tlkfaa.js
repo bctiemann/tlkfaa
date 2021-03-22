@@ -438,21 +438,18 @@ function refreshNameSort(name,sortname,sel) {
 }
 
 function checkAvail(name) {
-//  var newdirname = name;
-//  newdirname = newdirname.replace(/&#[0-9]+;/g,"x");
-//  newdirname = newdirname.replace(/[\\']/g,"");
-//  newdirname = newdirname.replace(/[^a-zA-Z0-9]/g,"_");
-//  newdirname = newdirname.toLowerCase();
-//  url="ajax_checkname.jsp?dirname="+newdirname+"&name="+name;
-  var url = '/check-name/' + name + '/';
-  $.getJSON(url, function(data) {
-console.log(data);
-    if (data.is_available) {
-      $('#newnameavailable').html('Available');
+    if (name) {
+        const url = '/check-name/' + name + '/';
+        $.getJSON(url, function(data) {
+            if (data.is_available) {
+                $('#newnameavailable').html('Available');
+            } else {
+                $('#newnameavailable').html('Taken');
+            }
+        });
     } else {
-      $('#newnameavailable').html('Taken');
+        $('#newnameavailable').html('');
     }
-  });
 }
 
 function addIM(imclient,imid) {
