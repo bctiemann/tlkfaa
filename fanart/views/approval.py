@@ -4,6 +4,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.template import loader
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
@@ -74,6 +75,11 @@ class ApprovalTemplateView(UserPassesTestMixin, AccessMixin, TemplateView):
             return False
         return self.request.user.is_approver
 
+    def handle_no_permission(self):
+        template = loader.get_template('403.html')
+        return HttpResponseForbidden(
+            template.render(request=self.request)
+        )
 
 class ApprovalHomeView(ApprovalTemplateView):
     template_name = 'approval/base.html'
