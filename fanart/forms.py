@@ -67,17 +67,18 @@ class LoginForm(AuthenticationForm):
         raw_password = self.cleaned_data.get('password')
 
         if username is not None and raw_password:
-            logger.info('Login: {0}'.format(username))
             m.update(raw_password.encode('utf8'))
             password = m.hexdigest()
             self.user_cache = authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
+                logger.info('Failed login: {0}'.format(username))
                 raise forms.ValidationError(
                     self.error_messages['invalid_login'],
                     code='invalid_login',
                     params={'username': self.username_field.verbose_name},
                 )
             else:
+                logger.info('Login: {0}'.format(username))
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data

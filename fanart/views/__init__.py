@@ -1247,7 +1247,10 @@ class ToggleFaveView(APIView):
             picture = get_object_or_404(models.Picture, pk=object_id)
             is_fave = True
             fave, is_created = models.Favorite.objects.get_or_create(user=request.user, picture=picture)
-            if not is_created:
+            if is_created:
+                logger.info(f'{request.user} favorited {picture}')
+            else:
+                logger.info(f'{request.user} unfavorited {picture}')
                 fave.delete()
                 is_fave = False
             response['picture_id'] = picture.id

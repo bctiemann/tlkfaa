@@ -579,7 +579,7 @@ ORDER BY fanart_user.sort_name
         self.save()
 
     def save(self, update_thumbs=False, *args, **kwargs):
-        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
+        logger.debug('Saving {0}, {1}'.format(self, update_thumbs))
 
         if not os.path.exists(self.absolute_dir_name):
             self.create_dir()
