@@ -44,6 +44,6 @@ class Command(BaseCommand):
                             drawpile=drawpile,
                             name=user['name'],
                             ip=user['ip'],
-                            is_op=user['op'],
-                            is_mod=user['mod'],
+                            # is_op=user['op'],
+                            # is_mod=user['mod'],
                         )
