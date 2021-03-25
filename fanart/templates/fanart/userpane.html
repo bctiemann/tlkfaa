@@ -115,7 +115,10 @@ Drawpile</h1>
 {% if drawpile %}
     <a href="{{ drawpile.download_url }}">Get Drawpile</a>
     {% if drawpile.is_running %}
-        <p style="margin-bottom: 0px;">Drawpile status: <b>Online</b> ({{ drawpile.active_users.count }} user{{ drawpile.active_users.count|pluralize }})</p>
+        <p style="margin-bottom: 0px;">Drawpile status: <b>Online</b>
+            (<span class="sketcher-users-count">{{ drawpile.active_users.count }}</span>
+            <span class="sketcher-users-count-label">user{{ drawpile.active_users.count|pluralize }}</span>)
+        </p>
         <p>Join: <b><code>fanart.lionking.org:28000</code></b></p>
     {% else %}
         <p>Drawpile status: <b>Offline</b></p>

@@ -3,7 +3,8 @@
 <h3>Current Drawpile users:</h3>
 
 {% for user in sketcher_slots %}
-<div class="sketcheruser"><span class="usernumber">{{ forloop.counter }}</span>
-{{ user.name }}
-</div>
+    <div class="sketcheruser">
+        <span class="usernumber">{{ forloop.counter }}</span>
+        {% if user %}<span>{{ user.name }}</span>{% endif %}
+    </div>
 {% endfor %}

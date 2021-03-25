@@ -3059,9 +3059,17 @@ function refreshSketcherLogin() {
 }
 
 function refreshSketcherUserBox() {
-//  var url = "/ajax_sketcherbox.jsp";
-  var url = '/userbox/sketcher_box/';
-  $('#sketcher_box').load(url);
+    const url = '/userbox/sketcher_box/';
+    $('#sketcher_box').load(url, function(html) {
+        const $html = $(html);
+        const sketcherUsers = $html.contents('.sketcheruser .sketcher-user-name').length;
+        $('.sketcher-users-count').html(sketcherUsers);
+        if (sketcherUsers === 1) {
+            $('.sketcher-users-count-label').html('user');
+        } else {
+            $('.sketcher-users-count-label').html('users');
+        }
+    });
 }
 
 function refreshResetStatus() {  
