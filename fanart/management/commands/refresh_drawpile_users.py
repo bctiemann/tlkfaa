@@ -39,6 +39,7 @@ class Command(BaseCommand):
                     response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
                     user_data = json.load(response)
                     for user in user_data['users']:
+                        logger.info(f"{user['name']} is in Drawpile")
                         ActiveUser.objects.create(
                             drawpile=drawpile,
                             name=user['name'],
