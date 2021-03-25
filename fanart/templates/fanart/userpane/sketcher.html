@@ -5,6 +5,8 @@
 {% for user in sketcher_slots %}
     <div class="sketcheruser">
         <span class="usernumber">{{ forloop.counter }}</span>
-        {% if user %}<span>{{ user.name }}</span>{% endif %}
+        {% if user %}
+            <span class="sketcher-user-name">{{ user.name }}</span>
+        {% endif %}
     </div>
 {% endfor %}
