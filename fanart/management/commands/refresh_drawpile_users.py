@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 if session['title'] == 'Sketcher Reborn':
                     response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
                     user_data = json.load(response)
-                    online_users = filter(lambda user: user['online'], user_data['users'])
+                    online_users = list(filter(lambda user: user['online'], user_data['users']))
                     online_user_names = ', '.join([user['name'] for user in online_users])
                     if online_users:
                         logger.info(f'Drawpile: {online_user_names}')
