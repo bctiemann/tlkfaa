@@ -1122,11 +1122,10 @@ class DeleteCommentView(LoginRequiredMixin, UpdateView):
     template_name = 'includes/comments.html'
 
     def get_object(self):
-        logger.info('get_object')
         return get_object_or_404(models.ThreadedComment, Q(user=self.request.user) | Q(picture__artist=self.request.user) | Q(bulletin__user=self.request.user), pk=self.kwargs['comment_id'])
 
     def form_valid(self, form):
-        logger.info('delete')
+        logger.info(f'{self.request.user} deleted comment {self.object}')
         self.object.is_deleted = True
         return super(DeleteCommentView, self).form_valid(form)
 #        return self.object.get_absolute_url()
