@@ -1,16 +1,14 @@
+import json
+import logging
+from urllib import request, error
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import six, timezone
-
-import os
-import unicodedata, re
-import urllib.request, urllib.error, urllib.parse
-import json
-
-import logging
-logger = logging.getLogger(__name__)
+from django.utils import timezone
 
 from sketcher.models import ActiveUser, Drawpile
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -21,10 +19,10 @@ class Command(BaseCommand):
 
             drawpile.last_checked_at = timezone.now()
             try:
-                response = urllib.request.urlopen('{0}/sessions/'.format(drawpile.admin_url))
+                response = request.urlopen(f'{drawpile.admin_url}/sessions/')
                 drawpile.is_running = True
                 drawpile.save()
-            except urllib.error.URLError as e:
+            except error.URLError as e:
                 drawpile.is_running = False
                 drawpile.status_message = e
                 drawpile.save()
@@ -35,8 +33,8 @@ class Command(BaseCommand):
             ActiveUser.objects.all().delete()
 
             for session in session_data:
-                if session['title'] == 'Sketcher Reborn':
-                    response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
+                if session['title'] == settings.DRAWPILE_CHANNEL_NAME:
+                    response = request.urlopen(f"{drawpile.admin_url}/sessions/{session['id']}")
                     user_data = json.load(response)
                     online_users = list(filter(lambda user: user['online'], user_data['users']))
                     online_user_names = ', '.join([user['name'] for user in online_users])

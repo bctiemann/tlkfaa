@@ -382,6 +382,8 @@ MOVIE_ICON_IMG_URL = '{0}{1}'.format(STATIC_URL, MOVIE_ICON_IMG)
 
 BULLETINS_MODERATED = False
 
+DRAWPILE_CHANNEL_NAME = 'Sketcher Reborn'
+
 
 # Local overrides from env.yaml
 with open(os.path.join(BASE_DIR, 'env.yaml')) as f:
