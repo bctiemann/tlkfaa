@@ -38,9 +38,11 @@ class Command(BaseCommand):
                 if session['title'] == 'Sketcher Reborn':
                     response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
                     user_data = json.load(response)
+                    online_user_names = ', '.join([user['name'] for user in user_data['users']])
+                    if online_user_names:
+                        logger.info(f'Drawpile: {online_user_names}')
                     for user in user_data['users']:
                         if user['online']:
-                            logger.info(f"{user['name']} is in Drawpile")
                             ActiveUser.objects.create(
                                 drawpile=drawpile,
                                 name=user['name'],
