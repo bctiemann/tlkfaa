@@ -38,15 +38,15 @@ class Command(BaseCommand):
                 if session['title'] == 'Sketcher Reborn':
                     response = urllib.request.urlopen('{0}/sessions/{1}'.format(drawpile.admin_url, session['id']))
                     user_data = json.load(response)
-                    online_user_names = ', '.join([user['name'] for user in user_data['users']])
-                    if online_user_names:
+                    online_users = filter(lambda user: user['online'], user_data['users'])
+                    online_user_names = ', '.join([user['name'] for user in online_users])
+                    if online_users:
                         logger.info(f'Drawpile: {online_user_names}')
-                    for user in user_data['users']:
-                        if user['online']:
-                            ActiveUser.objects.create(
-                                drawpile=drawpile,
-                                name=user['name'],
-                                ip=user['ip'],
-                                is_op=user.get('op', False),
-                                is_mod=user.get('mod', False),
-                            )
+                    for user in online_users:
+                        ActiveUser.objects.create(
+                            drawpile=drawpile,
+                            name=user['name'],
+                            ip=user['ip'],
+                            is_op=user.get('op', False),
+                            is_mod=user.get('mod', False),
+                        )
