@@ -131,7 +131,6 @@ class PMCreateView(LoginRequiredMixin, CreateView):
         pm.save()
 
         recipient = form.cleaned_data['recipient']
-        print(recipient)
         if recipient.email_pms:
             email_context = {'pm': pm, 'sender': self.request.user, 'base_url': settings.SERVER_BASE_URL}
             subject = 'TLKFAA Private Message from {0}'.format(self.request.user.username)

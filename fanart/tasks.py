@@ -186,8 +186,8 @@ def process_images(model_class_path, model, object_id, thumb_size='small'):
     models = importlib.import_module(model_class_path)
 #    model_class = getattr(importlib.import_module(model_class_path), model)
 #    from model_app import models
-    print(models)
-    print(model)
+#     print(models)
+#     print(model)
     model_class = getattr(models, model)
 
     try:

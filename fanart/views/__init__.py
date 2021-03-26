@@ -443,7 +443,6 @@ class CharactersView(UserPaneMixin, TemplateView):
                         characters = characters.filter(name=term)
                     else:
                         characters = characters.filter(name__icontains=term)
-                print(characters)
                 if start > 0:
                     context['show_search_box'] = False
                 context['term'] = term
@@ -822,7 +821,6 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
             raise Http404
 
         winning_entry = None
-        print(latest_contest.winning_entries)
         for entry in latest_contest.winning_entries:
             if entry.date_notified:
                 winning_entry = entry
