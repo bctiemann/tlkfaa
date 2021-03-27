@@ -97,7 +97,7 @@ class MarkCommentsReadView(APIView):
                 comment = models.ThreadedComment.objects.get(pk=comment_id, picture__artist=request.user)
                 comment.is_received = True
                 comment.save()
-                logger.info(comment.id)
+                logger.info(f'{request.user} marked comment {comment} read')
             except models.ThreadedComment.DoesNotExist:
                 pass
         response['success'] = True
