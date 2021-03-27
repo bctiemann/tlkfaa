@@ -28,12 +28,13 @@ class CommentsView(ArtManagerPaneView):
         context = super(CommentsView, self).get_context_data(**kwargs)
 
         comment_type = kwargs.get('comment_type')
-        if comment_type == None:
+        if comment_type is None:
             if self.request.user.is_artist:
                 comment_type = 'received'
             else:
                 comment_type = 'sent'
 
+        comments = []
         if comment_type == 'received':
             comments = models.ThreadedComment.objects.filter(picture__artist=self.request.user).order_by('-date_posted')
             show_all = False
@@ -57,7 +58,14 @@ class CommentsView(ArtManagerPaneView):
 
         context['comments'] = comments_page
         context['comment_type'] = comment_type
-        context['pages_link'] = utils.PagesLink(len(comments), settings.COMMENTS_PER_PAGE_ARTMANAGER, comments_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
+        context['pages_link'] = utils.PagesLink(
+            len(comments),
+            settings.COMMENTS_PER_PAGE_ARTMANAGER,
+            comments_page.number,
+            is_descending=False,
+            base_url=self.request.path,
+            query_dict=self.request.GET,
+        )
 
         return context
 
@@ -84,7 +92,11 @@ class CommentDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/comment.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.ThreadedComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+        return get_object_or_404(
+            models.ThreadedComment, (
+                Q(picture__artist=self.request.user) | Q(user=self.request.user)
+            ), pk=self.kwargs['comment_id']
+        )
 
     def get_context_data(self, **kwargs):
         context = super(CommentDetailView, self).get_context_data(**kwargs)
@@ -97,8 +109,12 @@ class CommentDeleteView(LoginRequiredMixin, UpdateView):
     form_class = forms.DeleteCommentForm
     template_name = 'artmanager/comment.html'
 
-    def get_object(self):
-        return get_object_or_404(models.ThreadedComment, (Q(picture__artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['comment_id'])
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            models.ThreadedComment, (
+                Q(picture__artist=self.request.user) | Q(user=self.request.user)
+            ), pk=self.kwargs['comment_id']
+        )
 
     def form_valid(self, form):
         self.object.is_deleted = True
@@ -110,5 +126,3 @@ class CommentDeleteView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('artmanager:comment-detail', kwargs={'comment_id': self.object.id})
-
-
