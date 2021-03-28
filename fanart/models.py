@@ -1139,7 +1139,7 @@ class Favorite(models.Model):
         ordering = ['-date_added']
 
 
-class PendingManager(UserManager):
+class PendingManager(models.Manager):
 
     def requiring_approval(self):
         return self.get_queryset().filter(is_approved=False).exclude(
