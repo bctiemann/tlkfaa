@@ -897,7 +897,7 @@ class Folder(models.Model):
         return self.picture_set.order_by('-date_uploaded').first()
 
     def refresh_num_pictures(self):
-        logger.info('Refreshing {0}'.format(self))
+        logger.info('Refreshing folder: {0}'.format(self))
         self.num_pictures = self.picture_set.count()
         self.save()
 
@@ -1361,11 +1361,9 @@ class Pending(models.Model):
         return reverse('artmanager:pending-detail', kwargs={'pending_id': self.id})
 
     def save(self, update_thumbs=False, *args, **kwargs):
-        logger.info('Saving {0}, {1}'.format(self, update_thumbs))
         if self.picture:
             self.file_size = self.picture.size
         super(Pending, self).save(*args, **kwargs)
-        logger.info(self.picture)
         if update_thumbs:
             process_images.apply_async(('fanart.models', 'Pending', self.id, 'small'), countdown=20)
             process_images.apply_async(('fanart.models', 'Pending', self.id, 'large'), countdown=20)
