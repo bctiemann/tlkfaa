@@ -588,7 +588,7 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
     form_class = forms.GiftPictureForm
 
     def get_object(self):
-        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user, is_active=False, date_declined__isnull=True)
+        return get_object_or_404(models.GiftPicture, hash=self.kwargs['hash'], recipient=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(ApproveRequestView, self).get_context_data(**kwargs)
