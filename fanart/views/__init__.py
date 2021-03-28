@@ -160,6 +160,16 @@ class UserPaneMixin(RatelimitMixin):
     def get_drawpile(self):
         return Drawpile.objects.first()
 
+    def get_sketcher_slots(self):
+        slots = []
+        sketcher_users = self.get_sketcher_users()
+        for slot in range(12):
+            try:
+                slots.append(sketcher_users[slot])
+            except IndexError:
+                slots.append(None)
+        return slots
+
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
 
@@ -173,13 +183,7 @@ class UserPaneMixin(RatelimitMixin):
         context['contests_data'] = self.get_contests_data()
 
         context['drawpile'] = self.get_drawpile()
-        sketcher_users = self.get_sketcher_users()
-        context['sketcher_slots'] = []
-        for slot in range(12):
-            try:
-                context['sketcher_slots'].append(sketcher_users[slot])
-            except IndexError:
-                context['sketcher_slots'].append(None)
+        context['sketcher_slots'] = self.get_sketcher_slots()
 
         return context
 
@@ -677,6 +681,12 @@ class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
 
 class SketcherBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/sketcher.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['drawpile'] = self.get_drawpile()
+        context['sketcher_slots'] = self.get_sketcher_slots()
+        return context
 
 
 class CommunityArtBoxView(UserPaneMixin, TemplateView):

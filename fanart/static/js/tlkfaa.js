@@ -272,7 +272,7 @@ function toggleUserBox(boxName) {
             $(`#${boxName}_toggle`).attr('class', 'toggle toggleclosed');
         });
     } else {
-        const boxContentUrl = `/userbox/${boxName}`;
+        const boxContentUrl = `/userbox/${boxName}/`;
         $(`#${boxName}`).load(boxContentUrl, function() {
             $(`#${boxName}_toggle`).attr('class', 'toggle toggleopen');
             Shadowbox.setup(`#${boxName} a.thumb`);
