@@ -15,7 +15,6 @@ from fanart import models, tasks
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        requiring_approval = [p.id for p in models.Pending.objects.requiring_approval()]
         for pending in models.Pending.objects.all():
             print(pending.id)
 
@@ -28,7 +27,7 @@ class Command(BaseCommand):
                 print('{0} file is missing; setting to failed processing'.format(pending.id))
                 continue
 
-            if pending.id in requiring_approval:
+            if pending in models.Pending.objects.requiring_approval():
                 print('{0} requires approval'.format(pending.id))
                 continue
 
