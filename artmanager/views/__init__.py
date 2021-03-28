@@ -1,8 +1,7 @@
 
-
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404
-from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -238,20 +237,19 @@ class UploadFileView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         response = {'success': False}
 
-        logger.info(self.request.POST)
-
-        if not 'picture' in self.request.FILES:
-            raise Http404
+        if 'picture' not in self.request.FILES:
+            response['message'] = 'No picture found in posted data.'
+            return JsonResponse(response, status=400)
 
         if not self.request.FILES['picture'].content_type in list(settings.MOVIE_FILE_TYPES.keys()) + list(settings.IMAGE_FILE_TYPES.keys()):
             response['message'] = 'Invalid file type. Valid types are: {0}'.format(', '.join(list(settings.IMAGE_FILE_TYPES.values()) + list(settings.MOVIE_FILE_TYPES.values())))
-            return JsonResponse(response)
+            return JsonResponse(response, status=400)
 
         if self.request.FILES['picture'].size > settings.MAX_UPLOAD_SIZE_HARD:
             formatted_size = filesizeformat(settings.MAX_UPLOAD_SIZE_HARD)
             logger.info(formatted_size)
             response['message'] = 'File is too large. Please keep the file size under {0}.'.format(formatted_size)
-            return JsonResponse(response)
+            return JsonResponse(response, status=400)
 
         try:
             folder = models.Folder.objects.get(pk=self.request.POST.get('folder', None), user=self.request.user)
@@ -279,19 +277,18 @@ class UploadFileView(LoginRequiredMixin, CreateView):
 
         for character_id in (self.request.POST.get('characters')).split(','):
             if character_id:
-                logger.info(character_id)
                 try:
                     character = models.Character.objects.get(pk=character_id)
                 except models.Character.DoesNotExist:
                     continue
                 logger.info(character)
                 pc = models.PictureCharacter.objects.create(pending=pending, character=character)
-                logger.info(pc)
 
         super(UploadFileView, self).form_valid(form)
 
         response['success'] = True
         response['pending_id'] = pending.id
+        logger.info(f'{self.request.user} uploaded {pending}')
 
         return JsonResponse(response)
 
@@ -352,6 +349,7 @@ class PendingFormView(LoginRequiredMixin, DetailView):
 
         return context
 
+
 class PendingUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Pending
     form_class = forms.PendingForm
@@ -361,7 +359,6 @@ class PendingUpdateView(LoginRequiredMixin, UpdateView):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
     def form_valid(self, form):
-        logger.info('{0} updated {1}'.format(self.request.user, self.object))
         logger.info(self.request.POST)
 
         self.object.folder = models.Folder.objects.filter(pk=self.request.POST.get('folder'), user=self.request.user).first()
@@ -379,7 +376,9 @@ class PendingUpdateView(LoginRequiredMixin, UpdateView):
                 logger.info(character)
                 pc = models.PictureCharacter.objects.create(pending=self.object, character=character)
 
+        logger.info('{0} updated {1}'.format(self.request.user, self.object))
         return response
+
 
 class PendingDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Pending
@@ -397,6 +396,7 @@ class PendingDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
 
         response['success'] = True
+        logger.info('{0} deleted {1}'.format(self.request.user, self.object))
 
         return JsonResponse(response)
 
