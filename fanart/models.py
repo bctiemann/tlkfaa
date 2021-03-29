@@ -1634,7 +1634,7 @@ class Showcase(models.Model):
 
     @property
     def pictures(self):
-        return Picture.objects.filter(id__in=Subquery(self.tag.picture_set.values_list('id', flat=True))).order_by('?')
+        return Picture.objects.filter(id__in=Subquery(self.tag.picture_set.values_list('id', flat=True)), artist__is_active=True).order_by('?')
 #        return Picture.objects.filter(keywords__search=self.keyword).order_by('?')
 
     def __str__(self):
