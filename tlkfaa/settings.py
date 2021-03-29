@@ -88,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tlkfaa.middleware.TimezoneMiddleware',
+    'tlkfaa.middleware.XForwardedForMiddleware',
 ]
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
