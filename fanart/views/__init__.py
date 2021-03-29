@@ -494,6 +494,7 @@ class ShowcasesView(UserPaneMixin, TemplateView):
             context['showcase'] = get_object_or_404(models.Showcase, pk=showcase_id)
 
             pictures = context['showcase'].pictures.order_by('date_uploaded')
+            pictures = pictures.filter(artist__is_active=True)
 
             context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
             try:
