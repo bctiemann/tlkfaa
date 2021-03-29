@@ -185,6 +185,8 @@ class UserPaneMixin(RatelimitMixin):
         context['drawpile'] = self.get_drawpile()
         context['sketcher_slots'] = self.get_sketcher_slots()
 
+        self.request.user.update_last_active()
+
         return context
 
 
