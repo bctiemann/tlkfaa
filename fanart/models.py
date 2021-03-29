@@ -197,6 +197,7 @@ class User(AbstractUser):
     )
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     last_host = models.CharField(max_length=128, null=True, blank=True)
+    last_active = models.DateTimeField(null=True)
 #    h_size = models.IntegerField(null=True, blank=True)
 #    v_size = models.IntegerField(null=True, blank=True)
 #    show_favorite_artists_box = models.BooleanField(default=True)
@@ -576,6 +577,10 @@ ORDER BY fanart_user.sort_name
         for picture in self.picture_set.all():
             num_favepics += picture.num_faves
         self.num_favepics = num_favepics
+        self.save()
+
+    def update_last_active(self):
+        self.last_active = timezone.now()
         self.save()
 
     def save(self, update_thumbs=False, *args, **kwargs):
