@@ -110,6 +110,11 @@ class OverwriteStorage(FileSystemStorage):
 
 class FanartUserManager(UserManager):
 
+    @property
+    def currently_online(self):
+        recent_activity_cutoff_time = timezone.now() - datetime.timedelta(seconds=settings.RECENT_ACTIVITY_CUTOFF_SECS)
+        return self.get_queryset().filter(last_active__gt=recent_activity_cutoff_time)
+
     def recently_active(self, request=None):
         artists = self.get_queryset().filter(is_artist=True, is_active=True, num_pictures__gt=0).order_by('-last_upload')
         if request and request.user.is_authenticated == False:
