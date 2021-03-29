@@ -202,7 +202,7 @@ class User(AbstractUser):
     )
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     last_host = models.CharField(max_length=128, null=True, blank=True)
-    last_active = models.DateTimeField(null=True)
+    last_active = models.DateTimeField(null=True, blank=True)
 #    h_size = models.IntegerField(null=True, blank=True)
 #    v_size = models.IntegerField(null=True, blank=True)
 #    show_favorite_artists_box = models.BooleanField(default=True)
