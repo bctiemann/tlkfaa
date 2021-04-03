@@ -1,9 +1,9 @@
 {% if show_search_input %}
 
-	<form name="searchform" onSubmit="listArtwork('search',10);return false;">
+	<form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
 	<input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
-	<button type="button" onClick="listArtwork('search',10)">Search Pictures</button>
-	<button type="button" onClick="listArtwork('tag',10)">Search Tags</button>
+	<button type="button" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
+	<button type="button" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
 	</form>
 
         <div class="popular-tags">
