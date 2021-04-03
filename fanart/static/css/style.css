@@ -3068,6 +3068,14 @@ video {
 	margin: 30px auto;
 }
 
+button.loading-spinner {
+	background-image: url('/static/images/spinner_transparent.gif');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 50% 0px;
+	color: rgba(0, 0, 0, 0);
+}
+
 .revision-log-recent {
 	font-weight: bold;
 }
