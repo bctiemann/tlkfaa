@@ -1410,7 +1410,7 @@ class CharacterView(UserPaneMixin, TemplateView):
             logger.info('Other characters: {0}'.format(character_list))
         context['canon_characters'] = models.Character.objects.filter(is_canon=True).order_by('name')
 
-        character_pictures = models.Picture.objects.all()
+        character_pictures = models.Picture.objects.filter(artist__is_active=True)
         for character_id in character_list:
             character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
         context['character_pictures'] = character_pictures.order_by('-picturecharacter__date_tagged')
