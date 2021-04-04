@@ -393,10 +393,10 @@ class PendingDeleteView(LoginRequiredMixin, DeleteView):
 
 #        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.object.directory), ignore_errors=True)
 
+        logger.info('{0} deleted {1}'.format(self.request.user, self.object))
         self.object.delete()
 
         response['success'] = True
-        logger.info('{0} deleted {1}'.format(self.request.user, self.object))
 
         return JsonResponse(response)
 
