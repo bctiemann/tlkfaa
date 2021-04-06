@@ -1,6 +1,4 @@
-{% load bbcode_tags %}
-{% load picture_tags %}
-
+{% load bbcode_tags picture_tags %}
 
 <div class="picture {% if view_unviewed_picture != False %}{% view_picture picture user %}{% endif %} {% if not picture.is_public %}privatepicture{% endif %}">
     {% if picture.date_deleted == None %}
@@ -30,7 +28,7 @@
                         {% endif %}
 
                         <div class="pictitle">
-                            {{ picture.parsed_title|bbcode|safe }}
+                            {{ picture.title|parse_urls|bbcode|safe }}
                         </div>
 
                         {% if contest and not contest.is_ended %}

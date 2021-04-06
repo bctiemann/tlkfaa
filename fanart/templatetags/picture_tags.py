@@ -1,3 +1,5 @@
+import re
+
 from django import template
 from django.template.defaultfilters import stringfilter
 
@@ -8,6 +10,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 register = template.Library()
+
+REGEX_YOUTUBE = r'((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?'
+REGEX_VIMEO = r'(http|https)?:\/\/(www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|)(\d+)(?:|\/\?)'
+REGEX_GIFV = r'\[img\]https://i.imgur.com/(\w+).gifv\[\/img\]'
+
+REPLACEMENT_URLS = (
+    (REGEX_YOUTUBE, '[youtube]\\5[/youtube]'),
+    (REGEX_VIMEO, '[vimeo]\\4[/vimeo]'),
+    (REGEX_GIFV, '[gifv]\\1[/gifv]')
+)
 
 
 class ViewPictureNode(template.Node):
@@ -104,6 +116,7 @@ def do_view_picture(parser, token):
         )
     return ViewPictureNode(picture, user)
 
+
 @register.tag(name='is_favorite_picture')
 def get_is_favorite_picture(parser, token):
     try:
@@ -113,6 +126,7 @@ def get_is_favorite_picture(parser, token):
             "%r tag requires two arguments, a picture and a user" % token.contents.split()[0]
         )
     return IsFavoritePictureNode(picture, user)
+
 
 @register.tag(name='is_favorite_artist')
 def get_is_favorite_artist(parser, token):
@@ -124,6 +138,7 @@ def get_is_favorite_artist(parser, token):
         )
     return IsFavoriteArtistNode(artist, user)
 
+
 @register.tag(name='is_visible')
 def get_is_visible(parser, token):
     try:
@@ -133,6 +148,7 @@ def get_is_visible(parser, token):
             "%r tag requires two arguments, an artist and a user" % token.contents.split()[0]
         )
     return IsVisibleNode(artist, user)
+
 
 @register.tag(name='applied_offer')
 def get_applied_offer(parser, token):
@@ -144,8 +160,18 @@ def get_applied_offer(parser, token):
         )
     return IsAppliedOfferNode(offer, user)
 
+
 @register.simple_tag()
 def pic_number(pic_number, page_number, per_page, *args, **kwargs):
     if not pic_number or not page_number or not per_page:
         return ''
     return pic_number + ((page_number - 1) * per_page)
+
+
+@register.filter
+@stringfilter
+def parse_urls(value):
+    for url in REPLACEMENT_URLS:
+        pattern, replacement = url
+        value = re.sub(pattern, replacement, value)
+    return value

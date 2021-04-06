@@ -1,8 +1,7 @@
 {% extends "fanart/base.html" %}
 
 {% load static %}
-{% load bbcode_tags %}
-{% load picture_tags %}
+{% load bbcode_tags picture_tags %}
 
 {% block page_title %} &mdash; Picture by {{ picture.artist.username }}{% endblock %}
 
@@ -183,7 +182,7 @@ img.featured-picture {
             </div>
 
             <div class="picturecaption">
-                {{ picture.parsed_title|bbcode|safe }}
+                {{ picture.title|parse_urls|bbcode|safe }}
             </div>
 
             <!-- {% view_picture picture user %} -->

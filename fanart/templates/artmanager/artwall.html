@@ -1,6 +1,6 @@
 {% extends "artmanager/base.html" %}
 {% load static %}
-{% load bbcode_tags %}
+{% load bbcode_tags picture_tags %}
 
 {% block page_title %} &mdash; ArtManager: ArtWall{% endblock %}
 
@@ -53,7 +53,7 @@
                             <div class="picartist"><a href="{% url "artist" dir_name=gift_picture.sender.dir_name %}">{{ gift_picture.sender.username }}</a></div>
 
                             <div class="pictitle">
-                                {{ gift_picture.picture.parsed_title|bbcode|safe }}
+                                {{ gift_picture.picture.title|parse_urls|bbcode|safe }}
                             </div>
 
                             {% if not gift_picture.is_active %}

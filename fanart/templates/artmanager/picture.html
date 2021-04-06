@@ -1,7 +1,7 @@
-{% load bbcode_tags %}
+{% load bbcode_tags picture_tags %}
 
 <div class="pictitle">
-    {{ picture.parsed_title|bbcode|safe }}
+    {{ picture.title|parse_urls|bbcode|safe }}
 </div>
 
 <div class="tagcharacters">
