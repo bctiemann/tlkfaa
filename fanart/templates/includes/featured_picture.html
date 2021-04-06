@@ -42,7 +42,7 @@ img.featured-picture {
 
     <div class="commentary">
         <div class="picturecaption">
-            {{ featured_picture.picture.title|bbcode|safe }}
+            {{ featured_picture.picture.parsed_title|bbcode|safe }}
         </div>
         <div class="float-right artist-info">
             {% if featured_picture.picture.artist.profile_pic_url %}

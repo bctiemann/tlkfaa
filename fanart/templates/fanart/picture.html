@@ -183,7 +183,7 @@ img.featured-picture {
             </div>
 
             <div class="picturecaption">
-                {{ picture.title|bbcode|safe }}
+                {{ picture.parsed_title|bbcode|safe }}
             </div>
 
             <!-- {% view_picture picture user %} -->

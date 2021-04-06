@@ -30,7 +30,7 @@
                         {% endif %}
 
                         <div class="pictitle">
-                            {{ picture.title|bbcode|safe }}
+                            {{ picture.parsed_title|bbcode|safe }}
                         </div>
 
                         {% if contest and not contest.is_ended %}

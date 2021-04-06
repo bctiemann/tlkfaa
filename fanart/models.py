@@ -33,6 +33,16 @@ CharField.register_lookup(Lower, "lower")
 
 THREE = 90
 
+REGEX_YOUTUBE = r'((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?'
+REGEX_VIMEO = r'(http|https)?:\/\/(www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|)(\d+)(?:|\/\?)'
+REGEX_GIFV = r'\[img\]https://i.imgur.com/(\w+).gifv\[\/img\]'
+
+REPLACEMENT_URLS = (
+    (REGEX_YOUTUBE, '[youtube]\\5[/youtube]'),
+    (REGEX_VIMEO, '[vimeo]\\4[/vimeo]'),
+    (REGEX_GIFV, '[gifv]\\1[/gifv]')
+)
+
 
 artists_tabs = ('name', 'newest', 'recentactive', 'toprated', 'topratedactive', 'prolific', 'random', 'search')
 artwork_tabs = ('unviewed', 'newest', 'newestfaves', 'toprated', 'topratedrecent', 'random', 'search', 'tag', 'character')
@@ -839,6 +849,13 @@ class Picture(models.Model):
     def featured_picture(self):
         return self.featuredpicture_set.first()
 
+    @property
+    def parsed_title(self):
+        for url in REPLACEMENT_URLS:
+            pattern, replacement = url
+            self.title = re.sub(pattern, replacement, self.title)
+        return self.title
+
     def get_absolute_url(self):
         # return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
         return reverse('picture', kwargs={'picture_id': self.id})
@@ -889,6 +906,11 @@ class Picture(models.Model):
     def refresh_num_faves(self):
         self.num_faves = self.fans.count()
         self.save()
+
+    def replace_urls(self):
+        for url in REPLACEMENT_URLS:
+            pattern, replacement = url
+            self.title = re.sub(pattern, replacement, self.title)
 
     def __str__(self):
         return '{0}: {1} {2}'.format(self.artist.username, self.id, self.filename)
