@@ -686,7 +686,8 @@ class SketcherBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/sketcher.html'
 
     def get_context_data(self, **kwargs):
-        self.request.user.update_last_active()
+        if self.request.user.is_authenticated:
+            self.request.user.update_last_active()
         context = super().get_context_data(**kwargs)
         context['drawpile'] = self.get_drawpile()
         context['sketcher_slots'] = self.get_sketcher_slots()
