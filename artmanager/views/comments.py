@@ -118,10 +118,8 @@ class CommentDeleteView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.is_deleted = True
+        logger.info(f'{self.request.user} deleted comment {self.object}')
         response = super(CommentDeleteView, self).form_valid(form)
-
-        logger.info(self.request.POST)
-
         return response
 
     def get_success_url(self):
