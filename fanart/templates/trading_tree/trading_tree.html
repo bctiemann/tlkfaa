@@ -17,7 +17,16 @@
 
 <div class="featurebox tradingtree">
 
+<div class="pageinfo">
+    <p>
+        Here at the Trading Tree, TLKFAA artists can create custom-colored icons to each other's specs, or post
+        adoptable characters for each other to make their own. This is also where you can see the art that has been
+        posted by artists on each other's ArtWalls, via art trades or requests.
+    </p>
+</div>
+
 <div class="selector">
+    <a class="{% if not offer_type %}selected{% endif %}" href="{% url "trading-tree" %}">ArtWall exchanges</a>
     <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree" offer_type="icon" %}">icons</a>
     <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a>
 </div>
@@ -76,34 +85,45 @@ if (thumbsGenerated == false) {
         </div>
     {% endif %}
 
+    {% if offer_type %}
 
-    <div id="offerslayout">
+        <div id="offerslayout">
 
-        {% for offer in offers %}
+            {% for offer in offers %}
 
-            <div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
-                <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="{{ offer.thumb_width }}" height="{{ offer.thumb_height }}" /></a><br />
-                {% if offer.artist %}
-                    <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
-                {% endif %}
-		<a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}">{{ offer.title }}</a><br />
-                {{ offer.date_posted|date }}<br />
-                {% if offer.type == "icon" %}
-                    {{ offer.claim_set.count }} request{{ offer.claim_set.count|pluralize }}, {{ offer.open_claims.count }} open
-                {% elif offer.type == "adoptable" %}
-                    {% if not offer.completed_claims.exists %}
-                        {{ offer.claim_set.count }} applying
-                    {% else %}
-                        Adopted.
+                <div class="offertile {% if user.is_authenticated %}{% applied_offer offer user %}{% endif %}">
+                    <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}"><img class="offer" src="{{ offer.thumbnail_url }}" width="{{ offer.thumb_width }}" height="{{ offer.thumb_height }}" /></a><br />
+                    {% if offer.artist %}
+                        <a href="{% url "artist" dir_name=offer.artist.dir_name %}">{{ offer.artist.username|truncatechars:20 }}</a><br />
                     {% endif %}
-                {% endif %}
-            </div>
+            <a href="{% url "trading-tree" offer_type=offer_type %}?offer_id={{ offer.id }}">{{ offer.title }}</a><br />
+                    {{ offer.date_posted|date }}<br />
+                    {% if offer.type == "icon" %}
+                        {{ offer.claim_set.count }} request{{ offer.claim_set.count|pluralize }}, {{ offer.open_claims.count }} open
+                    {% elif offer.type == "adoptable" %}
+                        {% if not offer.completed_claims.exists %}
+                            {{ offer.claim_set.count }} applying
+                        {% else %}
+                            Adopted.
+                        {% endif %}
+                    {% endif %}
+                </div>
 
+            {% endfor %}
+
+            <br clear="left" />
+
+        </div>
+
+    {% else %}
+
+        {% for picture in gift_pictures %}
+            {% with pic_number=forloop.revcounter picture=picture.picture %}
+                {% include "includes/picture.html" %}
+            {% endwith %}
         {% endfor %}
 
-        <br clear="left" />
-
-    </div>
+    {% endif %}
 
 {% endif %}
 

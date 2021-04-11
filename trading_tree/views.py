@@ -47,26 +47,34 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
         context = super(TradingTreeView, self).get_context_data(**kwargs)
 
         offer_type = kwargs.get('offer_type')
-        if not offer_type:
-            offer_type = 'icon'
+        # if not offer_type:
+        #     offer_type = 'icon'
 
-        offer_id = self.request.GET.get('offer_id', None)
-        if offer_id:
-            context['offer'] = get_object_or_404(Offer, pk=offer_id)
-            if self.request.user.is_authenticated:
-                context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
+        if offer_type:
+            offer_id = self.request.GET.get('offer_id', None)
+            if offer_id:
+                context['offer'] = get_object_or_404(Offer, pk=offer_id)
+                if self.request.user.is_authenticated:
+                    context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
 
-        three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
-        context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
+            three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
+            context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
 
-        if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
-            context['show_for_you'] = True
-            if offer_type == 'icon':
-                context['claims_for_you'] = self.request.user.icon_claims_ready.all().order_by('-date_posted')
-            elif offer_type == 'adoptable':
-                context['claims_for_you'] = self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
+            if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
+                context['show_for_you'] = True
+                if offer_type == 'icon':
+                    context['claims_for_you'] = self.request.user.icon_claims_ready.all().order_by('-date_posted')
+                elif offer_type == 'adoptable':
+                    context['claims_for_you'] = self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
 
-        context['offer_type'] = offer_type
+            context['offer_type'] = offer_type
+        else:
+            context['gift_pictures'] = models.GiftPicture.objects.order_by('picture__date_uploaded').filter(
+                is_active=True,
+                picture__is_public=True,
+                picture__date_deleted__isnull=True
+            )[0:50]
+
         return context
 
 
