@@ -139,6 +139,13 @@ class FolderAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Folder, FolderAdmin)
 
 
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'picture', 'artist', 'character',)
+    search_fields = ('user', 'picture', 'artist', 'character',)
+    autocomplete_fields = ('user', 'picture', 'artist', 'character',)
+admin.site.register(fanart_models.Favorite, FavoriteAdmin)
+
+
 class TagAdmin(admin.ModelAdmin):
     list_display = ('tag',)
     search_fields = ('tag',)

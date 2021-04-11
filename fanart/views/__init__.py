@@ -1258,7 +1258,12 @@ class ToggleFaveView(APIView):
         if fave_type == 'picture':
             picture = get_object_or_404(models.Picture, pk=object_id)
             is_fave = True
-            fave, is_created = models.Favorite.objects.get_or_create(user=request.user, picture=picture)
+            try:
+                fave, is_created = models.Favorite.objects.get_or_create(user=request.user, picture=picture)
+            except models.Favorite.MultipleObjectsReturned:
+                fave = models.Favorite.objects.filter(user=request.user, picture=picture)
+                is_created = False
+                logger.info(f'Deleted multiple ({fave.count()}) faves')
             if is_created:
                 logger.info(f'{request.user} favorited {picture}')
             else:
@@ -1272,8 +1277,16 @@ class ToggleFaveView(APIView):
         elif fave_type == 'artist':
             artist = get_object_or_404(models.User, pk=object_id, is_artist=True)
             is_fave = True
-            fave, is_created = models.Favorite.objects.get_or_create(user=request.user, artist=artist)
-            if not is_created:
+            try:
+                fave, is_created = models.Favorite.objects.get_or_create(user=request.user, artist=artist)
+            except models.Favorite.MultipleObjectsReturned:
+                fave = models.Favorite.objects.filter(user=request.user, artist=artist)
+                is_created = False
+                logger.info(f'Deleted multiple ({fave.count()}) faves')
+            if is_created:
+                logger.info(f'{request.user} favorited {artist}')
+            else:
+                logger.info(f'{request.user} unfavorited {artist}')
                 fave.delete()
                 is_fave = False
             response['artist_id'] = artist.id
