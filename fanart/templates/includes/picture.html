@@ -1,6 +1,12 @@
 {% load bbcode_tags picture_tags %}
 
-<div class="picture {% if view_unviewed_picture != False %}{% view_picture picture user %}{% endif %} {% if not picture.is_public %}privatepicture{% endif %}">
+<div
+    class="picture
+        {% if view_unviewed_picture != False %}{% view_picture picture user %}{% endif %}
+        {% if not picture.is_public %}privatepicture{% endif %}
+        {{ extra_classes }}
+        "
+    >
     {% if picture.date_deleted == None %}
         <table>
             <tr>

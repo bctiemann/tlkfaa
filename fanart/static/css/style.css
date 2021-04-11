@@ -1693,6 +1693,23 @@ div.picturecaption h3 {
 	margin-bottom: 5px;
 }
 
+.gift-picture-caption {
+	text-align: left;
+	font-size: 13px;
+	width: 80%;
+	margin: 0px auto;
+	padding: 1px;
+	background-color: rgba(229,233,239,0.8);
+	border-radius: 3px 3px 0px 0px;
+}
+.gift-picture-caption p {
+	margin-left: 5px;
+}
+
+div.picture.no-top-margin {
+	margin-top: 0px;
+}
+
 div.am_panel div.picture td {
 /*	padding: 0px;*/
 }

@@ -117,8 +117,13 @@ if (thumbsGenerated == false) {
 
     {% else %}
 
-        {% for picture in gift_pictures %}
-            {% with pic_number=forloop.revcounter picture=picture.picture %}
+        {% for gift_picture in gift_pictures %}
+            {% with pic_number=forloop.revcounter picture=gift_picture.picture extra_classes="no-top-margin" %}
+                <div class="gift-picture-caption">
+                    <p>
+                        Posted on <a href="{% url "artist" dir_name=gift_picture.recipient.dir_name %}">{{ gift_picture.recipient.username }}</a>'s <a href="{% url "artist-artwall" dir_name=gift_picture.recipient.dir_name %}">ArtWall</a>
+                    </p>
+                </div>
                 {% include "includes/picture.html" %}
             {% endwith %}
         {% endfor %}
