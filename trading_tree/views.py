@@ -69,7 +69,7 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
 
             context['offer_type'] = offer_type
         else:
-            context['gift_pictures'] = models.GiftPicture.objects.order_by('-picture__date_accepted').filter(
+            context['gift_pictures'] = models.GiftPicture.objects.order_by('-date_accepted').filter(
                 is_active=True,
                 picture__is_public=True,
                 picture__date_deleted__isnull=True
