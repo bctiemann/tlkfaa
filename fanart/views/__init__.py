@@ -333,8 +333,6 @@ class ArtworkView(UserPaneMixin, TemplateView):
             artwork = artwork.filter(num_faves__gt=100).order_by('-num_faves')
         elif list_type == 'topratedrecent':
             artwork = artwork.filter(date_uploaded__gt=three_months_ago).order_by('-num_faves')
-        elif list_type == 'prolific':
-            artists = artists.order_by('-num_pictures')
         elif list_type == 'random':
             random_ids = random.sample(list(range(models.Picture.objects.all().aggregate(Min('id'))['id__min'], models.Picture.objects.all().aggregate(Max('id'))['id__max'])), 100)
             artwork = artwork.filter(pk__in=random_ids)
@@ -779,9 +777,9 @@ class ContestEntryCreateView(LoginRequiredMixin, CreateView):
         contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
         picture = get_object_or_404(models.Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
 
-        logger.info(contest.allow_multiple_entries)
-        logger.info(contest.contestentry_set.filter(picture__artist=self.request.user).exists())
-        if not contest.allow_multiple_entries and contest.contestentry_set.filter(picture__artist=self.request.user).exists():
+        already_entered = contest.contestentry_set.filter(picture__artist=self.request.user).exists()
+        if not contest.allow_multiple_entries and already_entered:
+            logger.info(f'{self.request.user} already has an entry in {contest}')
             return redirect(reverse('contest', kwargs={'contest_id': contest.id}))
 
         contest_entry = form.save(commit=False)
@@ -789,6 +787,7 @@ class ContestEntryCreateView(LoginRequiredMixin, CreateView):
         contest_entry.contest = contest
         contest_entry.picture = picture
         contest_entry.save()
+        logger.info(f'{self.request.user} entered {picture} in {contest}')
         response = super(ContestEntryCreateView, self).form_valid(form)
         return response
 
