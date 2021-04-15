@@ -342,6 +342,8 @@ class ArtworkView(UserPaneMixin, TemplateView):
                 context['show_search_input'] = True
                 context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.num_pictures, reverse=True)
             if term:
+                if start == 0:
+                    context['show_search_input'] = True
                 context['term'] = term
                 if list_type == 'search':
                     artwork = artwork.filter(title__icontains=term).order_by('-num_faves')
