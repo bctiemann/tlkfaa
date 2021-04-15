@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load static %}
 
 {% block page_title %} &mdash; Artwork{% endblock %}
 
@@ -64,6 +65,7 @@
     </div>
     <br clear="left" />
 
+    <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div id="artwork">
         {% include "includes/artwork-list.html" %}
     </div>

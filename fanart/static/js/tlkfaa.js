@@ -2694,36 +2694,35 @@ function listArtists(list,count) {
   });
 }
 
-function listArtwork(list,count) {
-  var url = '/artwork/' + list + '/';
-  params = [];
-  if ((list == 'search' || list == 'tag') && count > 0) {
-    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
-  }
-  var queryParts = [];
-  params.forEach(function(e){
-    queryParts.push(e.name + '=' + e.value);
-  });
-  queryPartsWithCount = queryParts.slice();
-  queryPartsWithCount.push('count=' + count);
-  queryStr = queryPartsWithCount.join('&');
-  url += '?' + queryStr;
-  $('#artwork').slideUp('fast',function() {
-    $('#artwork').load(url,function() {
-//      Shadowbox.clearCache();
-//      Shadowbox.setup('td.thumb a');
-//      $('#artwork_'+list).slideDown('fast');
-      setupTooltipPreview();
-      $('#artwork').slideDown('fast');
-      artworklistopen = list;
-      $('h2.itemlist').removeClass('itemlist_selected');
-      $('#artworklisth2_'+list).addClass('itemlist_selected');
-      if (typeof(window.history.replaceState) !== "undefined") {
-        queryStr = queryParts.join('&');
-        window.history.replaceState('', '', '/Artwork/' + list + '/' + (queryStr ? '?' : '') + queryStr);
-      }
+function listArtwork(list, count) {
+    let url = `/artwork/${list}/`;
+    const params = [];
+    if ((list === 'search' || list === 'tag') && count > 0) {
+        params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+    }
+    const queryParts = [];
+    params.forEach(function(e){
+        queryParts.push(e.name + '=' + e.value);
     });
-  });
+    const queryPartsWithCount = queryParts.slice();
+    queryPartsWithCount.push('count=' + count);
+    let queryStr = queryPartsWithCount.join('&');
+    url += `?${queryStr}`;
+    $('.spinner').show();
+    $('#artwork').slideUp('fast', function() {
+        $('#artwork').load(url, function() {
+            $('.spinner').hide();
+            setupTooltipPreview();
+            $('#artwork').slideDown('fast');
+            artworklistopen = list;
+            $('h2.itemlist').removeClass('itemlist_selected');
+            $(`#artworklisth2_${list}`).addClass('itemlist_selected');
+            if (typeof(window.history.replaceState) !== "undefined") {
+                queryStr = queryParts.join('&');
+                window.history.replaceState('', '', `/Artwork/${list}/` + (queryStr ? '?' : '') + queryStr);
+            }
+        });
+    });
 }
 
 function listCharacters(list,count) {
