@@ -6,7 +6,11 @@
     <div class="bulletin-title-block">
         <p class="bulletintitle">{{ bulletin.title }}</p>
         <div class="bulletindate">{{ bulletin.date_posted|date:"SHORT_DATE_FORMAT" }}</div>
-        <div class="bulletinname"><a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a></div>
+        {% if bulletin.user.dir_name %}
+            <div class="bulletinname"><a href="{% url "artist" dir_name=bulletin.user.dir_name %}">{{ bulletin.user.username }}</a></div>
+        {% else %}
+            <div class="bulletinname">{{ bulletin.user.username }}</div>
+        {% endif %}
     </div>
 
     {% if bulletin.user.profile_pic_thumbnail_url %}
