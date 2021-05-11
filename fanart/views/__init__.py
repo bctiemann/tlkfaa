@@ -602,6 +602,8 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        logger.info(self.object)
+        logger.info(self.request.user)
         logger.info(self.request.POST)
         logger.info(form.cleaned_data)
         response = super(ApproveRequestView, self).form_valid(form)
