@@ -111,7 +111,7 @@ class PendingListView(ApprovalHomeView):
 class PendingCountView(ApprovalAPIView):
 
     def get(self, request):
-        response = {'count': models.Pending.objects.requiring_approval().count()}
+        response = {'count': models.Pending.objects.requiring_approval().exclude(failed_processing=True).count()}
         return Response(response)
 
 
