@@ -59,6 +59,7 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
 
             three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
             context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
+            context['offers'] = context['offers'].filter(artist__is_active=True)
 
             if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
                 context['show_for_you'] = True
