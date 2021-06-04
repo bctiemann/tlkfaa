@@ -163,7 +163,7 @@ admin.site.register(fanart_models.ThreadedComment, ThreadedCommentAdmin)
 class ShoutAdmin(admin.ModelAdmin):
     list_display = ('user', 'artist', 'date_posted',)
     list_filter = ()
-    readonly_fields = ('user', 'artist',)
+    readonly_fields = ('user', 'artist', 'reply_to',)
     user_id_for_formfield = None
 admin.site.register(fanart_models.Shout, ShoutAdmin)
 
