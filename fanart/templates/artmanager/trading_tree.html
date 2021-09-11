@@ -32,32 +32,30 @@
 
 {% if offer %}
 
-<script type="text/javascript">
-var refreshThumbsInterval = null;
+    <script type="text/javascript">
+    var refreshThumbsInterval = null;
 
-var checkThumbs = function() {
-    var url = '{% url "artmanager:offer-status" offer_id=offer.id %}';
-    $.getJSON(url, function(data) {
-        var continueChecking = false;
-        for (offer_id in data) {
-            if ($('img#offerthumb_' + offer_id).attr('src') != data[offer_id].thumbnail_url) {
-                $('img#offerthumb_' + offer_id).attr('src', data[offer_id].thumbnail_url);
+    var checkThumbs = function() {
+        var url = '{% url "artmanager:offer-status" offer_id=offer.id %}';
+        $.getJSON(url, function(data) {
+            var continueChecking = false;
+            for (offer_id in data) {
+                if ($('img#offerthumb_' + offer_id).attr('src') != data[offer_id].thumbnail_url) {
+                    $('img#offerthumb_' + offer_id).attr('src', data[offer_id].thumbnail_url);
+                }
+                if (!data[offer_id].thumbnail_done) {
+                    continueChecking = true;
+                }
             }
-            if (!data[offer_id].thumbnail_done) {
-                continueChecking = true;
+            if (!continueChecking) {
+                clearInterval(refreshThumbsInterval);
+    console.log(refreshThumbsInterval);
             }
-        }
-        if (!continueChecking) {
-            clearInterval(refreshThumbsInterval);
-console.log(refreshThumbsInterval);
-        }
-    });
-};
+        });
+    };
 
-refreshThumbsInterval = setInterval('checkThumbs()', 1000);
-</script>
-
-
+    refreshThumbsInterval = setInterval('checkThumbs()', 1000);
+    </script>
 
     {% if offer.is_active and offer.is_visible %}
         {% include "trading_tree/offer.html" %}
@@ -67,54 +65,64 @@ refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 
 {% else %}
 
-    <form name="offerform_new" id="offerform_new" method="POST">
-        <table class="formtable">
-            <tr>
-                <td class="label">Post new {{ offer_type }}</td>
-                <td class="data" id="offerselect">
-                    {% if offer_type == "icon" %}
-                        {#<input id="fileupload" type="file" name="picture" 1validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." data-url="{% url "artmanager:upload-icon-offer" %}">#}
-                        <span class="button btn-select fileinput-button">
-                            <i class="glyphicon glyphicon-plus"></i>
-                            <span>Select</span>
-                            <!-- The file input field used as target for the file upload widget -->
-                            <input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-icon-offer" %}">
-                       </span>
-                       <span id="selected_file"></span>
-                    {% elif offer_type == "adoptable" %}
-                        <span id="charactername">
-                            {% if character %}
-				{{ character.name }}
-                            {% endif %}
-                        </span>
-                        <input type="hidden" name="characterid" value="{% if character %}{{ character.id }}{% endif %}" validate="hasvalue" message="You must select a character to put up for adoption." />
-                        <a href="{% url "character-picker" %}" rel="shadowbox;width=500;height=600">select character</a>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Title</td>
-                <td class="data"><input type="text" class="std" name="title" validate="hasvalue" message="You must enter a title for this offer." /></td>
-            </tr>
-            <tr>
-                <td class="label">Comment</td>
-                <td class="data"><textarea name="comment"></textarea></td>
-            </tr>
-            <tr>
-                <td colspan="2" class="buttons">
-                    {% if offer_type == "icon" %}
-                        <button type="button" id="up_btn" class="start">Post Icon Offer</button>
-                    {% elif offer_type == "adoptable" %}
-                        <button type="button" onClick="validateForm('offerform_new','postAdoptableOffer()')">Post Adoptable</button>
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
-        <input type="hidden" name="op" value="tradingtree" />
-        <input type="hidden" name="uploadop" value="newoffer" />
-        <input type="hidden" name="todo" value="newoffer" />
-        <input type="hidden" name="offertype" value="{{ offer_type }}" />
-    </form>
+    {% if offer_type == "icon" and user.num_pictures == 0 %}
+
+        <p>
+            You cannot post icons until you have at least one picture accepted into your gallery.
+        </p>
+
+    {% else %}
+
+        <form name="offerform_new" id="offerform_new" method="POST">
+            <table class="formtable">
+                <tr>
+                    <td class="label">Post new {{ offer_type }}</td>
+                    <td class="data" id="offerselect">
+                        {% if offer_type == "icon" %}
+                            {#<input id="fileupload" type="file" name="picture" 1validate="hasvalue" message="You must provide a picture file to display as the basis for your icon offer." data-url="{% url "artmanager:upload-icon-offer" %}">#}
+                            <span class="button btn-select fileinput-button">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                <span>Select</span>
+                                <!-- The file input field used as target for the file upload widget -->
+                                <input id="fileupload" type="file" name="picture" data-url="{% url "artmanager:upload-icon-offer" %}">
+                           </span>
+                           <span id="selected_file"></span>
+                        {% elif offer_type == "adoptable" %}
+                            <span id="charactername">
+                                {% if character %}
+                    {{ character.name }}
+                                {% endif %}
+                            </span>
+                            <input type="hidden" name="characterid" value="{% if character %}{{ character.id }}{% endif %}" validate="hasvalue" message="You must select a character to put up for adoption." />
+                            <a href="{% url "character-picker" %}" rel="shadowbox;width=500;height=600">select character</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Title</td>
+                    <td class="data"><input type="text" class="std" name="title" validate="hasvalue" message="You must enter a title for this offer." /></td>
+                </tr>
+                <tr>
+                    <td class="label">Comment</td>
+                    <td class="data"><textarea name="comment"></textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="buttons">
+                        {% if offer_type == "icon" %}
+                            <button type="button" id="up_btn" class="start">Post Icon Offer</button>
+                        {% elif offer_type == "adoptable" %}
+                            <button type="button" onClick="validateForm('offerform_new','postAdoptableOffer()')">Post Adoptable</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="op" value="tradingtree" />
+            <input type="hidden" name="uploadop" value="newoffer" />
+            <input type="hidden" name="todo" value="newoffer" />
+            <input type="hidden" name="offertype" value="{{ offer_type }}" />
+        </form>
+
+    {% endif %}
 
     <div id="progress">
         <div class="bar no-border"></div>
