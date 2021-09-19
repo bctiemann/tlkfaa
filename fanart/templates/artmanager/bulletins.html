@@ -5,97 +5,107 @@
 
 {% block am_content %}
 
-<h2>Manage Bulletins</h2>
+{% if user.num_pictures == 0 %}
 
-<h3 class="sectionheader">Post New Bulletin</h3>
+    <p>
+        You cannot post bulletins until you have at least one picture accepted into your gallery.
+    </p>
 
-<div class="bulletin">
-    <form name="bulletinform_new" id="bulletinform_new" method="POST">
-        <table class="formtable">
-            <tr>
-                <td class="label">Title</td>
-                <td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="255" validate="hasvalue" message="You must enter a title." /></td>
-            </tr>
-            <tr>
-                <td class="label">Bulletin</td>
-                <td class="data"><textarea name="bulletin" id="bulletin_new" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
-            </tr>
-            <tr>
-                <td class="label">Allow Replies</td>
-                <td class="data"><input type="checkbox" checked name="allow_replies" id="allow_replies_new" value="1" /></td>
-            </tr>
-            <tr>
-                <td colspan="2" class="buttons">
-                    <button type="button" onClick="validateForm('bulletinform_new','postBulletin()')">Post</button>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
+{% else %}
 
+    <h2>Manage Bulletins</h2>
 
-<h3 class="sectionheader">Unpublished Bulletins</h3>
-
-{% for bulletin in unpublished_bulletins %}
+    <h3 class="sectionheader">Post New Bulletin</h3>
 
     <div class="bulletin">
-        <form name="bulletinform_{{ bulletin.bulletinid }}" id="bulletin_${bulletin.bulletinid}" method="POST">
+        <form name="bulletinform_new" id="bulletinform_new" method="POST">
             <table class="formtable">
                 <tr>
-                    <td class="label">Posted</td>
-                    <td class="data">{{ bulletin.date_posted|date }}</td>
-                </tr>
-                <tr>
                     <td class="label">Title</td>
-                    <td class="data"><input type="text" class="std" name="title" id="title_{{ bulletin.id }}" maxlength="255" value="{{ bulletin.title }}" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
+                    <td class="data"><input type="text" class="std" name="title" id="title_new" maxlength="255" validate="hasvalue" message="You must enter a title." /></td>
                 </tr>
                 <tr>
                     <td class="label">Bulletin</td>
-                    <td class="data"><textarea name="bulletin" id="bulletin_{{ bulletin.id }}" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
+                    <td class="data"><textarea name="bulletin" id="bulletin_new" validate="hasvalue" message="The bulletin text cannot be empty."></textarea></td>
                 </tr>
                 <tr>
                     <td class="label">Allow Replies</td>
-                    <td class="data"><input type="checkbox" {% if bulletin.allow_replies %}checked{% endif %} name="allow_replies" id="allow_replies_{{ bulletin.id }}" value="1" /></td>
+                    <td class="data"><input type="checkbox" checked name="allow_replies" id="allow_replies_new" value="1" /></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="buttons">
-                        <button type="button" onClick="validateForm('bulletin_{{ bulletin.id }}','updateBulletin({{ bulletin.id }})')">Edit</button>
-                        <button type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
+                        <button type="button" onClick="validateForm('bulletinform_new','postBulletin()')">Post</button>
                     </td>
                 </tr>
             </table>
         </form>
     </div>
 
-{% endfor %}
+
+    <h3 class="sectionheader">Unpublished Bulletins</h3>
+
+    {% for bulletin in unpublished_bulletins %}
+
+        <div class="bulletin">
+            <form name="bulletinform_{{ bulletin.bulletinid }}" id="bulletin_${bulletin.bulletinid}" method="POST">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Posted</td>
+                        <td class="data">{{ bulletin.date_posted|date }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Title</td>
+                        <td class="data"><input type="text" class="std" name="title" id="title_{{ bulletin.id }}" maxlength="255" value="{{ bulletin.title }}" validate="hasvalue" message="The bulletin title cannot be blank." /></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bulletin</td>
+                        <td class="data"><textarea name="bulletin" id="bulletin_{{ bulletin.id }}" validate="hasvalue" message="The bulletin text cannot be empty.">{{ bulletin.bulletin }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Allow Replies</td>
+                        <td class="data"><input type="checkbox" {% if bulletin.allow_replies %}checked{% endif %} name="allow_replies" id="allow_replies_{{ bulletin.id }}" value="1" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            <button type="button" onClick="validateForm('bulletin_{{ bulletin.id }}','updateBulletin({{ bulletin.id }})')">Edit</button>
+                            <button type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+    {% endfor %}
 
 
-<h3 class="sectionheader">Published Bulletins</h3>
+    <h3 class="sectionheader">Published Bulletins</h3>
 
-{% for bulletin in published_bulletins %}
+    {% for bulletin in published_bulletins %}
 
-    <div class="bulletin">
-        <form name="bulletinform_{{ bulletin.id }}" method="POST">
-            <table class="formtable">
-                <tr>
-                    <td class="label">Posted</td>
-                    <td class="data">
-                        <button class="rightbutton" type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
-                        {{ bulletin.date_posted|date }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="label">Title</td>
-                    <td class="data">{{ bulletin.title }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Bulletin</td>
-                    <td class="data">{{ bulletin.bulletin|bbcode|safe }}</td>
-                </tr>
-            </table>
-        </form>
-    </div>
+        <div class="bulletin">
+            <form name="bulletinform_{{ bulletin.id }}" method="POST">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Posted</td>
+                        <td class="data">
+                            <button class="rightbutton" type="button" onClick="deleteBulletin({{ bulletin.id }})">Delete</button>
+                            {{ bulletin.date_posted|date }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Title</td>
+                        <td class="data">{{ bulletin.title }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bulletin</td>
+                        <td class="data">{{ bulletin.bulletin|bbcode|safe }}</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
 
-{% endfor %}
+    {% endfor %}
+
+{% endif %}
 
 {% endblock %}
