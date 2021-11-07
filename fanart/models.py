@@ -87,11 +87,15 @@ def get_featured_banner_path(instance, filename):
 
 def validate_unique_username(value):
     dir_name = make_dir_name(value)
-    if User.objects.filter(Q(username=value) | Q(dir_name__lower=dir_name.lower())).exists() or dir_name in artists_tabs:
+    is_forbidden_name = dir_name in artists_tabs
+    dir_name_already_exists_in_db = User.objects.filter(Q(username=value) | Q(dir_name__lower=dir_name.lower())).exists()
+
+    if dir_name_already_exists_in_db or is_forbidden_name:
         raise ValidationError(
             _('The name %(value)s is already in use.'),
             params={'value': value},
         )
+
 
 def validate_unique_email(value):
     if User.objects.filter(email=value).exists():
@@ -533,6 +537,20 @@ ORDER BY fanart_user.sort_name
         except OSError:
             pass
 
+    @staticmethod
+    def get_absolute_dir_name(dir_name):
+        return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, dir_name)
+
+    @staticmethod
+    def check_dir_name_for_os_collision(dir_name):
+        absolute_dir_name = User.get_absolute_dir_name(dir_name)
+        if os.path.isdir(absolute_dir_name):
+            raise ValidationError(
+                _('The directory name %(value)s is already in use. This may be a data error; please contact the '
+                  'administrator for assistance.'),
+                params={'value': dir_name},
+            )
+
     def change_dir_name(self):
         new_dir_name = make_dir_name(self.username)
 #        new_dir_name = re.sub('&#[0-9]+;', 'x', self.username)
@@ -542,13 +560,8 @@ ORDER BY fanart_user.sort_name
         if new_dir_name == self.dir_name:
             return self.dir_name
 
-        new_absolute_dir_name = '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, new_dir_name)
-
-        if os.path.isdir(new_absolute_dir_name):
-            raise ValidationError(
-                _('The directory name %(value)s is already in use.'),
-                params={'value': new_dir_name},
-            )
+        new_absolute_dir_name = User.get_absolute_dir_name(new_dir_name)
+        User.check_dir_name_for_os_collision(new_dir_name)
 
         os.rename(self.absolute_dir_name, new_absolute_dir_name)
         self.dir_name = new_dir_name

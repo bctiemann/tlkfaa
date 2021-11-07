@@ -120,6 +120,16 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
                 }
                 return HttpResponse(json.dumps(ajax_response))
 
+            new_dir_name = utils.make_dir_name(new_username)
+            try:
+                models.User.check_dir_name_for_os_collision(new_dir_name)
+            except ValidationError as e:
+                ajax_response = {
+                    'success': False,
+                    'errors': {'username': e.messages},
+                }
+                return HttpResponse(json.dumps(ajax_response))
+
             user.username = new_username
             new_dir_name = user.change_dir_name()
 
