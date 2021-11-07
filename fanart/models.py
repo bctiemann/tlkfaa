@@ -4,6 +4,7 @@ from django.db.models import Q, OuterRef, Subquery, Min, Max, Count, CharField
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
+from django.core.mail import mail_admins
 #from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, UserManager, AbstractUser
 from django.utils.translation import ugettext_lazy as _
@@ -541,10 +542,13 @@ ORDER BY fanart_user.sort_name
     def get_absolute_dir_name(dir_name):
         return '{0}/Artwork/Artists/{1}'.format(settings.MEDIA_ROOT, dir_name)
 
-    @staticmethod
-    def check_dir_name_for_os_collision(dir_name):
+    def check_dir_name_for_os_collision(self, dir_name):
         absolute_dir_name = User.get_absolute_dir_name(dir_name)
         if os.path.isdir(absolute_dir_name):
+            mail_admins(
+                'Artist directory collision',
+                f'Artist rename failed: {self.username} tried to create dir\n{absolute_dir_name}\nwhich already exists',
+            )
             raise ValidationError(
                 _('The directory name %(value)s is already in use. This may be a data error; please contact the '
                   'administrator for assistance.'),
@@ -561,7 +565,7 @@ ORDER BY fanart_user.sort_name
             return self.dir_name
 
         new_absolute_dir_name = User.get_absolute_dir_name(new_dir_name)
-        User.check_dir_name_for_os_collision(new_dir_name)
+        self.check_dir_name_for_os_collision(new_dir_name)
 
         os.rename(self.absolute_dir_name, new_absolute_dir_name)
         self.dir_name = new_dir_name

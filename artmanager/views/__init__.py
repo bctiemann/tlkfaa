@@ -122,7 +122,7 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
 
             new_dir_name = utils.make_dir_name(new_username)
             try:
-                models.User.check_dir_name_for_os_collision(new_dir_name)
+                user.check_dir_name_for_os_collision(new_dir_name)
             except ValidationError as e:
                 ajax_response = {
                     'success': False,
