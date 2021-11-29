@@ -48,8 +48,7 @@ class CommentsView(ArtManagerPaneView):
             deleted = False
             if self.request.GET.get('deleted') == '1':
                 deleted = True
-            if not deleted:
-                comments = comments.filter(is_deleted=False)
+            comments = comments.filter(is_deleted=deleted)
             context['deleted'] = deleted
 
         elif comment_type == 'sent':
