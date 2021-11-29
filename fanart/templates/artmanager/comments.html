@@ -16,8 +16,25 @@
 
         {% if comment_type == "received" %}
         <div class="selector">
-            View: <a class="{% if not show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=0">unread</a>
-            <a class="{% if show_all %}selected{% endif %}" href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=1">all</a>
+            View:
+            <a
+                class="{% if not deleted and not show_all %}selected{% endif %}"
+                href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=0"
+            >
+                unread
+            </a>
+            <a
+                class="{% if deleted %}selected{% endif %}"
+                href="{% url "artmanager:comments" comment_type=comment_type %}?deleted=1"
+            >
+                deleted
+            </a>
+            <a
+                class="{% if show_all %}selected{% endif %}"
+                href="{% url "artmanager:comments" comment_type=comment_type %}?show_all=1"
+            >
+                all
+            </a>
         </div>
         <br clear="left" />
 
@@ -38,6 +55,7 @@
 
     <form name="editcomment_{{ comment.id }}">
         <div class="comment" id="comment_{{ comment.id }}">
+            {{ comment.is_deleted }}
             {% include "artmanager/comment.html" %}
         </div>
     </form>

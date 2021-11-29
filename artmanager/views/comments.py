@@ -37,12 +37,21 @@ class CommentsView(ArtManagerPaneView):
         comments = []
         if comment_type == 'received':
             comments = models.ThreadedComment.objects.filter(picture__artist=self.request.user).order_by('-date_posted')
+
             show_all = False
             if self.request.GET.get('show_all') == '1':
                 show_all = True
             if not show_all:
                 comments = comments.filter(is_received=False)
             context['show_all'] = show_all
+
+            deleted = False
+            if self.request.GET.get('deleted') == '1':
+                deleted = True
+            if not deleted:
+                comments = comments.filter(is_deleted=False)
+            context['deleted'] = deleted
+
         elif comment_type == 'sent':
             comments = self.request.user.threadedcomment_set.all().order_by('-date_posted')
 
