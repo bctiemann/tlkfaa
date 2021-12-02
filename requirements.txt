@@ -17,7 +17,7 @@ django-precise-bbcode==1.2.10
 celery==4.2.1
 requests==2.20.0
 html2bbcode==2.3.3
-wiki==0.7.3
+wiki==0.7.9
 pyyaml==5.4.1
 user-agents==2.1
 gunicorn==20.1.0
