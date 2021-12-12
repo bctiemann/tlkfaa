@@ -1,0 +1,5 @@
+This is an automated message from The Lion King Fan-Art Archive (http://fanart.lionking.org).
+
+A ZIP archive of your uploaded pictures has been created and is ready for you to download:
+
+{{ zip_url }}

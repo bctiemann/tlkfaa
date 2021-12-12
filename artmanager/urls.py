@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^artwork/coloring_picture/(?P<coloring_picture_ids>[0-9,]+)/delete/$', artmanager_views.ColoringPictureBulkDeleteView.as_view(), name='artwork-bulk-delete-coloring-picture'),
     url(r'^artwork/coloring/status/$', artmanager_views.ColoringStatusView.as_view(), name='artwork-coloring-status'),
     url(r'^artwork/tag_characters/(?P<obj>(new|[0-9]+))/$', artmanager_views.TagCharactersView.as_view(), name='tag-characters'),
+    url(r'^artwork/zip_gallery/$', artmanager_views.ArtworkDownloadZIPView.as_view(), name='zip-gallery'),
 
     url(r'^folders/$', artmanager_views.FoldersView.as_view(), name='folders'),
     url(r'^folders/create/$', artmanager_views.FolderCreateView.as_view(), name='folder-create'),

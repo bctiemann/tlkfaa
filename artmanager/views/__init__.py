@@ -467,6 +467,16 @@ class ArtworkView(ArtManagerPaneView):
 
         return context
 
+
+class ArtworkDownloadZIPView(APIView):
+
+    def post(self, request):
+        response = {'success': False}
+        tasks.zip_pictures.delay(request.user.id)
+        response['success'] = True
+        return Response(response)
+
+
 class PictureDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/picture.html'
 

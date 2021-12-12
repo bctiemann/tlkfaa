@@ -1,3 +1,10 @@
+import os
+import importlib
+from zipfile import ZipFile
+from pwd import getpwnam
+from PIL import Image
+from uuid import uuid4
+
 from django.conf import settings
 from django.core import mail
 from django.template import Context
@@ -5,11 +12,6 @@ from django.template.loader import get_template
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
-
-from PIL import Image
-import os
-import importlib
-from pwd import getpwnam
 
 import logging
 logger = logging.getLogger(__name__)
@@ -205,3 +207,38 @@ def process_images(model_class_path, model, object_id, thumb_size='small'):
 
 #@shared_task
 #def resize_image(model, object_id):
+
+
+@shared_task
+def zip_pictures(artist_id):
+    from fanart.models import User
+    artist = User.objects.get(pk=artist_id)
+
+    hash = uuid4()
+    zip_dir = f'{settings.MEDIA_ROOT}/zips/{hash}'
+    try:
+        os.makedirs(zip_dir)
+    except OSError:
+        pass
+
+    os.chdir(artist.absolute_dir_name)
+
+    zip_file = f'{zip_dir}/{artist.dir_name}.zip'
+    with ZipFile(zip_file, 'w') as artist_zip:
+        for picture in artist.picture_set.all():
+            artist_zip.write(picture.filename)
+
+    zip_url = f'{settings.SERVER_BASE_URL}{settings.MEDIA_URL}zips/{hash}/{artist.dir_name}.zip'
+
+    email_context = {
+        'user': artist,
+        'zip_url': zip_url,
+    }
+    send_email.delay(
+        recipients=[artist.email],
+        subject='TLKFAA: Gallery Archive Completed',
+        context=email_context,
+        text_template='email/zipfile_created.txt',
+        html_template='email/zipfile_created.html',
+        bcc=[settings.DEBUG_EMAIL],
+    )

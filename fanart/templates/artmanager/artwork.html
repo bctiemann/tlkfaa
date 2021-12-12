@@ -25,8 +25,19 @@ console.log(refreshThumbsInterval);
     });
 };
 
+var downloadZIP = function() {
+    const url = '{% url "artmanager:zip-gallery" %}';
+    $.post(url, function(data) {
+        alert('A ZIP archive is being generated of all your uploaded pictures. A download link will be emailed to you at {{ user.email }}.');
+    })
+}
+
 refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 </script>
+
+<div class="am_altpagelink">
+    <a class="button" href="#" onclick="downloadZIP();">Download ZIP</a>
+</div>
 
 <h2>Your Artwork</h2>
 
