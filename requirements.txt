@@ -14,7 +14,7 @@ django-extensions==2.0.7
 django-ratelimit==2.0.0
 Pillow==8.3.2
 django-precise-bbcode==1.2.10
-celery==4.2.1
+celery==5.2.3
 requests==2.20.0
 html2bbcode==2.3.3
 wiki==0.7.9
