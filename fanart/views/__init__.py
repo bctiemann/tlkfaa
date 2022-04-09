@@ -1,3 +1,5 @@
+import hashlib
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -976,9 +978,12 @@ class RegisterView(FormView):
             return HttpResponse(json.dumps(ajax_response))
 
         # All tests pass; create the user
+        m = hashlib.md5()
+        m.update(password.encode())
+        password_hash = m.hexdigest()
         user = models.User.objects.create_user(
             form.cleaned_data['username'],
-            password=password,
+            password=password_hash,
             email=form.cleaned_data['email'],
             is_artist=form.cleaned_data['is_artist']
         )
