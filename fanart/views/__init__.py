@@ -1737,6 +1737,9 @@ class PicturePickerView(LoginRequiredMixin, TemplateView):
         if folder_id == 'cc':
             pictures = self.request.user.coloringpicture_set.all()
             context['coloring_cave'] = True
+        elif folder_id == 'artwall':
+            pictures = self.request.user.gifts_received.all()
+            context['artwall'] = True
 
         else:
             selected_folder = None

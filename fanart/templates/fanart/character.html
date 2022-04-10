@@ -58,6 +58,9 @@
             {% if character.creator and character.owner != character.creator %}
                 <div class="creator">Created by <a href="{% url "artist" dir_name=character.creator.dir_name %}">{{ character.creator.username }}</a></div>
             {% endif %}
+            {% if character.profile_picture and character.profile_picture.artist != character.owner %}
+                Picture by <a href="{% url "picture" picture_id=character.profile_picture.id %}">{{ character.profile_picture.artist.username }}</a>
+            {% endif %}
         {% endif %}
 
     </div>

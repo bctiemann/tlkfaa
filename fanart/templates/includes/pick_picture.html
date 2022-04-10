@@ -9,8 +9,9 @@ Folder:
 <select name="switchfolder" class="foldermenu" onChange="switchParam(this, 'folder_id')">
     {% if target == "character" %}
         <option value="cc" {% if coloring_cave %}selected{% endif %}>(Coloring Cave)</option>
+        <option value="artwall" {% if artwall %}selected{% endif %}>(ArtWall)</option>
     {% endif %}
-    <option value="0" {% if not coloring_cave and selected_folder == None %}selected{% endif %}>(Main)</option>
+    <option value="0" {% if not coloring_cave and not artwall and selected_folder == None %}selected{% endif %}>(Main)</option>
     {% for folder in folders %}
         <option value="{{ folder.id }}" {% if selected_folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
     {% endfor %}
@@ -44,6 +45,35 @@ Sort by:
                             <div class="picdate">{{ picture.date_posted|date }}</div>
                             <div class="pictitle">
                                 {{ picture.comment|bbcode|safe }}
+                            </div>
+
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    {% endfor %}
+
+{% elif target == "character" and artwall %}
+
+        {% for gift_picture in pictures %}
+        <div class="picture">
+
+            <table>
+                <tr>
+                    <td class="thumb">
+                        <a href="javascript:nop()" onClick="selectPicture({{ gift_picture.id }},'artwall_picture')">
+                            <img class="thumb" id="picker_image_{{ gift_picture.id }}" src="{{ gift_picture.picture.preview_url }}" />
+                        </a>
+                    </td>
+                    <td class="fullwidth picturedetails">
+                        <div class="picturedetails">
+                            <p>From {{ gift_picture.picture.artist.username }}</p>
+                            <div class="picdate">{{ gift_picture.picture.date_uploaded|date }}</div>
+                            <div class="pictitle">
+                                {{ gift_picture.picture.title|bbcode|safe }}
                             </div>
 
                         </div>

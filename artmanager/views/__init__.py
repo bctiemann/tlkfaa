@@ -1093,17 +1093,25 @@ class CharacterSetPictureView(APIView):
 
         if request.POST.get('picture_type') == 'coloring_picture':
             picture_model = ColoringPicture
+        elif request.POST.get('picture_type') == 'artwall_picture':
+            picture_model = models.GiftPicture
         elif request.POST.get('picture_type') == 'picture':
             picture_model = models.Picture
 
         try:
-            picture = picture_model.objects.get(pk=request.POST.get('picture_id'), artist=request.user)
+            if picture_model in (ColoringPicture, models.Picture):
+                picture = picture_model.objects.get(pk=request.POST.get('picture_id'), artist=request.user)
+            elif picture_model == models.GiftPicture:
+                picture = picture_model.objects.get(pk=request.POST.get('picture_id'), recipient=request.user)
         except picture_model.DoesNotExist:
             return Response(response)
 
         if picture_model == ColoringPicture:
             character.profile_coloring_picture = picture
             character.profile_picture = None
+        elif picture_model == models.GiftPicture:
+            character.profile_picture = picture.picture
+            character.profile_coloring_picture = None
         elif picture_model == models.Picture:
             character.profile_picture = picture
             character.profile_coloring_picture = None

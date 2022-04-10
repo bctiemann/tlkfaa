@@ -18,6 +18,9 @@
             {% else %}
                 Owner: {{ character.owner.username }}
             {% endif %}
+            {% if character.profile_picture and character.profile_picture.artist != character.owner %}
+                Picture by <a href="{% url "picture" picture_id=character.profile_picture.id %}">{{ character.profile_picture.artist.username }}</a>
+            {% endif %}
         </p>
         {% endif %}
         {% if character.story_title %}
