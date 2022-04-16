@@ -15,7 +15,7 @@
 </form>
 
 <table class="users">
-    {% for block in user.block_set.all %}
+    {% for block in user.blocked_by.all %}
 
         <tr>
             <td class="profilepic">
