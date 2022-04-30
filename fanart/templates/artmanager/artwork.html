@@ -35,9 +35,11 @@ var downloadZIP = function() {
 refreshThumbsInterval = setInterval('checkThumbs()', 1000);
 </script>
 
+{% if user.num_pictures %}
 <div class="am_altpagelink">
     <a class="button" href="#" onclick="downloadZIP();">Download ZIP</a>
 </div>
+{% endif %}
 
 <h2>Your Artwork</h2>
 
