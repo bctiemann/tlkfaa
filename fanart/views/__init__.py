@@ -16,8 +16,6 @@ from django.contrib.auth import (
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
@@ -1827,8 +1825,7 @@ class RemoveSocialMediaIdentityView(LoginRequiredMixin, DeleteView):
 
 # Profile pic mgmt views -- ArtManager?
 
-@method_decorator(login_required, name='dispatch')
-class UploadProfilePicView(UpdateView):
+class UploadProfilePicView(LoginRequiredMixin, UpdateView):
     model = models.User
     form_class = forms.UploadProfilePicForm
 
@@ -1897,8 +1894,7 @@ class ProfilePicStatusView(APIView):
         return Response(response)
 
 
-@method_decorator(login_required, name='dispatch')
-class RemoveProfilePicView(UpdateView):
+class RemoveProfilePicView(LoginRequiredMixin, UpdateView):
     model = models.User
     form_class = forms.RemoveProfilePicForm
 
@@ -1929,8 +1925,7 @@ class RemoveProfilePicView(UpdateView):
 
 # Banner mgmt views -- ArtManager?
 
-@method_decorator(login_required, name='dispatch')
-class UploadBannerView(CreateView):
+class UploadBannerView(LoginRequiredMixin, CreateView):
     model = models.Banner
     form_class = forms.UploadBannerForm
 
@@ -1977,8 +1972,7 @@ class UploadBannerView(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
-class RemoveBannerView(DeleteView):
+class RemoveBannerView(LoginRequiredMixin, DeleteView):
     model = models.Banner
 
     def get(self, request, *args, **kwargs):
