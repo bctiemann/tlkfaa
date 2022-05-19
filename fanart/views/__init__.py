@@ -3,7 +3,7 @@ import hashlib
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseNotAllowed
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -16,6 +16,8 @@ from django.contrib.auth import (
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
@@ -1825,9 +1827,13 @@ class RemoveSocialMediaIdentityView(LoginRequiredMixin, DeleteView):
 
 # Profile pic mgmt views -- ArtManager?
 
+@method_decorator(login_required, name='dispatch')
 class UploadProfilePicView(UpdateView):
     model = models.User
     form_class = forms.UploadProfilePicForm
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(['POST'])
 
     def get_object(self):
         user = self.request.user
@@ -1891,9 +1897,13 @@ class ProfilePicStatusView(APIView):
         return Response(response)
 
 
+@method_decorator(login_required, name='dispatch')
 class RemoveProfilePicView(UpdateView):
     model = models.User
     form_class = forms.RemoveProfilePicForm
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(['POST'])
 
     def get_object(self):
         return self.request.user
@@ -1919,9 +1929,13 @@ class RemoveProfilePicView(UpdateView):
 
 # Banner mgmt views -- ArtManager?
 
+@method_decorator(login_required, name='dispatch')
 class UploadBannerView(CreateView):
     model = models.Banner
     form_class = forms.UploadBannerForm
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(['POST'])
 
     def form_invalid(self, form):
         response = {'success': False}
@@ -1963,8 +1977,12 @@ class UploadBannerView(CreateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class RemoveBannerView(DeleteView):
     model = models.Banner
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(['POST'])
 
     def get_object(self):
         return self.request.user.banner
@@ -2010,6 +2028,9 @@ class PostBulletinReplyView(LoginRequiredMixin, CreateView):
     model = models.ThreadedComment
     form_class = forms.ThreadedCommentForm
     template_name = 'includes/comments.html'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(['POST'])
 
     def form_valid(self, form):
         logger.info(form.cleaned_data)
