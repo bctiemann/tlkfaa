@@ -1,6 +1,6 @@
 
 from django.conf import settings
-from django.shortcuts import render, render_to_response, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
