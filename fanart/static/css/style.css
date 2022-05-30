@@ -3023,6 +3023,17 @@ div.login-failed-banner {
 	outline-offset: -2px;
 }
 
+
+/* Artwork tag */
+
+.search-year-range {
+	margin: 10px 0px;
+}
+.search-year-range input {
+	width: 100px;
+}
+
+
 .coloring-pictures {
 	text-align: left;
 }

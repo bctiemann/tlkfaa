@@ -340,6 +340,14 @@ class ArtworkView(UserPaneMixin, TemplateView):
             artwork = artwork.filter(pk__in=random_ids)
         elif list_type in ['search', 'tag', 'character']:
             term = self.request.GET.get('term', None)
+            year_from = self.request.GET.get('year_from')
+            year_to = self.request.GET.get('year_to')
+            if year_from:
+                artwork = artwork.filter(date_uploaded__year__gte=year_from)
+                context['year_from'] = year_from
+            if year_to:
+                artwork = artwork.filter(date_uploaded__year__lte=year_to)
+                context['year_to'] = year_to
             if not term:
                 context['show_search_input'] = True
                 context['top_300_tags'] = sorted(models.Tag.objects.annotate(num_pictures=Count('picture')).order_by('-num_pictures')[:300], key=lambda tag: tag.num_pictures, reverse=True)

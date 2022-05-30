@@ -1,16 +1,31 @@
 {% if show_search_input %}
 
-	<form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
-	<input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
-	<button type="button" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
-	<button type="button" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
-	</form>
+    <div class="search-form artwork-search">
+        <form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
+            <input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
+            <button type="submit" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
+            <button type="submit" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
+            <div class="search-year-range">
+                Years:
+                    <input type="number" name="year_from" id="id_year_from" placeholder="From" value="{{ year_from }}" />
+                    <input type="number" name="year_to" id="id_year_to" placeholder="To" value="{{ year_to }}" />
+            </div>
+        </form>
+    </div>
 
-        <div class="popular-tags">
+    <div class="popular-tags">
 
         <div class="tagcolumn">
         {% for tag in top_300_tags %}
-            <div class="tag"><a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag.tag }}">{{ tag.tag }} <span class="tagcount">{{ tag.num_pictures }}</span></a></div>
+            <div class="tag">
+                <a
+                    class="tag"
+                    href="{% url "artwork" list="tag" %}?term={{ tag.tag }}"
+                >
+                    {{ tag.tag }}
+                    <span class="tagcount">{{ tag.num_pictures }}</span>
+                </a>
+            </div>
         {% endfor %}
 	    </div>
 

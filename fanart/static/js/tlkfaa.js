@@ -2699,6 +2699,8 @@ function listArtwork(list, count) {
     const params = [];
     if ((list === 'search' || list === 'tag') && count > 0) {
         params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+        params.push({name: 'year_from', value: $('#id_year_from').val()});
+        params.push({name: 'year_to', value: $('#id_year_to').val()});
     }
     const queryParts = [];
     params.forEach(function(e){
