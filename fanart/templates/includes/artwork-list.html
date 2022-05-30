@@ -40,7 +40,7 @@
 
     {% if forloop.counter == count %}
         <button
-            onClick="getMoreArtwork({{ next_start }}, '{{ list_type }}', {{ count }}, '{{ term }}', this)"
+            onClick="getMoreArtwork({{ next_start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', this)"
         >
             More
         </button>

@@ -2790,9 +2790,9 @@ function getMoreArtists(start,list,count,term,obj) {
   ArtistList[list] = start;
 }
 
-function getMoreArtwork(start, list, count, term, obj) {
+function getMoreArtwork(start, list, count, term, yearFrom, yearTo, obj) {
 //  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = '/artwork/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
+  var url = `/artwork/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}$year_to=${yearTo}`;
   obj.classList.add('loading-spinner');
   $.ajax({ url: url, success: function(data) {
 //    $('#artwork_'+list).append(data);
