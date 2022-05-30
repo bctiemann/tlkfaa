@@ -8,6 +8,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from fanart import views as fanart_views
+from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
@@ -51,7 +52,6 @@ urlpatterns = [
     url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
     url(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
-    url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', fanart_views.ContestsView.as_view(), name='contests'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
     url(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
     url(r'^FeaturedPictures/$', fanart_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
@@ -96,12 +96,15 @@ urlpatterns = [
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     url(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/$', fanart_views.ContestView.as_view(), name='contest'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/entry/create/$', fanart_views.ContestEntryCreateView.as_view(), name='contest-entry-create'),
-    url(r'^contest/entry/(?P<entry_id>[0-9]+)/delete/$', fanart_views.ContestEntryDeleteView.as_view(), name='contest-entry-delete'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/vote/$', fanart_views.ContestVoteView.as_view(), name='contest-vote'),
-    url(r'^contest/setup/$', fanart_views.ContestSetupView.as_view(), name='contest-setup'),
-    url(r'^contest/setup/success/$', fanart_views.ContestSetupSuccessView.as_view(), name='contest-setup-success'),
+
+    # Contests
+    url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', contests.ContestsView.as_view(), name='contests'),
+    url(r'^contest/(?P<contest_id>[0-9]+)/$', contests.ContestView.as_view(), name='contest'),
+    url(r'^contest/(?P<contest_id>[0-9]+)/entry/create/$', contests.ContestEntryCreateView.as_view(), name='contest-entry-create'),
+    url(r'^contest/entry/(?P<entry_id>[0-9]+)/delete/$', contests.ContestEntryDeleteView.as_view(), name='contest-entry-delete'),
+    url(r'^contest/(?P<contest_id>[0-9]+)/vote/$', contests.ContestVoteView.as_view(), name='contest-vote'),
+    url(r'^contest/setup/$', contests.ContestSetupView.as_view(), name='contest-setup'),
+    url(r'^contest/setup/success/$', contests.ContestSetupSuccessView.as_view(), name='contest-setup-success'),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),
