@@ -19,8 +19,6 @@ urlpatterns = [
     # url(r'^favicon\.ico$', fanart_views.favicon),
     # url(r'^robots\.txt$', fanart_views.robots),
 
-    url(r'^admin/', admin.site.urls),
-
     url(r'^admin/approve.jsp$', RedirectView.as_view(url='/admin/approve/', permanent=True), name='approve-redirect'),
     url(r'^admin/approve/$', approval_views.ApprovalHomeView.as_view(), name='approve'),
     url(r'^admin/approve/list/$', approval_views.PendingListView.as_view(), name='pending-list'),
@@ -35,6 +33,8 @@ urlpatterns = [
     url(r'^admin/approve/auto_approval/(?P<artist_id>[0-9]+)/$', approval_views.AutoApprovalView.as_view(), name='pending-auto-approval'),
     url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/$', approval_views.ModNotesView.as_view(), name='pending-mod-notes'),
     url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/add/$', approval_views.AddModNoteView.as_view(), name='pending-mod-notes-add'),
+
+    url(r'^admin/', admin.site.urls),
 
     url(
         r'^login/$',
