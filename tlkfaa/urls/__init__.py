@@ -19,20 +19,8 @@ urlpatterns = [
     # url(r'^favicon\.ico$', fanart_views.favicon),
     # url(r'^robots\.txt$', fanart_views.robots),
 
-    url(r'^admin/approve.jsp$', RedirectView.as_view(url='/admin/approve/', permanent=True), name='approve-redirect'),
-    url(r'^admin/approve/$', approval_views.ApprovalHomeView.as_view(), name='approve'),
-    url(r'^admin/approve/list/$', approval_views.PendingListView.as_view(), name='pending-list'),
-    url(r'^admin/approve/count/$', approval_views.PendingCountView.as_view(), name='pending-count'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/$', approval_views.PendingDetailView.as_view(), name='pending-detail'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/approve/$', approval_views.PendingApproveView.as_view(), name='pending-approve'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/reject/$', approval_views.PendingRejectView.as_view(), name='pending-reject'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/resize/$', approval_views.PendingResizeView.as_view(), name='pending-resize'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/convert/$', approval_views.PendingConvertView.as_view(), name='pending-convert'),
-    url(r'^admin/approve/(?P<pending_id>[0-9]+)/upload_thumb/$', approval_views.PendingUploadThumbView.as_view(), name='pending-upload-thumb'),
-    url(r'^admin/approve/thumb_status/$', approval_views.PendingThumbStatusView.as_view(), name='pending-thumb-status'),
-    url(r'^admin/approve/auto_approval/(?P<artist_id>[0-9]+)/$', approval_views.AutoApprovalView.as_view(), name='pending-auto-approval'),
-    url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/$', approval_views.ModNotesView.as_view(), name='pending-mod-notes'),
-    url(r'^admin/approve/mod_notes/(?P<artist_id>[0-9]+)/add/$', approval_views.AddModNoteView.as_view(), name='pending-mod-notes-add'),
+    path('admin/approve.jsp', RedirectView.as_view(pattern_name='approve', permanent=True), name='approve-redirect'),
+    path('admin/approve/', include('tlkfaa.urls.approvals')),
 
     url(r'^admin/', admin.site.urls),
 
