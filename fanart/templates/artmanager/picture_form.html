@@ -28,7 +28,7 @@
                 <div class="charcount"><a target="_blank" href="http://www.bbcode.org/reference.php">BBcode</a> allowed</div>
             </td>
             <td class="data">
-                <textarea name="title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="The picture description must be longer than zero and less than ${maxtitlechars} characters." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_{{ picture.id }}_charcount')">{{ picture.title }}</textarea>
+                <textarea name="title" validate="hasvalue,maxlen:{{ max_title_chars }}" message="The picture description must be longer than zero and less than {{ max_title_chars }} characters." onKeyUp="refreshCharCount(this,{{ max_title_chars }},'title_{{ picture.id }}_charcount')">{{ picture.title }}</textarea>
             </td>
         </tr>
         <tr>

@@ -1,28 +1,26 @@
-        <table>
+<table>
 
-        <c:if test="${qryIMIDs.rowCount > 0}">
-
-                {% for identity in user.socialmediaidentity_set.all %}
-                <tr>
-                <td>{{ identity.social_media }}</td>
-                <td>{{ identity.identity }}</td>
-                <td><a href="javascript:nop()" onClick="removeIM('{{ identity.id }}')">remove</a></td>
-                </tr>
-                {% endfor %}
-
-        </c:if>
-
+    {% for identity in user.socialmediaidentity_set.all %}
         <tr>
+            <td>{{ identity.social_media }}</td>
+            <td>{{ identity.identity }}</td>
+            <td><a href="javascript:nop()" onClick="removeIM('{{ identity.id }}')">remove</a></td>
+        </tr>
+    {% endfor %}
+
+    <tr>
         <td>
-        <select name="imclient_new" id="imclient_new">
-        {% for social_media in social_medias %}
-        <option value="{{ social_media.id }}">{{ social_media.name }}</option>
-        {% endfor %}
-        </select>
+            <select name="imclient_new" id="imclient_new">
+                {% for social_media in social_medias %}
+                    <option value="{{ social_media.id }}">{{ social_media.name }}</option>
+                {% endfor %}
+            </select>
         </td>
         <td><input type="text" name="imid_new" id="imid_new" maxlength="50" /></td>
-        <td><a href="javascript:nop()" onClick="addIM(document.getElementById('imclient_new'),document.getElementById('imid_new'))">add</a></td>
-        </tr>
+        <td>
+            <a href="javascript:nop()" onClick="addIM(document.getElementById('imclient_new'),document.getElementById('imid_new'))">add</a>
+        </td>
+    </tr>
 
-        </table>
+</table>
 

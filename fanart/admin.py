@@ -273,7 +273,7 @@ admin.site.register(fanart_models.Showcase, ShowcaseAdmin)
 class FeaturedArtistAdmin(admin.ModelAdmin):
     list_display = ('artist', 'month_featured',)
     autocomplete_fields = ('artist',)
-    search_fields = ('username',)
+    search_fields = ('artist__username',)
 admin.site.register(fanart_models.FeaturedArtist, FeaturedArtistAdmin)
 
 

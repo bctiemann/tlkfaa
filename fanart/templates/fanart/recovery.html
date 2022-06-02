@@ -13,65 +13,6 @@
 
 <h2>Recover Your Profile Name / Password</h2>
 
-
-{% comment %}
-		<p>Your profile name is <b>${recovery.artistname}</b>.</p>
-
-		<p>An email containing a password recovery token is now being sent to your email address on file, <b>${recovery.email}</b>.
-		Expect it to arrive within the next few minutes. Follow the instructions in this email to reset your profile password.</p>
-
-		</div>
-
-		</c:if>
-		</c:forEach>
-
-{% endcomment %}
-
-{% comment %}
-	<div id="recovery">
-
-	<form>
-	<div class="recovertype pageinfo">
-	<p>If you have forgotten your profile name, you can recover it if you know the email address in your profile.</p>
-	<div class="centerdiv">
-	<button type="button" onClick="setupRecovery('name')">Forgot Name</button>
-	</div>
-	</div>
-	<div class="recovertype pageinfo">
-	<p>If you have forgotten your password, you can reset it if you know your profile name or email address.</p>
-	<div class="centerdiv">
-	<button type="button" onClick="setupRecovery('password')">Forgot Password</button>
-	</div>
-	</div>
-	</form>
-
-	<br clear="all" />
-
-	</div>
-
-        <div id="recovery_name">
-        <form method="POST" action="{% url "recovery-name" %}">
-
-        <div class="pageinfo">
-        <p>Enter your email address to recover your profile name.</p>
-        </div>
-
-        <table class="formtable">
-        <tr>
-        <td class="label">Email</td>
-        <td class="data"><input name="email" class="std" /></td>
-        </tr>
-        <tr>
-        <td colspan="2" class="buttons">
-        <button type="submit">Send Recovery Email</button>
-        </td>
-        </tr>
-        </table>
-        {% csrf_token %}
-        </form>
-        </div>
-{% endcomment %}
-
 {% block recovery_content %}
 <div class="pageinfo">
     <p>If you have forgotten your profile name or your password, you can recover it here.</p>

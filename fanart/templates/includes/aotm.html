@@ -24,7 +24,9 @@
 
     <div id="aotm_imgs">
         {% for picture in aotm.featuredartistpicture_set.all %}
-            <a href="{{ picture.showcase_picture.url }}?{{ picture.picture.id }}" rel="shadowbox[aotm]"><img src="{{ picture.thumbnail_url }}" width="60" height="${pic.thumbheight}" /></a>
+            <a href="{{ picture.showcase_picture.url }}?{{ picture.picture.id }}" rel="shadowbox[aotm]">
+                <img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.picture.thumb_height }}" />
+            </a>
         {% endfor %}
     </div>
 

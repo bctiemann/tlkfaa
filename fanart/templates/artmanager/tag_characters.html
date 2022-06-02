@@ -1,34 +1,3 @@
-{% comment %}
-<c:set var="taglist" value="${param.taglist}" />
-<%-- This needs to take into account pendingid if this function (preserve tagged char list when you click on the "tag characters" link) is
-to work. Probably not worth it since there will always be the clearing-out behavior for new uploads. --%>
-<c:if test="${pictureid > 0 && param.taglist == null}">
-	<sql:query var="qryPictureCharacters"> 
-	SELECT * FROM picturecharacters
-	WHERE pictureid=?
-	<sql:param value="${pictureid}" />
-	</sql:query>
-	<c:forEach var="picturecharacter" items="${qryPictureCharacters.rows}">
-	<c:set var="taglist" value="${taglist},${picturecharacter.characterid}" />
-	</c:forEach>
-</c:if>
-
-<sql:query var="qryCharacterCanon">
-SELECT * FROM characters
-WHERE artistid IS NULL
-AND deleted IS NULL
-ORDER BY charactername
-</sql:query>
-
-<sql:query var="qryCharacterYours">
-SELECT * FROM characters
-WHERE artistid=?
-AND deleted IS NULL
-ORDER BY charactername
-<sql:param value="${artist.artistid}" />
-</sql:query>
-{% endcomment %}
-
 <div class="tagcharacters">
 
     <table class="formtable tagcharacters">
