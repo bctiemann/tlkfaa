@@ -341,10 +341,11 @@ class ArtworkView(UserPaneMixin, TemplateView):
             term = self.request.GET.get('term', None)
             year_from = self.request.GET.get('year_from')
             year_to = self.request.GET.get('year_to')
-            if year_from and year_from.isnumeric():
+            current_year = timezone.now().year
+            if year_from and year_from.isnumeric() and current_year >= int(year_from) > 0:
                 artwork = artwork.filter(date_uploaded__year__gte=year_from)
                 context['year_from'] = year_from
-            if year_to and year_to.isnumeric():
+            if year_to and year_to.isnumeric() and current_year >= int(year_to) > 0:
                 artwork = artwork.filter(date_uploaded__year__lte=year_to)
                 context['year_to'] = year_to
             if not term:
