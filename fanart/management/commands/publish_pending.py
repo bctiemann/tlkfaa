@@ -1,12 +1,10 @@
+import os
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import six, timezone
+from django.utils import timezone
 
-import os
-import fnmatch
-import unicodedata, re
-
-import logging
 logger = logging.getLogger(__name__)
 
 from fanart import models, tasks
