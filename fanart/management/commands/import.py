@@ -1,54 +1,52 @@
+import MySQLdb
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import six, timezone
-
-import os
-import unicodedata, re
-import MySQLdb
-
-import logging
-logger = logging.getLogger(__name__)
+from django.utils import timezone
 
 from fanart import models as fanart_models
 from trading_tree.models import Offer, Claim
 from coloring_cave.models import Base, ColoringPicture
 from pms.models import PrivateMessage
 
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
 
     enabled = {
-#        'do_users': True,
-#        'do_folders': True,
-#        'do_pictures': True,
-#        'do_comments': True,
-#        'do_shouts': True,
-#        'do_coloringbase': True,
-#        'do_coloringpics': True,
-#        'do_characters': True,
-#        'do_favorites': True,
-#        'do_offers': True,
-#        'do_claims': True,
-#        'do_picturecharacters': True,
-#        'do_tags': True,
-#        'do_approvers': True,
-#        'do_sketcheradmins': True,
+       # 'do_users': True,
+       # 'do_folders': True,
+       # 'do_pictures': True,
+       # 'do_comments': True,
+       # 'do_shouts': True,
+       # 'do_coloringbase': True,
+       # 'do_coloringpics': True,
+       # 'do_characters': True,
+       # 'do_favorites': True,
+       # 'do_offers': True,
+       # 'do_claims': True,
+       # 'do_picturecharacters': True,
+       # 'do_tags': True,
+       # 'do_approvers': True,
+       # 'do_sketcheradmins': True,
         'do_requests': True,
-#        'do_imclients': True,
-#        'do_imids': True,
-#        'do_newpics': True,
-#        'do_approval_access': True,
-#        'do_adminblog': True,
-#        'do_artistnames': True,
-#        'do_blocks': True,
-#        'do_bulletins': True,
-#        'do_contests': True,
-#        'do_contestpics': True,
-#        'do_contestvotes': True,
-#        'do_pms': True,
-#        'do_specials': True,
-#        'do_votes': True,
-#        'do_customicons': True,
+       # 'do_imclients': True,
+       # 'do_imids': True,
+       # 'do_newpics': True,
+       # 'do_approval_access': True,
+       # 'do_adminblog': True,
+       # 'do_artistnames': True,
+       # 'do_blocks': True,
+       # 'do_bulletins': True,
+       # 'do_contests': True,
+       # 'do_contestpics': True,
+       # 'do_contestvotes': True,
+       # 'do_pms': True,
+       # 'do_specials': True,
+       # 'do_votes': True,
+       # 'do_customicons': True,
     }
 
     GENDERS = {
@@ -149,7 +147,13 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        db = MySQLdb.connect(passwd='28DcBPP2G6ckhnmXybFR8R25', db='fanart', host='10.0.0.2', user='fadbuser', charset='utf8mb4')
+        db = MySQLdb.connect(
+            passwd=settings.DATABASES['legacy']['PASSWORD'],
+            db=settings.DATABASES['legacy']['NAME'],
+            host=settings.DATABASES['legacy']['HOST'],
+            user=settings.DATABASES['legacy']['USER'],
+            charset=settings.DATABASES['legacy']['OPTIONS']['charset'],
+        )
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         if 'do_users' in self.enabled:

@@ -1,18 +1,12 @@
+import MySQLdb
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import six, timezone
-
-import os
-import unicodedata, re
-import MySQLdb
-
-import logging
-logger = logging.getLogger(__name__)
 
 from fanart import models as fanart_models
-from trading_tree.models import Offer, Claim
-from coloring_cave.models import Base, ColoringPicture
-from pms.models import PrivateMessage
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -21,7 +15,13 @@ class Command(BaseCommand):
         parser.add_argument('--key', dest='key',)
 
     def handle(self, *args, **options):
-        db = MySQLdb.connect(passwd='28DcBPP2G6ckhnmXybFR8R25', db='fanart', host='10.0.0.2', user='fadbuser', charset='utf8mb4')
+        db = MySQLdb.connect(
+            passwd=settings.DATABASES['legacy']['PASSWORD'],
+            db=settings.DATABASES['legacy']['NAME'],
+            host=settings.DATABASES['legacy']['HOST'],
+            user=settings.DATABASES['legacy']['USER'],
+            charset=settings.DATABASES['legacy']['OPTIONS']['charset'],
+        )
         c = db.cursor(MySQLdb.cursors.DictCursor)
 
         count = 0
