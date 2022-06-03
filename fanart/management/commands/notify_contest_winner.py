@@ -1,12 +1,13 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import six, timezone
+from django.utils import timezone
 from django.urls import reverse
 
-import logging
-logger = logging.getLogger(__name__)
-
 from fanart import models, tasks
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -19,9 +20,9 @@ class Command(BaseCommand):
                 print(entry.votes, latest_contest.total_votes)
                 if entry_notified:
                     continue
-                if entry.date_notified == None or (timezone.now() - entry.date_notified).days < 3:
+                if entry.date_notified is None or (timezone.now() - entry.date_notified).days < 3:
                     entry_notified = True
-                    if entry.date_notified == None:
+                    if entry.date_notified is None:
                         entry.date_notified = timezone.now()
                         entry.save()
 
@@ -46,4 +47,3 @@ class Command(BaseCommand):
                         html_template=html_template,
                         bcc=[settings.DEBUG_EMAIL]
                     )
-
