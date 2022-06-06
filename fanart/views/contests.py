@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 class ContestsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/contests.html'
 
+    def get_queryset(self):
+        return models.Contest.objects.filter(is_active=True)
+
     def get_context_data(self, **kwargs):
         context = super(ContestsView, self).get_context_data(**kwargs)
 
@@ -28,14 +31,7 @@ class ContestsView(UserPaneMixin, TemplateView):
         if sort_by not in ['artist', 'startdate', 'deadline']:
             sort_by = 'startdate'
 
-        contest_type = kwargs.get('contest_type', None)
-        if not contest_type:
-            contest_type = 'global'
-
-        personal_account_deadline_cutoff_date = timezone.now() - timedelta(days=2)
-        contests = models.Contest.objects.filter(type=contest_type, is_active=True)
-        if contest_type == 'personal':
-            contests = contests.filter(date_end__gte=personal_account_deadline_cutoff_date)
+        contests = self.get_queryset()
 
         if sort_by == 'artist':
             contests = contests.order_by('creator__username')
@@ -48,6 +44,22 @@ class ContestsView(UserPaneMixin, TemplateView):
         context['sort_by'] = sort_by
 
         return context
+
+
+class ContestsGlobalView(ContestsView):
+
+    def get_queryset(self):
+        contests = super().get_queryset()
+        return contests.filter(type='global')
+
+
+class ContestsPersonalView(ContestsView):
+
+    def get_queryset(self):
+        contests = super().get_queryset()
+        contests = contests.filter(type='personal')
+        personal_account_deadline_cutoff_date = timezone.now() - timedelta(days=2)
+        return contests.filter(date_end__gte=personal_account_deadline_cutoff_date)
 
 
 class ContestView(UserPaneMixin, DetailView):

@@ -86,13 +86,10 @@ urlpatterns = [
     url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
 
     # Contests
-    url(r'^Contests/(?:(?P<contest_type>(global|personal))/)?$', contests.ContestsView.as_view(), name='contests'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/$', contests.ContestView.as_view(), name='contest'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/entry/create/$', contests.ContestEntryCreateView.as_view(), name='contest-entry-create'),
-    url(r'^contest/entry/(?P<entry_id>[0-9]+)/delete/$', contests.ContestEntryDeleteView.as_view(), name='contest-entry-delete'),
-    url(r'^contest/(?P<contest_id>[0-9]+)/vote/$', contests.ContestVoteView.as_view(), name='contest-vote'),
-    url(r'^contest/setup/$', contests.ContestSetupView.as_view(), name='contest-setup'),
-    url(r'^contest/setup/success/$', contests.ContestSetupSuccessView.as_view(), name='contest-setup-success'),
+    path('Contests/', contests.ContestsView.as_view(), name='contests'),
+    path('Contests/global/', contests.ContestsGlobalView.as_view(), name='contests-global'),
+    path('Contests/personal/', contests.ContestsPersonalView.as_view(), name='contests-personal'),
+    path('contest/', include('tlkfaa.urls.contests')),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),
