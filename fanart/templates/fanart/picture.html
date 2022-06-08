@@ -138,6 +138,9 @@ img.featured-picture {
                             {% endif %}
                         </li>
                         <li>{{ picture.date_uploaded|date }}</li>
+                        {% if picture.date_updated %}
+                            <li>Edited: {{ picture.date_updated|date }}</li>
+                        {% endif %}
                         <li>{{ picture.width }} &times; {{ picture.height }} {{ picture.type }}
                         <li>{{ picture.file_size|filesizeformat }}</li>
                         <li>{{ picture.threadedcomment_set.count }} comment{{ picture.threadedcomment_set.count|pluralize }}</li>

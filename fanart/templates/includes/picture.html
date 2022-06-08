@@ -22,7 +22,12 @@
                     <div class="picturedetails">
 
                         <div class="picnumber">{% pic_number pic_number pictures.number pictures_paginator.per_page %}</div>
-                        <div class="picdate">{{ picture.date_uploaded }}</div>
+                        <div class="picdate">
+                            {{ picture.date_uploaded }}
+                            {% if picture.date_updated %}
+                                (Edited: {{ picture.date_updated|date }})
+                            {% endif %}
+                        </div>
                         <div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
                         {% if picture.folder %}
                             <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
