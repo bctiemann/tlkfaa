@@ -21,3 +21,4 @@ wiki==0.7.9
 pyyaml==5.4.1
 user-agents==2.1
 gunicorn==20.1.0
+bumpversion==0.6.0
