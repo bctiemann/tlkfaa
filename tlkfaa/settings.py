@@ -390,7 +390,7 @@ BULLETINS_MODERATED = False
 
 DRAWPILE_CHANNEL_NAME = 'Sketcher Reborn'
 
-VERSION = '10.0.2'
+VERSION = '10.0.3'
 
 
 # Local overrides from env.yaml
