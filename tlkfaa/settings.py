@@ -390,6 +390,8 @@ BULLETINS_MODERATED = False
 
 DRAWPILE_CHANNEL_NAME = 'Sketcher Reborn'
 
+VERSION = '10.0.2'
+
 
 # Local overrides from env.yaml
 with open(os.path.join(BASE_DIR, 'env.yaml')) as f:
