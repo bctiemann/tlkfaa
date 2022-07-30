@@ -12,4 +12,4 @@ pymysql.version_info = (1, 4, 6, 'final', 0)  # change mysqlclient version
 pymysql.install_as_MySQLdb()
 
 
-__version__ = '10.0.1'
+__version__ = '10.0.2'
