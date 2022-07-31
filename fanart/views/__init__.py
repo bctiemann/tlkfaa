@@ -406,10 +406,10 @@ class CharactersView(UserPaneMixin, TemplateView):
             list_type = kwargs.get('list', self.request.GET.get('list', default_characters_view))
             if not list_type in models.characters_tabs and not dir_name:
                 list_type = default_characters_view
-            if list_type == 'artist' and term and term.isnumeric():
+            if list_type == 'artist':
+                if not term or not term.isnumeric():
+                    raise Http404
                 context['artist'] = get_object_or_404(models.User, is_artist=True, pk=term)
-            else:
-                raise Http404
 
         mode = list_type
         tab_selected = list_type
