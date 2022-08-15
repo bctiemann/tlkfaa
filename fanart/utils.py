@@ -13,6 +13,7 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
+
 def tree_to_list(items, sort_by=None, parent_field='parent', omit=[], reverse=False):
 
     items_flat = []
@@ -51,6 +52,7 @@ def tree_to_list(items, sort_by=None, parent_field='parent', omit=[], reverse=Fa
                 roots.insert(0, child)
 
     return items_sorted
+
 
 def list_at_node(items, root):
     new_list = []
@@ -153,11 +155,6 @@ class PagesLink(object):
         self.pages_nav = pages_nav
         self.items_per_page = items_per_page
 
-def make_dir_name(username):
-    new_dir_name = re.sub('&#[0-9]+;', 'x', username)
-    new_dir_name = re.sub("[\\']", '', new_dir_name)
-    new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
-    return new_dir_name
 
 def unescape(text):
     def fixup(m):

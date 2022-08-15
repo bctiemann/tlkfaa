@@ -1,4 +1,3 @@
-
 from django.conf import settings
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponse, JsonResponse
@@ -120,7 +119,7 @@ class PrefsUpdateView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
                 }
                 return HttpResponse(json.dumps(ajax_response))
 
-            new_dir_name = utils.make_dir_name(new_username)
+            new_dir_name = models.make_dir_name(new_username)
             try:
                 user.check_dir_name_for_os_collision(new_dir_name)
             except ValidationError as e:

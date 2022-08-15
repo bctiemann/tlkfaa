@@ -24,7 +24,7 @@ from pwd import getpwnam
 from precise_bbcode.bbcode import get_parser
 from user_agents import parse as parse_ua
 
-from fanart.utils import dictfetchall, make_dir_name, upperfirst, sizeof_fmt
+from fanart.utils import dictfetchall, upperfirst, sizeof_fmt
 from fanart.tasks import process_images
 
 import logging
@@ -104,6 +104,14 @@ def validate_unique_email(value):
             _('The email %(value)s is already in use.'),
             params={'value': value},
         )
+
+
+def make_dir_name(username):
+    new_dir_name = User.normalize_username(username)
+    new_dir_name = re.sub('&#[0-9]+;', 'x', new_dir_name)
+    new_dir_name = re.sub("[\\']", '', new_dir_name)
+    new_dir_name = re.sub('[^a-zA-Z0-9]', '_', new_dir_name)
+    return new_dir_name
 
 
 class OverwriteStorage(FileSystemStorage):

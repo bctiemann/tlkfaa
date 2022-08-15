@@ -737,7 +737,7 @@ class CheckNameAvailabilityView(APIView):
 
     def get(self, request, username=None):
         response = {'is_available': True}
-        dir_name = utils.make_dir_name(username)
+        dir_name = models.make_dir_name(username)
         response['dir_name'] = dir_name
         try:
             models.validate_unique_username(dir_name)
