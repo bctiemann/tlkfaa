@@ -96,6 +96,11 @@ button {
 	cursor: pointer;
 	margin: 1px;
 }
+button:hover,
+.button:hover,
+a.button:hover {
+	background-color: #111;
+}
 .button:hover,
 button:hover,
 .button:link,
@@ -104,7 +109,7 @@ button:link,
 button:hover,
 .button:visited,
 button:visited {
-	background-color: #111; color: #fff;
+	color: #fff;
 	text-decoration: none;
 }
 .button:active,

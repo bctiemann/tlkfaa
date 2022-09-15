@@ -83,12 +83,12 @@
                     <td class="label">Picture From Gallery</td>
                     <td class="data" id="picselect">
                         <div id="pickpicture_new"></div>
-                        <a href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">select picture</a>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="buttons">
-                        <button type="button" 1onClick="this.form.submit();" onClick="postContestEntry(this.form)">Enter Picture</button>
+                        <a class="button" type="button" href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">Choose Picture</a>
+                        <button type="button" onClick="postContestEntry(this.form)">Enter Picture</button>
                     </td>
                 </tr>
             </table>
