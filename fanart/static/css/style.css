@@ -587,6 +587,7 @@ div.bulletinlink {
 	padding: 8px;
 	border-radius: 5px;
 	border: 1px solid rgba(0,0,0,0);
+	word-break: break-all;
 }
 div.bulletinlink:hover {
 	background-color: #f0f0ff;
