@@ -358,11 +358,11 @@ ORDER BY fanart_user.sort_name
 
     @property
     def unread_comments(self):
-        return ThreadedComment.objects.filter(picture__artist=self, is_received=False).exclude(user=self).order_by('-date_posted')
+        return ThreadedComment.objects.filter(picture__artist=self, is_deleted=False, is_received=False).exclude(user=self).order_by('-date_posted')
 
     @property
     def unread_shouts(self):
-        return Shout.objects.filter(artist=self, is_received=False).order_by('-date_posted')
+        return Shout.objects.filter(artist=self, is_deleted=False, is_received=False).order_by('-date_posted')
 
     @property
     def date_joined_str(self):
