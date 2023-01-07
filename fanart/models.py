@@ -130,8 +130,11 @@ class FanartUserManager(UserManager):
 
     def recently_active(self, request=None):
         artists = self.get_queryset().filter(is_artist=True, is_active=True, num_pictures__gt=0).order_by('-last_upload')
-        if request and request.user.is_authenticated == False:
-            artists = artists.filter(is_public=True)
+        if request:
+            if request.user.is_authenticated:
+                artists = artists.exclude(id__in=request.user.blocked_artist_ids)
+            else:
+                artists = artists.filter(is_public=True)
         return artists[0:10]
 
     def upcoming_birthdays(self):
@@ -347,7 +350,15 @@ ORDER BY fanart_user.sort_name
 
     @property
     def blocked_commenters(self):
-        return [b.blocked_user for b in self.blocked_by.all()]
+        return [b.blocked_user for b in self.blocked_users.all()]
+
+    @property
+    def blocked_artists(self):
+        return self.blocked_commenters
+
+    @property
+    def blocked_artist_ids(self):
+        return [u.id for u in self.blocked_artists]
 
     def is_blocked_by(self, blocking_user):
         return Block.objects.filter(blocked_user=self, user=blocking_user).exists()
@@ -1518,7 +1529,7 @@ class ArtistName(models.Model):
 
 
 class Block(models.Model):
-    user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_by', on_delete=models.SET_NULL)
+    user = models.ForeignKey('User', null=True, blank=True, related_name='blocked_users', on_delete=models.SET_NULL)
     blocked_user = models.ForeignKey('User', null=True, blank=True, related_name='blocks_received', on_delete=models.SET_NULL)
     date_blocked = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
