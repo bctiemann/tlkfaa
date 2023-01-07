@@ -241,6 +241,10 @@ class ArtistsView(UserPaneMixin, TemplateView):
         initial = self.request.GET.get('initial', None)
 
         artists = models.User.objects.filter(is_active=True, is_artist=True, num_pictures__gt=0)
+
+        if self.request.user.is_authenticated:
+            artists = artists.exclude(id__in=self.request.user.blocked_artist_ids)
+
         one_month_ago = timezone.now() - timedelta(days=180)
         if list_type == 'name':
             if not initial:
@@ -322,6 +326,10 @@ class ArtworkView(UserPaneMixin, TemplateView):
             initial = None
 
         artwork = models.Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
+
+        if self.request.user.is_authenticated:
+            artwork = artwork.exclude(artist__in=self.request.user.blocked_artists)
+
         three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
         one_month_ago = timezone.now() - timedelta(days=ONE_MONTH)
         if list_type == 'unviewed' and self.request.user.is_authenticated:
