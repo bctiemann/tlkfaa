@@ -54,7 +54,7 @@
                         </form>
                     </div>
                 </td></tr></table>
-                {% if user.is_authenticated and not current_user_is_blocked %}
+                {% if user.is_authenticated and not current_user_is_blocked and user.can_comment %}
                     <div class="commentbuttons">
                         {% if picture.artist == user %}
                             {% if comment.user in picture.artist.blocked_commenters %}
@@ -82,7 +82,7 @@
 {% endfor %}
 
 
-{% if user.is_authenticated and not current_user_is_blocked %}
+{% if user.is_authenticated and not current_user_is_blocked and user.can_comment %}
 
 <form name="commentform" onSubmit="return false">
     {% csrf_token %}
