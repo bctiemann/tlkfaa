@@ -20,7 +20,7 @@
                         <div class="charactername" id="charactername_{{ character.id }}">{{ character.name }}</div>
                         <div class="characteredit"><a href="javascript:nop()" onClick="setupEditCharacter({{ character.id }})">edit</a></div>
                         <div class="characterspecies">
-                            {{ character.sex|capfirst }} {{ character.species }}
+                            {{ character.gender|capfirst }} {{ character.species }}
                         </div>
                         <div class="characterdescr">{{ character.description|bbcode|safe }}</div>
                         <div class="characterstory">
