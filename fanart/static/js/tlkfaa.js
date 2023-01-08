@@ -840,7 +840,7 @@ function editCharacter(characterid,charform) {
   var charactername = charform.charactername.value;
   var description = charform.description.value;
   var species = charform.species.value;
-  var sex = charform.sex.options[charform.sex.selectedIndex].value;
+  var gender = charform.gender.options[charform.gender.selectedIndex].value;
   var storyname = charform.storyname.value;
   var storyurl = charform.storyurl.value;
 //  $.post("/ajax_editcharacter.jsp",{
@@ -850,7 +850,7 @@ function editCharacter(characterid,charform) {
       name: charactername,
       description: description,
       species: species,
-      sex: sex,
+      gender: gender,
       story_title: storyname,
       story_url: storyurl
     },function(data) {

@@ -13,12 +13,12 @@
             <td class="data"><input type="text" class="std" name="species" maxlength="64" value="{{ character.species }}" /></td>
         </tr>
         <tr>
-            <td class="label">Sex</td>
+            <td class="label">Gender</td>
             <td class="data">
-                <select name="sex">
-                    <option {% if character.sex == "male" %}selected{% endif %} value="male">Male</option>
-                    <option {% if character.sex == "female" %}selected{% endif %} value="female">Female</option>
-                    <option {% if character.sex == "" %}selected{% endif %} value="">Neither</option>
+                <select name="gender">
+                    <option {% if character.gender == character.Gender.MALE %}selected{% endif %} value="male">Male</option>
+                    <option {% if character.gender == character.Gender.FEMALE %}selected{% endif %} value="female">Female</option>
+                    <option {% if character.gender == character.Gender.NEITHER %}selected{% endif %} value="">Neither</option>
                 </select>
             </td>
         </tr>

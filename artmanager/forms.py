@@ -83,7 +83,7 @@ class CharacterForm(forms.ModelForm):
 
     class Meta:
         model = models.Character
-        fields = ['name', 'description', 'species', 'sex', 'story_title', 'story_url']
+        fields = ['name', 'description', 'species', 'gender', 'story_title', 'story_url']
 
 
 class CustomizeForm(forms.ModelForm):

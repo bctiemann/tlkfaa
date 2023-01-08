@@ -1063,11 +1063,10 @@ class CharacterManager(models.Manager):
 
 
 class Character(models.Model):
-    SEX_CHOICES = (
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('', 'Neither'),
-    )
+    class Gender(models.TextChoices):
+        MALE = ('male', 'Male')
+        FEMALE = ('female', 'Female')
+        NEITHER = ('', 'Neither')
 
     id_orig = models.IntegerField(null=True, blank=True, db_index=True)
     creator = models.ForeignKey('User', null=True, related_name='characters_created', on_delete=models.SET_NULL)
@@ -1079,7 +1078,7 @@ class Character(models.Model):
     profile_coloring_picture = models.ForeignKey('coloring_cave.ColoringPicture', null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
     species = models.CharField(max_length=64, blank=True)
-    sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True)
+    gender = models.CharField(max_length=10, choices=Gender.choices, blank=True)
     story_title = models.CharField(max_length=100, blank=True)
     story_url = models.CharField(max_length=100, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
