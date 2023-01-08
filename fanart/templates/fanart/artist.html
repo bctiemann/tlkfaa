@@ -354,7 +354,7 @@
 
 				<div id="blockstatus"></div>
 
-				{% if user.is_authenticated and not current_user_is_blocked %}
+				{% if user.is_authenticated and not current_user_is_blocked and user.can_comment %}
 
 					<div class="commenttext commentreply shouts">
 						<form name="commentform" onSubmit="return false">

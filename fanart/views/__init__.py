@@ -914,6 +914,12 @@ class PostCommentView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         logger.info(form.cleaned_data)
+
+        # TODO: JSON-based flow for posting comments and fetching HTML result
+        if not self.request.user.can_comment:
+            error = f'You must wait {settings.USER_AGE_BEFORE_COMMENTING_DAYS} days after joining before posting comments.'
+            return JsonResponse({'success': False, 'error': error})
+
         comment = form.save(commit=False)
         comment.user = self.request.user
         comment.save()

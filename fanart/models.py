@@ -436,7 +436,6 @@ ORDER BY fanart_user.sort_name
     def inactive_offers(self):
         return self.offer_set.exclude(is_active=True, is_visible=True).order_by('-date_posted')
 
-
     @property
     def banner_url(self):
         if self.banner:
@@ -540,6 +539,14 @@ ORDER BY fanart_user.sort_name
     @property
     def allow_sketcher(self):
         return not self.ban_set.exists()
+
+    @property
+    def days_since_joined(self):
+        return (timezone.now() - self.date_joined).days
+
+    @property
+    def can_comment(self):
+        return self.days_since_joined >= settings.USER_AGE_BEFORE_COMMENTING_DAYS
 
     def create_dir(self):
         try:
