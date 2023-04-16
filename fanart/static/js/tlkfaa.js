@@ -2811,9 +2811,9 @@ function getMoreArtwork(start, list, count, term, yearFrom, yearTo, obj) {
   ArtworkList[list] = start;
 }
 
-function getMoreCharacters(start,list,count,term,obj,dirName) {
+function getMoreCharacters(start,list,subList,count,term,obj,dirName,matchType) {
 //  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = '/characters/' + list + '/?start=' + start + '&count=' + count + '&term=' + term + '&dir_name=' + dirName;
+  var url = `/characters/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
   $.ajax({ url: url, success: function(data) {
 //    $('#artwork_'+list).append(data);
     $('#characters').append(data);

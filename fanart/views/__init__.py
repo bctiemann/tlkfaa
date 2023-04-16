@@ -407,6 +407,7 @@ class CharactersView(UserPaneMixin, TemplateView):
 
         dir_name = kwargs.get('dir_name', self.request.GET.get('dir_name', None))
         term = self.request.GET.get('term', None)
+        sub_list_type = ''
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
             list_type = 'artist'
@@ -448,28 +449,28 @@ class CharactersView(UserPaneMixin, TemplateView):
 #                    characters = characters.filter(species=term)
 #                else:
 #                    characters = characters.filter(species__icontains=term)
-                list_type = self.request.GET.get('list', None)
+                sub_list_type = self.request.GET.get('list', None)
                 logger.info('Character search ({0}): {1}'.format(list_type, term))
-                if not list_type in ['artist', 'species', 'charactername']:
-                    list_type = 'charactername'
+                if sub_list_type not in ['artist', 'species', 'charactername']:
+                    sub_list_type = 'species'
                 characters = characters.filter(owner__is_active=True).order_by('name')
-                if list_type == 'artist':
+                if sub_list_type == 'artist':
                     try:
                         characters = characters.filter(owner__id=term)
                         context['artist'] = get_object_or_404(models.User, is_artist=True, pk=term)
                     except ValueError:
                         pass
-                elif list_type == 'species':
+                elif sub_list_type == 'species':
                     if match_type == 'exact':
                         characters = characters.filter(species=term)
                     else:
                         characters = characters.filter(species__icontains=term)
-                elif list_type == 'charactername':
+                elif sub_list_type == 'charactername':
                     if match_type == 'exact':
                         characters = characters.filter(name=term)
                     else:
                         characters = characters.filter(name__icontains=term)
-                if start > 0:
+                if start > 1:
                     context['show_search_box'] = False
                 context['term'] = term
             else:
@@ -489,6 +490,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         context['start'] = start
 
         context['list_type'] = list_type
+        context['sub_list_type'] = sub_list_type
         context['tab_selected'] = tab_selected
         context['per_page'] = settings.CHARACTERS_PER_PAGE
 #        context['characters'] = characters_page
@@ -497,6 +499,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
         context['next_start'] = start + settings.CHARACTERS_PER_PAGE
         context['initial'] = initial
+        context['match_type'] = match_type
         context['characters'] = characters[start:start + context['count']]
 
         return context
@@ -1504,6 +1507,7 @@ class CharactersListView(CharactersView):
     template_name = 'includes/characters-list.html'
 
 
+# Search launchpad page with species aggregations (main Search tab under Characters)
 class CharactersSpeciesView(TemplateView):
     template_name = 'includes/species-list.html'
 
