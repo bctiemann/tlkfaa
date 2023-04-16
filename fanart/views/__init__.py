@@ -408,6 +408,7 @@ class CharactersView(UserPaneMixin, TemplateView):
         dir_name = kwargs.get('dir_name', self.request.GET.get('dir_name', None))
         term = self.request.GET.get('term', None)
         sub_list_type = ''
+        match_type = self.request.GET.get('match', 'contains')
         if dir_name:
             context['artist'] = get_object_or_404(models.User, is_artist=True, dir_name=dir_name)
             list_type = 'artist'
@@ -443,7 +444,6 @@ class CharactersView(UserPaneMixin, TemplateView):
             characters = characters.filter(num_pictures__gt=0).order_by('-date_tagged')
         elif list_type == 'search':
             context['show_search_box'] = True
-            match_type = self.request.GET.get('match', 'contains')
             if term:
 #                if match_type == 'exact':
 #                    characters = characters.filter(species=term)
