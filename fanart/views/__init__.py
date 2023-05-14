@@ -226,7 +226,7 @@ class RandomPopularView(TemplateView):
 
 
 class ArtistsView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/artists.html'
+    template_name = 'fanart/artists/base.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtistsView, self).get_context_data(**kwargs)

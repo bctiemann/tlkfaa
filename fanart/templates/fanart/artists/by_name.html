@@ -1,0 +1,17 @@
+{% extends "fanart/artists/base.html" %}
+
+{% block content %}
+
+    <div class="featurebox">
+
+        {{ pages_link.pages_nav|safe }}
+
+        <div id="artists">
+        {% include "includes/artists-list.html" %}
+        </div>
+
+        {{ pages_link.pages_nav|safe }}
+
+    </div>
+
+{% endblock %}

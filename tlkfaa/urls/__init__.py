@@ -8,6 +8,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from fanart import views as fanart_views
+from fanart.views import artists as artists_views
 from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
@@ -32,7 +33,7 @@ urlpatterns = [
     url(r'^logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
-    url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
+    # url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
     url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
@@ -71,11 +72,20 @@ urlpatterns = [
     url(r'^userbox/contests_box/$', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
     url(r'^userbox/tool_box/$', fanart_views.ToolBoxView.as_view(), name='tool-box'),
 
-#    url(r'^Artwork/Artists/(?P<dir_name>[^/]+)/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistView.as_view(), name='artist'),
+    path('Artists/', artists_views.ArtistsView.as_view(), name='artists'),
+    path('Artists/name/<str:initial>/', artists_views.ArtistsByNameView.as_view(list_type='name'), name='artists-by-name'),
+    path('Artists/newest/', artists_views.ArtistsView.as_view(list_type='newest'), name='artists-by-newest'),
+    path('Artists/recently_active/', artists_views.ArtistsView.as_view(list_type='recently_active'), name='artists-by-recently-active'),
+    # TODO: Add other view modes here pointing to ArtistsView
     url(r'^Artists/(?P<dir_name>[^/]+)/$', fanart_views.ArtistView.as_view(), name='artist'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Gallery/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
+
+    path('artists/list/name/<str:initial>/', artists_views.ArtistsListByNameView.as_view(), name='artists-list-by-name'),
+    path('artists/list/newest/', artists_views.ArtistsListByNewestView.as_view(), name='artists-list-by-newest'),
+    path('artists/list/recently_active/', artists_views.ArtistsListByRecentlyActiveView.as_view(), name='artists-list-by-recently-active'),
+    # TODO: Add other view modes here pointing to ArtistsListView subclasses
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
@@ -107,7 +117,6 @@ urlpatterns = [
 #    url(r'^shouts/mark_read/$', fanart_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
 
     url(r'^folders/(?P<artist_id>[0-9]+)/$', fanart_views.FoldersView.as_view(), name='folders'),
-    url(r'^artists/(?P<list>[a-z]+)/$', fanart_views.ArtistsListView.as_view(), name='artists-list'),
     url(r'^artwork/(?P<list>[a-z]+)/$', fanart_views.ArtworkListView.as_view(), name='artwork-list'),
     url(r'^characters/species/$', fanart_views.CharactersSpeciesView.as_view(), name='characters-species'),
     url(r'^characters/(?P<list>[a-z]+)/$', fanart_views.CharactersListView.as_view(), name='characters-list'),

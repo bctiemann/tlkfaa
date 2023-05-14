@@ -18,30 +18,12 @@
 
     By artist name:
     {% for letter in 'abcdefghijklmnopqrstuvwxyz' %}
-        <a href="{% url "artists" list="name" %}?initial={{ letter }}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
+        <a href="{% url "artists-by-name" initial=letter %}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
     {% endfor %}
 </div>
 {% endblock %}
 
 {% block content %}
-
-{% if list_type == "name" and initial %}
-
-    <div class="featurebox">
-
-        {{ pages_link.pages_nav|safe }}
-
-        <div id="artists">
-
-        {% include "includes/artists-list.html" %}
-
-        </div>
-
-        {{ pages_link.pages_nav|safe }}
-
-    </div>
-
-{% else %}
 
     <div class="featurebox featureboxwide">
         <div class="itemlistheaders" id="artistheaders">
@@ -53,8 +35,8 @@
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recently_active', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "recently_active" %}itemlist_selected{% endif %}" id="artistlisth2_recently_active">Recently Active</h2>
                 </a>
             </div>
 
@@ -92,11 +74,17 @@
         <br clear="left" />
 
         <div id="artists">
-            {% include "includes/artists-list.html" %}
+{#            {% include "includes/artists-list.html" %}#}
         </div>
 
     </div>
 
-{% endif %}
+{% endblock %}
 
+{% block footer_js %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        getMoreArtists(0, '{{ list }}', {{ count }}, '', '.get-more-button');
+    });
+    </script>
 {% endblock %}
