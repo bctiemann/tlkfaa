@@ -24,11 +24,11 @@ class ArtistsMixin:
 # content asynchronously via JS, and call ArtistsListView or one of its subclasses differentiated by list_type.
 class ArtistsView(UserPaneMixin, TemplateView):
     template_name = 'fanart/artists/base.html'
-    list_type = 'newest'
+    list_type = settings.DEFAULT_ARTISTS_VIEW
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['list'] = self.list_type
+        context['list_type'] = self.list_type
         context['count'] = settings.ARTISTS_PER_PAGE_INITIAL
         context['per_page'] = settings.ARTISTS_PER_PAGE
         return context
@@ -79,15 +79,16 @@ class ArtistsListView(ArtistsMixin, TemplateView):
     of the view modes/list types.
     """
     template_name = 'includes/artists-list.html'
+    list_type = settings.DEFAULT_ARTISTS_VIEW
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['show_search_input'] = False
 
-        list_type = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
-        if not list_type in artists_tabs:
-            list_type = settings.DEFAULT_ARTISTS_VIEW
+        # list_type = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
+        # if not list_type in artists_tabs:
+        #     list_type = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
         # initial = self.request.GET.get('initial', None)
@@ -134,7 +135,7 @@ class ArtistsListView(ArtistsMixin, TemplateView):
 
         # TODO: Don't show "more" button if there are no more (not necessary? Infinite scrolling)
 
-        context['list_type'] = list_type
+        context['list_type'] = self.list_type
         context['per_page'] = settings.ARTISTS_PER_PAGE
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
@@ -149,6 +150,7 @@ class ArtistsListView(ArtistsMixin, TemplateView):
 
 
 class ArtistsListByNewestView(ArtistsListView):
+    list_type = 'newest'
 
     def get_artists(self):
         artists = super().get_artists()
@@ -156,7 +158,29 @@ class ArtistsListByNewestView(ArtistsListView):
 
 
 class ArtistsListByRecentlyActiveView(ArtistsListView):
+    list_type = 'recently_active'
 
     def get_artists(self):
         artists = super().get_artists()
         return artists.order_by('-last_upload')
+
+
+class ArtistsListByTopRatedView(ArtistsListView):
+    list_type = 'top_rated'
+
+    def get_artists(self):
+        artists = super().get_artists()
+        return artists.extra(
+            select={'rating': 'num_favepics / num_pictures * num_faves'}
+        ).order_by('-rating')
+
+
+class ArtistsListByTopRatedActiveView(ArtistsListView):
+    list_type = 'top_rated_active'
+
+    def get_artists(self):
+        artists = super().get_artists()
+        recent_upload_cutoff = timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
+        return artists.filter(last_upload__gt=recent_upload_cutoff).extra(
+            select={'rating': 'num_favepics / num_pictures * num_faves'}
+        ).order_by('-rating')

@@ -41,14 +41,14 @@
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('top_rated', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "top_rated" %}itemlist_selected{% endif %}" id="artistlisth2_top_rated">Top Rated</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('top_rated_active', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "top_rated_active" %}itemlist_selected{% endif %}" id="artistlisth2_top_rated_active">Top Rated Recently Active</h2>
                 </a>
             </div>
 
@@ -84,7 +84,7 @@
 {% block footer_js %}
     <script type="text/javascript">
     $(document).ready(function() {
-        getMoreArtists(0, '{{ list }}', {{ count }}, '', '.get-more-button');
+        getMoreArtists(0, '{{ list_type }}', {{ count }}, '', '.get-more-button');
     });
     </script>
 {% endblock %}
