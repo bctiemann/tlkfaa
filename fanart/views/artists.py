@@ -37,6 +37,7 @@ class ArtistsView(UserPaneMixin, TemplateView):
 class ArtistsByNameView(ArtistsMixin, ArtistsView):
     """
     "Initial" based artist pages are rendered inline with a paginator; no "more" button or infinite scroll.
+    This means there is also no ArtistsListByNameView.
     """
     template_name = 'fanart/artists/by_name.html'
 
@@ -89,11 +90,12 @@ class ArtistsListView(ArtistsMixin, TemplateView):
             list_type = settings.DEFAULT_ARTISTS_VIEW
 
         start = int(self.request.GET.get('start', 0))
-        initial = self.request.GET.get('initial', None)
+        # initial = self.request.GET.get('initial', None)
 
+        # Overriden in each subclass
         artists = self.get_artists()
 
-        one_month_ago = timezone.now() - timedelta(days=180)
+        # one_month_ago = timezone.now() - timedelta(days=180)
         # if list_type == 'name':
         #     if not initial:
         #         raise Http404
@@ -108,33 +110,35 @@ class ArtistsListView(ArtistsMixin, TemplateView):
         #         artists_page = context['artists_paginator'].page(page)
         #     except EmptyPage:
         #         artists_page = context['artists_paginator'].page(1)
-        if list_type == 'newest':
-            artists = artists.order_by('-date_joined')
-        elif list_type == 'recentactive':
-            artists = artists.order_by('-last_upload')
-        elif list_type == 'toprated':
-            artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list_type == 'topratedactive':
-            artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        elif list_type == 'prolific':
-            artists = artists.order_by('-num_pictures')
-        elif list_type == 'random':
-            artists = artists.order_by('?')
-        elif list_type == 'search':
-            term = self.request.GET.get('term', None)
-            if not term:
-                context['show_search_input'] = True
-            if term:
-                context['term'] = term
-                artists = artists.filter(username__icontains=term).order_by('sort_name')
-            else:
-                artists = artists.filter(id__isnull=True)
+        # if list_type == 'newest':
+        #     artists = artists.order_by('-date_joined')
+        # elif list_type == 'recentactive':
+        #     artists = artists.order_by('-last_upload')
+        # elif list_type == 'toprated':
+        #     artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        # elif list_type == 'topratedactive':
+        #     artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
+        # elif list_type == 'prolific':
+        #     artists = artists.order_by('-num_pictures')
+        # elif list_type == 'random':
+        #     artists = artists.order_by('?')
+        # elif list_type == 'search':
+        #     term = self.request.GET.get('term', None)
+        #     if not term:
+        #         context['show_search_input'] = True
+        #     if term:
+        #         context['term'] = term
+        #         artists = artists.filter(username__icontains=term).order_by('sort_name')
+        #     else:
+        #         artists = artists.filter(id__isnull=True)
+
+        # TODO: Don't show "more" button if there are no more (not necessary? Infinite scrolling)
 
         context['list_type'] = list_type
         context['per_page'] = settings.ARTISTS_PER_PAGE
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
-        context['initial'] = initial
+        # context['initial'] = initial
         context['artists'] = artists[start:start + context['count']]
         # if list_type == 'name':
         #     context['artists'] = artists_page
@@ -144,69 +148,15 @@ class ArtistsListView(ArtistsMixin, TemplateView):
         return context
 
 
-class ArtistsListByNameView(ArtistsListView):
+class ArtistsListByNewestView(ArtistsListView):
 
     def get_artists(self):
         artists = super().get_artists()
-        initial = self.request.GET.get('initial', None)
-        if not initial:
-            raise Http404
-        return artists.filter(username__istartswith=initial).order_by('username')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        artists = self.get_artists()
-        context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
-
-        try:
-            page = int(self.request.GET.get('page', 1))
-        except ValueError:
-            page = 1
-        try:
-            artists_page = context['artists_paginator'].page(page)
-        except EmptyPage:
-            artists_page = context['artists_paginator'].page(1)
-
-        start = int(self.request.GET.get('start', 0))
-
-        context['artists'] = artists_page
-        context['list_type'] = 'name'
-        context['per_page'] = settings.ARTISTS_PER_PAGE
-        context['count'] = None
-        context['next_start'] = start + settings.ARTISTS_PER_PAGE
-        context['pages_link'] = PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
-        context['initial'] = self.request.GET.get('initial', None)
-
-        return context
-
-
-class ArtistsListByNewestView(ArtistsListView):
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+        return artists.order_by('-date_joined')
 
 
 class ArtistsListByRecentlyActiveView(ArtistsListView):
 
-    # TODO: Don't show "more" button if there are no more (not necessary? Infinite scrolling)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['show_search_input'] = False
-
-        start = int(self.request.GET.get('start', 0))
-        initial = self.request.GET.get('initial', None)
-
-        artists = self.get_artists()
-        artists = artists.order_by('-last_upload')
-
-        context['list_type'] = 'recently_active'
-        context['per_page'] = settings.ARTISTS_PER_PAGE
-        context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
-        context['next_start'] = start + settings.ARTISTS_PER_PAGE
-        context['initial'] = initial
-        context['artists'] = artists[start:start + context['count']]
-
-        return context
+    def get_artists(self):
+        artists = super().get_artists()
+        return artists.order_by('-last_upload')

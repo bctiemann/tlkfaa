@@ -82,7 +82,6 @@ urlpatterns = [
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
 
-    path('artists/list/name/<str:initial>/', artists_views.ArtistsListByNameView.as_view(), name='artists-list-by-name'),
     path('artists/list/newest/', artists_views.ArtistsListByNewestView.as_view(), name='artists-list-by-newest'),
     path('artists/list/recently_active/', artists_views.ArtistsListByRecentlyActiveView.as_view(), name='artists-list-by-recently-active'),
     # TODO: Add other view modes here pointing to ArtistsListView subclasses
