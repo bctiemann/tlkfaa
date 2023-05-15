@@ -3,8 +3,8 @@
     <div class="search-form artwork-search">
         <form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
             <input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
-            <button type="submit" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
-            <button type="submit" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
+            <button type="button" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
+            <button type="button" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
             <div class="search-year-range">
                 Years:
                     <input type="number" name="year_from" id="id_year_from" placeholder="From" value="{{ year_from }}" />
