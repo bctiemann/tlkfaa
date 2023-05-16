@@ -53,8 +53,8 @@
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('most_prolific', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "most_prolific" %}itemlist_selected{% endif %}" id="artistlisth2_most_prolific">Most Prolific</h2>
                 </a>
             </div>
 
@@ -84,7 +84,7 @@
 {% block footer_js %}
     <script type="text/javascript">
     $(document).ready(function() {
-        getMoreArtists(0, '{{ list_type }}', {{ count }}, '', '.get-more-button');
+        getMoreArtists(0, '{{ list_type }}', {{ count }}, '{{ term }}', '.get-more-button');
     });
     </script>
 {% endblock %}

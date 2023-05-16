@@ -31,6 +31,8 @@ class ArtistsView(UserPaneMixin, TemplateView):
         context['list_type'] = self.list_type
         context['count'] = settings.ARTISTS_PER_PAGE_INITIAL
         context['per_page'] = settings.ARTISTS_PER_PAGE
+        # For search view
+        context['term'] = self.request.GET.get('term', '')
         return context
 
 
@@ -84,67 +86,17 @@ class ArtistsListView(ArtistsMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['show_search_input'] = False
-
-        # list_type = kwargs.get('list', self.request.GET.get('list', settings.DEFAULT_ARTISTS_VIEW))
-        # if not list_type in artists_tabs:
-        #     list_type = settings.DEFAULT_ARTISTS_VIEW
-
-        start = int(self.request.GET.get('start', 0))
-        # initial = self.request.GET.get('initial', None)
-
         # Overriden in each subclass
         artists = self.get_artists()
 
-        # one_month_ago = timezone.now() - timedelta(days=180)
-        # if list_type == 'name':
-        #     if not initial:
-        #         raise Http404
-        #
-        #     artists = artists.filter(username__istartswith=initial).order_by('username')
-        #     context['artists_paginator'] = Paginator(artists, settings.ARTISTS_PER_PAGE_INITIAL)
-        #     try:
-        #         page = int(self.request.GET.get('page', 1))
-        #     except ValueError:
-        #         page = 1
-        #     try:
-        #         artists_page = context['artists_paginator'].page(page)
-        #     except EmptyPage:
-        #         artists_page = context['artists_paginator'].page(1)
-        # if list_type == 'newest':
-        #     artists = artists.order_by('-date_joined')
-        # elif list_type == 'recentactive':
-        #     artists = artists.order_by('-last_upload')
-        # elif list_type == 'toprated':
-        #     artists = artists.extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        # elif list_type == 'topratedactive':
-        #     artists = artists.filter(last_upload__gt=one_month_ago).extra(select={'rating': 'num_favepics / num_pictures * num_faves'}).order_by('-rating')
-        # elif list_type == 'prolific':
-        #     artists = artists.order_by('-num_pictures')
-        # elif list_type == 'random':
-        #     artists = artists.order_by('?')
-        # elif list_type == 'search':
-        #     term = self.request.GET.get('term', None)
-        #     if not term:
-        #         context['show_search_input'] = True
-        #     if term:
-        #         context['term'] = term
-        #         artists = artists.filter(username__icontains=term).order_by('sort_name')
-        #     else:
-        #         artists = artists.filter(id__isnull=True)
+        start = int(self.request.GET.get('start', 0))
 
-        # TODO: Don't show "more" button if there are no more (not necessary? Infinite scrolling)
-
+        context['show_search_input'] = False
         context['list_type'] = self.list_type
         context['per_page'] = settings.ARTISTS_PER_PAGE
         context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
-        # context['initial'] = initial
         context['artists'] = artists[start:start + context['count']]
-        # if list_type == 'name':
-        #     context['artists'] = artists_page
-        #     context['count'] = None
-        #     context['pages_link'] = PagesLink(len(artists), settings.ARTISTS_PER_PAGE_INITIAL, artists_page.number, is_descending=False, base_url=self.request.path, query_dict=self.request.GET)
 
         return context
 
@@ -184,3 +136,43 @@ class ArtistsListByTopRatedActiveView(ArtistsListView):
         return artists.filter(last_upload__gt=recent_upload_cutoff).extra(
             select={'rating': 'num_favepics / num_pictures * num_faves'}
         ).order_by('-rating')
+
+
+class ArtistsListByMostProlificView(ArtistsListView):
+    list_type = 'most_prolific'
+
+    def get_artists(self):
+        artists = super().get_artists()
+        return artists.order_by('-num_pictures')
+
+
+class ArtistsListByRandom(ArtistsListView):
+    list_type = 'random'
+
+    def get_artists(self):
+        artists = super().get_artists()
+        return artists.order_by('?')
+
+
+class ArtistsListBySearch(ArtistsListView):
+    list_type = 'search'
+
+    @property
+    def term(self):
+        return self.request.GET.get('term', None)
+
+    def get_artists(self):
+        artists = super().get_artists()
+        if self.term:
+            artists = artists.filter(username__icontains=self.term).order_by('sort_name')
+        else:
+            artists = artists.filter(id__isnull=True)
+        return artists
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.term:
+            context['term'] = self.term
+        else:
+            context['show_search_input'] = True
+        return context

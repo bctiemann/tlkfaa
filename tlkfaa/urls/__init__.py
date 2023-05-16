@@ -78,7 +78,10 @@ urlpatterns = [
     path('Artists/recently_active/', artists_views.ArtistsView.as_view(list_type='recently_active'), name='artists-by-recently-active'),
     path('Artists/top_rated/', artists_views.ArtistsView.as_view(list_type='top_rated'), name='artists-by-top-rated'),
     path('Artists/top_rated_active/', artists_views.ArtistsView.as_view(list_type='top_rated_active'), name='artists-by-top-rated-active'),
-    # TODO: Add other view modes here pointing to ArtistsView
+    path('Artists/most_prolific/', artists_views.ArtistsView.as_view(list_type='most_prolific'), name='artists-by-most-prolific'),
+    path('Artists/random/', artists_views.ArtistsView.as_view(list_type='random'), name='artists-by-random'),
+    path('Artists/search/', artists_views.ArtistsView.as_view(list_type='search'), name='artists-by-search'),
+
     url(r'^Artists/(?P<dir_name>[^/]+)/$', fanart_views.ArtistView.as_view(), name='artist'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Gallery/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
@@ -88,7 +91,9 @@ urlpatterns = [
     path('artists/list/recently_active/', artists_views.ArtistsListByRecentlyActiveView.as_view(), name='artists-list-by-recently-active'),
     path('artists/list/top_rated/', artists_views.ArtistsListByTopRatedView.as_view(), name='artists-list-by-top-rated'),
     path('artists/list/top_rated_active/', artists_views.ArtistsListByTopRatedActiveView.as_view(), name='artists-list-by-top-rated-active'),
-    # TODO: Add other view modes here pointing to ArtistsListView subclasses
+    path('artists/list/most_prolific/', artists_views.ArtistsListByMostProlificView.as_view(), name='artists-list-by-most-prolific'),
+    path('artists/list/random/', artists_views.ArtistsListByRandom.as_view(), name='artists-list-by-random'),
+    path('artists/list/search/', artists_views.ArtistsListBySearch.as_view(), name='artists-list-by-search'),
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
