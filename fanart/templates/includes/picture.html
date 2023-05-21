@@ -79,7 +79,7 @@
                     <div class="picinfowrapper">
                         <div class="picinfo">
                             <div class="picinfodata piclink">
-                                {% if picture.allow_comments %}
+                                {% if picture.allow_comments and picture.artist.allow_comments %}
                                     <a href="javascript:nop()" onClick="toggleComments({{ picture.id }})">comments ({{ picture.threadedcomment_set.count }})</a>
                                 {% endif %}
                             </div>
