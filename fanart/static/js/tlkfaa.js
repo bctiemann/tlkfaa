@@ -2793,15 +2793,21 @@ function getMoreArtists(start, list, count, term, moreButtonSelector) {
   ArtistList[list] = start;
 }
 
-function getMoreArtwork(start, list, count, term, yearFrom, yearTo, obj) {
+function getMoreArtwork(start, list, count, term, yearFrom, yearTo, moreButtonSelector) {
 //  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/artwork/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
-  obj.classList.add('loading-spinner');
+  var url = `/artwork/list/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
+    }
   $.ajax({ url: url, success: function(data) {
 //    $('#artwork_'+list).append(data);
+    for (const s of moreButtons) {
+        s.style.display = "none";
+    }
     $('#artwork').append(data);
 //    Shadowbox.setup('td.thumb a');
-    obj.style.display='none';
+//     obj.style.display='none';
     setupTooltipPreview();
     if (typeof(window.history.replaceState) !== "undefined") {
       var termstr = '';

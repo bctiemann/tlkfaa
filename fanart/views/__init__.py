@@ -49,7 +49,7 @@ from ratelimit.mixins import RatelimitMixin
 import logging
 logger = logging.getLogger(__name__)
 
-THREE_MONTHS = 90
+THREE_MONTHS = 9000
 ONE_MONTH = 30
 
 

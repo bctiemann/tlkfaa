@@ -67,10 +67,17 @@
 
     <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div id="artwork">
-        {% include "includes/artwork-list.html" %}
+{#        {% include "includes/artwork-list.html" %}#}
     </div>
 
 </div>
 
+{% endblock %}
 
+{% block footer_js %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        getMoreArtwork(0, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', '.get-more-button');
+    });
+    </script>
 {% endblock %}

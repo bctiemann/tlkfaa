@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from fanart import views as fanart_views
 from fanart.views import artists as artists_views
+from fanart.views import artwork as artwork_views
 from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
@@ -34,7 +35,7 @@ urlpatterns = [
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
     # url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
-    url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
+    # url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
@@ -94,6 +95,13 @@ urlpatterns = [
     path('artists/list/most_prolific/', artists_views.ArtistsListByMostProlificView.as_view(), name='artists-list-by-most-prolific'),
     path('artists/list/random/', artists_views.ArtistsListByRandom.as_view(), name='artists-list-by-random'),
     path('artists/list/search/', artists_views.ArtistsListBySearch.as_view(), name='artists-list-by-search'),
+
+    path('Artwork/', artwork_views.ArtworkView.as_view(), name='artwork'),
+    path('Artwork/newest/', artwork_views.ArtworkView.as_view(list_type='newest'), name='artwork-by-newest'),
+    path('Artwork/tag/', artwork_views.ArtworkView.as_view(list_type='tag'), name='artwork-by-tag'),
+    # Add more landing views here
+    path('artwork/list/newest/', artwork_views.ArtworkListByNewestView.as_view(), name='artwork-list-by-newest'),
+    # Add more list views here
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),

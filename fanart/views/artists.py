@@ -3,11 +3,10 @@ from datetime import timedelta
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.utils import timezone
-from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage
 
 from fanart.views import UserPaneMixin
-from fanart.models import artists_tabs, User
+from fanart.models import User
 from fanart.utils import PagesLink
 
 
@@ -94,7 +93,10 @@ class ArtistsListView(ArtistsMixin, TemplateView):
         context['show_search_input'] = False
         context['list_type'] = self.list_type
         context['per_page'] = settings.ARTISTS_PER_PAGE
-        context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
+        try:
+            context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
+        except ValueError:
+            context['count'] = settings.ARTISTS_PER_PAGE
         context['next_start'] = start + settings.ARTISTS_PER_PAGE
         context['artists'] = artists[start:start + context['count']]
 
