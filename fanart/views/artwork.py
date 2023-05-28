@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.conf import settings
@@ -6,8 +7,10 @@ from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage
 
 from fanart.views import UserPaneMixin
-from fanart.models import Picture
+from fanart.models import Picture, UnviewedPicture
 from fanart.utils import PagesLink
+
+logger = logging.getLogger(__name__)
 
 
 class ArtworkMixin:
@@ -178,3 +181,19 @@ class ArtworkListByNewestView(ArtworkListView):
     def get_artwork(self):
         artwork = super().get_artwork()
         return artwork.filter(date_uploaded__gt=self.recent_cutoff_date).order_by('-date_uploaded')
+
+
+class ArtworkListByUnviewedView(ArtworkListView):
+    list_type = 'unviewed'
+
+    def get_artwork(self):
+        if not self.request.user.is_authenticated:
+            return Picture.objects.none()
+        unviewed_pictures = UnviewedPicture.objects.filter(user=self.request.user)
+        unviewed_pictures = unviewed_pictures.order_by('-picture__date_uploaded')
+        return [uvp.picture for uvp in unviewed_pictures]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next_start'] = 0
+        return context

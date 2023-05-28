@@ -2695,7 +2695,7 @@ function listArtists(list, count) {
 }
 
 function listArtwork(list, count) {
-    let url = `/artwork/${list}/`;
+    let url = `/artwork/list/${list}/`;
     const params = [];
     if ((list === 'search' || list === 'tag') && count > 0) {
         params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
