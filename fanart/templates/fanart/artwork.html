@@ -36,8 +36,8 @@
 
         {% if user.is_authenticated %}
         <div class="itemlist">
-            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newestfaves', {{ per_page }})">
-                <h2 class="itemlist {% if list_type == "newestfaves" %}itemlist_selected{% endif %}" id="artworklisth2_newestfaves">Newest By Favorite Artists</h2>
+            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newest_by_faves', {{ per_page }})">
+                <h2 class="itemlist {% if list_type == "newest_by_faves" %}itemlist_selected{% endif %}" id="artworklisth2_newest_by_faves">Newest By Favorite Artists</h2>
             </a>
         </div>
         {% endif %}

@@ -100,9 +100,11 @@ urlpatterns = [
     path('Artwork/newest/', artwork_views.ArtworkView.as_view(list_type='newest'), name='artwork-by-newest'),
     path('Artwork/tag/', artwork_views.ArtworkView.as_view(list_type='tag'), name='artwork-by-tag'),
     path('Artwork/unviewed/', artwork_views.ArtworkView.as_view(list_type='unviewed'), name='artwork-by-unviewed'),
+    path('Artwork/newest_by_faves/', artwork_views.ArtworkView.as_view(list_type='newest_by_faves'), name='artwork-by-newest-by-faves'),
     # Add more landing views here
     path('artwork/list/newest/', artwork_views.ArtworkListByNewestView.as_view(), name='artwork-list-by-newest'),
     path('artwork/list/unviewed/', artwork_views.ArtworkListByUnviewedView.as_view(), name='artwork-list-by-unviewed'),
+    path('artwork/list/newest_by_faves/', artwork_views.ArtworkListByNewestByFaves.as_view(), name='artwork-list-by-newest-by-faves'),
     # Add more list views here
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),

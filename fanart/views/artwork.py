@@ -5,6 +5,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from fanart.views import UserPaneMixin
 from fanart.models import Picture, UnviewedPicture
@@ -197,3 +198,17 @@ class ArtworkListByUnviewedView(ArtworkListView):
         context = super().get_context_data(**kwargs)
         context['next_start'] = 0
         return context
+
+
+class ArtworkListByNewestByFaves(ArtworkListView):
+    list_type = 'newest_by_faves'
+
+    def get_artwork(self):
+        if not self.request.user.is_authenticated:
+            return Picture.objects.none()
+
+        artwork = super().get_artwork()
+        recent_upload_cutoff = timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
+        favorite_artists = Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))
+        artwork = artwork.filter(date_uploaded__gt=recent_upload_cutoff, artist__in=favorite_artists)
+        return artwork.order_by('-date_uploaded')
