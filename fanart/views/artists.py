@@ -28,6 +28,7 @@ class ArtistsView(UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
+        context['start'] = int(self.request.GET.get('start', 0))
         context['count'] = settings.ARTISTS_PER_PAGE_INITIAL
         context['per_page'] = settings.ARTISTS_PER_PAGE
         # For search view

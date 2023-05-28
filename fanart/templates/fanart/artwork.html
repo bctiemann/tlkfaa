@@ -77,7 +77,7 @@
 {% block footer_js %}
     <script type="text/javascript">
     $(document).ready(function() {
-        getMoreArtwork(0, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', '.get-more-button');
+        getMoreArtwork({{ start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', '.get-more-button');
     });
     </script>
 {% endblock %}

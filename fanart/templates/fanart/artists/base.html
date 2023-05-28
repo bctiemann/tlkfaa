@@ -84,7 +84,7 @@
 {% block footer_js %}
     <script type="text/javascript">
     $(document).ready(function() {
-        getMoreArtists(0, '{{ list_type }}', {{ count }}, '{{ term }}', '.get-more-button');
+        getMoreArtists({{ start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '.get-more-button');
     });
     </script>
 {% endblock %}

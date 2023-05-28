@@ -36,6 +36,7 @@ class ArtworkView(UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
+        context['start'] = int(self.request.GET.get('start', 0))
         try:
             context['count'] = int(self.request.GET.get('count', settings.ARTWORK_PER_PAGE))
         except ValueError:
