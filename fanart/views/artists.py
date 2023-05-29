@@ -152,7 +152,7 @@ class ArtistsListByMostProlificView(ArtistsListView):
         return artists.order_by('-num_pictures')
 
 
-class ArtistsListByRandom(ArtistsListView):
+class ArtistsListByRandomView(ArtistsListView):
     list_type = 'random'
 
     def get_artists(self):
@@ -160,7 +160,7 @@ class ArtistsListByRandom(ArtistsListView):
         return artists.order_by('?')
 
 
-class ArtistsListBySearch(ArtistsListView):
+class ArtistsListBySearchView(ArtistsListView):
     list_type = 'search'
 
     @property

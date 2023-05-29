@@ -93,8 +93,8 @@ urlpatterns = [
     path('artists/list/top_rated/', artists_views.ArtistsListByTopRatedView.as_view(), name='artists-list-by-top-rated'),
     path('artists/list/top_rated_active/', artists_views.ArtistsListByTopRatedActiveView.as_view(), name='artists-list-by-top-rated-active'),
     path('artists/list/most_prolific/', artists_views.ArtistsListByMostProlificView.as_view(), name='artists-list-by-most-prolific'),
-    path('artists/list/random/', artists_views.ArtistsListByRandom.as_view(), name='artists-list-by-random'),
-    path('artists/list/search/', artists_views.ArtistsListBySearch.as_view(), name='artists-list-by-search'),
+    path('artists/list/random/', artists_views.ArtistsListByRandomView.as_view(), name='artists-list-by-random'),
+    path('artists/list/search/', artists_views.ArtistsListBySearchView.as_view(), name='artists-list-by-search'),
 
     path('Artwork/', artwork_views.ArtworkView.as_view(), name='artwork'),
     path('Artwork/newest/', artwork_views.ArtworkView.as_view(list_type='newest'), name='artwork-by-newest'),
@@ -104,6 +104,7 @@ urlpatterns = [
     path('Artwork/top_rated/', artwork_views.ArtworkView.as_view(list_type='top_rated'), name='artwork-by-top-rated'),
     path('Artwork/top_rated_recent/', artwork_views.ArtworkView.as_view(list_type='top_rated_recent'), name='artwork-by-top-rated-recent'),
     path('Artwork/random/', artwork_views.ArtworkView.as_view(list_type='random'), name='artwork-by-random'),
+    path('Artwork/search/', artwork_views.ArtworkView.as_view(list_type='search'), name='artwork-by-search'),
     # Add more landing views here
     path('artwork/list/newest/', artwork_views.ArtworkListByNewestView.as_view(), name='artwork-list-by-newest'),
     path('artwork/list/unviewed/', artwork_views.ArtworkListByUnviewedView.as_view(), name='artwork-list-by-unviewed'),
@@ -111,6 +112,9 @@ urlpatterns = [
     path('artwork/list/top_rated/', artwork_views.ArtworkListByTopRatedView.as_view(), name='artwork-list-by-top-rated'),
     path('artwork/list/top_rated_recent/', artwork_views.ArtworkListByTopRatedRecentView.as_view(), name='artwork-list-by-top-rated-recent'),
     path('artwork/list/random/', artwork_views.ArtworkListByRandomView.as_view(), name='artwork-list-by-random'),
+    path('artwork/list/search/', artwork_views.ArtworkListSearchByTermView.as_view(), name='artwork-list-search-by-term'),
+    path('artwork/list/tag/', artwork_views.ArtworkListSearchByTagView.as_view(), name='artwork-list-search-by-tag'),
+    path('artwork/list/character/', artwork_views.ArtworkListSearchByCharacterView.as_view(), name='artwork-list-search-by-character'),
     # Add more list views here
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),

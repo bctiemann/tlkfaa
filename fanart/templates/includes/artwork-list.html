@@ -2,7 +2,7 @@
 
     <div class="search-form artwork-search">
         <form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
-            <input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
+            <input class="std" name="searchtext" id="searchtext" value="{{ term|default_if_none:"" }}" />
             <button type="button" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
             <button type="button" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
             <div class="search-year-range">

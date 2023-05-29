@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from fanart.views import UserPaneMixin
-from fanart.models import Picture, UnviewedPicture
+from fanart.models import Picture, UnviewedPicture, Tag, Character
 from fanart.utils import PagesLink
 
 logger = logging.getLogger(__name__)
@@ -243,3 +243,81 @@ class ArtworkListByRandomView(ArtworkListView):
         rand_range = min(max_id - min_id, 100)
         random_ids = random.sample(list(range(min_id, max_id)), rand_range)
         return artwork.filter(pk__in=random_ids).order_by('?')
+
+
+class ArtworkListSearchView(ArtworkListView):
+    term = None
+    start = None
+    year_from = None
+    year_to = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.term = request.GET.get('term', None)
+        self.start = int(request.GET.get('start', 0))
+        self.year_from = request.GET.get('year_from')
+        self.year_to = request.GET.get('year_to')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        current_year = timezone.now().year
+        if self.year_from and self.year_from.isnumeric() and current_year >= int(self.year_from) > 0:
+            artwork = artwork.filter(date_uploaded__year__gte=self.year_from)
+        if self.year_to and self.year_to.isnumeric() and current_year >= int(self.year_to) > 0:
+            artwork = artwork.filter(date_uploaded__year__lte=self.year_to)
+        return artwork
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['show_search_input'] = self.start == 0
+        context['term'] = self.term
+        context['year_from'] = self.year_from
+        context['year_to'] = self.year_to
+        return context
+
+
+class ArtworkListSearchByTermView(ArtworkListSearchView):
+    list_type = 'search'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        if self.term:
+            artwork = artwork.filter(title__icontains=self.term).order_by('-num_faves')
+            logger.info('Artwork title search by {0} {1}: {2} ({3})'.format(
+                self.request.user, self.request.META['REMOTE_ADDR'], self.term, self.start
+            ))
+        return artwork
+
+
+class ArtworkListSearchByTagView(ArtworkListSearchView):
+    list_type = 'tag'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        logger.info('Artwork tag search by {0} {1}: {2} ({3})'.format(
+            self.request.user, self.request.META['REMOTE_ADDR'], self.term, self.start))
+        tag = Tag.objects.filter(tag=self.term).first()
+        if tag:
+            artwork = tag.picture_set.filter(
+                artist__is_active=True,
+                artist__is_artist=True,
+                artist__num_pictures__gt=0
+            ).order_by('-num_faves')
+        else:
+            artwork = artwork.filter(id__isnull=True)
+        return artwork
+
+
+# Is this used anywhere? Search artwork by character may only be via the Characters tab now
+class ArtworkListSearchByCharacterView(ArtworkListSearchView):
+    list_type = 'character'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        for character_id in self.term.split(','):
+            try:
+                character_pictures = artwork.filter(picturecharacter__character_id=character_id)
+            except ValueError:
+                character_pictures = artwork.none()
+            artwork = character_pictures.order_by('-picturecharacter__date_tagged')
+        return artwork
