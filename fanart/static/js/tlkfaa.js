@@ -2820,11 +2820,18 @@ function getMoreArtwork(start, list, count, term, yearFrom, yearTo, moreButtonSe
   ArtworkList[list] = start;
 }
 
-function getMoreCharacters(start,list,subList,count,term,obj,dirName,matchType) {
+function getMoreCharacters(start, list, subList, count, term, moreButtonSelector, dirName, matchType) {
 //  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/characters/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
+  var url = `/characters/list/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
+    }
   $.ajax({ url: url, success: function(data) {
 //    $('#artwork_'+list).append(data);
+    for (const s of moreButtons) {
+        s.style.display = "none";
+    }
     $('#characters').append(data);
 //    Shadowbox.setup('td.thumb a');
     obj.style.display='none';

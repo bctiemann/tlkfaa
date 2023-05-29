@@ -57,5 +57,12 @@
 
 </div>
 
+{% endblock %}
 
+{% block footer_js %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        getMoreCharacters({{ start }}, '{{ list_type }}', '{{ sub_list_type }}', {{ count }}, '{{ term }}', '.get-more-button', '{{ artist.dir_name }}', '{{ match_type }}');
+    });
+    </script>
 {% endblock %}

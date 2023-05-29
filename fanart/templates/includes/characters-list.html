@@ -17,7 +17,12 @@
     {% include "includes/character.html" %}
 
     {% if forloop.counter == count %}
-        <button onClick="getMoreCharacters({{ next_start }},'{{ list_type }}','{{ sub_list_type }}',{{ count }},'{{ term }}',this,'{{ artist.dir_name }}','{{ match_type }}')">More</button>
+        <button
+            class="get-more-button"
+            onClick="getMoreCharacters({{ next_start }}, '{{ list_type }}', '{{ sub_list_type }}', {{ count }}, '{{ term }}', '.get-more-button', '{{ artist.dir_name }}', '{{ match_type }}')"
+        >
+            More
+        </button>
     {% endif %}
 
 {% endfor %}
