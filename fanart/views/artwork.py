@@ -1,4 +1,5 @@
 import logging
+import random
 from datetime import timedelta
 
 from django.conf import settings
@@ -17,8 +18,8 @@ logger = logging.getLogger(__name__)
 class ArtworkMixin:
 
     @property
-    def recent_cutoff_date(self):
-        return timezone.now() - timedelta(days=settings.ARTWORK_RECENT_CUTOFF_DAYS)
+    def recent_upload_cutoff_date(self):
+        return timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
 
     def get_artwork(self):
         artwork = Picture.objects.filter(artist__is_active=True, artist__is_artist=True, artist__num_pictures__gt=0)
@@ -182,7 +183,7 @@ class ArtworkListByNewestView(ArtworkListView):
 
     def get_artwork(self):
         artwork = super().get_artwork()
-        return artwork.filter(date_uploaded__gt=self.recent_cutoff_date).order_by('-date_uploaded')
+        return artwork.filter(date_uploaded__gt=self.recent_upload_cutoff_date).order_by('-date_uploaded')
 
 
 class ArtworkListByUnviewedView(ArtworkListView):
@@ -197,11 +198,13 @@ class ArtworkListByUnviewedView(ArtworkListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # For "unviewed" view, each UnviewedPicture is deleted upon viewing, so we pull the next page
+        # starting from 0
         context['next_start'] = 0
         return context
 
 
-class ArtworkListByNewestByFaves(ArtworkListView):
+class ArtworkListByNewestByFavesView(ArtworkListView):
     list_type = 'newest_by_faves'
 
     def get_artwork(self):
@@ -209,7 +212,34 @@ class ArtworkListByNewestByFaves(ArtworkListView):
             return Picture.objects.none()
 
         artwork = super().get_artwork()
-        recent_upload_cutoff = timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
         favorite_artists = Subquery(self.request.user.favorite_set.filter(picture__isnull=True).values('artist_id'))
-        artwork = artwork.filter(date_uploaded__gt=recent_upload_cutoff, artist__in=favorite_artists)
+        artwork = artwork.filter(date_uploaded__gt=self.recent_upload_cutoff_date, artist__in=favorite_artists)
         return artwork.order_by('-date_uploaded')
+
+
+class ArtworkListByTopRatedView(ArtworkListView):
+    list_type = 'top_rated'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        return artwork.filter(num_faves__gt=settings.ARTWORK_TOP_RATED_FAVE_CUTOFF).order_by('-num_faves')
+
+
+class ArtworkListByTopRatedRecentView(ArtworkListView):
+    list_type = 'top_rated_recent'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        return artwork.filter(date_uploaded__gt=self.recent_upload_cutoff_date).order_by('-num_faves')
+
+
+class ArtworkListByRandomView(ArtworkListView):
+    list_type = 'random'
+
+    def get_artwork(self):
+        artwork = super().get_artwork()
+        min_id = Picture.objects.all().aggregate(Min('id'))['id__min']
+        max_id = Picture.objects.all().aggregate(Max('id'))['id__max']
+        rand_range = min(max_id - min_id, 100)
+        random_ids = random.sample(list(range(min_id, max_id)), rand_range)
+        return artwork.filter(pk__in=random_ids).order_by('?')

@@ -101,10 +101,16 @@ urlpatterns = [
     path('Artwork/tag/', artwork_views.ArtworkView.as_view(list_type='tag'), name='artwork-by-tag'),
     path('Artwork/unviewed/', artwork_views.ArtworkView.as_view(list_type='unviewed'), name='artwork-by-unviewed'),
     path('Artwork/newest_by_faves/', artwork_views.ArtworkView.as_view(list_type='newest_by_faves'), name='artwork-by-newest-by-faves'),
+    path('Artwork/top_rated/', artwork_views.ArtworkView.as_view(list_type='top_rated'), name='artwork-by-top-rated'),
+    path('Artwork/top_rated_recent/', artwork_views.ArtworkView.as_view(list_type='top_rated_recent'), name='artwork-by-top-rated-recent'),
+    path('Artwork/random/', artwork_views.ArtworkView.as_view(list_type='random'), name='artwork-by-random'),
     # Add more landing views here
     path('artwork/list/newest/', artwork_views.ArtworkListByNewestView.as_view(), name='artwork-list-by-newest'),
     path('artwork/list/unviewed/', artwork_views.ArtworkListByUnviewedView.as_view(), name='artwork-list-by-unviewed'),
-    path('artwork/list/newest_by_faves/', artwork_views.ArtworkListByNewestByFaves.as_view(), name='artwork-list-by-newest-by-faves'),
+    path('artwork/list/newest_by_faves/', artwork_views.ArtworkListByNewestByFavesView.as_view(), name='artwork-list-by-newest-by-faves'),
+    path('artwork/list/top_rated/', artwork_views.ArtworkListByTopRatedView.as_view(), name='artwork-list-by-top-rated'),
+    path('artwork/list/top_rated_recent/', artwork_views.ArtworkListByTopRatedRecentView.as_view(), name='artwork-list-by-top-rated-recent'),
+    path('artwork/list/random/', artwork_views.ArtworkListByRandomView.as_view(), name='artwork-list-by-random'),
     # Add more list views here
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),

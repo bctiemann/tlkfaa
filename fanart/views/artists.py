@@ -83,6 +83,10 @@ class ArtistsListView(ArtistsMixin, TemplateView):
     template_name = 'includes/artists-list.html'
     list_type = settings.DEFAULT_ARTISTS_VIEW
 
+    @property
+    def recent_upload_cutoff_date(self):
+        return timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -135,8 +139,7 @@ class ArtistsListByTopRatedActiveView(ArtistsListView):
 
     def get_artists(self):
         artists = super().get_artists()
-        recent_upload_cutoff = timezone.now() - timedelta(days=settings.RECENT_UPLOAD_CUTOFF_DAYS)
-        return artists.filter(last_upload__gt=recent_upload_cutoff).extra(
+        return artists.filter(last_upload__gt=self.recent_upload_cutoff_date).extra(
             select={'rating': 'num_favepics / num_pictures * num_faves'}
         ).order_by('-rating')
 
