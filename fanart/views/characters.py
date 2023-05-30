@@ -4,12 +4,13 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from fanart.views import UserPaneMixin
-from fanart.models import Character
+from fanart.models import Character, User
 from fanart.utils import PagesLink
 
 logger = logging.getLogger(__name__)
@@ -21,20 +22,27 @@ class CharactersMixin:
         return Character.objects.all()
 
 
-
 class CharactersView(UserPaneMixin, TemplateView):
     template_name = 'fanart/characters.html'
     list_type = settings.DEFAULT_CHARACTERS_VIEW
+    tab_selected = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
+        context['tab_selected'] = self.tab_selected or self.list_type
         context['start'] = int(self.request.GET.get('start', 0))
         try:
             context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
         except ValueError:
             context['count'] = settings.CHARACTERS_PER_PAGE
         context['per_page'] = settings.CHARACTERS_PER_PAGE
+
+        # For by-artist view
+        dir_name = kwargs.get('dir_name')
+        if dir_name:
+            context['artist'] = get_object_or_404(User, is_artist=True, dir_name=dir_name)
+
         # For search view
         context['term'] = self.request.GET.get('term', '')
         return context
@@ -183,3 +191,22 @@ class CharactersListByCanonView(CharactersListView):
     def get_characters(self):
         characters = super().get_characters()
         return characters.filter(is_canon=True).order_by('-num_pictures')
+
+
+class CharactersListByArtistView(CharactersListView):
+    list_type = 'artist'
+    artist = None
+
+    def get(self, request, *args, **kwargs):
+        dir_name = request.GET.get('dir_name')
+        self.artist = get_object_or_404(User, is_artist=True, dir_name=dir_name)
+        return super().get(request, *args, **kwargs)
+
+    def get_characters(self):
+        characters = super().get_characters()
+        return characters.filter(owner=self.artist).order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['artist'] = self.artist
+        return context
