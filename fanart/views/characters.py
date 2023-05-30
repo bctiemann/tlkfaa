@@ -25,11 +25,13 @@ class CharactersMixin:
 class CharactersView(UserPaneMixin, TemplateView):
     template_name = 'fanart/characters.html'
     list_type = settings.DEFAULT_CHARACTERS_VIEW
+    sub_list_type = 'search'
     tab_selected = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
+        context['sub_list_type'] = self.sub_list_type
         context['tab_selected'] = self.tab_selected or self.list_type
         context['start'] = int(self.request.GET.get('start', 0))
         try:
@@ -45,6 +47,8 @@ class CharactersView(UserPaneMixin, TemplateView):
 
         # For search view
         context['term'] = self.request.GET.get('term', '')
+        context['match_type'] = self.request.GET.get('match', 'contains')
+
         return context
 
 
@@ -163,6 +167,7 @@ class CharactersListView(CharactersMixin, TemplateView):
     """
     template_name = 'includes/characters-list.html'
     list_type = settings.DEFAULT_ARTWORK_VIEW
+    sub_list_type = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -172,8 +177,9 @@ class CharactersListView(CharactersMixin, TemplateView):
 
         start = int(self.request.GET.get('start', 0))
 
-        context['show_search_input'] = False
+        context['show_search_box'] = False
         context['list_type'] = self.list_type
+        context['sub_list_type'] = self.sub_list_type
         context['per_page'] = settings.CHARACTERS_PER_PAGE
         try:
             context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
@@ -191,6 +197,48 @@ class CharactersListByCanonView(CharactersListView):
     def get_characters(self):
         characters = super().get_characters()
         return characters.filter(is_canon=True).order_by('-num_pictures')
+
+
+class CharactersListSearchView(CharactersListView):
+    list_type = 'search'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.term = request.GET.get('term', None)
+        self.sub_list_type = request.GET.get('list', 'species')
+        self.match_type = request.GET.get('match', 'exact')
+        return super().dispatch(request, *args, **kwargs)
+
+    # TODO: Further factor sub_list_type handling into Search subclasses
+    def get_characters(self):
+        characters = super().get_characters()
+        if not self.term:
+            return Character.objects.none()
+
+        if self.sub_list_type == 'artist':
+            try:
+                characters = characters.filter(owner__id=self.term)
+            except ValueError:
+                pass
+
+        elif self.sub_list_type == 'species':
+            if self.match_type == 'exact':
+                characters = characters.filter(species=self.term)
+            else:
+                characters = characters.filter(species__icontains=self.term)
+
+        elif self.sub_list_type == 'charactername':
+            if self.match_type == 'exact':
+                characters = characters.filter(name=self.term)
+            else:
+                characters = characters.filter(name__icontains=self.term)
+
+        return characters
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['list'] = self.request.GET.get('list')
+        context['show_search_box'] = True
+        return context
 
 
 class CharactersListByArtistView(CharactersListView):

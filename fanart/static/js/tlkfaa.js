@@ -1686,7 +1686,8 @@ console.log(url);
 }
 
 function updateCharacterList(list,term,page) {
-  var url = '/Characters/search/?list=' + list + '&term=' + escape(term) + '&page=' + page
+  var url = `/Characters/search/?list=${list}&term=${escape(term)}&page=${page}`;
+  console.log(url);
 //  var url = "/ajax_listcharacters.jsp?mode=fan&list="+list+"&term="+escape(term)+"&page="+page;
   window.location = url;
 //  $('#characterlist').load(url);
@@ -2728,7 +2729,8 @@ function listArtwork(list, count) {
 }
 
 function listCharacters(list,count) {
-  var url = '/characters/' + list + '/';
+    console.log('listCharacters');
+  var url = `/characters/list/${list}/`;
   params = [];
   if ((list == 'search' || list == 'tag') && count > 0) {
     params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
@@ -2741,6 +2743,7 @@ function listCharacters(list,count) {
   queryPartsWithCount.push('count=' + count);
   queryStr = queryPartsWithCount.join('&');
   url += '?' + queryStr;
+  console.log(url);
   $('#characters').slideUp('fast',function() {
     $('#characters').load(url,function() {
 //      Shadowbox.clearCache();
@@ -2755,11 +2758,14 @@ function listCharacters(list,count) {
         queryStr = queryParts.join('&');
         window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
       }
+      console.log(list);
       if (list == 'search') {
         setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
         setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
         setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
         var speciesUrl = '/characters/species/';
+        console.log(speciesUrl);
+        console.log($('#species_list'));
         $('#species_list').append($('.spinner'));
         $('#species_list').load(speciesUrl, function() {
           setupTooltipPreview();
@@ -2834,7 +2840,7 @@ function getMoreCharacters(start, list, subList, count, term, moreButtonSelector
     }
     $('#characters').append(data);
 //    Shadowbox.setup('td.thumb a');
-    obj.style.display='none';
+//     obj.style.display='none';
     setupTooltipPreview();
     if (typeof(window.history.replaceState) !== "undefined") {
       var termstr = '';

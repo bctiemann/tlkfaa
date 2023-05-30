@@ -118,8 +118,12 @@ urlpatterns = [
     path('artwork/list/character/', artwork_views.ArtworkListSearchByCharacterView.as_view(), name='artwork-list-search-by-character'),
 
     path('Characters/', characters_views.CharactersView.as_view(), name='characters'),
+    path('Characters/canon/', characters_views.CharactersView.as_view(list_type='canon'), name='characters-by-canon'),
+    path('Characters/search/', characters_views.CharactersView.as_view(list_type='search'), name='characters-by-search'),
     path('Artists/<str:dir_name>/Characters/', characters_views.CharactersView.as_view(list_type='artist', tab_selected='search'), name='artist-characters'),
+
     path('characters/list/canon/', characters_views.CharactersListByCanonView.as_view(), name='characters-list-by-canon'),
+    path('characters/list/search/', characters_views.CharactersListSearchView.as_view(), name='characters-list-search'),
     path('characters/list/artist/', characters_views.CharactersListByArtistView.as_view(), name='characters-list-by-artist'),
     # Add remaining character views here
 
@@ -155,7 +159,7 @@ urlpatterns = [
     url(r'^folders/(?P<artist_id>[0-9]+)/$', fanart_views.FoldersView.as_view(), name='folders'),
     # url(r'^artwork/(?P<list>[a-z]+)/$', fanart_views.ArtworkListView.as_view(), name='artwork-list'),
     url(r'^characters/species/$', fanart_views.CharactersSpeciesView.as_view(), name='characters-species'),
-    url(r'^characters/(?P<list>[a-z]+)/$', fanart_views.CharactersListView.as_view(), name='characters-list'),
+    # url(r'^characters/(?P<list>[a-z]+)/$', fanart_views.CharactersListView.as_view(), name='characters-list'),
 
     url(r'^characters-ac/(?P<term>.+)/$', fanart_views.CharactersAutocompleteView.as_view(), name='characters-autocomplete'),
     url(r'^species-ac/(?P<term>.+)/$', fanart_views.SpeciesAutocompleteView.as_view(), name='species-autocomplete'),
