@@ -176,6 +176,7 @@ class CharactersListView(CharactersMixin, TemplateView):
     template_name = 'includes/characters-list.html'
     list_type = settings.DEFAULT_ARTWORK_VIEW
     sub_list_type = None
+    start = 0
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -183,7 +184,7 @@ class CharactersListView(CharactersMixin, TemplateView):
         # Overriden in each subclass
         characters = self.get_characters()
 
-        start = int(self.request.GET.get('start', 0))
+        self.start = int(self.request.GET.get('start', 0))
 
         context['show_search_box'] = False
         context['list_type'] = self.list_type
@@ -193,8 +194,8 @@ class CharactersListView(CharactersMixin, TemplateView):
             context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
         except ValueError:
             context['count'] = settings.CHARACTERS_PER_PAGE
-        context['next_start'] = start + settings.CHARACTERS_PER_PAGE
-        context['characters'] = characters[start:start + context['count']]
+        context['next_start'] = self.start + settings.CHARACTERS_PER_PAGE
+        context['characters'] = characters[self.start:self.start + context['count']]
 
         return context
 
@@ -270,8 +271,9 @@ class CharactersListSearchView(CharactersListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['list'] = self.request.GET.get('list')
-        context['show_search_box'] = True
+        context['term'] = self.term
+        context['match_type'] = self.match_type
+        context['show_search_box'] = not self.term
         return context
 
 
