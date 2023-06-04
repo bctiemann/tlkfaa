@@ -199,6 +199,30 @@ class CharactersListByCanonView(CharactersListView):
         return characters.filter(is_canon=True).order_by('-num_pictures')
 
 
+class CharactersListByNewestView(CharactersListView):
+    list_type = 'newest'
+
+    def get_characters(self):
+        characters = super().get_characters()
+        return characters.order_by('-date_created')
+
+
+class CharactersListByMostTaggedView(CharactersListView):
+    list_type = 'most_tagged'
+
+    def get_characters(self):
+        characters = super().get_characters()
+        return characters.filter(num_pictures__gt=0).order_by('-num_pictures')
+
+
+class CharactersListByRecentlyTaggedView(CharactersListView):
+    list_type = 'recently_tagged'
+
+    def get_characters(self):
+        characters = super().get_characters()
+        return characters.filter(num_pictures__gt=0).order_by('-date_tagged')
+
+
 class CharactersListSearchView(CharactersListView):
     list_type = 'search'
 

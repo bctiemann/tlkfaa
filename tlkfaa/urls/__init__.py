@@ -119,10 +119,16 @@ urlpatterns = [
 
     path('Characters/', characters_views.CharactersView.as_view(), name='characters'),
     path('Characters/canon/', characters_views.CharactersView.as_view(list_type='canon'), name='characters-by-canon'),
+    path('Characters/newest/', characters_views.CharactersView.as_view(list_type='newest'), name='characters-by-newest'),
+    path('Characters/most_tagged/', characters_views.CharactersView.as_view(list_type='most_tagged'), name='characters-by-most-tagged'),
+    path('Characters/recently_tagged/', characters_views.CharactersView.as_view(list_type='recently_tagged'), name='characters-by-recently-tagged'),
     path('Characters/search/', characters_views.CharactersView.as_view(list_type='search'), name='characters-by-search'),
     path('Artists/<str:dir_name>/Characters/', characters_views.CharactersView.as_view(list_type='artist', tab_selected='search'), name='artist-characters'),
 
     path('characters/list/canon/', characters_views.CharactersListByCanonView.as_view(), name='characters-list-by-canon'),
+    path('characters/list/newest/', characters_views.CharactersListByNewestView.as_view(), name='characters-list-by-newest'),
+    path('characters/list/most_tagged/', characters_views.CharactersListByMostTaggedView.as_view(), name='characters-list-by-most-tagged'),
+    path('characters/list/recently_tagged/', characters_views.CharactersListByRecentlyTaggedView.as_view(), name='characters-list-by-recently-tagged'),
     path('characters/list/search/', characters_views.CharactersListSearchView.as_view(), name='characters-list-search'),
     path('characters/list/artist/', characters_views.CharactersListByArtistView.as_view(), name='characters-list-by-artist'),
     # Add remaining character views here
