@@ -44,9 +44,9 @@
                         </li>
                     {% endif %}
                 {% if character.is_canon %}
-                    <li><a href="{% url "characters" list="canon" %}">All Canon Characters</a></li>
+                    <li><a href="{% url "characters-by-canon" %}">All Canon Characters</a></li>
                 {% else %}
-                    <li><a href="{% url "characters" list="search" %}?list=artist&term={{ character.owner.id }}">All Characters owned by {{ character.owner.username }}</a></li>
+                    <li><a href="{% url "artist-characters" dir_name=character.owner.dir_name %}">All Characters owned by {{ character.owner.username }}</a></li>
                {% endif %}
             </ul>
         </div>
