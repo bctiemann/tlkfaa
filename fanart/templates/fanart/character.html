@@ -129,7 +129,7 @@
     </div>
 
     {% if character_pictures.count > 50 %}
-        <a class="button" href="{% url "artwork" list="character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
+        <a class="button" href="{% url "artwork-by-character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
     {% endif %}
 
 </div>
