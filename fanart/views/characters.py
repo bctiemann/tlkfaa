@@ -26,7 +26,15 @@ class CharactersView(UserPaneMixin, TemplateView):
     template_name = 'fanart/characters.html'
     list_type = settings.DEFAULT_CHARACTERS_VIEW
     sub_list_type = 'search'
+    term = None
+    match_type = None
     tab_selected = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.term = request.GET.get('term', None)
+        self.sub_list_type = request.GET.get('list', 'species')
+        self.match_type = request.GET.get('match', 'exact')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -225,6 +233,8 @@ class CharactersListByRecentlyTaggedView(CharactersListView):
 
 class CharactersListSearchView(CharactersListView):
     list_type = 'search'
+    match_type = None
+    term = None
 
     def dispatch(self, request, *args, **kwargs):
         self.term = request.GET.get('term', None)
@@ -232,7 +242,7 @@ class CharactersListSearchView(CharactersListView):
         self.match_type = request.GET.get('match', 'exact')
         return super().dispatch(request, *args, **kwargs)
 
-    # TODO: Further factor sub_list_type handling into Search subclasses
+    # TODO: Further factor sub_list_type handling into Search subclasses (see CharactersListSearchBySpeciesView)
     def get_characters(self):
         characters = super().get_characters()
         if not self.term:
@@ -263,6 +273,17 @@ class CharactersListSearchView(CharactersListView):
         # context['list'] = self.request.GET.get('list')
         context['show_search_box'] = True
         return context
+
+
+# TODO: This refactor requires a JS rework, to handle parameterized URL paths rather than query strings.
+class CharactersListSearchBySpeciesView(CharactersListSearchView):
+    sub_list_type = 'species'
+
+    def get_characters(self):
+        characters = super().get_characters()
+        if self.match_type == 'exact':
+            return characters.filter(species=self.term)
+        return characters.filter(species__icontains=self.term)
 
 
 class CharactersListByArtistView(CharactersListView):
