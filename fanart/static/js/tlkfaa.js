@@ -2770,8 +2770,9 @@ function listCharacters(list,count) {
         var speciesUrl = '/characters/species/';
         console.log(speciesUrl);
         console.log($('#species_list'));
-        // $('#species_list').append($('.spinner'));
-          $('#species_list .spinner').show();
+        $('.spinner').clone().appendTo($('#species_list')).show();
+        // $('#species_list').append(spinner);
+        //   $('#species_list .spinner').show();
         $('#species_list').load(speciesUrl, function() {
           $('#species_list .spinner').hide();
           setupTooltipPreview();
