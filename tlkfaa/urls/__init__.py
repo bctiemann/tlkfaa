@@ -141,7 +141,7 @@ urlpatterns = [
 
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     url(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),
-    url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
+    url(r'^character/(?P<character_id>[0-9]+)/$', characters_views.CharacterView.as_view(), name='character'),
 
     # Contests
     path('Contests/', contests.ContestsView.as_view(), name='contests'),

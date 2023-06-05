@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 
 from fanart.views import UserPaneMixin
-from fanart.models import Character, User
+from fanart.models import Character, User, Picture
 
 logger = logging.getLogger(__name__)
 
@@ -190,4 +190,32 @@ class CharactersListByArtistView(CharactersListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['artist'] = self.artist
+        return context
+
+
+class CharacterView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/character.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CharacterView, self).get_context_data(**kwargs)
+
+        context['character'] = get_object_or_404(Character, pk=kwargs.get('character_id', None))
+        logger.info('{0} viewing character {1} via {2}'.format(self.request.user, context['character'], self.template_name))
+        other_characters = self.request.GET.get('othercharacters', None)
+        character_list = [str(context['character'].id)]
+        if other_characters:
+            context['other_characters'] = Character.objects.filter(id__in=other_characters.split(','))
+            other_character_ids = [str(c.id) for c in context['other_characters']]
+            context['other_characters_param'] = ','.join(other_character_ids)
+            character_list += other_character_ids
+            logger.info('Other characters: {0}'.format(character_list))
+        context['canon_characters'] = Character.objects.filter(is_canon=True).order_by('name')
+
+        character_pictures = Picture.objects.filter(artist__is_active=True)
+        for character_id in character_list:
+            character_pictures = character_pictures.filter(picturecharacter__character_id=character_id)
+        context['character_pictures_per_page'] = settings.PICTURES_PER_CHARACTER_PAGE
+        context['show_more_button'] = character_pictures.count() > settings.PICTURES_PER_CHARACTER_PAGE
+        context['character_pictures'] = character_pictures.order_by('-picturecharacter__date_tagged')[0:settings.PICTURES_PER_CHARACTER_PAGE]
+
         return context
