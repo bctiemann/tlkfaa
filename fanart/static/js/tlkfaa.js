@@ -2771,7 +2771,9 @@ function listCharacters(list,count) {
         console.log(speciesUrl);
         console.log($('#species_list'));
         // $('#species_list').append($('.spinner'));
+          $('#species_list .spinner').show();
         $('#species_list').load(speciesUrl, function() {
+          $('#species_list .spinner').hide();
           setupTooltipPreview();
         });
       }

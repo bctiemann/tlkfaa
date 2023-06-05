@@ -1,7 +1,8 @@
-{% load humanize %}
+{% load humanize static %}
 
 {% for species in popular_species %}
 
+    <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div class="species group">
         <ul class="characters group">
         {% for character in species.characters %}
