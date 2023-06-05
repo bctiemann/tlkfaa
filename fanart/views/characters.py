@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 from fanart.views import UserPaneMixin
 from fanart.models import Character, User, Picture
@@ -193,6 +194,23 @@ class CharactersListByArtistView(CharactersListView):
         return context
 
 
+# Search launchpad page fragment with species aggregations (main Search tab under Characters)
+class CharactersSpeciesView(TemplateView):
+    template_name = 'includes/species-list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CharactersSpeciesView, self).get_context_data(**kwargs)
+
+        characters = Character.objects.all()
+        context['popular_species'] = []
+        # Fill up the species box with a bunch of characters, sorted by popularity
+        for species in characters.filter(owner__is_active=True).exclude(species='').values('species').annotate(num_characters=Count('species')).order_by('-num_characters')[0:20]:
+            species['characters'] = characters.filter(species=species['species']).order_by('-num_pictures')[0:20]
+            context['popular_species'].append(species)
+        return context
+
+
+# Character detail page
 class CharacterView(UserPaneMixin, TemplateView):
     template_name = 'fanart/character.html'
 

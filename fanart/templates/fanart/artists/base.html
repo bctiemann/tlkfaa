@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load static %}
 
 {% block page_title %} &mdash; Artists{% endblock %}
 
@@ -73,6 +74,7 @@
         </div>
         <br clear="left" />
 
+        <img class="spinner" src="{% static "img/loading.gif" %}" />
         <div id="artists">
 {#            {% include "includes/artists-list.html" %}#}
         </div>

@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load static %}
 
 {% block page_title %} &mdash; Characters{% endblock %}
 
@@ -51,6 +52,7 @@
     </div>
     <br clear="left" />
 
+    <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div id="characters">
 {#        {% include "includes/characters-list.html" %}#}
     </div>

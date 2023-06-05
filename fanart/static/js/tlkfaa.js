@@ -2677,8 +2677,10 @@ function listArtists(list, count) {
   queryPartsWithCount.push('count=' + count);
   queryStr = queryPartsWithCount.join('&');
   url += '?' + queryStr;
+    $('.spinner').show();
   $('#artists').slideUp('fast',function() {
     $('#artists').load(url,function() {
+        $('.spinner').hide();
 //      Shadowbox.clearCache();
 //      Shadowbox.setup('td.thumb a,a.profilelink');
 //      $('#artists_'+list).slideDown('fast');
@@ -2744,8 +2746,10 @@ function listCharacters(list,count) {
   queryStr = queryPartsWithCount.join('&');
   url += '?' + queryStr;
   console.log(url);
+    $('.spinner').show();
   $('#characters').slideUp('fast',function() {
     $('#characters').load(url,function() {
+        $('.spinner').hide();
 //      Shadowbox.clearCache();
 //      Shadowbox.setup('td.thumb a');
 //      $('#artwork_'+list).slideDown('fast');
@@ -2766,7 +2770,7 @@ function listCharacters(list,count) {
         var speciesUrl = '/characters/species/';
         console.log(speciesUrl);
         console.log($('#species_list'));
-        $('#species_list').append($('.spinner'));
+        // $('#species_list').append($('.spinner'));
         $('#species_list').load(speciesUrl, function() {
           setupTooltipPreview();
         });
@@ -2779,7 +2783,9 @@ function getMoreArtists(start, list, count, term, moreButtonSelector) {
 //  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
 //   var url = '/artists/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
   var url = `/artists/list/${list}/?start=${start}&count=${count}&term=${term}`;
+    $('.spinner').show();
   $.ajax({ url: url, success: function(data) {
+    $('.spinner').hide();
 //    $('#artists_'+list).append(data);
     let moreButtons = document.querySelectorAll(moreButtonSelector);
     for (const s of moreButtons) {
@@ -2806,7 +2812,9 @@ function getMoreArtwork(start, list, count, term, yearFrom, yearTo, moreButtonSe
     for (const s of moreButtons) {
         s.classList.add('loading-spinner');
     }
+    $('.spinner').show();
   $.ajax({ url: url, success: function(data) {
+    $('.spinner').hide();
 //    $('#artwork_'+list).append(data);
     for (const s of moreButtons) {
         s.style.display = "none";
@@ -2833,7 +2841,9 @@ function getMoreCharacters(start, list, subList, count, term, moreButtonSelector
     for (const s of moreButtons) {
         s.classList.add('loading-spinner');
     }
+    $('.spinner').show();
   $.ajax({ url: url, success: function(data) {
+    $('.spinner').hide();
 //    $('#artwork_'+list).append(data);
     for (const s of moreButtons) {
         s.style.display = "none";
