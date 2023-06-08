@@ -2664,37 +2664,34 @@ console.log(data);
 }
 
 function listArtists(list, count) {
-  let url = `/artists/list/${list}/`;
-  params = [];
-  if ((list == 'search' || list == 'tag') && count > 0) {
-    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
-  }
-  var queryParts = [];
-  params.forEach(function(e){
-    queryParts.push(e.name + '=' + e.value);
-  });
-  queryPartsWithCount = queryParts.slice();
-  queryPartsWithCount.push('count=' + count);
-  queryStr = queryPartsWithCount.join('&');
-  url += '?' + queryStr;
-    $('.spinner').show();
-  $('#artists').slideUp('fast',function() {
-    $('#artists').load(url,function() {
-        $('.spinner').hide();
-//      Shadowbox.clearCache();
-//      Shadowbox.setup('td.thumb a,a.profilelink');
-//      $('#artists_'+list).slideDown('fast');
-      setupTooltipPreview();
-      $('#artists').slideDown('fast');
-      artistlistopen = list;
-      $('h2.itemlist').removeClass('itemlist_selected');
-      $('#artistlisth2_'+list).addClass('itemlist_selected');
-      if (typeof(window.history.replaceState) !== "undefined") {
-        queryStr = queryParts.join('&');
-        window.history.replaceState('', '', '/Artists/' + list + '/' + (queryStr ? '?' : '') + queryStr);
-      }
+    let url = `/artists/list/${list}/`;
+    const params = [];
+    if ((list === 'search' || list === 'tag') && count > 0) {
+        params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+    }
+    const queryParts = [];
+    params.forEach(function(e){
+        queryParts.push(e.name + '=' + e.value);
     });
-  });
+    const queryPartsWithCount = queryParts.slice();
+    queryPartsWithCount.push('count=' + count);
+    let queryStr = queryPartsWithCount.join('&');
+    url += `?${queryStr}`;
+    $('.spinner').show();
+    $('#artists').slideUp('fast',function() {
+        $('#artists').load(url,function() {
+            $('.spinner').hide();
+            setupTooltipPreview();
+            $('#artists').slideDown('fast');
+            artistlistopen = list;
+            $('h2.itemlist').removeClass('itemlist_selected');
+            $('#artistlisth2_'+list).addClass('itemlist_selected');
+            if (typeof(window.history.replaceState) !== "undefined") {
+                queryStr = queryParts.join('&');
+                window.history.replaceState('', '', '/Artists/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+            }
+        });
+    });
 }
 
 function listArtwork(list, count) {
@@ -2730,56 +2727,51 @@ function listArtwork(list, count) {
     });
 }
 
-function listCharacters(list,count) {
+function listCharacters(list, count) {
     console.log('listCharacters');
-  var url = `/characters/list/${list}/`;
-  params = [];
-  if ((list == 'search' || list == 'tag') && count > 0) {
-    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
-  }
-  var queryParts = [];
-  params.forEach(function(e){
-    queryParts.push(e.name + '=' + e.value);
-  });
-  queryPartsWithCount = queryParts.slice();
-  queryPartsWithCount.push('count=' + count);
-  queryStr = queryPartsWithCount.join('&');
-  url += '?' + queryStr;
-  console.log(url);
-    $('.spinner').show();
-  $('#characters').slideUp('fast',function() {
-    $('#characters').load(url,function() {
-        $('.spinner').hide();
-//      Shadowbox.clearCache();
-//      Shadowbox.setup('td.thumb a');
-//      $('#artwork_'+list).slideDown('fast');
-      setupTooltipPreview();
-      $('#characters').slideDown('fast');
-      characterslistopen = list;
-      $('h2.itemlist').removeClass('itemlist_selected');
-      $('#characterslisth2_'+list).addClass('itemlist_selected');
-      if (typeof(window.history.replaceState) !== "undefined") {
-        queryStr = queryParts.join('&');
-        window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
-      }
-      console.log(list);
-      if (list == 'search') {
-        setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
-        setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
-        setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
-        var speciesUrl = '/characters/species/';
-        console.log(speciesUrl);
-        console.log($('#species_list'));
-        $('.spinner').clone().appendTo($('#species_list')).show();
-        // $('#species_list').append(spinner);
-        //   $('#species_list .spinner').show();
-        $('#species_list').load(speciesUrl, function() {
-          $('#species_list .spinner').hide();
-          setupTooltipPreview();
-        });
-      }
+    let url = `/characters/list/${list}/`;
+    const params = [];
+    if ((list === 'search' || list === 'tag') && count > 0) {
+        params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+    }
+    const queryParts = [];
+    params.forEach(function(e){
+        queryParts.push(e.name + '=' + e.value);
     });
-  });
+    const queryPartsWithCount = queryParts.slice();
+    queryPartsWithCount.push('count=' + count);
+    let queryStr = queryPartsWithCount.join('&');
+    url += `?${queryStr}`;
+    console.log(url);
+    $('.spinner').show();
+    $('#characters').slideUp('fast',function() {
+        $('#characters').load(url,function() {
+            $('.spinner').hide();
+            setupTooltipPreview();
+            $('#characters').slideDown('fast');
+            characterslistopen = list;
+            $('h2.itemlist').removeClass('itemlist_selected');
+            $('#characterslisth2_'+list).addClass('itemlist_selected');
+            if (typeof(window.history.replaceState) !== "undefined") {
+                queryStr = queryParts.join('&');
+                window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+            }
+            console.log(list);
+            if (list == 'search') {
+                setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
+                setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
+                setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
+                let speciesUrl = '/characters/species/';
+                console.log(speciesUrl);
+                console.log($('#species_list'));
+                $('.spinner').clone().appendTo($('#species_list')).show();
+                $('#species_list').load(speciesUrl, function() {
+                    $('#species_list .spinner').hide();
+                    setupTooltipPreview();
+                });
+            }
+        });
+    });
 }
 
 function getMoreArtists(start, list, count, term, moreButtonSelector) {
