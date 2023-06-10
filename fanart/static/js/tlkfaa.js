@@ -2778,11 +2778,14 @@ function getMoreArtists(start, list, count, term, moreButtonSelector) {
 //  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
 //   var url = '/artists/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
   var url = `/artists/list/${list}/?start=${start}&count=${count}&term=${term}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
+    }
     $('.spinner').show();
-  $.ajax({ url: url, success: function(data) {
+    $.ajax({ url: url, success: function(data) {
     $('.spinner').hide();
 //    $('#artists_'+list).append(data);
-    let moreButtons = document.querySelectorAll(moreButtonSelector);
     for (const s of moreButtons) {
         s.style.display = "none";
     }
