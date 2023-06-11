@@ -2775,93 +2775,81 @@ function listCharacters(list, count) {
 }
 
 function getMoreArtists(start, list, count, term, moreButtonSelector) {
-//  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-//   var url = '/artists/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
-  var url = `/artists/list/${list}/?start=${start}&count=${count}&term=${term}`;
+    let url = `/artists/list/${list}/?start=${start}&count=${count}&term=${term}`;
     let moreButtons = document.querySelectorAll(moreButtonSelector);
     for (const s of moreButtons) {
         s.classList.add('loading-spinner');
     }
     $('.spinner').show();
     $.ajax({ url: url, success: function(data) {
-    $('.spinner').hide();
-//    $('#artists_'+list).append(data);
-    for (const s of moreButtons) {
-        s.style.display = "none";
-    }
-    $('#artists').append(data);
-//    Shadowbox.setup('td.thumb a,a.profilelink');
-    setupTooltipPreview();
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-      window.history.replaceState('', '', '/Artists/' + list + '/?start=' + start + termstr);
-    }
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#artists').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            window.history.replaceState('', '', `/Artists/${list}/?start=${start}${termstr}`);
+        }
   }});
   ArtistList[list] = start;
 }
 
 function getMoreArtwork(start, list, count, term, yearFrom, yearTo, moreButtonSelector) {
-//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/artwork/list/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
+    let url = `/artwork/list/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
     let moreButtons = document.querySelectorAll(moreButtonSelector);
     for (const s of moreButtons) {
         s.classList.add('loading-spinner');
     }
     $('.spinner').show();
-  $.ajax({ url: url, success: function(data) {
-    $('.spinner').hide();
-//    $('#artwork_'+list).append(data);
-    for (const s of moreButtons) {
-        s.style.display = "none";
-    }
-    $('#artwork').append(data);
-//    Shadowbox.setup('td.thumb a');
-//     obj.style.display='none';
-    setupTooltipPreview();
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-      window.history.replaceState('', '', '/Artwork/' + list + '/?start=' + start + termstr);
-    }
-  }});
-  ArtworkList[list] = start;
+    $.ajax({ url: url, success: function(data) {
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#artwork').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            window.history.replaceState('', '', `/Artwork/${list}/?start=${start}${termstr}`);
+        }
+    }});
+    ArtworkList[list] = start;
 }
 
 function getMoreCharacters(start, list, subList, count, term, moreButtonSelector, dirName, matchType) {
-//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/characters/list/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
+    let url = `/characters/list/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
     let moreButtons = document.querySelectorAll(moreButtonSelector);
     for (const s of moreButtons) {
         s.classList.add('loading-spinner');
     }
     $('.spinner').show();
-  $.ajax({ url: url, success: function(data) {
-    $('.spinner').hide();
-//    $('#artwork_'+list).append(data);
-    for (const s of moreButtons) {
-        s.style.display = "none";
-    }
-    $('#characters').append(data);
-//    Shadowbox.setup('td.thumb a');
-//     obj.style.display='none';
-    setupTooltipPreview();
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-      if (dirName != '') {
-        termstr += "&dir_name="+dirName;
-      }
-      window.history.replaceState('', '', '/Characters/' + list + '/?start=' + start + termstr);
-    }
-  }});
-  CharactersList[list] = start;
+    $.ajax({ url: url, success: function(data) {
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#characters').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            if (dirName !== '') {
+                termstr += "&dir_name=" + dirName;
+            }
+            window.history.replaceState('', '', `/Characters/${list}/?start=${start}${termstr}`);
+        }
+    }});
+    CharactersList[list] = start;
 }
 
 function doSearch(mode) {
