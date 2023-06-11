@@ -1,4 +1,5 @@
 {% extends "fanart/base.html" %}
+{% load static %}
 
 {% block page_title %} &mdash; Artists{% endblock %}
 
@@ -18,30 +19,12 @@
 
     By artist name:
     {% for letter in 'abcdefghijklmnopqrstuvwxyz' %}
-        <a href="{% url "artists" list="name" %}?initial={{ letter }}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
+        <a href="{% url "artists-by-name" initial=letter %}" {% if initial == letter %}class="selected"{% endif %}>{{ letter|upper }}</a>
     {% endfor %}
 </div>
 {% endblock %}
 
 {% block content %}
-
-{% if list_type == "name" and initial %}
-
-    <div class="featurebox">
-
-        {{ pages_link.pages_nav|safe }}
-
-        <div id="artists">
-
-        {% include "includes/artists-list.html" %}
-
-        </div>
-
-        {{ pages_link.pages_nav|safe }}
-
-    </div>
-
-{% else %}
 
     <div class="featurebox featureboxwide">
         <div class="itemlistheaders" id="artistheaders">
@@ -53,26 +36,26 @@
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recentactive', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "recentactive" %}itemlist_selected{% endif %}" id="artistlisth2_recentactive">Recently Active</h2>
+                <a class="itemlistheading" href="javascript:nop()" onClick="listArtists('recently_active', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "recently_active" %}itemlist_selected{% endif %}" id="artistlisth2_recently_active">Recently Active</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('toprated', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "toprated" %}itemlist_selected{% endif %}" id="artistlisth2_toprated">Top Rated</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('top_rated', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "top_rated" %}itemlist_selected{% endif %}" id="artistlisth2_top_rated">Top Rated</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('topratedactive', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "topratedactive" %}itemlist_selected{% endif %}" id="artistlisth2_topratedactive">Top Rated Recently Active</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('top_rated_active', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "top_rated_active" %}itemlist_selected{% endif %}" id="artistlisth2_top_rated_active">Top Rated Recently Active</h2>
                 </a>
             </div>
 
             <div class="itemlist">
-                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('prolific', {{ per_page }})">
-                    <h2 class="itemlist {% if list_type == "prolific" %}itemlist_selected{% endif %}" id="artistlisth2_prolific">Most Prolific</h2>
+                <a class="itemlistheading" class="viewmorelink" href="javascript:nop()" onClick="listArtists('most_prolific', {{ per_page }})">
+                    <h2 class="itemlist {% if list_type == "most_prolific" %}itemlist_selected{% endif %}" id="artistlisth2_most_prolific">Most Prolific</h2>
                 </a>
             </div>
 
@@ -91,12 +74,19 @@
         </div>
         <br clear="left" />
 
+        <img class="spinner" src="{% static "img/loading.gif" %}" />
         <div id="artists">
-            {% include "includes/artists-list.html" %}
+{#            {% include "includes/artists-list.html" %}#}
         </div>
 
     </div>
 
-{% endif %}
+{% endblock %}
 
+{% block footer_js %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        getMoreArtists({{ start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '.get-more-button');
+    });
+    </script>
 {% endblock %}

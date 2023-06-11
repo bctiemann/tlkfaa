@@ -14,7 +14,12 @@
     {% if forloop.counter == count %}
 
     	<br clear="all" />
-	    <button onClick="getMoreArtists({{ next_start }},'{{ list_type }}',{{ count }},'{{ term }}',this)">More</button>
+	    <button
+            class="get-more-button"
+            onClick="getMoreArtists({{ next_start }},'{{ list_type }}',{{ count }},'{{ term }}', '.get-more-button')"
+        >
+            More
+        </button>
 
     {% endif %}
 

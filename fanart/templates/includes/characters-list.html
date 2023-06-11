@@ -1,13 +1,13 @@
 {% load static %}
 {% load humanize %}
 
-{% if list == "search" and show_search_box %}
+{% if list_type == "search" and show_search_box %}
 
     Artist: <input id="artist_pick_search" onFocus="this.value=''" />
     Species: <input id="species_pick_search" onFocus="this.value=''" />
     Name: <input id="character_pick_search" onFocus="this.value=''" />
 
-    <img class="spinner" src="{% static "img/loading.gif" %}" />
+{#    <img class="spinner" src="{% static "img/loading.gif" %}" />#}
     <div id="species_list"></div>
 
 {% endif %}
@@ -17,7 +17,12 @@
     {% include "includes/character.html" %}
 
     {% if forloop.counter == count %}
-        <button onClick="getMoreCharacters({{ next_start }},'{{ list_type }}','{{ sub_list_type }}',{{ count }},'{{ term }}',this,'{{ artist.dir_name }}','{{ match_type }}')">More</button>
+        <button
+            class="get-more-button"
+            onClick="getMoreCharacters({{ next_start }}, '{{ list_type }}', '{{ sub_list_type }}', {{ count }}, '{{ term }}', '.get-more-button', '{{ artist.dir_name }}', '{{ match_type }}')"
+        >
+            More
+        </button>
     {% endif %}
 
 {% endfor %}

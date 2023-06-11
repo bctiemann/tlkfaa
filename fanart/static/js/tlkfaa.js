@@ -1686,7 +1686,8 @@ console.log(url);
 }
 
 function updateCharacterList(list,term,page) {
-  var url = '/Characters/search/?list=' + list + '&term=' + escape(term) + '&page=' + page
+  var url = `/Characters/search/?list=${list}&term=${escape(term)}&page=${page}`;
+  console.log(url);
 //  var url = "/ajax_listcharacters.jsp?mode=fan&list="+list+"&term="+escape(term)+"&page="+page;
   window.location = url;
 //  $('#characterlist').load(url);
@@ -2662,40 +2663,39 @@ console.log(data);
     }, 'json');
 }
 
-function listArtists(list,count) {
-  var url = '/artists/' + list + '/';
-  params = [];
-  if ((list == 'search' || list == 'tag') && count > 0) {
-    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
-  }
-  var queryParts = [];
-  params.forEach(function(e){
-    queryParts.push(e.name + '=' + e.value);
-  });
-  queryPartsWithCount = queryParts.slice();
-  queryPartsWithCount.push('count=' + count);
-  queryStr = queryPartsWithCount.join('&');
-  url += '?' + queryStr;
-  $('#artists').slideUp('fast',function() {
-    $('#artists').load(url,function() {
-//      Shadowbox.clearCache();
-//      Shadowbox.setup('td.thumb a,a.profilelink');
-//      $('#artists_'+list).slideDown('fast');
-      setupTooltipPreview();
-      $('#artists').slideDown('fast');
-      artistlistopen = list;
-      $('h2.itemlist').removeClass('itemlist_selected');
-      $('#artistlisth2_'+list).addClass('itemlist_selected');
-      if (typeof(window.history.replaceState) !== "undefined") {
-        queryStr = queryParts.join('&');
-        window.history.replaceState('', '', '/Artists/' + list + '/' + (queryStr ? '?' : '') + queryStr);
-      }
+function listArtists(list, count) {
+    let url = `/artists/list/${list}/`;
+    const params = [];
+    if ((list === 'search' || list === 'tag') && count > 0) {
+        params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+    }
+    const queryParts = [];
+    params.forEach(function(e){
+        queryParts.push(e.name + '=' + e.value);
     });
-  });
+    const queryPartsWithCount = queryParts.slice();
+    queryPartsWithCount.push('count=' + count);
+    let queryStr = queryPartsWithCount.join('&');
+    url += `?${queryStr}`;
+    $('.spinner').show();
+    $('#artists').slideUp('fast',function() {
+        $('#artists').load(url,function() {
+            $('.spinner').hide();
+            setupTooltipPreview();
+            $('#artists').slideDown('fast');
+            artistlistopen = list;
+            $('h2.itemlist').removeClass('itemlist_selected');
+            $('#artistlisth2_'+list).addClass('itemlist_selected');
+            if (typeof(window.history.replaceState) !== "undefined") {
+                queryStr = queryParts.join('&');
+                window.history.replaceState('', '', '/Artists/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+            }
+        });
+    });
 }
 
 function listArtwork(list, count) {
-    let url = `/artwork/${list}/`;
+    let url = `/artwork/list/${list}/`;
     const params = [];
     if ((list === 'search' || list === 'tag') && count > 0) {
         params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
@@ -2727,111 +2727,129 @@ function listArtwork(list, count) {
     });
 }
 
-function listCharacters(list,count) {
-  var url = '/characters/' + list + '/';
-  params = [];
-  if ((list == 'search' || list == 'tag') && count > 0) {
-    params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
-  }
-  var queryParts = [];
-  params.forEach(function(e){
-    queryParts.push(e.name + '=' + e.value);
-  });
-  queryPartsWithCount = queryParts.slice();
-  queryPartsWithCount.push('count=' + count);
-  queryStr = queryPartsWithCount.join('&');
-  url += '?' + queryStr;
-  $('#characters').slideUp('fast',function() {
-    $('#characters').load(url,function() {
-//      Shadowbox.clearCache();
-//      Shadowbox.setup('td.thumb a');
-//      $('#artwork_'+list).slideDown('fast');
-      setupTooltipPreview();
-      $('#characters').slideDown('fast');
-      characterslistopen = list;
-      $('h2.itemlist').removeClass('itemlist_selected');
-      $('#characterslisth2_'+list).addClass('itemlist_selected');
-      if (typeof(window.history.replaceState) !== "undefined") {
-        queryStr = queryParts.join('&');
-        window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
-      }
-      if (list == 'search') {
-        setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
-        setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
-        setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
-        var speciesUrl = '/characters/species/';
-        $('#species_list').append($('.spinner'));
-        $('#species_list').load(speciesUrl, function() {
-          setupTooltipPreview();
-        });
-      }
+function listCharacters(list, count) {
+    console.log('listCharacters');
+    let url = `/characters/list/${list}/`;
+    const params = [];
+    if ((list === 'search' || list === 'tag') && count > 0) {
+        params.push({name: 'term', value: encodeURIComponent($('#searchtext').val())});
+    }
+    const queryParts = [];
+    params.forEach(function(e){
+        queryParts.push(e.name + '=' + e.value);
     });
-  });
+    const queryPartsWithCount = queryParts.slice();
+    queryPartsWithCount.push('count=' + count);
+    let queryStr = queryPartsWithCount.join('&');
+    url += `?${queryStr}`;
+    console.log(url);
+    $('.spinner').show();
+    $('#characters').slideUp('fast',function() {
+        $('#characters').load(url,function() {
+            $('.spinner').hide();
+            setupTooltipPreview();
+            $('#characters').slideDown('fast');
+            characterslistopen = list;
+            $('h2.itemlist').removeClass('itemlist_selected');
+            $('#characterslisth2_'+list).addClass('itemlist_selected');
+            if (typeof(window.history.replaceState) !== "undefined") {
+                queryStr = queryParts.join('&');
+                window.history.replaceState('', '', '/Characters/' + list + '/' + (queryStr ? '?' : '') + queryStr);
+            }
+            console.log(list);
+            if (list == 'search') {
+                setupAutocompleteArtist($('input#artist_pick_search'),"updateCharacterList('artist',ui.item.artistid,1);");
+                setupAutocompleteSpecies('search',"updateCharacterList('species',ui.item.species,1);");
+                setupAutocompleteCharacter('search',"updateCharacterList('charactername',ui.item.name,1);");
+                let speciesUrl = '/characters/species/';
+                console.log(speciesUrl);
+                console.log($('#species_list'));
+                $('.spinner').clone().appendTo($('#species_list')).show();
+                $('#species_list').load(speciesUrl, function() {
+                    $('#species_list .spinner').hide();
+                    setupTooltipPreview();
+                });
+            }
+        });
+    });
 }
 
-function getMoreArtists(start,list,count,term,obj) {
-//  var url = "/ajax_listartists.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = '/artists/' + list + '/?start=' + start + '&count=' + count + '&term=' + term;
-  $.ajax({ url: url, success: function(data) {
-//    $('#artists_'+list).append(data);
-    $('#artists').append(data);
-//    Shadowbox.setup('td.thumb a,a.profilelink');
-    setupTooltipPreview();
-    obj.style.display='none';
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-//      window.history.replaceState('', '', "/Artists.jsp?list="+list+"&start="+start+termstr);
-      window.history.replaceState('', '', '/Artists/' + list + '/?start=' + start + termstr);
+function getMoreArtists(start, list, count, term, moreButtonSelector) {
+    let url = `/artists/list/${list}/?start=${start}&count=${count}&term=${term}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
     }
+    $('.spinner').show();
+    $.ajax({ url: url, success: function(data) {
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#artists').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            window.history.replaceState('', '', `/Artists/${list}/?start=${start}${termstr}`);
+        }
   }});
   ArtistList[list] = start;
 }
 
-function getMoreArtwork(start, list, count, term, yearFrom, yearTo, obj) {
-//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/artwork/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
-  obj.classList.add('loading-spinner');
-  $.ajax({ url: url, success: function(data) {
-//    $('#artwork_'+list).append(data);
-    $('#artwork').append(data);
-//    Shadowbox.setup('td.thumb a');
-    obj.style.display='none';
-    setupTooltipPreview();
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-      window.history.replaceState('', '', '/Artwork/' + list + '/?start=' + start + termstr);
+function getMoreArtwork(start, list, count, term, yearFrom, yearTo, moreButtonSelector) {
+    let url = `/artwork/list/${list}/?start=${start}&count=${count}&term=${term}&year_from=${yearFrom}&year_to=${yearTo}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
     }
-  }});
-  ArtworkList[list] = start;
+    $('.spinner').show();
+    $.ajax({ url: url, success: function(data) {
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#artwork').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            window.history.replaceState('', '', `/Artwork/${list}/?start=${start}${termstr}`);
+        }
+    }});
+    ArtworkList[list] = start;
 }
 
-function getMoreCharacters(start,list,subList,count,term,obj,dirName,matchType) {
-//  var url = "/ajax_listartwork.jsp?start="+start+"&list="+list+"&count="+count+"&term="+term;
-  var url = `/characters/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
-  $.ajax({ url: url, success: function(data) {
-//    $('#artwork_'+list).append(data);
-    $('#characters').append(data);
-//    Shadowbox.setup('td.thumb a');
-    obj.style.display='none';
-    setupTooltipPreview();
-    if (typeof(window.history.replaceState) !== "undefined") {
-      var termstr = '';
-      if (term != '') {
-        termstr = "&term="+term;
-      }
-      if (dirName != '') {
-        termstr += "&dir_name="+dirName;
-      }
-      window.history.replaceState('', '', '/Characters/' + list + '/?start=' + start + termstr);
+function getMoreCharacters(start, list, subList, count, term, moreButtonSelector, dirName, matchType) {
+    let url = `/characters/list/${list}/?start=${start}&count=${count}&list=${subList}&term=${term}&dir_name=${dirName}&match=${matchType}`;
+    let moreButtons = document.querySelectorAll(moreButtonSelector);
+    for (const s of moreButtons) {
+        s.classList.add('loading-spinner');
     }
-  }});
-  CharactersList[list] = start;
+    $('.spinner').show();
+    $.ajax({ url: url, success: function(data) {
+        $('.spinner').hide();
+        for (const s of moreButtons) {
+            s.style.display = "none";
+        }
+        $('#characters').append(data);
+        setupTooltipPreview();
+        if (typeof(window.history.replaceState) !== "undefined") {
+            let termstr = '';
+            if (term !== '') {
+                termstr = "&term=" + term;
+            }
+            if (dirName !== '') {
+                termstr += "&dir_name=" + dirName;
+            }
+            window.history.replaceState('', '', `/Characters/${list}/?start=${start}${termstr}`);
+        }
+    }});
+    CharactersList[list] = start;
 }
 
 function doSearch(mode) {

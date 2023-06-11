@@ -2,7 +2,7 @@
 
     <div class="search-form artwork-search">
         <form name="searchform" onSubmit="listArtwork('search', {{ per_page }});return false;">
-            <input class="std" name="searchtext" id="searchtext" value="{{ term }}" />
+            <input class="std" name="searchtext" id="searchtext" value="{{ term|default_if_none:"" }}" />
             <button type="button" onClick="listArtwork('search', {{ per_page }})">Search Pictures</button>
             <button type="button" onClick="listArtwork('tag', {{ per_page }})">Search Tags</button>
             <div class="search-year-range">
@@ -20,7 +20,7 @@
             <div class="tag">
                 <a
                     class="tag"
-                    href="{% url "artwork" list="tag" %}?term={{ tag.tag }}"
+                    href="{% url "artwork-by-tag" %}?term={{ tag.tag }}"
                 >
                     {{ tag.tag }}
                     <span class="tagcount">{{ tag.num_pictures }}</span>
@@ -40,7 +40,8 @@
 
     {% if forloop.counter == count %}
         <button
-            onClick="getMoreArtwork({{ next_start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', this)"
+            class="get-more-button"
+            onClick="getMoreArtwork({{ next_start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', '.get-more-button')"
         >
             More
         </button>

@@ -166,7 +166,7 @@ img.featured-picture {
                             <li>Keywords:</li>
                         {% endif %}
                         {% for tag in picture.tags.all %}
-                            <a class="tag" href="{% url "artwork" list="tag" %}?term={{ tag }}">{{ tag }}</a>
+                            <a class="tag" href="{% url "artwork-by-tag" %}?term={{ tag }}">{{ tag }}</a>
                         {% endfor %}
 
                         {% if picture.giftpicture_set.count %}

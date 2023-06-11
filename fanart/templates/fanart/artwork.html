@@ -36,20 +36,20 @@
 
         {% if user.is_authenticated %}
         <div class="itemlist">
-            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newestfaves', {{ per_page }})">
-                <h2 class="itemlist {% if list_type == "newestfaves" %}itemlist_selected{% endif %}" id="artworklisth2_newestfaves">Newest By Favorite Artists</h2>
+            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('newest_by_faves', {{ per_page }})">
+                <h2 class="itemlist {% if list_type == "newest_by_faves" %}itemlist_selected{% endif %}" id="artworklisth2_newest_by_faves">Newest By Favorite Artists</h2>
             </a>
         </div>
         {% endif %}
 
         <div class="itemlist">
-            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('toprated', {{ per_page }})">
-                <h2 class="itemlist {% if list_type == "toprated" %}itemlist_selected{% endif %}" id="artworklisth2_toprated">Top Rated</h2>
+            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('top_rated', {{ per_page }})">
+                <h2 class="itemlist {% if list_type == "top_rated" %}itemlist_selected{% endif %}" id="artworklisth2_top_rated">Top Rated</h2>
             </a>
         </div>
         <div class="itemlist">
-            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('topratedrecent', {{ per_page }})">
-                <h2 class="itemlist {% if list_type == "topratedrecent" %}itemlist_selected{% endif %}" id="artworklisth2_topratedrecent">Top Rated Recent Uploads</h2>
+            <a class="itemlistheading" href="javascript:nop()" onClick="listArtwork('top_rated_recent', {{ per_page }})">
+                <h2 class="itemlist {% if list_type == "top_rated_recent" %}itemlist_selected{% endif %}" id="artworklisth2_top_rated_recent">Top Rated Recent Uploads</h2>
             </a>
         </div>
         <div class="itemlist">
@@ -67,10 +67,17 @@
 
     <img class="spinner" src="{% static "img/loading.gif" %}" />
     <div id="artwork">
-        {% include "includes/artwork-list.html" %}
+{#        {% include "includes/artwork-list.html" %}#}
     </div>
 
 </div>
 
+{% endblock %}
 
+{% block footer_js %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        getMoreArtwork({{ start }}, '{{ list_type }}', {{ count }}, '{{ term }}', '{{ year_from }}', '{{ year_to }}', '.get-more-button');
+    });
+    </script>
 {% endblock %}

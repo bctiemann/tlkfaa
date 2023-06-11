@@ -8,6 +8,9 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from fanart import views as fanart_views
+from fanart.views import artists as artists_views
+from fanart.views import artwork as artwork_views
+from fanart.views import characters as characters_views
 from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
@@ -32,10 +35,10 @@ urlpatterns = [
     url(r'^logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 
     url(r'^$', fanart_views.HomeView.as_view(), name='home'),
-    url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
-    url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
+    # url(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
+    # url(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
 #    url(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
-    url(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
+#     url(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
@@ -71,11 +74,67 @@ urlpatterns = [
     url(r'^userbox/contests_box/$', fanart_views.ContestsBoxView.as_view(), name='contests-box'),
     url(r'^userbox/tool_box/$', fanart_views.ToolBoxView.as_view(), name='tool-box'),
 
-#    url(r'^Artwork/Artists/(?P<dir_name>[^/]+)/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistView.as_view(), name='artist'),
+    path('Artists/', artists_views.ArtistsView.as_view(), name='artists'),
+    path('Artists/name/<str:initial>/', artists_views.ArtistsByNameView.as_view(list_type='name'), name='artists-by-name'),
+    path('Artists/newest/', artists_views.ArtistsView.as_view(list_type='newest'), name='artists-by-newest'),
+    path('Artists/recently_active/', artists_views.ArtistsView.as_view(list_type='recently_active'), name='artists-by-recently-active'),
+    path('Artists/top_rated/', artists_views.ArtistsView.as_view(list_type='top_rated'), name='artists-by-top-rated'),
+    path('Artists/top_rated_active/', artists_views.ArtistsView.as_view(list_type='top_rated_active'), name='artists-by-top-rated-active'),
+    path('Artists/most_prolific/', artists_views.ArtistsView.as_view(list_type='most_prolific'), name='artists-by-most-prolific'),
+    path('Artists/random/', artists_views.ArtistsView.as_view(list_type='random'), name='artists-by-random'),
+    path('Artists/search/', artists_views.ArtistsView.as_view(list_type='search'), name='artists-by-search'),
+
     url(r'^Artists/(?P<dir_name>[^/]+)/$', fanart_views.ArtistView.as_view(), name='artist'),
     url(r'^Artists/(?P<dir_name>[^/]+)/Gallery/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     url(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
-    url(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
+    # url(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
+
+    path('artists/list/newest/', artists_views.ArtistsListByNewestView.as_view(), name='artists-list-by-newest'),
+    path('artists/list/recently_active/', artists_views.ArtistsListByRecentlyActiveView.as_view(), name='artists-list-by-recently-active'),
+    path('artists/list/top_rated/', artists_views.ArtistsListByTopRatedView.as_view(), name='artists-list-by-top-rated'),
+    path('artists/list/top_rated_active/', artists_views.ArtistsListByTopRatedActiveView.as_view(), name='artists-list-by-top-rated-active'),
+    path('artists/list/most_prolific/', artists_views.ArtistsListByMostProlificView.as_view(), name='artists-list-by-most-prolific'),
+    path('artists/list/random/', artists_views.ArtistsListByRandomView.as_view(), name='artists-list-by-random'),
+    path('artists/list/search/', artists_views.ArtistsListBySearchView.as_view(), name='artists-list-by-search'),
+
+    path('Artwork/', artwork_views.ArtworkView.as_view(), name='artwork'),
+    path('Artwork/newest/', artwork_views.ArtworkView.as_view(list_type='newest'), name='artwork-by-newest'),
+    path('Artwork/tag/', artwork_views.ArtworkView.as_view(list_type='tag'), name='artwork-by-tag'),
+    path('Artwork/unviewed/', artwork_views.ArtworkView.as_view(list_type='unviewed'), name='artwork-by-unviewed'),
+    path('Artwork/newest_by_faves/', artwork_views.ArtworkView.as_view(list_type='newest_by_faves'), name='artwork-by-newest-by-faves'),
+    path('Artwork/top_rated/', artwork_views.ArtworkView.as_view(list_type='top_rated'), name='artwork-by-top-rated'),
+    path('Artwork/top_rated_recent/', artwork_views.ArtworkView.as_view(list_type='top_rated_recent'), name='artwork-by-top-rated-recent'),
+    path('Artwork/random/', artwork_views.ArtworkView.as_view(list_type='random'), name='artwork-by-random'),
+    path('Artwork/search/', artwork_views.ArtworkView.as_view(list_type='search'), name='artwork-by-search'),
+    path('Artwork/character/', artwork_views.ArtworkView.as_view(list_type='character'), name='artwork-by-character'),
+
+    path('artwork/list/newest/', artwork_views.ArtworkListByNewestView.as_view(), name='artwork-list-by-newest'),
+    path('artwork/list/unviewed/', artwork_views.ArtworkListByUnviewedView.as_view(), name='artwork-list-by-unviewed'),
+    path('artwork/list/newest_by_faves/', artwork_views.ArtworkListByNewestByFavesView.as_view(), name='artwork-list-by-newest-by-faves'),
+    path('artwork/list/top_rated/', artwork_views.ArtworkListByTopRatedView.as_view(), name='artwork-list-by-top-rated'),
+    path('artwork/list/top_rated_recent/', artwork_views.ArtworkListByTopRatedRecentView.as_view(), name='artwork-list-by-top-rated-recent'),
+    path('artwork/list/random/', artwork_views.ArtworkListByRandomView.as_view(), name='artwork-list-by-random'),
+    path('artwork/list/search/', artwork_views.ArtworkListSearchByTermView.as_view(), name='artwork-list-search-by-term'),
+    path('artwork/list/tag/', artwork_views.ArtworkListSearchByTagView.as_view(), name='artwork-list-search-by-tag'),
+    path('artwork/list/character/', artwork_views.ArtworkListSearchByCharacterView.as_view(), name='artwork-list-search-by-character'),
+
+    path('Characters/', characters_views.CharactersView.as_view(), name='characters'),
+    path('Characters/canon/', characters_views.CharactersView.as_view(list_type='canon'), name='characters-by-canon'),
+    path('Characters/newest/', characters_views.CharactersView.as_view(list_type='newest'), name='characters-by-newest'),
+    path('Characters/most_tagged/', characters_views.CharactersView.as_view(list_type='most_tagged'), name='characters-by-most-tagged'),
+    path('Characters/recently_tagged/', characters_views.CharactersView.as_view(list_type='recently_tagged'), name='characters-by-recently-tagged'),
+    path('Characters/search/', characters_views.CharactersView.as_view(list_type='search'), name='characters-by-search'),
+    path('Artists/<str:dir_name>/Characters/', characters_views.CharactersView.as_view(list_type='artist', tab_selected='search'), name='artist-characters'),
+
+    path('characters/species/', characters_views.CharactersSpeciesView.as_view(), name='characters-species-list'),
+    path('characters/list/canon/', characters_views.CharactersListByCanonView.as_view(), name='characters-list-by-canon'),
+    path('characters/list/newest/', characters_views.CharactersListByNewestView.as_view(), name='characters-list-by-newest'),
+    path('characters/list/most_tagged/', characters_views.CharactersListByMostTaggedView.as_view(), name='characters-list-by-most-tagged'),
+    path('characters/list/recently_tagged/', characters_views.CharactersListByRecentlyTaggedView.as_view(), name='characters-list-by-recently-tagged'),
+    path('characters/list/search/', characters_views.CharactersListSearchView.as_view(), name='characters-list-search'),
+    path('characters/list/species/', characters_views.CharactersListSearchBySpeciesView.as_view(), name='characters-list-search-by-species'),
+    path('characters/list/artist/', characters_views.CharactersListByArtistView.as_view(), name='characters-list-by-artist'),
+    # Add remaining character views here
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
@@ -83,7 +142,7 @@ urlpatterns = [
 
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     url(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),
-    url(r'^character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterView.as_view(), name='character'),
+    url(r'^character/(?P<character_id>[0-9]+)/$', characters_views.CharacterView.as_view(), name='character'),
 
     # Contests
     path('Contests/', contests.ContestsView.as_view(), name='contests'),
@@ -107,10 +166,9 @@ urlpatterns = [
 #    url(r'^shouts/mark_read/$', fanart_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
 
     url(r'^folders/(?P<artist_id>[0-9]+)/$', fanart_views.FoldersView.as_view(), name='folders'),
-    url(r'^artists/(?P<list>[a-z]+)/$', fanart_views.ArtistsListView.as_view(), name='artists-list'),
-    url(r'^artwork/(?P<list>[a-z]+)/$', fanart_views.ArtworkListView.as_view(), name='artwork-list'),
-    url(r'^characters/species/$', fanart_views.CharactersSpeciesView.as_view(), name='characters-species'),
-    url(r'^characters/(?P<list>[a-z]+)/$', fanart_views.CharactersListView.as_view(), name='characters-list'),
+    # url(r'^artwork/(?P<list>[a-z]+)/$', fanart_views.ArtworkListView.as_view(), name='artwork-list'),
+    # url(r'^characters/species/$', fanart_views.CharactersSpeciesView.as_view(), name='characters-species'),
+    # url(r'^characters/(?P<list>[a-z]+)/$', fanart_views.CharactersListView.as_view(), name='characters-list'),
 
     url(r'^characters-ac/(?P<term>.+)/$', fanart_views.CharactersAutocompleteView.as_view(), name='characters-autocomplete'),
     url(r'^species-ac/(?P<term>.+)/$', fanart_views.SpeciesAutocompleteView.as_view(), name='species-autocomplete'),

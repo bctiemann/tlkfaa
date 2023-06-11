@@ -44,9 +44,9 @@
                         </li>
                     {% endif %}
                 {% if character.is_canon %}
-                    <li><a href="{% url "characters" list="canon" %}">All Canon Characters</a></li>
+                    <li><a href="{% url "characters-by-canon" %}">All Canon Characters</a></li>
                 {% else %}
-                    <li><a href="{% url "characters" list="search" %}?list=artist&term={{ character.owner.id }}">All Characters owned by {{ character.owner.username }}</a></li>
+                    <li><a href="{% url "artist-characters" dir_name=character.owner.dir_name %}">All Characters owned by {{ character.owner.username }}</a></li>
                {% endif %}
             </ul>
         </div>
@@ -119,7 +119,7 @@
     <br clear="right" />
     <div id="offerslayout">
 
-        {% for character_picture in character_pictures|slice:"0:50" %}
+        {% for character_picture in character_pictures %}
             <div class="offertile picturetile">
                 <a id="picturetile_{{ character_picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ character_picture.id }}" href="{% url "picture" picture_id=character_picture.id %}"><img class="" src="{{ character_picture.thumbnail_url }}" width="60" height="{{ character_picture.thumb_height }}" /></a>
                 <a href="{% url "artist" dir_name=character_picture.artist.dir_name %}">{{ character_picture.artist.username }}</a>
@@ -128,8 +128,8 @@
 
     </div>
 
-    {% if character_pictures.count > 50 %}
-        <a class="button" href="{% url "artwork" list="character" %}?start=50&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
+    {% if show_more_button %}
+        <a class="button" href="{% url "artwork-by-character" %}?start={{ character_pictures_per_page }}&term={{ character.id }}{% if other_characters_param %},{{ other_characters_param }}{% endif %}">More</a>
     {% endif %}
 
 </div>
