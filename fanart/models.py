@@ -1056,6 +1056,13 @@ class Shout(BaseComment):
         return '{0} {1} on {2}'.format(self.id, self.user.username, self.artist.username)
 
 
+class SpamFlag(models.Model):
+    comment = models.ForeignKey('fanart.ThreadedComment', null=True, on_delete=models.CASCADE)
+    shout = models.ForeignKey('fanart.Shout', null=True, on_delete=models.CASCADE)
+    flagged_at = models.DateTimeField(auto_now_add=True)
+    flagged_by = models.ForeignKey('fanart.User', on_delete=models.CASCADE)
+
+
 class CharacterManager(models.Manager):
 
     def get_queryset(self):

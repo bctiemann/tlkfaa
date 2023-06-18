@@ -2084,6 +2084,14 @@ console.log(data);
     }, 'json');
 }
 
+function flagSpam(commentId) {
+    let url = `/flag_spam/${commentId}/`;
+    $.post(url, function(data) {
+        console.log(data);
+        alert('This comment has been flagged as spam. It will be investigated and action will be taken as appropriate. Thank you!');
+    });
+}
+
 function togglePicture(pictureid) {
   if ($('#thepicture').hasClass('preview') == true) {
     $('#thepicture').removeClass('preview');

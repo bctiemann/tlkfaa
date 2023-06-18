@@ -910,6 +910,28 @@ class ToggleBlockView(APIView):
         return Response(response)
 
 
+class FlagSpamView(APIView):
+
+    def post(self, request, comment_id):
+        response = {'success': False}
+
+        matching_comment = models.ThreadedComment.objects.filter(pk=comment_id).first()
+        matching_shout = models.Shout.objects.filter(pk=comment_id).first()
+        comment = matching_comment or matching_shout
+        if not comment:
+            raise Http404
+
+        spam_flag = models.SpamFlag.objects.create(
+            comment=comment if isinstance(comment, models.ThreadedComment) else None,
+            shout=comment if isinstance(comment, models.Shout) else None,
+            flagged_by=request.user,
+        )
+        response['spam_flag_id'] = spam_flag.id
+
+        response['success'] = True
+        return Response(response)
+
+
 # Picture pages
 
 class PictureRedirectByIDView(RedirectView):

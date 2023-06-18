@@ -44,11 +44,31 @@
                             <textarea class="comment" name="replytext" id="replytext_{{ comment.id }}"></textarea>
                             <div class="replybuttons">
                                 {% if picture %}
-                                    <button type="button" onClick="postReply({{ picture.id }},{{ comment.id }})">Post</button>
-                                    <button type="button" onClick="cancelReply({{ picture.id }},{{ comment.id }})">Cancel</button>
+                                    <button
+                                        type="button"
+                                        onClick="postReply({{ picture.id }}, {{ comment.id }})"
+                                    >
+                                        Post
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick="cancelReply({{ picture.id }}, {{ comment.id }})"
+                                    >
+                                        Cancel
+                                    </button>
                                 {% elif bulletin %}
-                                    <button type="button" onClick="postBulletinReply({{ bulletin.id }},{{ comment.id }})">Post</button>
-                                    <button type="button" onClick="cancelReply({{ bulletin.id }},{{ comment.id }})">Cancel</button>
+                                    <button
+                                        type="button"
+                                        onClick="postBulletinReply({{ bulletin.id }}, {{ comment.id }})"
+                                    >
+                                        Post
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick="cancelReply({{ bulletin.id }}, {{ comment.id }})"
+                                    >
+                                        Cancel
+                                    </button>
                                 {% endif %}
                             </div>
                         </form>
@@ -56,21 +76,87 @@
                 </td></tr></table>
                 {% if user.is_authenticated and not current_user_is_blocked and user.can_comment %}
                     <div class="commentbuttons">
+
+                        <button
+                            type="button"
+                            class="small spam"
+                            onClick="flagSpam({{ comment.id }})"
+                        >
+                            Spam
+                        </button>
+
                         {% if picture.artist == user %}
                             {% if comment.user in picture.artist.blocked_commenters %}
-                                <button type="button" class="small" onClick="blockUser({{ comment.user.id }},'unblock','comment',{{ comment.picture.id }})">Unblock</button>
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="blockUser({{ comment.user.id }}, 'unblock', 'comment', {{ comment.picture.id }})"
+                                >
+                                    Unblock
+                                </button>
                             {% else %}
-                                <button type="button" class="small" onClick="blockUser({{ comment.user.id }},'block','comment',{{ comment.picture.id }})">Block</button>
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="blockUser({{ comment.user.id }}, 'block', 'comment', {{ comment.picture.id }})"
+                                >
+                                    Block
+                                </button>
                             {% endif %}
                         {% endif %}
+
                         {% if picture %}
-                            <button type="button" class="small" id="replybutton_{{ comment.id }}" onclick="doReply({{ picture.id }},{{ comment.id }})">Reply</button>
-                            {% if picture.artist == user or comment.user == user %}<button type="button" class="small" onClick="deleteComment({{ picture.id }},{{ comment.id }})">Delete</button>{% endif %}
-                            {% if comment.user == user %}<button type="button" class="small" onClick="setupEditComment({{ picture.id }},{{ comment.id }})">Edit</button>{% endif %}
+                            <button
+                                type="button"
+                                class="small"
+                                id="replybutton_{{ comment.id }}" onclick="doReply({{ picture.id }}, {{ comment.id }})"
+                            >
+                                Reply
+                            </button>
+                            {% if picture.artist == user or comment.user == user %}
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="deleteComment({{ picture.id }}, {{ comment.id }})"
+                                >
+                                    Delete
+                                </button>
+                            {% endif %}
+                            {% if comment.user == user %}
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="setupEditComment({{ picture.id }}, {{ comment.id }})"
+                                >
+                                    Edit
+                                </button>
+                            {% endif %}
                         {% elif bulletin %}
-                            <button type="button" class="small" id="replybutton_{{ comment.id }}" onclick="doReply({{ bulletin.id }},{{ comment.id }})">Reply</button>
-                            {% if bulletin.user == user or comment.user == user %}<button type="button" class="small" onClick="deleteComment({{ bulletin.id }},{{ comment.id }})">Delete</button>{% endif %}
-                            {% if comment.user == user %}<button type="button" class="small" onClick="setupEditComment({{ bulletin.id }},{{ comment.id }})">Edit</button>{% endif %}
+                            <button
+                                type="button"
+                                class="small"
+                                id="replybutton_{{ comment.id }}" onclick="doReply({{ bulletin.id }}, {{ comment.id }})"
+                            >
+                                Reply
+                            </button>
+                            {% if bulletin.user == user or comment.user == user %}
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="deleteComment({{ bulletin.id }}, {{ comment.id }})"
+                                >
+                                    Delete
+                                </button>
+                            {% endif %}
+                            {% if comment.user == user %}
+                                <button
+                                    type="button"
+                                    class="small"
+                                    onClick="setupEditComment({{ bulletin.id }}, {{ comment.id }})"
+                                >
+                                    Edit
+                                </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 {% endif %}
@@ -84,25 +170,46 @@
 
 {% if user.is_authenticated and not current_user_is_blocked and user.can_comment %}
 
-<form name="commentform" onSubmit="return false">
-    {% csrf_token %}
-    <div class="commenttext commentreply">
-        Comment:<br />
-        {% if picture %}
-            <textarea class="comment top-level" name="replytext" id="replytext_picture_{{ picture.id }}"></textarea>
-            <input type="hidden" name="hash" id="hash" value="{{ hash }}" />
-            <div class="replybuttons">
-                <button type="button" class="" onClick="postReply({{ picture.id }},0)">Post</button>
-            </div>
-        {% elif bulletin %}
-            <textarea class="comment top-level" name="replytext" id="replytext_bulletin_{{ bulletin.id }}"></textarea>
-            <input type="hidden" name="hash" id="hash" value="{{ hash }}" />
-            <div class="replybuttons">
-                <button type="button" class="" onClick="postBulletinReply({{ bulletin.id }},0)">Post</button>
-            </div>
-        {% endif %}
-    </div>
-</form>
+    <form name="commentform" onSubmit="return false">
+        {% csrf_token %}
+        <div class="commenttext commentreply">
+            Comment:<br />
+            {% if picture %}
+                <textarea
+                    class="comment
+                    top-level"
+                    name="replytext"
+                    id="replytext_picture_{{ picture.id }}"
+                ></textarea>
+                <input type="hidden" name="hash" id="hash" value="{{ hash }}" />
+                <div class="replybuttons">
+                    <button
+                        type="button"
+                        class=""
+                        onClick="postReply({{ picture.id }}, 0)"
+                    >
+                        Post
+                    </button>
+                </div>
+            {% elif bulletin %}
+                <textarea
+                    class="comment top-level"
+                    name="replytext"
+                    id="replytext_bulletin_{{ bulletin.id }}"
+                ></textarea>
+                <input type="hidden" name="hash" id="hash" value="{{ hash }}" />
+                <div class="replybuttons">
+                    <button
+                        type="button"
+                        class=""
+                        onClick="postBulletinReply({{ bulletin.id }}, 0)"
+                    >
+                        Post
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
 
 {% elif current_user_is_blocked %}
 

@@ -33,19 +33,66 @@
         </div>
         </td></tr></table>
         <div class="commentbuttons">
-        {% if shout.artist == user %}
-            {% if shout.user in artist.blocked_commenters %}
-                <button type="button" class="small" onClick="blockUser({{ shout.user.id }},'unblock','shout',{{ artist.id }},{{ shout.id }})">Unblock</button>
-            {% else %}
-                <button type="button" class="small" onClick="blockUser({{ shout.user.id }},'block','shout',{{ artist.id }},{{ shout.id }})">Block</button>
+
+            <button
+                type="button"
+                class="small spam"
+                onClick="flagSpam({{ shout.id }})"
+            >
+                Spam
+            </button>
+        
+            {% if shout.artist == user %}
+                {% if shout.user in artist.blocked_commenters %}
+                    <button
+                        type="button"
+                        class="small"
+                        onClick="blockUser({{ shout.user.id }}, 'unblock', 'shout', {{ artist.id }}, {{ shout.id }})"
+                    >
+                        Unblock
+                    </button>
+                {% else %}
+                    <button
+                        type="button"
+                        class="small"
+                        onClick="blockUser({{ shout.user.id }}, 'block', 'shout', {{ artist.id }}, {{ shout.id }})"
+                    >
+                        Block
+                    </button>
+                {% endif %}
+                <button
+                    type="button"
+                    class="small"
+                    onClick="replyShout({{ shout.id }})"
+                >
+                    Reply
+                </button>
+                <button
+                    type="button"
+                    class="small"
+                    onClick="replyPM({{ shout.user.id }}, {{ shout.id }})"
+                >
+                    PM
+                </button>
             {% endif %}
-            <button type="button" class="small" onClick="replyShout({{ shout.id }})">Reply</button>
-            <button type="button" class="small" onClick="replyPM({{ shout.user.id }}, {{ shout.id }})">PM</button>
-        {% endif %}
-        {% if shout.artist == user or shout.user == user %}<button type="button" class="small" onClick="deleteShout({{ shout.id }})">Delete</button>{% endif %}
-        {% if shout.user == user and shout.replies.count > 0 %}
-            <button type="button" class="small" onClick="replyShout({{ shout.id }})">Reply</button>
-        {% endif %}
+            {% if shout.artist == user or shout.user == user %}
+                <button
+                    type="button"
+                    class="small"
+                    onClick="deleteShout({{ shout.id }})"
+                >
+                    Delete
+                </button>
+            {% endif %}
+            {% if shout.user == user and shout.replies.count > 0 %}
+                <button
+                    type="button"
+                    class="small"
+                    onClick="replyShout({{ shout.id }})"
+                >
+                    Reply
+                </button>
+            {% endif %}
         </div>
     {% endif %}
     <br clear="all" />

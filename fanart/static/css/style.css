@@ -1598,6 +1598,17 @@ a.lightbutton:hover,
 button.light:hover {
 	background-color: #778;
 }
+div.commentbuttons button.spam {
+	background-color: rgba(0, 0, 0, 0);
+	border: 1px solid #d0d0d0;
+	box-shadow: none;
+	color: #aaa;
+	font-weight: lighter;
+}
+div.commentbuttons button.spam:hover {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
 div.replybuttons {
 	text-align: right;
 }

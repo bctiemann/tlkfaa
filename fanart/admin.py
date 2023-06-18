@@ -168,6 +168,12 @@ class ShoutAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Shout, ShoutAdmin)
 
 
+class SpamFlagAdmin(admin.ModelAdmin):
+    list_display = ('comment', 'shout', 'flagged_at', 'flagged_by',)
+    readonly_fields = ('comment', 'shout', 'flagged_by',)
+admin.site.register(fanart_models.SpamFlag, SpamFlagAdmin)
+
+
 #class BulletinCommentAdmin(admin.ModelAdmin):
 #    list_display = ('user', 'bulletin', 'date_posted', 'num_replies',)
 #    list_filter = ()
