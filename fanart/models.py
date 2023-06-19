@@ -1004,6 +1004,14 @@ class BaseComment(models.Model):
     def __str__(self):
         return '{0} {1}'.format(self.id, self.user.username)
 
+    @property
+    def is_comment(self):
+        return isinstance(self, ThreadedComment)
+
+    @property
+    def is_shout(self):
+        return isinstance(self, Shout)
+
     class Meta:
         abstract = True
         ordering = ['date_posted']

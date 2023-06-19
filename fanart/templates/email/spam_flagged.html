@@ -1,0 +1,3 @@
+<p>
+    {% if comment.is_comment %}Comment{% elif comment.is_shout %}Roar{% endif %} {{ comment.id }} by {{ comment.user }} was flagged as spam.
+</p>
