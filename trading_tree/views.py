@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -79,10 +80,11 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
         return context
 
 
-class PostClaimView(CreateView):
+class PostClaimView(LoginRequiredMixin, CreateView):
     model = Claim
     form_class = forms.ClaimForm
     template_name = 'trading_tree/offer.html'
+    http_method_names = ['post']
 
     def form_valid(self, form):
         logger.info(self.request.POST)
