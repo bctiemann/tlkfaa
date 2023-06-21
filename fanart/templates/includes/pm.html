@@ -54,6 +54,13 @@
             <p>You cannot send a PM to yourself.</p>
         </div>
 
+    {% elif not user.can_comment %}
+
+        <div class="error">
+            <h3>An error occurred</h3>
+            <p>You must wait three days before sending private messages.</p>
+        </div>
+
     {% elif blocked %}
 
         <div class="error">
