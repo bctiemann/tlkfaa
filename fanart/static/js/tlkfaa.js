@@ -2049,7 +2049,7 @@ function setupEditShout(shoutid, artmanagerview) {
         if (data.success) {
             $('#shout_edit_content').val(data.comment.comment);
             $('#dialog_edit_shout').dialog({
-                width: 600,
+                width: '50%',
                 resizable: false,
                 modal: true,
                 buttons: {
