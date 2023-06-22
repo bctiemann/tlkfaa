@@ -790,6 +790,26 @@ class PostShoutView(LoginRequiredMixin, CreateView):
         return JsonResponse(response)
 
 
+class EditShoutView(LoginRequiredMixin, UpdateView):
+    model = models.Shout
+    form_class = forms.ShoutUpdateForm
+    template_name = 'includes/shouts.html'
+
+    def post(self, *args, **kwargs):
+        self.shout = get_object_or_404(models.Shout, pk=kwargs['pk'], user=self.request.user)
+        return super().post(*args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.date_edited = timezone.now()
+        form.save()
+        ajax_response = {
+            'success': True,
+            'artist_id': self.object.artist.id,
+        }
+        return HttpResponse(json.dumps(ajax_response))
+
+
 class ReplyShoutView(LoginRequiredMixin, CreateView):
     model = models.Shout
     form_class = forms.ShoutReplyForm
@@ -817,6 +837,19 @@ class ReplyShoutView(LoginRequiredMixin, CreateView):
 class ShoutDetailView(LoginRequiredMixin, DetailView):
     model = models.Shout
     template_name = 'includes/shout.html'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if request.is_ajax():
+            ajax_response = {
+                'success': True,
+                'comment': {
+                    'comment': self.object.comment,
+                }
+            }
+            return HttpResponse(json.dumps(ajax_response))
+        else:
+            return response
 
 
 class DeleteShoutView(LoginRequiredMixin, APIView):

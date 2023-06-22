@@ -159,6 +159,7 @@ urlpatterns = [
     url(r'^shouts/(?P<artist_id>[0-9]+)/$', fanart_views.ShoutsView.as_view(), name='shouts'),
     url(r'^shouts/(?P<artist_id>[0-9]+)/post/$', fanart_views.PostShoutView.as_view(), name='post-shout'),
     url(r'^shouts/(?P<pk>[0-9]+)/detail/$', fanart_views.ShoutDetailView.as_view(), name='shout-detail'),
+    url(r'^shouts/(?P<pk>[0-9]+)/edit/$', fanart_views.EditShoutView.as_view(), name='edit-shout'),
     url(r'^shouts/(?P<shout_id>[0-9]+)/reply/$', fanart_views.ReplyShoutView.as_view(), name='reply-shout'),
     url(r'^shouts/(?P<shout_id>[0-9]+)/delete/$', fanart_views.DeleteShoutView.as_view(), name='delete-shout'),
 

@@ -130,6 +130,14 @@ class ShoutForm(forms.ModelForm):
         fields = ['user', 'artist', 'comment']
 
 
+class ShoutUpdateForm(forms.ModelForm):
+    comment = forms.CharField(label='Comment:')
+
+    class Meta:
+        model = models.Shout
+        fields = ['comment']
+
+
 class ShoutReplyForm(forms.ModelForm):
     comment = forms.CharField(label='Comment:')
 

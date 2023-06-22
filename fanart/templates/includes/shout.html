@@ -84,6 +84,15 @@
                     Delete
                 </button>
             {% endif %}
+            {% if shout.user == user %}
+                <button
+                    type="button"
+                    class="small"
+                    onClick="setupEditShout({{ shout.id }})"
+                >
+                    Edit
+                </button>
+            {% endif %}
             {% if shout.user == user and shout.replies.count > 0 %}
                 <button
                     type="button"

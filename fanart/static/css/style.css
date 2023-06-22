@@ -1011,6 +1011,9 @@ textarea.pm {
 	margin: 10px 0px;
 	margin-left: 10px;
 }
+textarea.edit-shout {
+	width: 90%;
+}
 
 div.pageinfo {
 	text-align: left;

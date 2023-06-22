@@ -2044,6 +2044,40 @@ function deleteShout(shoutid, artmanagerview) {
   });
 }
 
+function setupEditShout(shoutid, artmanagerview) {
+    $.getJSON('/shouts/' + shoutid + '/detail/', function(data) {
+        if (data.success) {
+            $('#shout_edit_content').val(data.comment.comment);
+            $('#dialog_edit_shout').dialog({
+                width: 600,
+                resizable: false,
+                modal: true,
+                buttons: {
+                    "Save": function() {
+                        $(this).dialog('close');
+                        editShout(shoutid);
+                    },
+                    Cancel: function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        }
+    });
+}
+
+function editShout(shoutId) {
+    var params = {
+        shout_id: shoutId,
+        comment: $('#shout_edit_content').val(),
+    };
+    var url = `/shouts/${shoutId}/edit/`;
+    $.post(url, params, function(data) {
+        $('#shouts').empty();
+        getMoreShouts(data.artist_id, 0, globals.shoutsToLoad);
+    }, 'json');
+}
+
 function blockUser(userid,fnc,type,itemid,commentid) {
 //    var url = '/api/block.jsp';
     var url = '/block/' + (userid || $('#blockuserid').val()) + '/';
