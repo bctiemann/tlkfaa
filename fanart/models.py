@@ -1627,7 +1627,7 @@ class Contest(models.Model):
 
     @property
     def winning_entries(self):
-        entries = self.contestentry_set.all().order_by('?')
+        entries = self.contestentry_set.filter(picture__date_deleted__isnull=True).order_by('?')
         if self.is_ended:
             entries = entries.annotate(votes=Count('contestvote')).order_by('-votes', 'date_entered')
         return entries
