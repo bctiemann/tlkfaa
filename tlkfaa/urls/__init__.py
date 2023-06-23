@@ -11,6 +11,7 @@ from fanart import views as fanart_views
 from fanart.views import artists as artists_views
 from fanart.views import artwork as artwork_views
 from fanart.views import characters as characters_views
+from fanart.views import showcases as showcases_views
 from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
@@ -42,7 +43,7 @@ urlpatterns = [
     url(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
     url(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     url(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
-    url(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
+    # url(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
     url(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
     url(r'^FeaturedPictures/$', fanart_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
@@ -134,7 +135,16 @@ urlpatterns = [
     path('characters/list/search/', characters_views.CharactersListSearchView.as_view(), name='characters-list-search'),
     path('characters/list/species/', characters_views.CharactersListSearchBySpeciesView.as_view(), name='characters-list-search-by-species'),
     path('characters/list/artist/', characters_views.CharactersListByArtistView.as_view(), name='characters-list-by-artist'),
-    # Add remaining character views here
+
+    # Showcases
+    path('Showcases/', showcases_views.ShowcasesView.as_view(), name='showcases'),
+    path('Showcases/<int:showcase_id>/', showcases_views.ShowcaseView.as_view(), name='showcase'),
+
+    # Contests
+    path('Contests/', contests.ContestsView.as_view(), name='contests'),
+    path('Contests/global/', contests.ContestsGlobalView.as_view(), name='contests-global'),
+    path('Contests/personal/', contests.ContestsPersonalView.as_view(), name='contests-personal'),
+    path('contest/', include('tlkfaa.urls.contests')),
 
     url(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     url(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
@@ -143,12 +153,6 @@ urlpatterns = [
     url(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     url(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),
     url(r'^character/(?P<character_id>[0-9]+)/$', characters_views.CharacterView.as_view(), name='character'),
-
-    # Contests
-    path('Contests/', contests.ContestsView.as_view(), name='contests'),
-    path('Contests/global/', contests.ContestsGlobalView.as_view(), name='contests-global'),
-    path('Contests/personal/', contests.ContestsPersonalView.as_view(), name='contests-personal'),
-    path('contest/', include('tlkfaa.urls.contests')),
 
     url(r'^comments/(?P<picture_id>[0-9]+)/$', fanart_views.CommentsView.as_view(), name='comments'),
     url(r'^comments/(?P<picture_id>[0-9]+)/reply/$', fanart_views.PostCommentView.as_view(), name='post-comment'),
