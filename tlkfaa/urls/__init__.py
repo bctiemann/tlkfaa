@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
-from django.urls import path
+from django.urls import path, register_converter
 
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
@@ -11,13 +11,27 @@ from fanart import views as fanart_views
 from fanart.views import artists as artists_views
 from fanart.views import artwork as artwork_views
 from fanart.views import characters as characters_views
-from fanart.views import showcases as showcases_views
+from fanart.views import chamber_of_stars as stars_views
 from fanart.views import contests
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
 from pms import views as pms_views
+
+
+class MonthPathConverter:
+    regex = '[0-9]{4}-[0-9]{2}'
+
+    def to_python(self, value):
+        return str(value)
+
+    def to_url(self, value):
+        return value
+
+
+register_converter(MonthPathConverter, "month")
+
 
 urlpatterns = [
     # url(r'^favicon\.ico$', fanart_views.favicon),
@@ -45,8 +59,8 @@ urlpatterns = [
     url(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
     # url(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
     url(r'^FavoritePictures/$', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
-    url(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', fanart_views.FeaturedArtistsView.as_view(), name='featured-artists'),
-    url(r'^FeaturedPictures/$', fanart_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
+    # url(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', showcases_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    # url(r'^FeaturedPictures/$', showcases_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
     url(r'^revision_log/$', fanart_views.RevisionLogView.as_view(), name='revision-log'),
 
     url(r'^about/$', fanart_views.AboutView.as_view(), name='about'),
@@ -136,9 +150,18 @@ urlpatterns = [
     path('characters/list/species/', characters_views.CharactersListSearchBySpeciesView.as_view(), name='characters-list-search-by-species'),
     path('characters/list/artist/', characters_views.CharactersListByArtistView.as_view(), name='characters-list-by-artist'),
 
+    # Chamber of Stars
+
+    path('Showcases/', stars_views.ChamberOfStarsView.as_view(), name='chamber-of-stars'),
+
     # Showcases
-    path('Showcases/', showcases_views.ShowcasesView.as_view(), name='showcases'),
-    path('Showcases/<int:showcase_id>/', showcases_views.ShowcaseView.as_view(), name='showcase'),
+    path('Showcases/', stars_views.ShowcasesView.as_view(), name='showcases'),
+    path('Showcases/<int:showcase_id>/', stars_views.ShowcaseView.as_view(), name='showcase'),
+
+    # Featured Artists and Featured Pictures
+    path('FeaturedArtists/', stars_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    path('FeaturedArtists/<month:month_featured>/', stars_views.FeaturedArtistsView.as_view(), name='featured-artists'),
+    path('FeaturedPictures/', stars_views.FeaturedPicturesView.as_view(), name='featured-pictures'),
 
     # Contests
     path('Contests/', contests.ContestsView.as_view(), name='contests'),

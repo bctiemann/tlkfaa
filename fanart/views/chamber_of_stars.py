@@ -5,12 +5,26 @@ from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
 
 from fanart.views import UserPaneMixin
-from fanart.models import Showcase, Contest
+from fanart.models import Showcase, Contest, FeaturedArtist, FeaturedPicture
 from fanart.utils import PagesLink
 
 
+class ChamberOfStarsView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/chamber_of_stars/base.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['contest'] = Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
+        context['contest_entries'] = context['contest'].winning_entries
+
+        context['showcases'] = Showcase.objects.filter(is_visible=True).order_by('id')
+
+        return context
+
+
 class ShowcasesView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/showcases/base.html'
+    template_name = 'fanart/chamber_of_stars/base.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -24,7 +38,7 @@ class ShowcasesView(UserPaneMixin, TemplateView):
 
 
 class ShowcaseView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/showcases/showcase.html'
+    template_name = 'fanart/chamber_of_stars/showcase.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,4 +63,36 @@ class ShowcaseView(UserPaneMixin, TemplateView):
 
         context['pages_link'] = PagesLink(len(pictures), settings.PICTURES_PER_PAGE, context['page_number'], is_descending=True, base_url=self.request.path, query_dict=self.request.GET)
 
+        return context
+
+"""
+- Featured Artists of the Month
+- Featured Artwork
+- Showcases
+- Contests
+"""
+
+
+class FeaturedArtistsView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/chamber_of_stars/featured_artists.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FeaturedArtistsView, self).get_context_data(**kwargs)
+
+        month_featured = kwargs.get('month_featured', None)
+        if month_featured:
+            year, month = month_featured.split('-')
+            context['featured_artist'] = get_object_or_404(FeaturedArtist, date_featured__month=month, date_featured__year=year, is_published=True)
+        else:
+            context['featured_artists'] = FeaturedArtist.objects.filter(is_published=True).order_by('-date_featured')
+
+        return context
+
+
+class FeaturedPicturesView(TemplateView):
+    template_name = 'fanart/chamber_of_stars/featured_pictures.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['featured_pictures'] = FeaturedPicture.objects.filter(is_published=True).all()
         return context

@@ -1,15 +1,17 @@
-{% extends "fanart/featured.html" %}
+{% extends "fanart/chamber_of_stars/featured.html" %}
 {% load bbcode_tags %}
 
 {% block page_title %} &mdash; Featured Artists{% endblock %}
 
 {% block grass %}
-{% include "includes/grass_showcases.html" %}
+    {% include "includes/grass_chamber_of_stars.html" %}
 {% endblock %}
 
 {% block body_prop %}tall{% endblock %}
 
-{% block content %}
+{% block featured_artists_class %}selected{% endblock %}
+
+{% block chamber_of_stars_section %}
 
     <div class="toolbar">
         <ul>

@@ -1,17 +1,19 @@
-{% extends "fanart/base.html" %}
+{% extends "fanart/chamber_of_stars/base.html" %}
 {% load bbcode_tags %}
 
 {% block page_title %} &mdash; Contests{% endblock %}
 
-{% block activetab_showcases %}active{% endblock %}
+{% block activetab_chamber_of_stars %}active{% endblock %}
 
 {% block grass %}
-{% include "includes/grass_showcases.html" %}
+    {% include "includes/grass_chamber_of_stars.html" %}
 {% endblock %}
 
 {% block body_prop %}tall{% endblock %}
 
-{% block content %}
+{% block contests_class %}selected{% endblock %}
+
+{% block chamber_of_stars_section %}
 
 <h1>Art Contests</h1>
 

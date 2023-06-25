@@ -227,29 +227,29 @@ class RandomPopularView(TemplateView):
 
 # Secondary pages
 
-class FeaturedArtistsView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/featured_artists.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(FeaturedArtistsView, self).get_context_data(**kwargs)
-
-        month_featured = kwargs.get('month_featured', None)
-        if month_featured:
-            year, month = month_featured.split('-')
-            context['featured_artist'] = get_object_or_404(models.FeaturedArtist, date_featured__month=month, date_featured__year=year, is_published=True)
-        else:
-            context['featured_artists'] = models.FeaturedArtist.objects.filter(is_published=True).order_by('-date_featured')
-
-        return context
-
-
-class FeaturedPicturesView(TemplateView):
-    template_name = 'fanart/featured_pictures.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['featured_pictures'] = models.FeaturedPicture.objects.filter(is_published=True).all()
-        return context
+# class FeaturedArtistsView(UserPaneMixin, TemplateView):
+#     template_name = 'fanart/showcases/featured_artists.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(FeaturedArtistsView, self).get_context_data(**kwargs)
+#
+#         month_featured = kwargs.get('month_featured', None)
+#         if month_featured:
+#             year, month = month_featured.split('-')
+#             context['featured_artist'] = get_object_or_404(models.FeaturedArtist, date_featured__month=month, date_featured__year=year, is_published=True)
+#         else:
+#             context['featured_artists'] = models.FeaturedArtist.objects.filter(is_published=True).order_by('-date_featured')
+#
+#         return context
+#
+#
+# class FeaturedPicturesView(TemplateView):
+#     template_name = 'fanart/showcases/featured_pictures.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['featured_pictures'] = models.FeaturedPicture.objects.filter(is_published=True).all()
+#         return context
 
 
 class RevisionLogView(UserPaneMixin, TemplateView):
