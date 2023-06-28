@@ -20,7 +20,9 @@
 
 {% block chamber_of_stars_section %}
 
-    {% for featured in featured_artists %}
+    {{ pages_link.pages_nav|safe }}
+
+    {% for featured in featuredartist_list %}
 
         <div class="featurebox">
 

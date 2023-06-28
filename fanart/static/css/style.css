@@ -2387,6 +2387,13 @@ div.selector_commentview div.selector {
 	margin-right: 30px;
 }
 
+.chamber-of-stars .pageslink {
+	color: #f0f0f0;
+}
+.chamber-of-stars .pageslink a {
+	color: #0e9bcb;
+}
+
 div.banner-preview {
 	margin: 0px auto;
 	width: 602px;

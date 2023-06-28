@@ -1,52 +1,22 @@
 from django.conf import settings
-from django.views.generic import TemplateView
-from django.utils import timezone
+from django.views.generic import TemplateView, DetailView, ListView
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
 
 from fanart.views import UserPaneMixin
-from fanart.models import Showcase, Contest, FeaturedArtist, FeaturedPicture
+from fanart.models import Showcase, FeaturedArtist, FeaturedPicture
 from fanart.utils import PagesLink
 
 
-class ChamberOfStarsView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/chamber_of_stars/base.html'
+class PaginationMixin:
+
+    def get_pictures(self):
+        raise NotImplementedError
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['contest'] = Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
-        context['contest_entries'] = context['contest'].winning_entries
-
-        context['showcases'] = Showcase.objects.filter(is_visible=True).order_by('id')
-
-        return context
-
-
-class ShowcasesView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/chamber_of_stars/showcases.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['contest'] = Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
-        context['contest_entries'] = context['contest'].winning_entries
-
-        context['showcases'] = Showcase.objects.filter(is_visible=True).order_by('id')
-
-        return context
-
-
-class ShowcaseView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/chamber_of_stars/showcase.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['showcase'] = get_object_or_404(Showcase, pk=kwargs['showcase_id'])
-
-        pictures = context['showcase'].pictures.order_by('date_uploaded')
-        pictures = pictures.filter(artist__is_active=True)
+        pictures = self.get_pictures()
 
         context['pictures_paginator'] = Paginator(pictures, settings.PICTURES_PER_PAGE)
         try:
@@ -65,20 +35,44 @@ class ShowcaseView(UserPaneMixin, TemplateView):
 
         return context
 
-"""
-- Featured Artists of the Month
-- Featured Artwork
-- Showcases
-- Contests
-"""
+
+class ShowcasesView(UserPaneMixin, ListView):
+    template_name = 'fanart/chamber_of_stars/showcases.html'
+    model = Showcase
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(is_visible=True).order_by('id')
 
 
-class FeaturedArtistsView(UserPaneMixin, TemplateView):
+class ShowcaseView(UserPaneMixin, PaginationMixin, DetailView):
+    template_name = 'fanart/chamber_of_stars/showcase.html'
+    model = Showcase
+    pk_url_kwarg = 'showcase_id'
+
+    def get_pictures(self):
+        pictures = self.object.pictures.order_by('date_uploaded')
+        return pictures.filter(artist__is_active=True)
+
+
+class FeaturedArtistsView(UserPaneMixin, ListView):
     template_name = 'fanart/chamber_of_stars/featured_artists.html'
+    model = FeaturedArtist
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['featured_artists'] = FeaturedArtist.objects.filter(is_published=True).order_by('-date_featured')
+
+        page_obj = context['page_obj']
+        context['pages_link'] = PagesLink(
+            len(self.object_list),
+            self.paginate_by,
+            page_obj.number,
+            is_descending=True,
+            base_url=self.request.path,
+            query_dict=self.request.GET,
+        )
+
         return context
 
 
@@ -93,6 +87,7 @@ class FeaturedArtistView(UserPaneMixin, TemplateView):
         context['featured_artist'] = get_object_or_404(FeaturedArtist, date_featured__month=month, date_featured__year=year, is_published=True)
 
         return context
+
 
 class FeaturedPicturesView(TemplateView):
     template_name = 'fanart/chamber_of_stars/featured_pictures.html'
