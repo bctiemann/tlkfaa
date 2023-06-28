@@ -2387,10 +2387,10 @@ div.selector_commentview div.selector {
 	margin-right: 30px;
 }
 
-.chamber-of-stars .pageslink {
+.chamber-of-stars > .pageslink {
 	color: #f0f0f0;
 }
-.chamber-of-stars .pageslink a {
+.chamber-of-stars > .pageslink a {
 	color: #0e9bcb;
 }
 
