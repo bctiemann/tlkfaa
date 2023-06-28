@@ -1,25 +1,24 @@
-{% extends "fanart/base.html" %}
+{% extends "fanart/chamber_of_stars/base.html" %}
 {% load bbcode_tags %}
 
 {% block page_title %} &mdash; Featured Artwork{% endblock %}
 
 {% block grass %}
-{% include "includes/grass_showcases.html" %}
+    {% include "includes/grass_chamber_of_stars.html" %}
 {% endblock %}
 
 {% block body_prop %}tall{% endblock %}
 
-{% block content %}
+{% block featured_pictures_class %}selected{% endblock %}
 
-    <div class="toolbar">
-        <ul>
-            <li>
-                <a class="button" href="{% url "featured-artists" %}">Featured Artists</a>
-            </li>
-        </ul>
-    </div>
+{% block section_title %}Featured Artwork{% endblock %}
 
-    <h1>Featured Artwork</h1>
+{% block section_intro %}
+    Featured Artwork is selected for its popularity within the last three years, to highlight currently active
+    artists and bring attention to unique and notable talent on display in our community.
+{% endblock %}
+
+{% block chamber_of_stars_section %}
 
     {% for featured_picture in featured_pictures %}
 

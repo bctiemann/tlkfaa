@@ -1,19 +1,11 @@
-{% extends "fanart/base.html" %}
+{% extends "fanart/chamber_of_stars/contests.html" %}
 {% load bbcode_tags %}
 
-{% block page_title %} &mdash; Contest: {{ contest.title }}{% endblock %}
-
-{% block activetab_showcases %}active{% endblock %}
-
-{% block grass %}
-{% include "includes/grass_showcases.html" %}
+{% block section_nav_link %}
+    <a class="section-nav-link" href="{% url "contests" %}">Show all</a>
 {% endblock %}
 
-{% block body_prop %}tall{% endblock %}
-
-{% block content %}
-
-<h1>Art Contests</h1>
+{% block chamber_of_stars_section %}
 
 <div class="featurebox">
 
@@ -28,12 +20,6 @@
         {% if contest.type == "global" %}
             <a class="archive-link" href="{% url "contests-global" %}?sort_by=deadline">Previous Contests</a>
             <h3>Archive-Wide Art Contest</h3>
-            <p class="global-contest-blurb">
-                Every couple of weeks, the Archive holds an art contest here on this page. The winner of the previous 
-                contest chooses the theme, sets the length of time, and manages the pictures that other artists create 
-                and submit to the contest for judging. Any logged-in user of the Archive can vote on their favorite 
-                picture, and the winner sets up the next contest!
-           </p>
        {% endif %}
 
        <div class="contest-title"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>

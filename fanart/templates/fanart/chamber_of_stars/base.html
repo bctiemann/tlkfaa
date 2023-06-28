@@ -1,0 +1,114 @@
+{% extends "fanart/base.html" %}
+{% load bbcode_tags %}
+
+{% block page_title %} &mdash; Special Features{% endblock %}
+
+{% block activetab_chamber_of_stars %}active{% endblock %}
+
+{% block grass %}
+{% include "includes/grass_chamber_of_stars.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block content %}
+
+    <div class="featurebox featureboxwide chamber-of-stars">
+
+        <ul>
+            <a href="{% url "featured-pictures" %}">
+                <li class="section-selector {% block featured_pictures_class %}{% endblock %}">
+                    Featured Artwork
+                </li>
+            </a>
+            <a href="{% url "featured-artists" %}">
+                <li class="section-selector {% block featured_artists_class %}{% endblock %}">
+                    Featured Artists
+                </li>
+            </a>
+            <a href="{% url "contests" %}">
+                <li class="section-selector {% block contests_class %}{% endblock %}">
+                    Contests
+                </li>
+            </a>
+            <a href="{% url "showcases" %}">
+                <li class="section-selector {% block showcases_class %}{% endblock %}">
+                    Showcases
+                </li>
+            </a>
+        </ul>
+
+        <h1 class="section-title">
+            {% block section_nav_link %}{% endblock %}
+            {% block section_title %}{% endblock %}
+        </h1>
+        <p class="section-intro">{% block section_intro %}{% endblock %}</p>
+
+        {% block chamber_of_stars_section %}
+
+            <div class="featurebox">
+
+                <a class="archive-link" href="{% url "contests-global" %}?sort_by=deadline">Previous Contests</a>
+                <h2>Current Art Contest</h2>
+
+                <div class="contest">
+
+                    <h3><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></h3>
+
+                    <div class="contestdetails">
+
+                        <div class="contesttheme">
+                            {{ contest.description|bbcode|safe }}
+                        </div>
+
+                        <div class="contestrules">
+                            {{ contest.rules|bbcode|safe }}
+                        </div>
+
+                        <br clear="all" />
+                    </div>
+                </div>
+
+                {% if contest.is_ended %}
+                    Winning entries:
+                {% else %}
+                    Some random entries:
+                {% endif %}
+
+                <div class="masonry">
+                    {% for entry in contest_entries %}
+                        <div class="offertile picturetile">
+                            <a id="picturetile_{{ entry.picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ entry.picture.id }}" popupheight="50" href="{{ entry.picture.url }}"" rel="shadowbox[contest]"><img src="{{ entry.picture.thumbnail_url }}" width="60" height="{{ entry.picture.thumb_height }}" /></a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            {% for showcase in showcases %}
+
+                <div class="featurebox">
+
+                    <h2><a href="{% url "showcase" showcase_id=showcase.id %}">{{ showcase.title }}</a></h2>
+
+                    <div class="pageinfo">
+                        <p>{{ showcase.description|safe }}</p>
+                    </div>
+
+                    <div class="masonry">
+                        {% for picture in showcase.pictures|slice:":20" %}
+                            <div class="offertile picturetile">
+                                <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picture.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% endblock %}
+
+    </div>
+
+{% endblock %}

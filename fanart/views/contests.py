@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Contests
 
 class ContestsView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/contests.html'
+    template_name = 'fanart/chamber_of_stars/contests.html'
 
     def get_queryset(self):
         return models.Contest.objects.filter(is_active=True)
@@ -31,7 +31,10 @@ class ContestsView(UserPaneMixin, TemplateView):
         if sort_by not in ['artist', 'startdate', 'deadline']:
             sort_by = 'startdate'
 
-        contests = self.get_queryset()
+        current_contest = models.Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
+        context['current_contest'] = current_contest.winning_entries
+
+        contests = self.get_queryset().exclude(pk=current_contest.pk)
 
         if sort_by == 'artist':
             contests = contests.order_by('creator__username')
@@ -41,6 +44,7 @@ class ContestsView(UserPaneMixin, TemplateView):
             contests = contests.order_by('-date_end')
 
         context['contests'] = contests
+        context['current_contest'] = current_contest
         context['sort_by'] = sort_by
 
         return context
@@ -63,7 +67,7 @@ class ContestsPersonalView(ContestsView):
 
 
 class ContestView(UserPaneMixin, DetailView):
-    template_name = 'fanart/contest.html'
+    template_name = 'fanart/chamber_of_stars/contest.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], is_active=True)
@@ -83,7 +87,7 @@ class ContestView(UserPaneMixin, DetailView):
 class ContestEntryCreateView(LoginRequiredMixin, CreateView):
     model = models.ContestEntry
     form_class = forms.ContestEntryForm
-    template_name = 'fanart/contest.html'
+    template_name = 'fanart/chamber_of_stars/contest.html'
 
     def form_valid(self, form):
         contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
@@ -121,7 +125,7 @@ class ContestEntryDeleteView(LoginRequiredMixin, DeleteView):
 class ContestVoteView(LoginRequiredMixin, CreateView):
     model = models.ContestVote
     form_class = forms.ContestVoteForm
-    template_name = 'fanart/contest.html'
+    template_name = 'fanart/chamber_of_stars/contest.html'
 
     def form_valid(self, form):
         models.ContestVote.objects.filter(
@@ -138,7 +142,7 @@ class ContestVoteView(LoginRequiredMixin, CreateView):
 
 class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
     model = models.Contest
-    template_name = 'fanart/contest_setup.html'
+    template_name = 'fanart/chamber_of_stars/contest_setup.html'
     form_class = forms.GlobalContestForm
 
     def get_context_data(self, **kwargs):
@@ -187,7 +191,7 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
 
 class ContestSetupSuccessView(LoginRequiredMixin, TemplateView):
     model = models.Contest
-    template_name = 'fanart/contest_setup_success.html'
+    template_name = 'fanart/chamber_of_stars/contest_setup_success.html'
 
     def get_context_data(self, **kwargs):
         context = super(ContestSetupSuccessView, self).get_context_data(**kwargs)
