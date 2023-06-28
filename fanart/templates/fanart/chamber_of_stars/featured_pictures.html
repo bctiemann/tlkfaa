@@ -20,7 +20,9 @@
 
 {% block chamber_of_stars_section %}
 
-    {% for featured_picture in featured_pictures %}
+    {{ pages_link.pages_nav|safe }}
+
+    {% for featured_picture in featuredpicture_list %}
 
         <div class="featurebox">
 

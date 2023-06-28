@@ -93,10 +93,22 @@ class FeaturedArtistView(UserPaneMixin, TemplateView):
         return context
 
 
-class FeaturedPicturesView(TemplateView):
+class FeaturedPicturesView(UserPaneMixin, ListView):
     template_name = 'fanart/chamber_of_stars/featured_pictures.html'
+    model = FeaturedPicture
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['featured_pictures'] = FeaturedPicture.objects.filter(is_published=True).all()
+
+        page_obj = context['page_obj']
+        context['pages_link'] = PagesLink(
+            len(self.object_list),
+            self.paginate_by,
+            page_obj.number,
+            is_descending=True,
+            base_url=self.request.path,
+            query_dict=self.request.GET,
+        )
+
         return context
