@@ -1,0 +1,36 @@
+{% extends "fanart/chamber_of_stars/base.html" %}
+
+{% block showcases_class %}selected{% endblock %}
+
+{% block section_title %}Showcases{% endblock %}
+
+{% block section_intro %}
+    Showcases are themed collections of artwork, gathered together for a specific purpose, whether to commemorate
+    an event or to highlight a community member or public figure.
+{% endblock %}
+
+{% block chamber_of_stars_section %}
+
+    {% for showcase in showcases %}
+
+        <div class="featurebox">
+
+            <h2><a href="{% url "showcase" showcase_id=showcase.id %}">{{ showcase.title }}</a></h2>
+
+            <div class="pageinfo">
+                <p>{{ showcase.description|safe }}</p>
+            </div>
+
+            <div class="masonry">
+                {% for picture in showcase.pictures|slice:":20" %}
+                    <div class="offertile picturetile">
+                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picture.url }}" rel="shadowbox[showcase_{{ showcase.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

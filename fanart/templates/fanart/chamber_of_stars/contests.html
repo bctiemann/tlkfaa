@@ -1,0 +1,118 @@
+{% extends "fanart/chamber_of_stars/base.html" %}
+{% load bbcode_tags %}
+
+{% block page_title %} &mdash; Contests{% endblock %}
+
+{% block activetab_chamber_of_stars %}active{% endblock %}
+
+{% block grass %}
+    {% include "includes/grass_chamber_of_stars.html" %}
+{% endblock %}
+
+{% block body_prop %}tall{% endblock %}
+
+{% block contests_class %}selected{% endblock %}
+
+{% block section_title %}Art Contests{% endblock %}
+
+{% block section_intro %}
+    Every couple of weeks, the Archive holds an art contest here on this page. The winner of the previous
+    contest chooses the theme, sets the length of time, and manages the pictures that other artists create
+    and submit to the contest for judging. Any logged-in user of the Archive can vote on their favorite
+    picture, and the winner sets up the next contest!
+{% endblock %}
+
+{% block chamber_of_stars_section %}
+
+    <div class="featurebox">
+
+        <div class="selector">
+            Sort by:
+            <a class="{% if sort_by == "artist" %}selected{% endif %}" href="{% url "contests" %}?sort_by=artist">artist</a>
+            <a class="{% if sort_by == "startdate" %}selected{% endif %}" href="{% url "contests" %}?sort_by=startdate">newest</a>
+            <a class="{% if sort_by == "deadline" %}selected{% endif %}" href="{% url "contests" %}?sort_by=deadline">deadline</a>
+        </div>
+
+        <div>
+
+            {% if contests.count == 0 %}
+                <div class="noentries">
+                    No contests.
+                </div>
+            {% endif %}
+
+            <div class="featurebox">
+
+                <h2>Current Art Contest</h2>
+
+                <div class="contest">
+
+                    <h3><a href="{% url "contest" contest_id=current_contest.id %}">{{ current_contest.title }}</a></h3>
+
+                    <div class="contestdetails">
+
+                        <div class="contesttheme">
+                            {{ current_contest.description|bbcode|safe }}
+                        </div>
+
+                        <div class="contestrules">
+                            {{ current_contest.rules|bbcode|safe }}
+                        </div>
+
+                        <br clear="all" />
+                    </div>
+                </div>
+
+                {% if current_contest.is_ended %}
+                    Winning entries:
+                {% else %}
+                    Some random entries:
+                {% endif %}
+
+                <div class="masonry">
+                    {% for entry in current_contest.winning_entries %}
+                        <div class="offertile picturetile">
+                            <a id="picturetile_{{ entry.picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ entry.picture.id }}" popupheight="50" href="{{ entry.picture.url }}"" rel="shadowbox[contest]"><img src="{{ entry.picture.thumbnail_url }}" width="60" height="{{ entry.picture.thumb_height }}" /></a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <h3>Previous Contests:</h3>
+
+            {% for contest in contests|slice:"0:20" %}
+
+                <div class="contest">
+                    <table>
+                        <tr>
+                            <td class="contestinfo">
+                                <div class="contestartist"><a href="{% url "artist" dir_name=contest.creator.dir_name %}">{{ contest.creator.username }}</a></div>
+                                <div class="contesttitle"><a href="{% url "contest" contest_id=contest.id %}">{{ contest.title }}</a></div>
+                                <div class="contestdeadline">
+                                    {% if contest.is_ended %}
+                                        Ended {{ contest.date_end|date }}
+                                    {% else %}
+                                        Contest ends {{ contest.date_end }} ({{ contest.days_left }} day{{ contest.days_left|pluralize }} left)
+                                    {% endif %}
+                                </div>
+                                <div class="contestdescr">{{ contest.description|bbcode|safe }}</div>
+                            </td>
+                            <td class="contestentries">
+                                <div class="">
+                                    {% for contest_entry in contest.winning_entries|slice:"0:6" %}
+                                        <img src="{{ contest_entry.picture.thumbnail_url }}" width="60" height="{{ contest_entry.picture.thumb_height }}" class="previewPopupTrigger" type="picture" itemid="{{ contest_entry.picture.id }}" />
+                                    {% endfor %}
+                                </div>
+                            </td>
+                         </tr>
+                    </table>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+{% endblock %}

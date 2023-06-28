@@ -1,0 +1,17 @@
+{% extends "fanart/chamber_of_stars/featured_artists.html" %}
+
+{% block section_nav_link %}
+    <a class="section-nav-link" href="{% url "featured-artists" %}">Show all</a>
+{% endblock %}
+
+{% block chamber_of_stars_section %}
+
+    <div class="featurebox">
+
+        {% with aotm=featured_artist %}
+            {% include "includes/aotm.html" %}
+        {% endwith %}
+
+    </div>
+
+{% endblock %}
