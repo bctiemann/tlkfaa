@@ -2,7 +2,7 @@ from datetime import timedelta
 import logging
 
 from django.http import Http404
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 from django.utils import timezone
@@ -11,41 +11,56 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
 from fanart.views import UserPaneMixin
-from fanart import models, forms
+from fanart import forms
+from fanart.models import Contest, ContestEntry, ContestVote, Picture
+from fanart.utils import PagesLink
 
 logger = logging.getLogger(__name__)
 
 
 # Contests
 
-class ContestsView(UserPaneMixin, TemplateView):
+class ContestsView(UserPaneMixin, ListView):
     template_name = 'fanart/chamber_of_stars/contests.html'
+    model = Contest
+    current_contest = None
+    sort_by = None
+    paginate_by = 20
 
     def get_queryset(self):
-        return models.Contest.objects.filter(is_active=True)
+        self.current_contest = Contest.objects.filter(
+            type='global', date_start__lt=timezone.now(), is_active=True
+        ).order_by('-date_created').first()
+
+        queryset = Contest.objects.filter(is_active=True).exclude(pk=self.current_contest.pk)
+
+        self.sort_by = self.request.GET.get('sort_by', None)
+        if self.sort_by not in ['artist', 'startdate', 'deadline']:
+            self.sort_by = 'startdate'
+
+        if self.sort_by == 'artist':
+            queryset = queryset.order_by('creator__username')
+        if self.sort_by == 'startdate':
+            queryset = queryset.order_by('-date_start')
+        if self.sort_by == 'deadline':
+            queryset = queryset.order_by('-date_end')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
-        context = super(ContestsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context['current_contest'] = self.current_contest
+        context['sort_by'] = self.sort_by
 
-        sort_by = self.request.GET.get('sort_by', None)
-        if sort_by not in ['artist', 'startdate', 'deadline']:
-            sort_by = 'startdate'
-
-        current_contest = models.Contest.objects.filter(type='global', date_start__lt=timezone.now(), is_active=True).order_by('-date_created').first()
-        context['current_contest'] = current_contest.winning_entries
-
-        contests = self.get_queryset().exclude(pk=current_contest.pk)
-
-        if sort_by == 'artist':
-            contests = contests.order_by('creator__username')
-        if sort_by == 'startdate':
-            contests = contests.order_by('-date_start')
-        if sort_by == 'deadline':
-            contests = contests.order_by('-date_end')
-
-        context['contests'] = contests
-        context['current_contest'] = current_contest
-        context['sort_by'] = sort_by
+        page_obj = context['page_obj']
+        context['pages_link'] = PagesLink(
+            len(self.object_list),
+            self.paginate_by,
+            page_obj.number,
+            is_descending=True,
+            base_url=self.request.path,
+            query_dict=self.request.GET,
+        )
 
         return context
 
@@ -70,14 +85,14 @@ class ContestView(UserPaneMixin, DetailView):
     template_name = 'fanart/chamber_of_stars/contest.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], is_active=True)
+        return get_object_or_404(Contest, pk=self.kwargs['contest_id'], is_active=True)
 
     def get_context_data(self, **kwargs):
         context = super(ContestView, self).get_context_data(**kwargs)
 
         if self.request.user.is_authenticated:
             context['my_entries'] = self.object.contestentry_set.filter(picture__artist=self.request.user).all()
-            context['my_vote'] = models.ContestVote.objects.filter(
+            context['my_vote'] = ContestVote.objects.filter(
                 user=self.request.user, entry__contest=self.object
             ).first()
 
@@ -85,13 +100,13 @@ class ContestView(UserPaneMixin, DetailView):
 
 
 class ContestEntryCreateView(LoginRequiredMixin, CreateView):
-    model = models.ContestEntry
+    model = ContestEntry
     form_class = forms.ContestEntryForm
     template_name = 'fanart/chamber_of_stars/contest.html'
 
     def form_valid(self, form):
-        contest = get_object_or_404(models.Contest, pk=self.kwargs.get('contest_id', None))
-        picture = get_object_or_404(models.Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
+        contest = get_object_or_404(Contest, pk=self.kwargs.get('contest_id', None))
+        picture = get_object_or_404(Picture, pk=self.request.POST.get('picture', None), artist=self.request.user)
 
         already_entered = contest.contestentry_set.filter(picture__artist=self.request.user).exists()
         if not contest.allow_multiple_entries and already_entered:
@@ -109,11 +124,11 @@ class ContestEntryCreateView(LoginRequiredMixin, CreateView):
 
 
 class ContestEntryDeleteView(LoginRequiredMixin, DeleteView):
-    model = models.ContestEntry
+    model = ContestEntry
 
     def get_object(self, queryset=None):
         return get_object_or_404(
-            models.ContestEntry,
+            ContestEntry,
             (Q(picture__artist=self.request.user) | Q(contest__creator=self.request.user)),
             pk=self.kwargs['entry_id'],
         )
@@ -123,12 +138,12 @@ class ContestEntryDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class ContestVoteView(LoginRequiredMixin, CreateView):
-    model = models.ContestVote
+    model = ContestVote
     form_class = forms.ContestVoteForm
     template_name = 'fanart/chamber_of_stars/contest.html'
 
     def form_valid(self, form):
-        models.ContestVote.objects.filter(
+        ContestVote.objects.filter(
             entry__contest=form.cleaned_data['entry'].contest, user=self.request.user
         ).delete()
 
@@ -141,14 +156,14 @@ class ContestVoteView(LoginRequiredMixin, CreateView):
 
 
 class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
-    model = models.Contest
+    model = Contest
     template_name = 'fanart/chamber_of_stars/contest_setup.html'
     form_class = forms.GlobalContestForm
 
     def get_context_data(self, **kwargs):
         context = super(ContestSetupView, self).get_context_data(**kwargs)
 
-        latest_contest = models.Contest.objects.filter(type='global').order_by('-date_created').first()
+        latest_contest = Contest.objects.filter(type='global').order_by('-date_created').first()
         if not latest_contest.is_ended:
             raise Http404
 
@@ -190,13 +205,13 @@ class ContestSetupView(LoginRequiredMixin, UserPaneMixin, CreateView):
 
 
 class ContestSetupSuccessView(LoginRequiredMixin, TemplateView):
-    model = models.Contest
+    model = Contest
     template_name = 'fanart/chamber_of_stars/contest_setup_success.html'
 
     def get_context_data(self, **kwargs):
         context = super(ContestSetupSuccessView, self).get_context_data(**kwargs)
 
-        latest_contest = models.Contest.objects.filter(type='global').order_by('-date_created').first()
+        latest_contest = Contest.objects.filter(type='global').order_by('-date_created').first()
         if latest_contest.is_ended or latest_contest.creator != self.request.user:
             raise Http404
 

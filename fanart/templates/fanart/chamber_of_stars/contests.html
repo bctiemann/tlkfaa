@@ -81,7 +81,9 @@
 
             <h3>Previous Contests:</h3>
 
-            {% for contest in contests|slice:"0:20" %}
+            {{ pages_link.pages_nav|safe }}
+
+            {% for contest in contest_list %}
 
                 <div class="contest">
                     <table>
