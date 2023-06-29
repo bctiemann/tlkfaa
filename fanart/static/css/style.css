@@ -1687,6 +1687,9 @@ div.bulletin button.rightbutton,
 div.contest button.rightbutton {
 	float: right;
 }
+div.bulletin img {
+	max-width: 100%;
+}
 
 div.standalone {
 	width: auto;
