@@ -38,12 +38,12 @@ class ContestsView(UserPaneMixin, ListView):
         if self.sort_by not in ['artist', 'startdate', 'deadline']:
             self.sort_by = 'startdate'
 
-        if self.sort_by == 'artist':
-            queryset = queryset.order_by('creator__username')
-        if self.sort_by == 'startdate':
-            queryset = queryset.order_by('-date_start')
-        if self.sort_by == 'deadline':
-            queryset = queryset.order_by('-date_end')
+        order_by_map = {
+            'artist': 'creator__username',
+            'startdate': '-date_start',
+            'deadline': '-date_end',
+        }
+        queryset = queryset.order_by(order_by_map[self.sort_by])
 
         return queryset
 
