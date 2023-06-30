@@ -1781,34 +1781,32 @@ function deleteBulletin_old(selform,bulletin) {
   });
 }
 
-function toggleFave(id,type) {
-  var isfave = $('#togglefave'+type+'_'+id).hasClass('isfave');
-  if (type == 'picture') {
-//    var url = "/ajax_fave.jsp?pictureid="+id;
-    var url = '/fave/picture/' + id + '/';
-//    var faveurl = "/ajax_favoritepicturesbox.jsp";
-    var faveurl = '/userbox/favorite_pictures_box/';
-  } else if (type == 'artist') {
-//    var url = "/ajax_fave.jsp?artistid="+id;
-    var url = '/fave/artist/' + id + '/';
-    var faveurl = '/userbox/favorite_artists_box/';
-  }
-//  $('#togglefave'+type+'_'+id).load(url,function() {
-  $.post(url, function(data) {
-    if (isfave) {
-      $('#togglefave'+type+'_'+id).removeClass('isfave');
-      $('#togglevisible_'+id).removeClass('isvisible');
-    } else {
-      $('#togglefave'+type+'_'+id).addClass('isfave');
+function toggleFave(id, type) {
+    let url, faveurl;
+    if (type === 'picture') {
+        url = `/fave/picture/${id}/`;
+        faveurl = '/userbox/favorite_pictures_box/';
+    } else if (type === 'artist') {
+        url = `/fave/artist/${id}/`;
+        faveurl = '/userbox/favorite_artists_box/';
     }
-    $('#favorite_'+type+'s_box').load(faveurl,function() {
-      if (type == 'picture') {
-        Shadowbox.setup('#favoritepicturesbox a');
-      } else if (type == 'artist') {
-        $('#togglevisible_'+id).toggle();
-      }
-    });
-  }, 'json');
+    $.post(url, function(data) {
+        if (data.is_fave) {
+            $(`#togglefave${type}_${id}`).addClass('isfave');
+            $(`.fave_${type}_${id}`).addClass('isfave');
+        } else {
+            $(`#togglefave${type}_${id}`).removeClass('isfave');
+            $(`#togglevisible_${id}`).removeClass('isvisible');
+            $(`.fave_${type}_${id}`).removeClass('isfave');
+        }
+        $(`#favorite_${type}s_box`).load(faveurl, function() {
+            if (type === 'picture') {
+                Shadowbox.setup('#favoritepicturesbox a');
+            } else if (type === 'artist') {
+                $(`#togglevisible_${id}`).toggle();
+            }
+        });
+    }, 'json');
 }
 
 function toggleVisible(id) {

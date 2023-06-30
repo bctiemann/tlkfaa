@@ -28,7 +28,14 @@
                                 (Edited: {{ picture.date_updated|date }})
                             {% endif %}
                         </div>
-                        <div class="picartist"><a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a></div>
+                        <div class="picartist">
+                            <a
+                                class="addfavorites fave_artist_{{ picture.artist.id }} {% if fave_artist %}isfave{% endif %}"
+                                href="javascript:nop()"
+                                onClick="toggleFave({{ picture.artist.id }}, 'artist')"
+                                title="Follow this artist"></a>
+                            <a href="{% url "artist" dir_name=picture.artist.dir_name %}">{{ picture.artist.username }}</a>
+                        </div>
                         {% if picture.folder %}
                             <a href="{% url "artist-gallery" dir_name=picture.artist.dir_name %}?folder_id={{ picture.folder.id }}"><div class="picfolder">{{ picture.folder.name }}</div></a>
                         {% else %}

@@ -1458,6 +1458,9 @@ div.pictureheading .addfavorites,
 	width: 24px;
 	height: 24px;
 }
+.picartist .addfavorites {
+	margin-left: 5px;
+}
 .isfave {
 	background-image: url('/static/images/starFull.gif');
 }
