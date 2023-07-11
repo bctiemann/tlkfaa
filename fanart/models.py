@@ -1069,6 +1069,7 @@ class SpamFlag(models.Model):
     shout = models.ForeignKey('fanart.Shout', null=True, on_delete=models.CASCADE)
     flagged_at = models.DateTimeField(auto_now_add=True)
     flagged_by = models.ForeignKey('fanart.User', on_delete=models.CASCADE)
+    actioned_at = models.DateTimeField(null=True, blank=True)
 
 
 class CharacterManager(models.Manager):

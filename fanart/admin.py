@@ -169,7 +169,7 @@ admin.site.register(fanart_models.Shout, ShoutAdmin)
 
 
 class SpamFlagAdmin(admin.ModelAdmin):
-    list_display = ('comment', 'shout', 'flagged_at', 'flagged_by',)
+    list_display = ('comment', 'shout', 'flagged_at', 'actioned_at', 'flagged_by',)
     readonly_fields = ('comment', 'shout', 'flagged_by',)
 admin.site.register(fanart_models.SpamFlag, SpamFlagAdmin)
 
