@@ -15,7 +15,7 @@ import sys
 import yaml
 from unipath import Path
 from colorlog import ColoredFormatter
-from cloghandler import ConcurrentRotatingFileHandler
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
