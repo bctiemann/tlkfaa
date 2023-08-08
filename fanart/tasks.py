@@ -214,6 +214,32 @@ def send_bulletin_reply_email(comment_id):
 
 
 @shared_task
+def send_art_trade_response_email(gift_picture_id, is_declined=False):
+    GiftPicture = apps.get_model('fanart', 'GiftPicture')
+
+    gift_picture = GiftPicture.objects.get(pk=gift_picture_id)
+
+    email_context = {'user': gift_picture.recipient, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+    if is_declined:
+        subject = 'TLKFAA: Art Trade/Request Rejected by {0}'.format(gift_picture.recipient.username)
+        text_template = 'email/gift_rejected.txt'
+        html_template = 'email/gift_rejected.html'
+    else:
+        subject = 'TLKFAA: Art Trade/Request Accepted by {0}'.format(gift_picture.recipient.username)
+        text_template = 'email/gift_accepted.txt'
+        html_template = 'email/gift_accepted.html'
+
+    send_email(
+        recipients=[gift_picture.sender.email],
+        subject=subject,
+        context=email_context,
+        text_template=text_template,
+        html_template=html_template,
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
+
+@shared_task
 def send_pm_email(pm_id):
     PrivateMessage = apps.get_model('fanart', 'PrivateMessage')
 

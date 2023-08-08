@@ -312,34 +312,19 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
         logger.info(self.request.POST)
         logger.info(form.cleaned_data)
         response = super(ApproveRequestView, self).form_valid(form)
+
         if self.request.POST.get('approved'):
             self.object.is_active = True
             self.object.date_accepted = timezone.now()
             self.object.save()
 
-            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
-            tasks.send_email.delay(
-                recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Accepted by {0}'.format(self.request.user.username),
-                context=email_context,
-                text_template='email/gift_accepted.txt',
-                html_template='email/gift_accepted.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_art_trade_response_email(self.object.id, is_declined=False)
 
         elif self.request.POST.get('declined'):
             self.object.date_declined = timezone.now()
             self.object.save()
 
-            email_context = {'user': self.request.user, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
-            tasks.send_email.delay(
-                recipients=[self.object.sender.email],
-                subject='TLKFAA: Art Trade/Request Rejected by {0}'.format(self.request.user.username),
-                context=email_context,
-                text_template='email/gift_rejected.txt',
-                html_template='email/gift_rejected.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_art_trade_response_email(self.object.id, is_declined=True)
 
         return response
 
