@@ -210,6 +210,22 @@ def send_pending_published_email(pending_id, picture_id):
 
 
 @shared_task
+def send_bulletin_posted_email(bulletin_id):
+    Bulletin = apps.get_model('fanart', 'Bulletin')
+
+    bulletin = Bulletin.objects.get(pk=bulletin_id)
+
+    email_context = {'user': bulletin.user, 'bulletin': bulletin}
+    send_email(
+        recipients=[settings.ADMIN_EMAIL],
+        subject='TLKFAA: New Bulletin Posted',
+        context=email_context,
+        text_template='email/bulletin_posted.txt',
+        html_template='email/bulletin_posted.html',
+    )
+
+
+@shared_task
 def send_bulletin_reply_email(comment_id):
     ThreadedComment = apps.get_model('fanart', 'ThreadedComment')
 

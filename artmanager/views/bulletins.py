@@ -74,14 +74,7 @@ class BulletinCreateView(LoginRequiredMixin, CreateView):
             bulletin.date_published = timezone.now()
         bulletin.save()
 
-        email_context = {'user': self.request.user, 'bulletin': bulletin}
-        tasks.send_email.delay(
-            recipients=[settings.ADMIN_EMAIL],
-            subject='TLKFAA: New Bulletin Posted',
-            context=email_context,
-            text_template='email/bulletin_posted.txt',
-            html_template='email/bulletin_posted.html',
-        )
+        tasks.send_bulletin_posted_email.delay(bulletin.id)
 
         response = {'success': True}
         return JsonResponse(response)
