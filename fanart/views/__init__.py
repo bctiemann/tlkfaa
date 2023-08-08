@@ -1577,20 +1577,7 @@ class PostBulletinReplyView(LoginRequiredMixin, CreateView):
 
         bulletin = form.cleaned_data['bulletin']
         if bulletin.user.email_comments and self.request.user != bulletin.user:
-            email_context = {
-                'user': self.request.user,
-                'bulletin': bulletin,
-                'comment': comment,
-                'base_url': settings.SERVER_BASE_URL,
-            }
-            tasks.send_email.delay(
-                recipients=[bulletin.user.email],
-                subject='TLKFAA: New Bulletin Reply Posted',
-                context=email_context,
-                text_template='email/bulletin_comment_posted.txt',
-                html_template='email/bulletin_comment_posted.html',
-#                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_bulletin_reply_email.delay(comment.id)
 
         logger.info('User {0} posted bulletin comment {1} ({2}).'.format(self.request.user, comment.id, bulletin.id))
 

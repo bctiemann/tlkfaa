@@ -192,6 +192,28 @@ def send_pending_acceptance_email(pending_id, picture_id):
 
 
 @shared_task
+def send_bulletin_reply_email(comment_id):
+    ThreadedComment = apps.get_model('fanart', 'ThreadedComment')
+
+    comment = ThreadedComment.objects.get(pk=comment_id)
+
+    email_context = {
+        'user': comment.user,
+        'bulletin': comment.bulletin,
+        'comment': comment.comment,
+        'base_url': settings.SERVER_BASE_URL,
+    }
+    send_email(
+        recipients=[comment.bulletin.user.email],
+        subject='TLKFAA: New Bulletin Reply Posted',
+        context=email_context,
+        text_template='email/bulletin_comment_posted.txt',
+        html_template='email/bulletin_comment_posted.html',
+        # bcc=[settings.DEBUG_EMAIL]
+    )
+
+
+@shared_task
 def send_pm_email(pm_id):
     PrivateMessage = apps.get_model('fanart', 'PrivateMessage')
 
