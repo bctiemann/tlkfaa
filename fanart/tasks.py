@@ -165,7 +165,25 @@ def send_spam_flag_email(spam_flag_id):
 
 
 @shared_task
-def send_pending_acceptance_email(pending_id, picture_id):
+def send_pending_moderation_email(pending_id, subject, text_template, html_template, attachments=None):
+    Pending = apps.get_model('fanart', 'Pending')
+
+    pending = Pending.objects.get(pk=pending_id)
+
+    email_context = {'pending': pending}
+    send_email(
+        recipients=[pending.artist.email],
+        subject=subject,
+        context=email_context,
+        text_template=text_template,
+        html_template=html_template,
+        bcc=[settings.DEBUG_EMAIL],
+        attachments=attachments,
+    )
+
+
+@shared_task
+def send_pending_published_email(pending_id, picture_id):
     Pending = apps.get_model('fanart', 'Pending')
     Picture = apps.get_model('fanart', 'Picture')
 
@@ -219,7 +237,7 @@ def send_art_trade_response_email(gift_picture_id, is_declined=False):
 
     gift_picture = GiftPicture.objects.get(pk=gift_picture_id)
 
-    email_context = {'user': gift_picture.recipient, 'giftpicture': self.object, 'base_url': settings.SERVER_BASE_URL}
+    email_context = {'user': gift_picture.recipient, 'giftpicture': gift_picture, 'base_url': settings.SERVER_BASE_URL}
     if is_declined:
         subject = 'TLKFAA: Art Trade/Request Rejected by {0}'.format(gift_picture.recipient.username)
         text_template = 'email/gift_rejected.txt'

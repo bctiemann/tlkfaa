@@ -134,7 +134,7 @@ class Command(BaseCommand):
 
             # Send email notification
             if pending.notify_on_approval:
-                tasks.send_pending_acceptance_email.delay(pending.id, picture.id)
+                tasks.send_pending_published_email.delay(pending.id, picture.id)
 
             # delete pending
             pending.delete()

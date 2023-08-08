@@ -133,6 +133,9 @@ class PendingApproveView(ApprovalAPIView):
 #            pending.artist.save()
 
         send_email = False
+        subject = None
+        text_template = None
+        html_template = None
         if request.POST.get('warn_ot'):
             logger.info('Off-topic warning')
             subject = 'Fan Art Submission (off-topic warning)'
@@ -148,15 +151,7 @@ class PendingApproveView(ApprovalAPIView):
             send_email = True
 
         if send_email:
-            email_context = {'pending': pending}
-            tasks.send_email.delay(
-                recipients=[pending.artist.email],
-                subject=subject,
-                context=email_context,
-                text_template=text_template,
-                html_template=html_template,
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_pending_moderation_email(pending.id, subject, text_template, html_template)
 
         logger.info(request.POST)
         return Response(response)
@@ -170,6 +165,9 @@ class PendingRejectView(ApprovalAPIView):
         logger.info(f'{request.user} rejected pending {pending}')
 
         send_email = False
+        subject = None
+        text_template = None
+        html_template = None
         if request.POST.get('reason') == 'copied':
             logger.info('Copied')
             subject = 'Fan Art Submission (unable to accept)'
@@ -203,15 +201,8 @@ class PendingRejectView(ApprovalAPIView):
                 image_data = file.read()
             attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
 
-            email_context = {'pending': pending}
-            tasks.send_email.delay(
-                recipients = [pending.artist.email],
-                subject = subject,
-                context = email_context,
-                text_template = text_template,
-                html_template = html_template,
-                bcc = [settings.DEBUG_EMAIL],
-                attachments = attachments,
+            tasks.send_pending_moderation_email(
+                pending.id, subject, text_template, html_template, attachments=attachments
             )
 
         pending.delete()
