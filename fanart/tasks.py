@@ -330,9 +330,11 @@ def send_password_reset_email(user_id, site_name, domain, uid, token, use_https=
     }
     if extra_email_context is not None:
         context.update(extra_email_context)
+
     logger.info(user.email)
     logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
-    tasks.send_email.delay(
+
+    send_email(
         recipients=[user.email],
         subject='TLKFAA: Password Recovery',
         context=context,
