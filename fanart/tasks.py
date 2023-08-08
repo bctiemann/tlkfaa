@@ -171,6 +171,24 @@ def send_pending_acceptance_email(pending_id, picture_id):
     )
 
 
+@shared_task
+def send_pm_email(pm_id):
+    PrivateMessage = apps.get_model('fanart', 'PrivateMessage')
+
+    pm = PrivateMessage.objects.get(pk=pm_id)
+
+    email_context = {'pm': pm, 'sender': pm.sender, 'base_url': settings.SERVER_BASE_URL}
+    subject = 'TLKFAA Private Message from {0}'.format(pm.sender.username)
+    send_email.delay(
+        recipients=[pm.recipient.email],
+        subject=subject,
+        context=email_context,
+        text_template='email/pm_sent.txt',
+        html_template='email/pm_sent.html',
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
+
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
     logger.info('Creating {0} px thumb for {1} {2}'.format(max_pixels, model, picture_object.id))
