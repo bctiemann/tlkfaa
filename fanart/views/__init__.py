@@ -611,7 +611,7 @@ class PostCommentView(LoginRequiredMixin, CreateView):
 
         picture = form.cleaned_data['picture']
         if picture.artist.email_comments and self.request.user != picture.artist:
-            tasks.send_comment_email.delay(self.request.user, picture, comment)
+            tasks.send_comment_email.delay(self.request.user.id, picture.id, comment.id)
 
         logger.info('User {0} posted comment {1} ({2}).'.format(self.request.user, comment.id, picture))
 
