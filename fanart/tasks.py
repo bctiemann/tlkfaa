@@ -17,10 +17,6 @@ from celery.utils.log import get_task_logger
 import logging
 logger = logging.getLogger(__name__)
 
-User = apps.get_model('fanart', 'User')
-Picture = apps.get_model('fanart', 'Picture')
-ThreadedComment = apps.get_model('fanart', 'ThreadedComment')
-
 TEXT_TEMPLATE = 'email/notification.txt'
 HTML_TEMPLATE = 'email/notification.html'
 FROM_ADDRESS = settings.SITE_EMAIL
@@ -104,6 +100,10 @@ def send_templated_email(
 
 @shared_task
 def send_comment_email(user_id, picture_id, comment_id):
+    User = apps.get_model('fanart', 'User')
+    Picture = apps.get_model('fanart', 'Picture')
+    ThreadedComment = apps.get_model('fanart', 'ThreadedComment')
+
     user = User.objects.get(pk=user_id)
     picture = Picture.objects.get(pk=picture_id)
     comment = ThreadedComment.objects.get(pk=comment_id)
