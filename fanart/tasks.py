@@ -9,15 +9,17 @@ from django.conf import settings
 from django.core import mail
 from django.template import Context
 from django.template.loader import get_template
+from django.apps import apps
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from fanart.models import User, Picture, ThreadedComment
-
 import logging
 logger = logging.getLogger(__name__)
 
+User = apps.get_model('fanart', 'User')
+Picture = apps.get_model('fanart', 'Picture')
+ThreadedComment = apps.get_model('fanart', 'ThreadedComment')
 
 TEXT_TEMPLATE = 'email/notification.txt'
 HTML_TEMPLATE = 'email/notification.html'
