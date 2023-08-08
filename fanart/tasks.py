@@ -313,6 +313,35 @@ def send_pm_email(pm_id):
     )
 
 
+@shared_task
+def send_password_reset_email(user_id, site_name, domain, uid, token, use_https=False, extra_email_context=None):
+    User = apps.get_model('fanart', 'User')
+
+    user = User.objects.get(pk=user_id)
+
+    context = {
+        'email': user.email,
+        'domain': domain,
+        'site_name': site_name,
+        'uid': uid,
+        'user': user,
+        'token': token,
+        'protocol': 'https' if use_https else 'http',
+    }
+    if extra_email_context is not None:
+        context.update(extra_email_context)
+    logger.info(user.email)
+    logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
+    tasks.send_email.delay(
+        recipients=[user.email],
+        subject='TLKFAA: Password Recovery',
+        context=context,
+        text_template='email/password_reset_email.txt',
+        html_template='email/password_reset_email.html',
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
+
 # Image processing
 
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):

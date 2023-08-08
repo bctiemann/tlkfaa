@@ -322,26 +322,12 @@ class UsernameAwarePasswordResetForm(PasswordResetForm):
                 domain = current_site.domain
             else:
                 site_name = domain = domain_override
-            context = {
-                'email': email,
-                'domain': domain,
-                'site_name': site_name,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'user': user,
-                'token': token_generator.make_token(user),
-                'protocol': 'https' if use_https else 'http',
-            }
-            if extra_email_context is not None:
-                context.update(extra_email_context)
-            logger.info(user.email)
-            logger.info('Sending password recovery email to {0} - {1}'.format(user.username, user.email))
-            tasks.send_email.delay(
-                recipients=[user.email],
-                subject='TLKFAA: Password Recovery',
-                context=context,
-                text_template='email/password_reset_email.txt',
-                html_template='email/password_reset_email.html',
-                bcc=[settings.DEBUG_EMAIL]
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = token_generator.make_token(user)
+
+            tasks.send_password_reset_email.delay(
+                user.id, site_name, domain, uid, token, use_https=use_https, extra_email_context=extra_email_context
             )
 
 
