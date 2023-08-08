@@ -13,6 +13,8 @@ from django.template.loader import get_template
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
+from fanart.models import User, Picture, ThreadedComment
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -54,6 +56,71 @@ def send_email(recipients,
         logger.info('Sending email "{0}" to {1}...'.format(subject, recipient))
 
     connection.close()
+
+
+@shared_task
+def send_templated_email(
+        recipients,
+        context,
+        from_email=settings.SITE_EMAIL,
+        subject=None,
+        text_template=None,
+        html_template=None,
+        attachments=None,
+        cc=None,
+        bcc=None,
+):
+    if settings.DEBUG:
+        recipients = [settings.DEBUG_EMAIL]
+
+    context['admin_email'] = settings.ADMIN_EMAIL
+    context['admin_name'] = settings.ADMIN_NAME
+
+    plaintext_template = get_template(text_template)
+    html_template = get_template(html_template)
+    bcc = bcc or []
+    if settings.BCC_EMAIL:
+        bcc.append(settings.BCC_EMAIL)
+    connection = mail.get_connection()
+    connection.open()
+    for recipient in recipients:
+        text_content = plaintext_template.render(context)
+        html_content = html_template.render(context)
+        msg = mail.EmailMultiAlternatives(subject, text_content, from_email, [recipient], cc=cc, bcc=bcc)
+        msg.attach_alternative(html_content, "text/html")
+        if attachments:
+            for attachment in attachments:
+                msg.attach(**attachment)
+
+        msg.send()
+        logger.info(f'Sent email "{subject}" to {recipient}')
+
+    connection.close()
+
+    return 'done'
+
+
+@shared_task
+def send_comment_email(user_id, picture_id, comment_id):
+    user = User.objects.get(pk=user_id)
+    picture = Picture.objects.get(pk=picture_id)
+    comment = ThreadedComment.objects.get(pk=comment_id)
+
+    email_context = {
+        'user': user,
+        'picture': picture,
+        'comment': comment,
+        'base_url': settings.SERVER_BASE_URL,
+    }
+    send_email(
+        recipients=[picture.artist.email],
+        subject='TLKFAA: New Comment Posted',
+        context=email_context,
+        text_template='email/comment_posted.txt',
+        html_template='email/comment_posted.html',
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
 
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
