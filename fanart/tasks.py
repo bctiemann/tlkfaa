@@ -144,6 +144,33 @@ def send_shout_email(user_id, artist_id, shout_id):
     )
 
 
+@shared_task
+def send_pending_acceptance_email(pending_id, picture_id):
+    Pending = apps.get_model('fanart', 'Pending')
+    Picture = apps.get_model('fanart', 'Picture')
+
+    pending = Pending.objects.get(pk=pending_id)
+    picture = Picture.objects.get(pk=picture_id)
+
+    subject = 'Fan-Art Picture Accepted'
+    text_template = 'email/approval/approved.txt'
+    html_template = 'email/approval/approved.html'
+
+    email_context = {
+        'pending': pending,
+        'picture': picture,
+        'base_url': settings.SERVER_BASE_URL,
+    }
+    send_email.delay(
+        recipients=[pending.artist.email],
+        subject=subject,
+        context=email_context,
+        text_template=text_template,
+        html_template=html_template,
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
+
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
     logger.info('Creating {0} px thumb for {1} {2}'.format(max_pixels, model, picture_object.id))

@@ -133,24 +133,8 @@ class Command(BaseCommand):
             os.rmdir(os.path.dirname(pending.picture.path))
 
             # Send email notification
-            subject = 'Fan-Art Picture Accepted'
-            text_template = 'email/approval/approved.txt'
-            html_template = 'email/approval/approved.html'
-
             if pending.notify_on_approval:
-                email_context = {
-                    'pending': pending,
-                    'picture': picture,
-                    'base_url': settings.SERVER_BASE_URL,
-                }
-                tasks.send_email.delay(
-                    recipients=[pending.artist.email],
-                    subject=subject,
-                    context=email_context,
-                    text_template=text_template,
-                    html_template=html_template,
-                    bcc=[settings.DEBUG_EMAIL]
-                )
+                tasks.send_pending_acceptance_email.delay(pending.id, picture.id)
 
             # delete pending
             pending.delete()
