@@ -318,13 +318,13 @@ class ApproveRequestView(LoginRequiredMixin, UserPaneMixin, UpdateView):
             self.object.date_accepted = timezone.now()
             self.object.save()
 
-            tasks.send_art_trade_response_email(self.object.id, is_declined=False)
+            tasks.send_art_trade_response_email.delay(self.object.id, is_declined=False)
 
         elif self.request.POST.get('declined'):
             self.object.date_declined = timezone.now()
             self.object.save()
 
-            tasks.send_art_trade_response_email(self.object.id, is_declined=True)
+            tasks.send_art_trade_response_email.delay(self.object.id, is_declined=True)
 
         return response
 
