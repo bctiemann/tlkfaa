@@ -155,7 +155,7 @@ def send_spam_flag_email(spam_flag_id):
     email_context = {
         'comment': spam_flag.comment or spam_flag.shout,
     }
-    send_email.delay(
+    send_email(
         recipients=[settings.ADMIN_EMAIL],
         subject='TLKFAA: Comment flagged as spam',
         context=email_context,
