@@ -124,6 +124,26 @@ def send_comment_email(user_id, picture_id, comment_id):
     )
 
 
+@shared_task
+def send_shout_email(user_id, artist_id, shout_id):
+    User = apps.get_model('fanart', 'User')
+    Shout = apps.get_model('fanart', 'Shout')
+
+    user = User.objects.get(pk=user_id)
+    artist = User.objects.get(pk=artist_id)
+    shout = Shout.objects.get(pk=shout_id)
+
+    email_context = {'user': user, 'artist': artist, 'shout': shout}
+    send_email(
+        recipients=[artist.email],
+        subject='TLKFAA: New Roar Posted',
+        context=email_context,
+        text_template='email/shout_posted.txt',
+        html_template='email/shout_posted.html',
+        bcc=[settings.DEBUG_EMAIL]
+    )
+
+
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]
     logger.info('Creating {0} px thumb for {1} {2}'.format(max_pixels, model, picture_object.id))

@@ -721,15 +721,7 @@ class PostShoutView(LoginRequiredMixin, CreateView):
         shout.save()
 
         if artist.email_shouts:
-            email_context = {'user': self.request.user, 'artist': artist, 'shout': shout}
-            tasks.send_email.delay(
-                recipients=[artist.email],
-                subject='TLKFAA: New Roar Posted',
-                context=email_context,
-                text_template='email/shout_posted.txt',
-                html_template='email/shout_posted.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_shout_email.delay(self.request.user.id, artist.id, shout.id)
 
         logger.info('User {0} posted shout {1} (artist {2}).'.format(self.request.user, shout.id, artist))
 
