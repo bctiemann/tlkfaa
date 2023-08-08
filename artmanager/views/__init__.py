@@ -779,19 +779,7 @@ class GiftPictureSendView(APIView):
             }
             gift_picture, created = models.GiftPicture.objects.get_or_create(sender=request.user, picture=picture, recipient=recipient, defaults=defaults)
 
-            email_context = {
-                'user': request.user,
-                'base_url': settings.SERVER_BASE_URL,
-                'url': reverse('approve-request', kwargs={'hash': gift_picture.hash}),
-            }
-            tasks.send_email.delay(
-                recipients=[recipient.email],
-                context=email_context,
-                subject='TLKFAA ArtWall submission from {0}'.format(request.user.username),
-                text_template='email/gift_sent.txt',
-                html_template='email/gift_sent.html',
-                bcc=[settings.DEBUG_EMAIL]
-            )
+            tasks.send_art_wall_submission_email.delay(gift_picture.id)
 
         response['success'] = True
         return Response(response)

@@ -10,6 +10,7 @@ from django.core import mail
 from django.template import Context
 from django.template.loader import get_template
 from django.apps import apps
+from django.shortcuts import reverse
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -244,6 +245,27 @@ def send_bulletin_reply_email(comment_id):
         text_template='email/bulletin_comment_posted.txt',
         html_template='email/bulletin_comment_posted.html',
         # bcc=[settings.DEBUG_EMAIL]
+    )
+
+
+@shared_task
+def send_art_wall_submission_email(gift_picture_id):
+    GiftPicture = apps.get_model('fanart', 'GiftPicture')
+
+    gift_picture = GiftPicture.objects.get(pk=gift_picture_id)
+
+    email_context = {
+        'user': gift_picture.sender,
+        'base_url': settings.SERVER_BASE_URL,
+        'url': reverse('approve-request', kwargs={'hash': gift_picture.hash}),
+    }
+    send_email(
+        recipients=[gift_picture.recipient.email],
+        context=email_context,
+        subject='TLKFAA ArtWall submission from {0}'.format(gift_picture.sender.username),
+        text_template='email/gift_sent.txt',
+        html_template='email/gift_sent.html',
+        bcc=[settings.DEBUG_EMAIL]
     )
 
 
