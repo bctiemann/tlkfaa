@@ -151,7 +151,7 @@ class PendingApproveView(ApprovalAPIView):
             send_email = True
 
         if send_email:
-            tasks.send_pending_moderation_email(pending.id, subject, text_template, html_template)
+            tasks.send_pending_moderation_email.delay(pending.id, subject, text_template, html_template)
 
         logger.info(request.POST)
         return Response(response)
@@ -201,7 +201,7 @@ class PendingRejectView(ApprovalAPIView):
                 image_data = file.read()
             attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
 
-            tasks.send_pending_moderation_email(
+            tasks.send_pending_moderation_email.delay(
                 pending.id, subject, text_template, html_template, attachments=attachments
             )
 

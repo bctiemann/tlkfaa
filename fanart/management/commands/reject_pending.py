@@ -26,6 +26,9 @@ class Command(BaseCommand):
         pending = models.Pending.objects.get(pk=pending_id)
 
         send_email = False
+        subject = None
+        text_template = None
+        html_template = None
         if reason == 'copied':
             subject = 'Fan Art Submission (unable to accept)'
             text_template = 'email/approval/rejected_copied.txt'
@@ -55,15 +58,8 @@ class Command(BaseCommand):
                 image_data = file.read()
             attachments.append({'filename': pending.picture.name, 'content': image_data, 'mimetype': pending.mime_type})
 
-            email_context = {'pending': pending}
-            tasks.send_email.delay(
-                recipients = [pending.artist.email],
-                subject = subject,
-                context = email_context,
-                text_template = text_template,
-                html_template = html_template,
-                bcc = [settings.DEBUG_EMAIL],
-                attachments = attachments,
+            tasks.send_pending_moderation_email.delay(
+                pending.id, subject, text_template, html_template, attachments=attachments
             )
 
         pending.delete()
