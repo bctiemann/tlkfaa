@@ -181,7 +181,7 @@ def send_pending_acceptance_email(pending_id, picture_id):
         'picture': picture,
         'base_url': settings.SERVER_BASE_URL,
     }
-    send_email.delay(
+    send_email(
         recipients=[pending.artist.email],
         subject=subject,
         context=email_context,
@@ -199,7 +199,7 @@ def send_pm_email(pm_id):
 
     email_context = {'pm': pm, 'sender': pm.sender, 'base_url': settings.SERVER_BASE_URL}
     subject = 'TLKFAA Private Message from {0}'.format(pm.sender.username)
-    send_email.delay(
+    send_email(
         recipients=[pm.recipient.email],
         subject=subject,
         context=email_context,
@@ -298,7 +298,7 @@ def create_thumbnail(model, picture_object, thumb_size, **kwargs):
                 'user': picture_object.artist,
                 'pending': picture_object,
             }
-            send_email.delay(
+            send_email(
                 recipients=[picture_object.artist.email],
                 subject='TLKFAA: Image processing error',
                 context=email_context,
@@ -390,7 +390,7 @@ def zip_pictures(artist_id):
         'user': artist,
         'zip_url': zip_url,
     }
-    send_email.delay(
+    send_email(
         recipients=[artist.email],
         subject='TLKFAA: Gallery Archive Completed',
         context=email_context,
