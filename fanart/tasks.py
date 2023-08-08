@@ -98,6 +98,8 @@ def send_templated_email(
     return 'done'
 
 
+# Canned email tasks
+
 @shared_task
 def send_comment_email(user_id, picture_id, comment_id):
     User = apps.get_model('fanart', 'User')
@@ -145,6 +147,24 @@ def send_shout_email(user_id, artist_id, shout_id):
 
 
 @shared_task
+def send_spam_flag_email(spam_flag_id):
+    SpamFlag = apps.get_model('fanart', 'SpamFlag')
+
+    spam_flag = SpamFlag.objects.get(pk=spam_flag_id)
+
+    email_context = {
+        'comment': spam_flag.comment or spam_flag.shout,
+    }
+    send_email.delay(
+        recipients=[settings.ADMIN_EMAIL],
+        subject='TLKFAA: Comment flagged as spam',
+        context=email_context,
+        text_template='email/spam_flagged.txt',
+        html_template='email/spam_flagged.html',
+    )
+
+
+@shared_task
 def send_pending_acceptance_email(pending_id, picture_id):
     Pending = apps.get_model('fanart', 'Pending')
     Picture = apps.get_model('fanart', 'Picture')
@@ -188,6 +208,8 @@ def send_pm_email(pm_id):
         bcc=[settings.DEBUG_EMAIL]
     )
 
+
+# Image processing
 
 def create_thumbnail(model, picture_object, thumb_size, **kwargs):
     max_pixels = settings.THUMB_SIZE[thumb_size]

@@ -902,16 +902,7 @@ class FlagSpamView(APIView):
         )
         response['spam_flag_id'] = spam_flag.id
 
-        email_context = {
-            'comment': comment,
-        }
-        tasks.send_email.delay(
-            recipients=[settings.ADMIN_EMAIL],
-            subject='TLKFAA: Comment flagged as spam',
-            context=email_context,
-            text_template='email/spam_flagged.txt',
-            html_template='email/spam_flagged.html',
-        )
+        tasks.send_spam_flag_email.delay(spam_flag.id)
 
         response['success'] = True
         return Response(response)
