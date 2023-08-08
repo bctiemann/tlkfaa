@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     text_template = 'email/contest_winner.txt'
                     html_template = 'email/contest_winner.html'
                     subject = 'Archive-Wide Art Contest Winner!'
-                    tasks.send_email.delay(
+                    tasks.send_email(
                         recipients=[entry.picture.artist.email],
                         subject=subject,
                         context=email_context,
