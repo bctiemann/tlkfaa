@@ -1713,7 +1713,7 @@ img.fullsize {
 */
 }
 img.preview {
-	max-width: 500px;
+	max-width: 100%;
 }
 div.directcaption {
 	width: 500px;
