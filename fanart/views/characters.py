@@ -36,7 +36,10 @@ class CharactersView(UserPaneMixin, TemplateView):
         context['list_type'] = self.list_type
         context['sub_list_type'] = self.sub_list_type
         context['tab_selected'] = self.tab_selected or self.list_type
-        context['start'] = int(self.request.GET.get('start', 0))
+        try:
+            context['start'] = int(self.request.GET.get('start', 0))
+        except ValueError:
+            context['start'] = 0
         try:
             context['count'] = int(self.request.GET.get('count', settings.CHARACTERS_PER_PAGE))
         except ValueError:

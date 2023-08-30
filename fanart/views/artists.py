@@ -28,8 +28,14 @@ class ArtistsView(UserPaneMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
-        context['start'] = int(self.request.GET.get('start', 0))
-        context['count'] = settings.ARTISTS_PER_PAGE
+        try:
+            context['start'] = int(self.request.GET.get('start', 0))
+        except ValueError:
+            context['start'] = 0
+        try:
+            context['count'] = int(self.request.GET.get('count', settings.ARTISTS_PER_PAGE))
+        except ValueError:
+            context['count'] = settings.ARTISTS_PER_PAGE
         context['per_page'] = settings.ARTISTS_PER_PAGE
         # For search view
         context['term'] = self.request.GET.get('term', '')
