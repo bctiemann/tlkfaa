@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib import admin
 from django.utils import timezone
 from fanart import models as fanart_models
@@ -54,7 +55,7 @@ class PictureRecentFilter(admin.SimpleListFilter):
     title = 'is_recent'
     parameter_name = 'is_recent'
 
-    RECENT_YEARS = 3
+    RECENT_YEARS = settings.FEATURED_ARTWORK_RECENT_YEARS
 
     def lookups(self, request, model_admin):
         return (
