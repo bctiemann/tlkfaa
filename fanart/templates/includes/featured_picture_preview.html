@@ -27,23 +27,7 @@
     <div class="sidebar-featured-preview">
         <h2>Fan-Art Spotlight</h2>
         <div class="pic-container">
-            {% if featured_picture.picture.mime_type == 'application/x-shockwave-flash' %}
-                <object class="inlinemovie" width="{{ featured_picture.picture.video_width }}" height="{{ featured_picture.picture.video_height }}">
-                    <param name="movie" value="{{ featured_picture.picture.url }}">
-                    <embed src="{{ featured_picture.picture.url }}" class="inlinemovie" width="{{ featured_picture.picture.width }}" height="{{ featured_picture.picture.height }}">
-                    </embed>
-                </object>
-            {% elif featured_picture.picture.mime_type in video_types %}
-                <video id="video_display" class="video-js" controls preload="auto" width="{{ featured_picture.picture.width }}" height="{{ featured_picture.picture.height }}" poster="" data-setup="{}">
-                    <source src="{{ featured_picture.picture.url }}" type="{{ featured_picture.picture.mime_type }}">
-                    <p class="vjs-no-js">
-                        To view this video please enable JavaScript, and consider upgrading to a web browser that
-                        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-                    </p>
-                </video>
-            {% else %}
-                <img src="{{ featured_picture.picture.preview_url }}" />
-            {% endif %}
+            <img src="{{ featured_picture.picture.preview_url }}" />
         </div>
         <p>
             by <a href="{% url "artist" dir_name=featured_picture.picture.artist.dir_name %}">{{ featured_picture.picture.artist.username }}</a>
