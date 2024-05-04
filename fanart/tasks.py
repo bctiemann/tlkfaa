@@ -297,7 +297,7 @@ def send_art_trade_response_email(gift_picture_id, is_declined=False):
 
 @shared_task
 def send_pm_email(pm_id):
-    PrivateMessage = apps.get_model('fanart', 'PrivateMessage')
+    PrivateMessage = apps.get_model('pms', 'PrivateMessage')
 
     pm = PrivateMessage.objects.get(pk=pm_id)
 
