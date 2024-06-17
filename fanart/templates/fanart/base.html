@@ -23,7 +23,12 @@
 
 <div class="wrapper">
 
-    <div class="top"><img id="simba" src="{% static "images/AdultSimba.gif" %}" /></div>
+    <div class="top">
+        <img id="simba" src="{% static "images/AdultSimba.gif" %}" />
+        {% if 30th_anniversary %}
+            <img id="anniversary_30" src="{% static "images/30th_anniversary.png" %}" />
+        {% endif %}
+    </div>
 
     <div class="header">
         <div class="logo">

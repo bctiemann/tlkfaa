@@ -179,6 +179,12 @@ div.top img#simba {
 	float: right;
 	margin-top: 10px;
 }
+img#anniversary_30 {
+	position: absolute;
+	right: -30px;
+	top: 20px;
+	z-index: 10;
+}
 div.simbabottom {
 	position: absolute;
 	float: right;
