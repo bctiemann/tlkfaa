@@ -19,7 +19,7 @@ import pytz
 import os
 import re
 import shutil
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from pwd import getpwnam
 from precise_bbcode.bbcode import get_parser
 from user_agents import parse as parse_ua
@@ -881,6 +881,30 @@ class Picture(models.Model):
     @property
     def featured_picture(self):
         return self.featuredpicture_set.first()
+
+    def get_color_type(self, image):
+        if image.format in ('JPEG', 'PNG') and image.getcolors() is None:
+            return 'Grayscale'
+        return 'Color'
+
+    def get_image_type(self):
+        im = Image.open(self.path)
+        color_type = self.get_color_type(im)
+        format = im.format
+        if format in ('GIF', 'PNG'):
+            try:
+                im.seek(1)
+                format = f'Animated {format}'
+            except EOFError as e:
+                pass
+        return f'{color_type} {format}'
+
+    def update_type(self):
+        try:
+            self.type = self.get_image_type()
+            self.save()
+        except UnidentifiedImageError as e:
+            print(f'Unable to identify image type of {self.filename}: {self.mime_type}')
 
     def get_absolute_url(self):
         # return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
