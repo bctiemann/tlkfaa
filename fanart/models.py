@@ -893,7 +893,13 @@ class Picture(models.Model):
         return 'Grayscale'
 
     def get_image_type(self):
-        im = Image.open(self.path)
+        try:
+            im = Image.open(self.path)
+        except UnidentifiedImageError as e:
+            error = f'Unable to identify image type of {self.filename}: {self.mime_type}'
+            logger.warning(error)
+            print(error)
+            return None
         color_type = self.get_color_type(im)
         format = im.format
         if format in ('GIF', 'PNG'):
@@ -905,11 +911,9 @@ class Picture(models.Model):
         return f'{color_type} {format}'
 
     def update_type(self):
-        try:
-            self.type = self.get_image_type()
+        self.type = self.get_image_type()
+        if self.type:
             self.save()
-        except UnidentifiedImageError as e:
-            print(f'Unable to identify image type of {self.filename}: {self.mime_type}')
 
     def get_absolute_url(self):
         # return reverse('artmanager:artwork-picture-detail', kwargs={'picture_id': self.id})
