@@ -882,11 +882,23 @@ class Picture(models.Model):
     def featured_picture(self):
         return self.featuredpicture_set.first()
 
+    @staticmethod
+    def chunks(lst, n):
+        """Yield successive n-sized chunks from lst."""
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+
     def get_color_type(self, image):
-        color_list = image.getcolors()
-        if color_list is None:
+        palette = image.getpalette()
+        if palette is not None:
+            for color in self.chunks(palette, 3):
+                if not color[0] == color[1] == color[2]:
+                    return 'Color'
+            return 'Grayscale'
+        colors = image.getcolors()
+        if colors is None:
             return 'Color'
-        for color_entry in color_list:
+        for color_entry in colors:
             color = color_entry[1]
             if isinstance(color, tuple) and len(color) > 2 and not color[0] == color[1] == color[2]:
                 return 'Color'
