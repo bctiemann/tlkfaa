@@ -900,6 +900,10 @@ class Picture(models.Model):
             logger.warning(error)
             print(error)
             return None
+        except FileNotFoundError as e:
+            logger.warning(e)
+            print(e)
+            return None
         color_type = self.get_color_type(im)
         format = im.format
         if format in ('GIF', 'PNG'):
