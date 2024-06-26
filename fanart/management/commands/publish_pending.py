@@ -132,6 +132,9 @@ class Command(BaseCommand):
             os.rename(pending.preview_path, picture.preview_path)
             os.rmdir(os.path.dirname(pending.picture.path))
 
+            # Detect and save image type
+            picture.update_type()
+
             # Send email notification
             if pending.notify_on_approval:
                 tasks.send_pending_published_email(pending.id, picture.id)
