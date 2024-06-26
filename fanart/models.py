@@ -883,9 +883,14 @@ class Picture(models.Model):
         return self.featuredpicture_set.first()
 
     def get_color_type(self, image):
-        if image.format in ('JPEG', 'PNG') and image.getcolors() is not None:
-            return 'Grayscale'
-        return 'Color'
+        color_list = image.getcolors()
+        if color_list is None:
+            return 'Color'
+        for color_entry in color_list:
+            color = color_entry[1]
+            if isinstance(color, tuple) and not color[0] == color[1] == color[2]:
+                return 'Color'
+        return 'Grayscale'
 
     def get_image_type(self):
         im = Image.open(self.path)
