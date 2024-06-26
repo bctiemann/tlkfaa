@@ -888,7 +888,7 @@ class Picture(models.Model):
             return 'Color'
         for color_entry in color_list:
             color = color_entry[1]
-            if isinstance(color, tuple) and not color[0] == color[1] == color[2]:
+            if isinstance(color, tuple) and len(color) > 2 and not color[0] == color[1] == color[2]:
                 return 'Color'
         return 'Grayscale'
 
