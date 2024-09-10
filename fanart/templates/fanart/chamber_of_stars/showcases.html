@@ -1,4 +1,5 @@
 {% extends "fanart/chamber_of_stars/base.html" %}
+{% load bbcode_tags %}
 
 {% block showcases_class %}selected{% endblock %}
 
@@ -17,8 +18,12 @@
 
             <h2><a href="{% url "showcase" showcase_id=showcase.id %}">{{ showcase.title }}</a></h2>
 
+            <div class="pageinfo float-right">
+                <p>Tag: <span class="tag">{{ showcase.tag }}</span></p>
+            </div>
+
             <div class="pageinfo">
-                <p>{{ showcase.description|safe }}</p>
+                <p>{{ showcase.description|bbcode|safe }}</p>
             </div>
 
             <div class="masonry">
