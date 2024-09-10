@@ -1,4 +1,5 @@
 {% extends "fanart/chamber_of_stars/showcases.html" %}
+{% load bbcode_tags %}
 
 {% block section_nav_link %}
     <a class="section-nav-link" href="{% url "showcases" %}">Show all</a>
@@ -9,8 +10,13 @@
     <div class="featurebox">
 
         <h2>{{ showcase.title }}</h2>
+
+        <div class="pageinfo float-right">
+            <p>Tag: <span class="tag">{{ showcase.tag }}</span></p>
+        </div>
+
         <div class="pageinfo">
-            <p>{{ showcase.description|safe }}</p>
+            <p>{{ showcase.description|bbcode|safe }}</p>
         </div>
 
         {{ pages_link.pages_nav|safe }}
