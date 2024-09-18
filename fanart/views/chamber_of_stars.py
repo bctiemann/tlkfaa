@@ -42,7 +42,7 @@ class ShowcasesView(UserPaneMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(is_visible=True).order_by('id')
+        return queryset.filter(is_visible=True).order_by('-id')
 
 
 class ShowcaseView(UserPaneMixin, PaginationMixin, DetailView):
