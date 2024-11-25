@@ -41,6 +41,8 @@ class PictureYearFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         qs = model_admin.get_queryset(request)
+        # If qs.dates returns None, make sure time zone tables are loaded in MySQL:
+        # mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
         for year in qs.dates('date_uploaded', 'year'):
             yield (year.year, year.year)
 
