@@ -258,6 +258,32 @@ div.footer a {
 }
 
 
+.cookie-notification {
+	display: none;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(38, 47, 13, 100%);
+	z-index: 1000;
+	color: #fff;
+	padding: 20px;
+	border-top: 4px solid #afafaf;
+}
+.cookie-notification p {
+	margin: 5px;
+	width: 60%;
+}
+.cookie-notification .buttons {
+	float: right;
+	margin-right: 100px;
+}
+.cookie-notification button,
+.cookie-notification .button {
+	min-width: 100px;
+	text-align: center;
+}
+
+
 table.layout {
 	border-collapse: collapse;
 	width: 100%;

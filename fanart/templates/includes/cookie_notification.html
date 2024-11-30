@@ -1,0 +1,18 @@
+<div class="cookie-notification">
+    <h3>This site uses cookies</h3>
+    <p>
+        The TLKFAA uses cookies in order to provide social media features to its users and to enhance and customize
+        content. We do not sell any user data to any third parties or collect user data for any purpose other than
+        site analytics and customized user features.
+    </p>
+    <p>
+        You have the option to browse anonymously, without registering a profile or logging in.
+    </p>
+    <div class="buttons">
+        <button onclick="acceptCookieNotification();">OK</button>
+        <a class="button" href="{% url "privacy" %}">Privacy Policy</a>
+    </div>
+</div>
+<script type="text/javascript">
+    showCookieNotification();
+</script>

@@ -68,6 +68,19 @@ $.ajaxSetup({
     }
 });
 
+ function setCookie (name, value) {
+  var argv = setCookie.arguments;
+  var argc = setCookie.arguments.length;
+  var expires = (argc > 2) ? argv[2] : null;
+  var path = (argc > 3) ? argv[3] : null;
+  var domain = (argc > 4) ? argv[4] : null;
+  var secure = (argc > 5) ? argv[5] : false;
+  document.cookie = name + "=" + encodeURIComponent(value) +
+    ((expires == null) ? "" : ("; expires=" + expires.toGMTString())) +
+    ((path == null) ? "" : ("; path=" + path)) +
+    ((domain == null) ? "" : ("; domain=" + domain)) +
+    ((secure == true) ? "; secure" : "");
+}
 
 /* Support functions */
 
@@ -223,6 +236,22 @@ function validateForm(selformid,successfnc) {
 
 
 /* Site functionality */
+
+function acceptCookieNotification() {
+  var expdate = new Date ();
+  let expdays = 99999;
+  expdate.setTime (expdate.getTime() + (24 * 60 * 60 * 1000 * expdays));
+  setCookie('cookie_notification', true, expdate, "/");
+  $('.cookie-notification').fadeOut('200');
+}
+
+function showCookieNotification() {
+    let cookieNotificationCookie = getCookie('cookie_notification');
+    console.log(cookieNotificationCookie);
+    if (!cookieNotificationCookie) {
+        $('.cookie-notification').show();
+    }
+}
 
 function registerUser() {
 //    var url = '/api/register.jsp';
@@ -868,10 +897,10 @@ function editPending(pendingid,pendingform) {
   var title = pendingform.title.value;
   var keywords = uniqueKeywords.join(',');
   var characters = pendingform.characters.value;
-//  $.post("/ajax_editpending.jsp",{ 
+//  $.post("/ajax_editpending.jsp",{
   $.post('/ArtManager/pending/' + pendingid + '/update/', {
       op: "edit",
-      pendingid: pendingid, 
+      pendingid: pendingid,
       folder: folderid,
       title: title,
       keywords: keywords,
@@ -921,7 +950,7 @@ function editPicture(pictureid,pictureform) {
 
 function editCCPic(ccpicid,ccpicform) {
   var comment = ccpicform.comment.value;
-//  $.post("/ajax_editccpic.jsp",{ 
+//  $.post("/ajax_editccpic.jsp",{
   $.post('/ArtManager/artwork/coloring_picture/' + ccpicid + '/update/', {
       op: "edit",
       ccpicid: ccpicid,
@@ -936,7 +965,7 @@ function editOffer(offerid,offerform) {
   var comment = offerform.comment.value;
   $.post('/offer/' + offerid + '/edit/', {
       op: "edit",
-      offerid: offerid, 
+      offerid: offerid,
       title: title,
       comment: comment
     },function(data) {
@@ -3132,8 +3161,8 @@ function refreshSketcherUserBox() {
     });
 }
 
-function refreshResetStatus() {  
-  var url = "/Sketcher/ajax_resetstatus.jsp";   
+function refreshResetStatus() {
+  var url = "/Sketcher/ajax_resetstatus.jsp";
   $('#resetstatus').load(url);
 }
 
@@ -3145,7 +3174,7 @@ function connectSketcher() {
   var width = screen.width;
   var height = screen.height;
   var url = "/Sketcher/Sketcher.jsp?h=" + height + "&sounds=" + ($('#sounds').prop('checked') ? 1 : 0);
-  var settings = 
+  var settings =
   "toolbar=no,location=no,directories=no,"+
   "status=no,menubar=no,scrollbars=yes,"+
   "resizable=yes,width="+width+",height="+height;
