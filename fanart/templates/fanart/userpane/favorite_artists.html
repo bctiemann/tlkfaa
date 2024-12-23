@@ -1,19 +1,40 @@
 {% load static %}
 
 <table class="favorites">
-{#{% for fave in favorite_artists %}#}
 {% for fave in favorite_artists %}
-<tr>
-<td><img class="favevisible" src="{% if fave.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" /></td>
-<td><a {% if fave.new > 0 %}class="hasnewpics"{% endif %} href="{% url "artist" dir_name=fave.dir_name %}">{{ fave.username }}</a></td>
-<td class="newpics">{% if fave.new > 0 %}<a href="{% url "artist-gallery" dir_name=fave.dir_name %}?list=bydate">{{ fave.new }} new</a>{% endif %}</td>
-<td>
-<a href="javascript:nop()" title="{{ fave.username }} is {% if not fave.commissions_open %}not {% endif %}accepting requests/commissions."><div class="commlight" style="background-image: url('{% if fave.commissions_open %}{% static "images/commissions-on.gif" %}{% else %}{% static "images/commissions-off.gif" %}{% endif %}"></div></a>
-</td>
-</tr>
+    <tr>
+        <td>
+            <img class="favevisible" src="{% if fave.artist.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" />
+        </td>
+        <td>
+            <a
+                {% if fave.artist.new > 0 %}class="hasnewpics"{% endif %}
+                href="{% url "artist" dir_name=fave.artist.dir_name %}"
+            >
+                {{ fave.artist.username }}
+            </a>
+        </td>
+        <td class="newpics">
+            {% if fave.new > 0 %}
+                <a href="{% url "artist-gallery" dir_name=fave.artist.dir_name %}?list=bydate">{{ fave.artist.new }} new</a>
+            {% endif %}
+        </td>
+        <td>
+            <a
+                href="javascript:nop()"
+                title="{{ fave.artist.username }} is {% if not fave.artist.commissions_open %}not {% endif %}accepting requests/commissions."
+            >
+                <div class="commlight" style="background-image: url('{% if fave.commissions_open %}{% static "images/commissions-on.gif" %}{% else %}{% static "images/commissions-off.gif" %}{% endif %}"></div>
+            </a>
+        </td>
+    </tr>
 {% endfor %}
 </table>
 
-{% if favorite_artists|length == 0 %}
+{% if favorite_artists.count == 0 %}
 No favorite artists yet.
 {% endif %}
+
+<script type="text/javascript">
+    getFavoriteArtistsWithCounts();
+</script>

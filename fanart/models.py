@@ -319,6 +319,10 @@ class User(AbstractUser):
 
     @property
     def favorite_artists(self):
+        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True, character__isnull=True, artist__is_active=True, artist__is_artist=True).order_by('artist__sort_name')
+
+    @property
+    def favorite_artists_with_unviewed_pictures(self):
 #        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
 
         with connection.cursor() as cursor:

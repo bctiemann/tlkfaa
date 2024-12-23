@@ -74,7 +74,7 @@ Favorite Artists</h1>
 
 </div>
 <div class="userboxfooter">
-{{ user.favorite_artists|length }} artist{{ user.favorite_artists|length|pluralize }} watched
+{{ user.favorite_artists.count }} artist{{ user.favorite_artists.count|pluralize }} watched
 </div>
 </div>
 
