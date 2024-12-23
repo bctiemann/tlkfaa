@@ -178,7 +178,6 @@ class UserPaneMixin(RatelimitMixin):
             return context
 
         context['favorite_artists'] = self.request.user.favorite_artists
-        context['favorite_artists_with_unviewed_pictures'] = self.request.user.favorite_artists_with_unviewed_pictures
 
         context['THUMB_SIZE'] = settings.THUMB_SIZE
         context['community_art_data'] = self.get_community_art_data()
@@ -371,8 +370,13 @@ class FavoriteArtistsBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/favorite_artists.html'
 
 
-class FavoriteArtistsBoxWithUnviewedCountsView(UserPaneMixin, TemplateView):
+class FavoriteArtistsBoxWithUnviewedCountsView(TemplateView):
     template_name = 'fanart/userpane/favorite_artists_with_counts.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*kwargs, **kwargs)
+        context['favorite_artists'] = self.request.user.favorite_artists_with_unviewed_pictures
+        return context
 
 
 class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
