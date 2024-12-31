@@ -4,7 +4,7 @@
 {% for fave in favorite_artists %}
     <tr>
         <td>
-            <img class="favevisible" src="{% if fave.artist.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" />
+            <img class="favevisible" src="{% if fave.is_visible %}{% static "images/eye.gif" %}{% else %}{% static "images/blankdot.gif" %}{% endif %}" />
         </td>
         <td>
             <a
@@ -24,7 +24,7 @@
                 href="javascript:nop()"
                 title="{{ fave.artist.username }} is {% if not fave.artist.commissions_open %}not {% endif %}accepting requests/commissions."
             >
-                <div class="commlight" style="background-image: url('{% if fave.commissions_open %}{% static "images/commissions-on.gif" %}{% else %}{% static "images/commissions-off.gif" %}{% endif %}"></div>
+                <div class="commlight" style="background-image: url('{% if fave.artist.commissions_open %}{% static "images/commissions-on.gif" %}{% else %}{% static "images/commissions-off.gif" %}{% endif %}"></div>
             </a>
         </td>
     </tr>
