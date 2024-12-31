@@ -331,7 +331,7 @@ class User(AbstractUser):
     def unviewed_by_artist(self):
         unviewed = defaultdict(int)
         for uvp in UnviewedPicture.objects.filter(user=self):
-            unviewed[uvp.artist.id] += 1
+            unviewed[uvp.artist_id] += 1
         return unviewed
 
     @property
