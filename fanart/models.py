@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.conf import settings
 from django.db import models, connection
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count, CharField
@@ -319,7 +321,18 @@ class User(AbstractUser):
 
     @property
     def favorite_artists(self):
-        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True, character__isnull=True, artist__is_active=True, artist__is_artist=True).order_by('artist__sort_name')
+        favorite_artists = self.favorite_set.filter(artist__isnull=False, picture__isnull=True, character__isnull=True, artist__is_active=True, artist__is_artist=True).order_by('artist__sort_name')
+        unviewed_by_artist = self.unviewed_by_artist
+        for fave in favorite_artists:
+            fave.num_unviewed = unviewed_by_artist.get(fave.artist.id, 0)
+        return favorite_artists
+
+    @property
+    def unviewed_by_artist(self):
+        unviewed = defaultdict(int)
+        for uvp in UnviewedPicture.objects.filter(user=self):
+            unviewed[uvp.artist.id] += 1
+        return unviewed
 
     @property
     def favorite_artists_with_unviewed_pictures(self):

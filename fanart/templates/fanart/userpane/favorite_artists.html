@@ -8,7 +8,7 @@
         </td>
         <td>
             <a
-                {% if fave.artist.new > 0 %}class="hasnewpics"{% endif %}
+                {% if fave.num_unviewed > 0 %}class="hasnewpics"{% endif %}
                 href="{% url "artist" dir_name=fave.artist.dir_name %}"
             >
                 {{ fave.artist.username }}
@@ -16,7 +16,7 @@
         </td>
         <td class="newpics">
             {% if fave.new > 0 %}
-                <a href="{% url "artist-gallery" dir_name=fave.artist.dir_name %}?list=bydate">{{ fave.artist.new }} new</a>
+                <a href="{% url "artist-gallery" dir_name=fave.artist.dir_name %}?list=bydate">{{ fave.num_unviewed }} new</a>
             {% endif %}
         </td>
         <td>
@@ -36,5 +36,5 @@ No favorite artists yet.
 {% endif %}
 
 <script type="text/javascript">
-    getFavoriteArtistsWithCounts();
+    // getFavoriteArtistsWithCounts();
 </script>
