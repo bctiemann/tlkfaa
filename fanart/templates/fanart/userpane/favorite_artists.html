@@ -15,7 +15,7 @@
             </a>
         </td>
         <td class="newpics">
-            {% if fave.new > 0 %}
+            {% if fave.num_unviewed > 0 %}
                 <a href="{% url "artist-gallery" dir_name=fave.artist.dir_name %}?list=bydate">{{ fave.num_unviewed }} new</a>
             {% endif %}
         </td>
