@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for pending in models.Pending.objects.all():
-            print(pending.id)
+            print(pending)
 
             try:
                 pending.picture.file
@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
             filename = '{0}.{1}'.format(pending.next_unique_basename, pending.extension)
             if os.path.isfile('{0}/{1}.s.jpg'.format(pending.artist.absolute_dir_name, pending.next_unique_basename)):
-                logger.error('File {0} exists; skipping.'.format(pending.next_unique_basename))
+                print('File {0} exists; skipping.'.format(pending.next_unique_basename))
                 continue
 
             pending.locked_for_publish = True
@@ -105,17 +105,24 @@ class Command(BaseCommand):
                         artist = picture.artist,
                         user = watcher.user,
                     )
+                print(f'{models.UnviewedPicture.objects.filter(picture=picture).count()} UnviewedPictures created')
 
             # Update artist.last_upload
+            print(f'Setting last_upload to {timezone.now()}...')
             pending.artist.last_upload = timezone.now()
+            pending.artist.refresh_from_db()
+            print(pending.artist.last_upload)
 
             # Refresh num_pictures and picture ranks in artist and folder
+            print(f'Refreshing artist {pending.artist}')
             pending.artist.refresh_num_pictures()
             pending.artist.refresh_picture_ranks()
             if pending.folder:
+                print(f'Refreshing folder {pending.folder}')
                 pending.folder.refresh_num_pictures()
                 pending.folder.refresh_picture_ranks()
             else:
+                print('Refreshing main folder')
                 pending.artist.refresh_main_folder_picture_ranks()
 
             # Move files into place
@@ -131,13 +138,16 @@ class Command(BaseCommand):
             os.rename(pending.thumbnail_path, picture.thumbnail_path)
             os.rename(pending.preview_path, picture.preview_path)
             os.rmdir(os.path.dirname(pending.picture.path))
+            print(f'File {pending.picture} processed')
 
             # Detect and save image type
             picture.update_type()
 
             # Send email notification
             if pending.notify_on_approval:
+                print('Notifying watchers...')
                 tasks.send_pending_published_email(pending.id, picture.id)
 
             # delete pending
             pending.delete()
+            print(f'Pending {pending} deleted.')
