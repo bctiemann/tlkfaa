@@ -14,6 +14,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for pending in models.Pending.objects.all():
+            print()
+            print(timezone.now())
             print(pending)
 
             try:
