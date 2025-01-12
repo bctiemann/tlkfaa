@@ -17,7 +17,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
 
 from django.core.exceptions import ValidationError
-#from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView

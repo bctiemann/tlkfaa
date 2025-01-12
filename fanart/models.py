@@ -9,11 +9,10 @@ from django.core.files.storage import FileSystemStorage
 from django.core.mail import mail_admins
 #from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, UserManager, AbstractUser
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import uuid
 import datetime

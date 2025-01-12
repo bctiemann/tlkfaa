@@ -16,7 +16,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.exceptions import ValidationError
-#from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
