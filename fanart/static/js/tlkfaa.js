@@ -310,19 +310,10 @@ function toggleUserBox(boxName) {
                     box_name: boxName,
                     is_shown: true,
                 };
-                $.post(url, params, function(data) {
-                    if (boxName === 'favorite_artists_box') {
-                        getFavoriteArtistsWithCounts();
-                    }
-                });
+                $.post(url, params, function(data) {});
             });
         });
     }
-}
-
-function getFavoriteArtistsWithCounts() {
-    const url = '/userbox/favorite_artists_box_with_counts/';
-    $('#favorite_artists_box').load(url, function(data) {})
 }
 
 function getMoreAdminAnnouncements(start, count) {
