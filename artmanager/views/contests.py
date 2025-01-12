@@ -108,10 +108,9 @@ class ContestDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Contest, pk=self.kwargs['contest_id'], creator=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
         logger.info(self.object)
 
         self.object.delete()

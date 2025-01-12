@@ -93,10 +93,9 @@ class BulletinDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Bulletin, pk=self.kwargs['bulletin_id'], user=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
         logger.info(self.object)
 
         self.object.delete()

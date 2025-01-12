@@ -145,10 +145,9 @@ class RemoveColoringPictureView(DeleteView):
     def get_object(self):
         return get_object_or_404(ColoringPicture, (Q(artist=self.request.user) | Q(base__creator=self.request.user)), pk=self.kwargs['coloring_picture_id'])
 
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
+    def form_valid(self, form):
         logger.info(self.object.picture.name)
-        result = super(RemoveColoringPictureView, self).delete(self, request, *args, **kwargs)
+        result = super().form_valid(form)
         self.object.base.refresh_num_colored()
         return result
 

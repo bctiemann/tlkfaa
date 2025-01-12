@@ -220,10 +220,9 @@ class RemoveClaimView(DeleteView):
     def get_object(self):
         return get_object_or_404(Claim, (Q(user=self.request.user) | Q(offer__artist=self.request.user)), pk=self.kwargs['claim_id'])
 
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
+    def form_valid(self, form):
         logger.info(self.object.picture.name)
-        return super(RemoveClaimView, self).delete(self, request, *args, **kwargs)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('offer', kwargs={'offer_id': self.object.offer.id})

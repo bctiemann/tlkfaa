@@ -1509,10 +1509,8 @@ class RemoveBannerView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return self.request.user.banner
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': True}
-
-        self.object = self.get_object()
 
         if not self.object:
             return JsonResponse(response)

@@ -397,10 +397,6 @@ class PendingDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
-
-#        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'pending', self.object.directory), ignore_errors=True)
-
         logger.info('{0} deleted {1}'.format(self.request.user, self.object))
         self.object.delete()
 
@@ -596,7 +592,6 @@ class PictureDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
         logger.info(self.object)
 
         self.object.set_deleted()
@@ -675,10 +670,9 @@ class ColoringPictureDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(ColoringPicture, pk=self.kwargs['coloring_picture_id'], artist=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
         logger.info(self.object.picture.name)
 
         self.object.delete()
@@ -790,10 +784,8 @@ class GiftPictureDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.GiftPicture, pk=self.kwargs['gift_picture_id'], sender=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
-
-        self.object = self.get_object()
 
         self.object.delete()
 
@@ -897,10 +889,8 @@ class FolderDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Folder, pk=self.kwargs['folder_id'], user=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
-
-        self.object = self.get_object()
 
         self.object.delete()
 
@@ -967,18 +957,6 @@ class GiftPictureBulkDeleteView(APIView):
 
         response['success'] = True
         return Response(response)
-
-
-    def delete(self, request, *args, **kwargs):
-        response = {'success': False}
-
-        self.object = self.get_object()
-
-        self.object.delete()
-
-        response['success'] = True
-
-        return JsonResponse(response)
 
 
 class CharactersView(ArtManagerPaneView):
@@ -1113,10 +1091,9 @@ class CharacterDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Character, pk=self.kwargs['character_id'], owner=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
-        self.object = self.get_object()
         logger.info(self.object)
 
         self.object.set_deleted()
