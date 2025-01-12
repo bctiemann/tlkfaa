@@ -976,11 +976,6 @@ class Picture(models.Model):
         self.num_faves = self.fans.count()
         self.save()
 
-    def replace_urls(self):
-        for url in REPLACEMENT_URLS:
-            pattern, replacement = url
-            self.title = re.sub(pattern, replacement, self.title)
-
     def __str__(self):
         return '{0}: {1} {2}'.format(self.artist.username, self.id, self.filename)
 
