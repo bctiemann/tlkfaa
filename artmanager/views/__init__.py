@@ -394,7 +394,7 @@ class PendingDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Pending, pk=self.kwargs['pending_id'], artist=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
         self.object = self.get_object()
@@ -593,7 +593,7 @@ class PictureDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return get_object_or_404(models.Picture, pk=self.kwargs['picture_id'], artist=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         response = {'success': False}
 
         self.object = self.get_object()
