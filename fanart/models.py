@@ -335,28 +335,6 @@ class User(AbstractUser):
         return unviewed
 
     @property
-    def favorite_artists_with_unviewed_pictures(self):
-#        return self.favorite_set.filter(artist__isnull=False, picture__isnull=True).order_by('artist__sort_name')
-
-        with connection.cursor() as cursor:
-            query = """
-SELECT fanart_favorite.artist_id,fanart_user.username,fanart_user.dir_name,fanart_favorite.is_visible,fanart_user.commissions_open,count(distinct fanart_unviewedpicture.picture_id) AS new
-FROM fanart_user,fanart_favorite
-LEFT JOIN fanart_unviewedpicture ON fanart_unviewedpicture.artist_id=fanart_favorite.artist_id AND fanart_unviewedpicture.user_id=fanart_favorite.user_id
-WHERE fanart_user.id=fanart_favorite.artist_id
-AND fanart_favorite.user_id=%s
-AND fanart_favorite.picture_id IS NULL
-AND fanart_favorite.character_id IS NULL
-AND fanart_user.is_active=1
-AND fanart_user.is_artist=1
-GROUP BY fanart_favorite.artist_id
-ORDER BY fanart_user.sort_name
-"""
-            cursor.execute(query, [self.id])
-            result = dictfetchall(cursor)
-        return result
-
-    @property
     def favorite_pictures(self):
         return self.favorite_set.filter(artist__isnull=True, picture__isnull=False, character__isnull=True, picture__date_deleted__isnull=True).prefetch_related('picture').order_by('-date_added')
 
@@ -1429,6 +1407,8 @@ class Pending(models.Model):
         base_fn = re.sub('\.[^\.]+$', '', self.filename)
         out_fn = ''.join([upperfirst(part) for part in re.split('[- _+~&()\.]', base_fn)])
         out_fn = re.sub('[^a-zA-Z0-9_-]', '', out_fn)
+        if not out_fn:
+            out_fn = 'Untitled'
         out_fn = re.sub('(?i)copy$', '', out_fn)
         out_fn = re.sub('(?i)jpg$', '', out_fn)
         out_fn = re.sub('(?i)gif$', '', out_fn)
