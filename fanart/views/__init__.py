@@ -27,7 +27,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from fanart import models, forms, utils, tasks, serializers
-from fanart.forms import AjaxableResponseMixin
+from fanart.forms import AjaxableResponseMixin, IsAjaxMixin
 from coloring_cave.models import Base, ColoringPicture
 from trading_tree.models import Offer, Claim
 from sketcher.models import ActiveUser, Drawpile
@@ -424,7 +424,7 @@ class CheckNameAvailabilityView(APIView):
         return Response(response)
 
 
-class RegisterView(FormView):
+class RegisterView(FormView, IsAjaxMixin):
     form_class = forms.RegisterForm
     template_name = 'fanart/register.html'
 
@@ -442,7 +442,7 @@ class RegisterView(FormView):
     def form_invalid(self, form):
         response = super(RegisterView, self).form_invalid(form)
         logger.info(f'Registration failed: {form.data} {form.errors.as_json()}')
-        if self.request.is_ajax():
+        if self.is_ajax():
             ajax_response = {
                 'success': False,
                 'errors': form.errors,
@@ -604,7 +604,7 @@ class PostCommentView(LoginRequiredMixin, CreateView):
         return response
 
 
-class CommentDetailView(LoginRequiredMixin, DetailView):
+class CommentDetailView(LoginRequiredMixin, DetailView, IsAjaxMixin):
     model = models.ThreadedComment
     form_class = forms.ThreadedCommentForm
     template_name = 'includes/comments.html'
@@ -614,7 +614,7 @@ class CommentDetailView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         response = super(CommentDetailView, self).get(request, *args, **kwargs)
-        if request.is_ajax():
+        if self.is_ajax():
             ajax_response = {
                 'success': True,
                 'comment': {
@@ -760,13 +760,13 @@ class ReplyShoutView(LoginRequiredMixin, CreateView):
         return JsonResponse(response)
 
 
-class ShoutDetailView(LoginRequiredMixin, DetailView):
+class ShoutDetailView(LoginRequiredMixin, DetailView, IsAjaxMixin):
     model = models.Shout
     template_name = 'includes/shout.html'
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
-        if request.is_ajax():
+        if self.is_ajax():
             ajax_response = {
                 'success': True,
                 'comment': {
