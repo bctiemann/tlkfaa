@@ -40,7 +40,7 @@ class AjaxableResponseMixin(IsAjaxMixin):
     def form_invalid(self, form):
         logger.warning(form.errors)
         response = super(AjaxableResponseMixin, self).form_invalid(form)
-        if self.is_ajax():
+        if self.is_ajax:
             ajax_response = {
                 'success': False,
                 'errors': form.errors,
@@ -55,7 +55,7 @@ class AjaxableResponseMixin(IsAjaxMixin):
         # it might do some processing (in the case of CreateView, it will
         # call form.save() for example).
         response = super(AjaxableResponseMixin, self).form_valid(form)
-        if self.is_ajax():
+        if self.is_ajax:
             data = {
                 'success': True,
                 'pk': self.object.pk,

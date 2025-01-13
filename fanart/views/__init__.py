@@ -442,7 +442,7 @@ class RegisterView(FormView, IsAjaxMixin):
     def form_invalid(self, form):
         response = super(RegisterView, self).form_invalid(form)
         logger.info(f'Registration failed: {form.data} {form.errors.as_json()}')
-        if self.is_ajax():
+        if self.is_ajax:
             ajax_response = {
                 'success': False,
                 'errors': form.errors,
@@ -614,7 +614,7 @@ class CommentDetailView(LoginRequiredMixin, DetailView, IsAjaxMixin):
 
     def get(self, request, *args, **kwargs):
         response = super(CommentDetailView, self).get(request, *args, **kwargs)
-        if self.is_ajax():
+        if self.is_ajax:
             ajax_response = {
                 'success': True,
                 'comment': {
@@ -766,7 +766,7 @@ class ShoutDetailView(LoginRequiredMixin, DetailView, IsAjaxMixin):
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
-        if self.is_ajax():
+        if self.is_ajax:
             ajax_response = {
                 'success': True,
                 'comment': {

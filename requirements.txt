@@ -22,3 +22,4 @@ pyyaml==6.0.1
 user-agents==2.1
 gunicorn==22.0.0
 bumpversion==0.6.0
+redis==5.2.1
