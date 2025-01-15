@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',
 
     'fanart',
     'trading_tree',
@@ -60,8 +59,9 @@ INSTALLED_APPS = [
     'artmanager',
     'sketcher',
 
+    # django-wiki requirements
     'django.contrib.sites.apps.SitesConfig',
-#    'django.contrib.humanize.apps.HumanizeConfig',
+    'django.contrib.humanize.apps.HumanizeConfig',
     'django_nyt.apps.DjangoNytConfig',
     'mptt',
     'sekizai',
