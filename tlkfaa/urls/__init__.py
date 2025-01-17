@@ -220,15 +220,15 @@ urlpatterns = [
 
 #    re_path(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 
-    re_path(r'^fave/(?P<fave_type>[a-z]+)/(?P<object_id>[0-9]+)/$', fanart_views.ToggleFaveView.as_view(), name='toggle-fave'),
-    re_path(r'^visible/(?P<artist_id>[0-9]+)/$', fanart_views.ToggleVisibleView.as_view(), name='toggle-visible'),
-    re_path(r'^block/(?P<user_id>[0-9]+)/$', fanart_views.ToggleBlockView.as_view(), name='toggle-block'),
+    path('fave/<str:fave_type>/<str:object_id>/', fanart_views.ToggleFaveView.as_view(), name='toggle-fave'),
+    path('visible/<int:artist_id>/', fanart_views.ToggleVisibleView.as_view(), name='toggle-visible'),
+    path('block/<int:user_id>/', fanart_views.ToggleBlockView.as_view(), name='toggle-block'),
     path('flag_spam/<int:comment_id>/', fanart_views.FlagSpamView.as_view(), name='flag-spam'),
 
-    re_path(r'^tooltip/picture/(?P<picture_id>[0-9]+)/$', fanart_views.PictureTooltipView.as_view(), name='picture-tooltip'),
-    re_path(r'^tooltip/coloring_picture/(?P<coloring_picture_id>[0-9]+)/$', fanart_views.ColoringPictureTooltipView.as_view(), name='coloring-picture-tooltip'),
-    re_path(r'^tooltip/character/(?P<character_id>[0-9]+)/$', fanart_views.CharacterTooltipView.as_view(), name='character-tooltip'),
-    re_path(r'^tooltip/msg/(?P<msg_id>[0-9]+)/$', fanart_views.MessageTooltipView.as_view(), name='message-tooltip'),
+    path('tooltip/picture/<int:picture_id>/', fanart_views.PictureTooltipView.as_view(), name='picture-tooltip'),
+    path('tooltip/coloring_picture/<int:coloring_picture_id>/', fanart_views.ColoringPictureTooltipView.as_view(), name='coloring-picture-tooltip'),
+    path('tooltip/character/<int:character_id>/', fanart_views.CharacterTooltipView.as_view(), name='character-tooltip'),
+    path('tooltip/msg/<int:msg_id>/', fanart_views.MessageTooltipView.as_view(), name='message-tooltip'),
 
     re_path(r'^pick/picture/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
     re_path(r'^pick/character/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
