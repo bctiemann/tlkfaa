@@ -1,3 +1,7 @@
+import logging
+import os
+from datetime import timedelta
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -24,17 +28,6 @@ from fanart import views as fanart_views
 from trading_tree import forms
 from trading_tree.models import Offer, Claim
 
-from fanart.response import JSONResponse, response_mimetype
-from fanart.serialize import serialize
-
-from datetime import timedelta
-import uuid
-import json
-import random
-import mimetypes
-import os
-
-import logging
 logger = logging.getLogger(__name__)
 
 THREE_MONTHS = 90
@@ -43,41 +36,92 @@ ONE_MONTH = 180
 
 class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
     template_name = 'trading_tree/trading_tree.html'
+    offer_type = None
 
-    def get_context_data(self, **kwargs):
-        context = super(TradingTreeView, self).get_context_data(**kwargs)
+    def get_offer(self):
+        offer_id = self.request.GET.get('offer_id', None)
+        if offer_id:
+            return get_object_or_404(Offer, pk=offer_id)
 
-        offer_type = kwargs.get('offer_type')
-        # if not offer_type:
-        #     offer_type = 'icon'
+    def get_claims_for_offer(self):
+        offer = self.get_offer()
+        if self.request.user.is_authenticated:
+            return offer.claim_set.filter(user=self.request.user)
 
-        if offer_type:
-            offer_id = self.request.GET.get('offer_id', None)
-            if offer_id:
-                context['offer'] = get_object_or_404(Offer, pk=offer_id)
-                if self.request.user.is_authenticated:
-                    context['my_claims_for_offer'] = context['offer'].claim_set.filter(user=self.request.user)
+    def get_offers(self):
+        three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
+        offers = Offer.objects.filter(
+            is_visible=True, is_active=True, type=self.offer_type, date_posted__gt=three_months_ago
+        ).order_by('-date_posted')
+        offers = offers.filter(artist__is_active=True)
+        return offers
 
-            three_months_ago = timezone.now() - timedelta(days=THREE_MONTHS)
-            context['offers'] = Offer.objects.filter(is_visible=True, is_active=True, type=offer_type, date_posted__gt=three_months_ago).order_by('-date_posted')
-            context['offers'] = context['offers'].filter(artist__is_active=True)
+    @property
+    def show_for_you(self):
+        raise NotImplementedError
 
-            if self.request.user.is_authenticated and ((offer_type == 'icon' and self.request.user.icon_claims_ready.exists()) or (offer_type == 'adoptable' and self.request.user.adoptable_claims_ready.exists())):
-                context['show_for_you'] = True
-                if offer_type == 'icon':
-                    context['claims_for_you'] = self.request.user.icon_claims_ready.all().order_by('-date_posted')
-                elif offer_type == 'adoptable':
-                    context['claims_for_you'] = self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
+    @property
+    def claims_for_you(self):
+        raise NotImplementedError
 
-            context['offer_type'] = offer_type
-        else:
-            context['gift_pictures'] = models.GiftPicture.objects.order_by('-date_accepted').filter(
-                is_active=True,
-                picture__is_public=True,
-                picture__date_deleted__isnull=True
-            )[0:50]
+    def get_context_data_for_offer_type(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        offer = self.get_offer()
+        context['offer'] = offer
+        if offer:
+            context['my_claims_for_offer'] = self.get_claims_for_offer()
+
+        context['offers'] = self.get_offers()
+
+        if self.show_for_you:
+            context['show_for_you'] = True
+            context['claims_for_you'] = self.claims_for_you
+
+        context['offer_type'] = self.offer_type
 
         return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['gift_pictures'] = models.GiftPicture.objects.order_by('-date_accepted').filter(
+            is_active=True,
+            picture__is_public=True,
+            picture__date_deleted__isnull=True
+        )[0:50]
+
+        return context
+
+
+class TradingTreeIconsView(TradingTreeView):
+    offer_type = 'icon'
+
+    @property
+    def show_for_you(self):
+        return self.request.user.is_authenticated and self.request.user.icon_claims_ready.exists()
+
+    @property
+    def claims_for_you(self):
+        return self.request.user.icon_claims_ready.all().order_by('-date_posted')
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data_for_offer_type(**kwargs)
+
+
+class TradingTreeAdoptablesView(TradingTreeView):
+    offer_type = 'adoptable'
+
+    @property
+    def show_for_you(self):
+        return self.request.user.is_authenticated and self.request.user.adoptable_claims_ready.exists()
+
+    @property
+    def claims_for_you(self):
+        return self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data_for_offer_type(**kwargs)
+
 
 
 class PostClaimView(LoginRequiredMixin, CreateView):

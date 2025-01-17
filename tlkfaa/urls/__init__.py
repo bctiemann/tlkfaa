@@ -1,8 +1,7 @@
-from django.urls import include, re_path
+from django.urls import include, path, re_path, register_converter
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
-from django.urls import path, register_converter
 
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
@@ -39,21 +38,22 @@ urlpatterns = [
     path('admin/approve.jsp', RedirectView.as_view(pattern_name='approve', permanent=True), name='approve-redirect'),
     path('admin/approve/', include('tlkfaa.urls.approvals')),
 
-    re_path(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
-    re_path(
-        r'^login/$',
-        fanart_views.LoginView.as_view(),
-        name='login',
-    ),
-    re_path(r'^logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    path('login/', fanart_views.LoginView.as_view(), name='login',),
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 
-    re_path(r'^$', fanart_views.HomeView.as_view(), name='home'),
+    path('', fanart_views.HomeView.as_view(), name='home'),
     # re_path(r'^Artists/(?:(?P<list>({0}))/)?$'.format('|'.join(artists_tabs)), fanart_views.ArtistsView.as_view(), name='artists'),
     # re_path(r'^Artwork/(?:(?P<list>({0}))/)?$'.format('|'.join(artwork_tabs)), fanart_views.ArtworkView.as_view(), name='artwork'),
-#    re_path(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
-#     re_path(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
-    re_path(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
+    # re_path(r'^Characters/(?:(?P<character_id>[0-9]+)/)?$', fanart_views.CharactersView.as_view(), name='characters'),
+    # re_path(r'^Characters/(?:(?P<list>({0}))/)?$'.format('|'.join(characters_tabs)), fanart_views.CharactersView.as_view(), name='characters'),
+
+    # re_path(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
+    path('TradingTree/', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
+    path('TradingTree/icons/', trading_tree_views.TradingTreeIconsView.as_view(offer_type='icon'), name='trading-tree-icons'),
+    path('TradingTree/adoptables/', trading_tree_views.TradingTreeAdoptablesView.as_view(offer_type='adoptable'), name='trading-tree-adoptables'),
+
     re_path(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     re_path(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
     # re_path(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),

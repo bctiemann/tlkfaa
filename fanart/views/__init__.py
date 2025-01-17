@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.contrib.auth import (
     login, authenticate, get_user_model, password_validation,
 )
-from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -70,7 +70,7 @@ ONE_MONTH = 30
 #     template_name = '403.html'
 
 
-class LoginView(LoginView):
+class LoginView(BaseLoginView):
     form_class = forms.LoginForm
 
     def get(self, request, *args, **kwargs):
