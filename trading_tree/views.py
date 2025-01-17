@@ -3,24 +3,18 @@ import os
 from datetime import timedelta
 
 from django.conf import settings
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
-from django.contrib.auth.views import LoginView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, OuterRef, Subquery, Min, Max, Count
-from django.db import connection
-from django.forms import ValidationError
+from django.db.models import Q
 
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from fanart import models
@@ -98,9 +92,6 @@ class TradingTreeOfferTypeView(TradingTreeView):
     def dispatch(self, request, *args, **kwargs):
         self.offer_type = self.kwargs['offer_type']
         return super().dispatch(request, *args, **kwargs)
-
-    def get_offer_type(self):
-        return self.kwargs['offer_type']
 
     @property
     def show_for_you(self):
@@ -324,4 +315,3 @@ class OfferRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         offer = get_object_or_404(Offer, pk=kwargs.get('offer_id'))
         return offer.url
-
