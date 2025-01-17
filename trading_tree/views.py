@@ -93,35 +93,31 @@ class TradingTreeView(fanart_views.UserPaneMixin, TemplateView):
         return context
 
 
-class TradingTreeIconsView(TradingTreeView):
-    offer_type = 'icon'
+class TradingTreeOfferTypeView(TradingTreeView):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.offer_type = self.kwargs['offer_type']
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_offer_type(self):
+        return self.kwargs['offer_type']
 
     @property
     def show_for_you(self):
-        return self.request.user.is_authenticated and self.request.user.icon_claims_ready.exists()
+        if self.offer_type == 'icon':
+            return self.request.user.is_authenticated and self.request.user.icon_claims_ready.exists()
+        elif self.offer_type == 'adoptable':
+            return self.request.user.is_authenticated and self.request.user.adoptable_claims_ready.exists()
 
     @property
     def claims_for_you(self):
-        return self.request.user.icon_claims_ready.all().order_by('-date_posted')
+        if self.offer_type == 'icon':
+            return self.request.user.icon_claims_ready.all().order_by('-date_posted')
+        elif self.offer_type == 'adoptable':
+            return self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
 
     def get_context_data(self, **kwargs):
         return super().get_context_data_for_offer_type(**kwargs)
-
-
-class TradingTreeAdoptablesView(TradingTreeView):
-    offer_type = 'adoptable'
-
-    @property
-    def show_for_you(self):
-        return self.request.user.is_authenticated and self.request.user.adoptable_claims_ready.exists()
-
-    @property
-    def claims_for_you(self):
-        return self.request.user.adoptable_claims_ready.all().order_by('-date_posted')
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data_for_offer_type(**kwargs)
-
 
 
 class PostClaimView(LoginRequiredMixin, CreateView):

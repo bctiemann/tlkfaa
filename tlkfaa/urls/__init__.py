@@ -51,8 +51,7 @@ urlpatterns = [
 
     # re_path(r'^TradingTree/(?:(?P<offer_type>(icon|adoptable))/)?$', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
     path('TradingTree/', trading_tree_views.TradingTreeView.as_view(), name='trading-tree'),
-    path('TradingTree/icons/', trading_tree_views.TradingTreeIconsView.as_view(offer_type='icon'), name='trading-tree-icons'),
-    path('TradingTree/adoptables/', trading_tree_views.TradingTreeAdoptablesView.as_view(offer_type='adoptable'), name='trading-tree-adoptables'),
+    path('TradingTree/<str:offer_type>/', trading_tree_views.TradingTreeOfferTypeView.as_view(), name='trading-tree'),
 
     re_path(r'^ColoringCave/(?:(?P<coloring_base_id>[0-9]+)/)?$', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     re_path(r'^ColoringCave/artist/(?P<dir_name>[^/]+)?$', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),

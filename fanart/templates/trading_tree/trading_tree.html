@@ -27,8 +27,8 @@
 
 <div class="selector">
     <a class="{% if not offer_type %}selected{% endif %}" href="{% url "trading-tree" %}">ArtWall exchanges</a>
-    <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree-icons" %}">icons</a>
-    <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree-adoptables" %}">adoptables</a>
+    <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree" offer_type="icon" %}">icons</a>
+    <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a>
 </div>
 
 {% if offer %}
