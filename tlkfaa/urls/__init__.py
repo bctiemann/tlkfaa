@@ -100,6 +100,7 @@ urlpatterns = [
     # path('Artists/<str:dir_name>/<str:filename>', fanart_views.PictureRedirectByPathView.as_view(), name='picture-redirect'),
     path('Artists/<str:dir_name>/', fanart_views.ArtistView.as_view(), name='artist'),
     path('Artists/<str:dir_name>/Gallery/', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
+    path('Artists/<str:dir_name>/Gallery/<str:subview>/', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     path('Artists/<str:dir_name>/ArtWall/', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
     # re_path(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
 
