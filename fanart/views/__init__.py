@@ -1039,11 +1039,6 @@ class ArtistGalleryView(ArtistView):
         except ValueError:
             raise Http404
 
-        subview = kwargs.get('subview', None)
-        if subview:
-            context['show_folders'] = False
-        else:
-            context['show_folders'] = True
         context['list'] = self.request.GET.get('list', 'folder')
 
         if context['list'] == 'new' and self.request.user.is_authenticated:

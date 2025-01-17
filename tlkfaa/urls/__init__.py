@@ -97,9 +97,10 @@ urlpatterns = [
     path('Artists/random/', artists_views.ArtistsView.as_view(list_type='random'), name='artists-by-random'),
     path('Artists/search/', artists_views.ArtistsView.as_view(list_type='search'), name='artists-by-search'),
 
-    re_path(r'^Artists/(?P<dir_name>[^/]+)/$', fanart_views.ArtistView.as_view(), name='artist'),
-    re_path(r'^Artists/(?P<dir_name>[^/]+)/Gallery/(?:(?P<subview>[a-z]+)/)?$', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
-    re_path(r'^Artists/(?P<dir_name>[^/]+)/ArtWall/$', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
+    path('Artists/<str:dir_name>/', fanart_views.ArtistView.as_view(), name='artist'),
+    path('Artists/<str:dir_name>/<str:filename>', fanart_views.PictureRedirectByPathView.as_view(), name='picture-redirect'),
+    path('Artists/<str:dir_name>/Gallery/', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
+    path('Artists/<str:dir_name>/ArtWall/', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
     # re_path(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
 
     path('artists/list/newest/', artists_views.ArtistsListByNewestView.as_view(), name='artists-list-by-newest'),
@@ -169,7 +170,6 @@ urlpatterns = [
 
     re_path(r'^Artwork/offers/(?P<offer_id>[0-9]+)\.(?P<ext>[a-z]+)$', trading_tree_views.OfferRedirectView.as_view(), name='offer-redirect'),
     re_path(r'^Picture.jsp$', fanart_views.PictureRedirectByIDView.as_view(), name='picture-redirect'),
-    re_path(r'^Artists/(?P<dir_name>[^/]+)/(?P<filename>[^/]+)$', fanart_views.PictureRedirectByPathView.as_view(), name='picture-redirect'),
 
     re_path(r'^picture/(?P<picture_id>[0-9]+)/fans/$', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     re_path(r'^picture/(?P<picture_id>[0-9]+)/', fanart_views.PictureView.as_view(), name='picture'),

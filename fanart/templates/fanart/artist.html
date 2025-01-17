@@ -118,7 +118,7 @@
 
 				</div>
 				<div class="viewmoretile">
-					<a href="{% url "artist-gallery" dir_name=artist.dir_name subview="bydate" %}">
+					<a href="{% url "artist-gallery" dir_name=artist.dir_name %}?list=bydate">
 						View more...
 					</a>
 				</div>
@@ -150,7 +150,7 @@
 
 					</div>
 					<div class="viewmoretile">
-						<a href="{% url "artist-gallery" dir_name=artist.dir_name subview="popular" %}">
+						<a href="{% url "artist-gallery" dir_name=artist.dir_name %}?list=popular">
 							View more...
 						</a>
 					</div>
