@@ -41,17 +41,18 @@ logger = logging.getLogger(__name__)
 
 class PMsView(LoginRequiredMixin, TemplateView):
     template_name = 'includes/private_messages.html'
+    box = None
 
     def get_context_data(self, *args, **kwargs):
         context = super(PMsView, self).get_context_data(*args, **kwargs)
 
-        box = kwargs.get('box', 'in')
+        # box = kwargs.get('box', 'in')
         pms = None
-        if box == 'in':
+        if self.box == 'in':
              pms = self.request.user.pms_received.filter(deleted_by_recipient=False)
-        elif box == 'out':
+        elif self.box == 'out':
              pms = self.request.user.pms_sent.filter(deleted_by_sender=False)
-        elif box == 'trash':
+        elif self.box == 'trash':
              pms = self.request.user.pms_sent.filter(deleted_by_sender=True).union(self.request.user.pms_received.filter(deleted_by_recipient=True))
 
         pms = pms.order_by('-date_sent')
@@ -66,7 +67,7 @@ class PMsView(LoginRequiredMixin, TemplateView):
         except EmptyPage:
             pms_page = context['pms_paginator'].page(1)
 
-        context['box'] = box
+        context['box'] = self.box
         context['pms'] = pms_page
         if self.request.GET.get('showstatus'):
             context['showstatus'] = True
@@ -182,24 +183,25 @@ class PMUserView(LoginRequiredMixin, TemplateView):
 
 
 class PMsMoveView(LoginRequiredMixin, APIView):
+    action = None
 
-    def post(self, request, action):
-        response = {'success': False, 'action': action, 'pm_ids': request.POST.get('pm_ids')}
-        logger.info(action)
+    def post(self, request):
+        response = {'success': False, 'action': self.action, 'pm_ids': request.POST.get('pm_ids')}
+        logger.info(self.action)
         for pm_id in (request.POST.get('pm_ids')).split(','):
             if not pm_id:
                 continue
             try:
                 pm = PrivateMessage.objects.get((Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=pm_id)
                 logger.info(pm)
-                if action == 'delete':
+                if self.action == 'delete':
                     if pm.sender == request.user:
                         logger.info('deleting sender')
                         pm.deleted_by_sender = True
                     elif pm.recipient == request.user:
                         logger.info('deleting recipient')
                         pm.deleted_by_recipient = True
-                elif action == 'restore':
+                elif self.action == 'restore':
                     if pm.sender == request.user:
                         pm.deleted_by_sender = False
                     elif pm.recipient == request.user:
