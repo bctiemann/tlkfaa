@@ -3,7 +3,7 @@ import hashlib
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse, Http404, HttpResponseForbidden, HttpResponseNotAllowed
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseRedirect, HttpResponseNotAllowed
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -11,9 +11,11 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView, FormMixin
 from django.utils import timezone
 from django.contrib.auth import (
-    login, authenticate, get_user_model, password_validation,
+    login, authenticate, get_user_model, password_validation, logout
 )
-from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView
+from django.contrib.auth.views import (
+    LoginView as BaseLoginView, LogoutView as BaseLogoutView, PasswordResetView, PasswordResetConfirmView
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -83,6 +85,25 @@ class LoginView(BaseLoginView):
     def form_invalid(self, form):
         self.request.session['login_failed'] = True
         return redirect('home')
+
+
+class LogoutView(BaseLogoutView):
+
+    http_method_names = ["get", "post", "options"]
+
+    def dispatch(self, request, *args, **kwargs):
+        logger.info(f'{request.user} logged out.')
+        return super().dispatch(request, *args, **kwargs)
+
+    # TODO: Make this a POST from all templates and eliminate this method
+    def get(self, request, *args, **kwargs):
+        """Logout may be done via POST."""
+        logout(request)
+        redirect_to = self.get_success_url()
+        if redirect_to != request.get_full_path():
+            # Redirect to target page once the session has been cleared.
+            return HttpResponseRedirect(redirect_to)
+        return super().get(request, *args, **kwargs)
 
 
 class UserPaneMixin(RatelimitMixin):
