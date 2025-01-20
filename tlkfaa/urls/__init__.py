@@ -225,10 +225,10 @@ urlpatterns = [
     path('claim/<int:claim_id>/choose/', trading_tree_views.ChooseAdopterView.as_view(), name='choose-adopter'),
     path('claim/<int:claim_id>/remove/', trading_tree_views.RemoveClaimView.as_view(), name='remove-claim'),
 
-    re_path(r'^coloring/(?P<coloring_base_id>[0-9]+)/$', coloring_cave_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
-    re_path(r'^coloring/(?P<coloring_base_id>[0-9]+)/upload/$', coloring_cave_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),
-    re_path(r'^coloring/(?P<coloring_base_id>[0-9]+)/status/$', coloring_cave_views.ColoringPictureStatusView.as_view(), name='coloring-picture-status'),
-    re_path(r'^coloring/(?P<coloring_picture_id>[0-9]+)/remove/$', coloring_cave_views.RemoveColoringPictureView.as_view(), name='remove-coloring-picture'),
+    path('coloring/<int:coloring_base_id>/', coloring_cave_views.ColoringPicturesView.as_view(), name='coloring-pictures'),
+    path('coloring/<int:coloring_base_id>/upload/', coloring_cave_views.UploadColoringPictureView.as_view(), name='upload-coloring-picture'),
+    path('coloring/<int:coloring_base_id>/status/', coloring_cave_views.ColoringPictureStatusView.as_view(), name='coloring-picture-status'),
+    path('coloring/<int:coloring_picture_id>/remove/', coloring_cave_views.RemoveColoringPictureView.as_view(), name='remove-coloring-picture'),
 
 #    re_path(r'^upload/$', fanart_views.UploadPictureView.as_view(), name='upload-picture'),
 
@@ -242,8 +242,8 @@ urlpatterns = [
     path('tooltip/character/<int:character_id>/', fanart_views.CharacterTooltipView.as_view(), name='character-tooltip'),
     path('tooltip/msg/<int:msg_id>/', fanart_views.MessageTooltipView.as_view(), name='message-tooltip'),
 
-    re_path(r'^pick/picture/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
-    re_path(r'^pick/character/(?:(?P<target>[a-z_-]+)/)?$', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
+    path('pick/picture/<str:target>/', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
+    path('pick/character/<str:target>/', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
 
     re_path(r'^pms/(?P<box>(in|out|trash))/$', pms_views.PMsView.as_view(), name='pms'),
     re_path(r'^pms/(?P<action>(delete|restore))/$', pms_views.PMsMoveView.as_view(), name='pms-move'),
@@ -253,28 +253,28 @@ urlpatterns = [
     re_path(r'^pm/create/$', pms_views.PMCreateView.as_view(), name='pm-create'),
     re_path(r'^pm/success/(?P<pm_id>[0-9]+)/$', pms_views.PMSuccessView.as_view(), name='pm-success'),
 
-    re_path(r'^admin_announcements/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
-    re_path(r'^bulletins/(?P<count>[0-9]+)/(?P<start>[0-9]+)/$', fanart_views.BulletinsView.as_view(), name='bulletins'),
-    re_path(r'^bulletin/(?P<bulletin_id>[0-9]+)/$', fanart_views.BulletinView.as_view(), name='bulletin'),
-    re_path(r'^bulletin/(?P<bulletin_id>[0-9]+)/reply/$', fanart_views.PostBulletinReplyView.as_view(), name='post-bulletin-reply'),
+    path('admin_announcements/<int:count>/<int:start>/', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
+    path('bulletins/<int:count>/<int:start>/', fanart_views.BulletinsView.as_view(), name='bulletins'),
+    path('bulletin/<int:bulletin_id>/', fanart_views.BulletinView.as_view(), name='bulletin'),
+    path('bulletin/<int:bulletin_id>/reply/', fanart_views.PostBulletinReplyView.as_view(), name='post-bulletin-reply'),
 
-    re_path(r'^aotm/vote/$', fanart_views.AotmVoteView.as_view(), name='aotm-vote'),
-    re_path(r'^aotm/vote/form/$', fanart_views.AotmVoteFormView.as_view(), name='aotm-vote-form'),
+    path('aotm/vote/', fanart_views.AotmVoteView.as_view(), name='aotm-vote'),
+    path('aotm/vote/form/', fanart_views.AotmVoteFormView.as_view(), name='aotm-vote-form'),
 
-    re_path(r'^social_media/identities/$', fanart_views.SocialMediaIdentitiesView.as_view(), name='social-media-identities'),
-    re_path(r'^social_media/add/$', fanart_views.AddSocialMediaIdentityView.as_view(), name='add-social-media-identity'),
-    re_path(r'^social_media/(?P<identity_id>[0-9]+)/remove/$', fanart_views.RemoveSocialMediaIdentityView.as_view(), name='remove-social-media-identity'),
+    path('social_media/identities/', fanart_views.SocialMediaIdentitiesView.as_view(), name='social-media-identities'),
+    path('social_media/add/', fanart_views.AddSocialMediaIdentityView.as_view(), name='add-social-media-identity'),
+    path('social_media/<int:identity_id>/remove/', fanart_views.RemoveSocialMediaIdentityView.as_view(), name='remove-social-media-identity'),
 
-    re_path(r'^profile-pic/upload/$', fanart_views.UploadProfilePicView.as_view(), name='upload-profile-pic'),
-    re_path(r'^profile-pic/upload/status/$', fanart_views.ProfilePicStatusView.as_view(), name='profile-pic-status'),
-    re_path(r'^profile-pic/remove/$', fanart_views.RemoveProfilePicView.as_view(), name='remove-profile-pic'),
+    path('profile-pic/upload/', fanart_views.UploadProfilePicView.as_view(), name='upload-profile-pic'),
+    path('profile-pic/upload/status/', fanart_views.ProfilePicStatusView.as_view(), name='profile-pic-status'),
+    path('profile-pic/remove/', fanart_views.RemoveProfilePicView.as_view(), name='remove-profile-pic'),
 
-    re_path(r'^banner/upload/$', fanart_views.UploadBannerView.as_view(), name='upload-banner'),
-    re_path(r'^banner/remove/$', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
+    path('banner/upload/', fanart_views.UploadBannerView.as_view(), name='upload-banner'),
+    path('banner/remove/', fanart_views.RemoveBannerView.as_view(), name='remove-banner'),
 
-    re_path(r'^browser-stats/$', fanart_views.BrowserStatsView.as_view(), name='browser-stats'),
+    path('browser-stats/', fanart_views.BrowserStatsView.as_view(), name='browser-stats'),
 
-    re_path(r'^ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
+    path('ArtManager/', include(('artmanager.urls', 'artmanager'), namespace='artmanager')),
 
     path('wiki/notifications/', include('django_nyt.urls')),
     path('wiki/', include('wiki.urls')),

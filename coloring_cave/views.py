@@ -83,6 +83,7 @@ class ColoringPicturesView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(ColoringPicturesView, self).get_context_data(*args, **kwargs)
         context['coloring_base'] = self.object
+        context['hide_cc_link'] = True
         return context
 
 
@@ -112,7 +113,8 @@ class UploadColoringPictureView(CreateView):
 
 #        self.object.filename = self.request.FILES['picture'].name
 #        self.object.date_uploaded = timezone.now()
-        super(UploadColoringPictureView, self).form_valid(form)
+        super().form_valid(form)
+        response = {'success': True}
 
         return JsonResponse(response)
 
@@ -120,6 +122,7 @@ class UploadColoringPictureView(CreateView):
     def get_context_data(self, *args, **kwargs):
         context = super(UploadColoringPictureView, self).get_context_data(*args, **kwargs)
         context['coloring_base'] = self.object
+        context['hide_cc_link'] = True
         return context
 
 
