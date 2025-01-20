@@ -91,8 +91,18 @@ MIDDLEWARE = [
     'tlkfaa.middleware.XForwardedForMiddleware',
 ]
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 #STATICFILES_STORAGE = 'fanart.storage.ManifestStaticFilesStorageNonStrict'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
+
 
 ROOT_URLCONF = 'tlkfaa.urls'
 
