@@ -186,6 +186,7 @@ urlpatterns = [
 
     path('picture/<int:picture_id>/fans/', fanart_views.PictureFansView.as_view(), name='picture-fans'),
     path('picture/<int:picture_id>/', fanart_views.PictureView.as_view(), name='picture'),
+    path('picture/<int:picture_id>/<filename:filename>', fanart_views.PictureView.as_view(), name='picture'),
     path('character/<int:character_id>/', characters_views.CharacterView.as_view(), name='character'),
 
     path('comments/<int:picture_id>/', fanart_views.CommentsView.as_view(), name='comments'),
