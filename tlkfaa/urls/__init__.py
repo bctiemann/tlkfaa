@@ -244,7 +244,9 @@ urlpatterns = [
     path('tooltip/character/<int:character_id>/', fanart_views.CharacterTooltipView.as_view(), name='character-tooltip'),
     path('tooltip/msg/<int:msg_id>/', fanart_views.MessageTooltipView.as_view(), name='message-tooltip'),
 
+    path('pick/picture/', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
     path('pick/picture/<str:target>/', fanart_views.PicturePickerView.as_view(), name='picture-picker'),
+    path('pick/character/', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
     path('pick/character/<str:target>/', fanart_views.CharacterPickerView.as_view(), name='character-picker'),
 
     path('pms/in/', pms_views.PMsView.as_view(box='in'), name='pms-in'),
@@ -254,6 +256,7 @@ urlpatterns = [
     path('pms/restore/', pms_views.PMsMoveView.as_view(action='restore'), name='pms-move-restore'),
     path('pm/<int:pm_id>/', pms_views.PMView.as_view(), name='pm'),
     path('pm/shout/<int:shout_id>/', pms_views.PMShoutView.as_view(), name='pm-shout'),
+    path('pm/user/', pms_views.PMUserView.as_view(), name='pm-user'),
     path('pm/user/<int:recipient_id>/', pms_views.PMUserView.as_view(), name='pm-user'),
     path('pm/create/', pms_views.PMCreateView.as_view(), name='pm-create'),
     path('pm/success/<int:pm_id>/', pms_views.PMSuccessView.as_view(), name='pm-success'),

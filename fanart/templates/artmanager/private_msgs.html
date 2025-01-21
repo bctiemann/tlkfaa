@@ -7,9 +7,9 @@
 <h2>Private Messages</h2>
 
 <div class="selector">
-    <a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="in" %}">Inbox</a>
-    <a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="out" %}">Sent</a>
-    <a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="{% url "artmanager:private-msgs" box="trash" %}">Trash</a>
+    <a id="sel_in" class="{% if box == "in" %}selected{% endif %}" href="{% url "artmanager:private-msgs-in" %}">Inbox</a>
+    <a id="sel_out" class="{% if box == "out" %}selected{% endif %}" href="{% url "artmanager:private-msgs-out" %}">Sent</a>
+    <a id="sel_trash" class="{% if box == "trash" %}selected{% endif %}" href="{% url "artmanager:private-msgs-trash" %}">Trash</a>
 </div>
 
 {% if not user.is_paid %}

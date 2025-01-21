@@ -810,6 +810,8 @@ class SetExamplePictureView(APIView):
         return Response(response)
 
 
+# TODO: This view only GETs a list of characters by ID from the taglist; it ignores <obj> from the path.
+#  Simplify by removing <obj> dependency
 class TagCharactersView(LoginRequiredMixin, TemplateView):
     template_name = 'artmanager/tag_characters.html'
 
@@ -1136,6 +1138,7 @@ class BannerPreviewView(FormView):
 
 class PrivateMessagesView(ArtManagerPaneView):
     template_name = 'artmanager/private_msgs.html'
+    box = 'in'
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'private-msgs'
@@ -1145,17 +1148,17 @@ class PrivateMessagesView(ArtManagerPaneView):
         context = super(PrivateMessagesView, self).get_context_data(**kwargs)
 
         context['pms'] = self.request.user.pms_received.all()
-        box = kwargs.get('box') or 'in'
+        # box = kwargs.get('box') or 'in'
         pm_id = kwargs.get('pm_id', None)
         partner = None
         if pm_id:
             pm = get_object_or_404(PrivateMessage, (Q(sender=self.request.user) | Q(recipient=self.request.user)), pk=pm_id)
             partner = pm.sender
             if pm.sender == self.request.user:
-                box = 'out'
+                self.box = 'out'
                 partner = pm.recipient
             if (pm.sender == self.request.user and pm.deleted_by_sender) or (pm.recipient == self.request.user and pm.deleted_by_recipient):
-                box = 'trash'
+                self.box = 'trash'
             context['pm'] = pm
 
             for thread_pm in pm.thread:
@@ -1163,7 +1166,7 @@ class PrivateMessagesView(ArtManagerPaneView):
                     thread_pm.date_viewed = timezone.now()
                     thread_pm.save()
 
-        context['box'] = box
+        context['box'] = self.box
         recipient_id = kwargs.get('recipient_id', None)
         if recipient_id:
             context['recipient'] = get_object_or_404(models.User, pk=recipient_id)
@@ -1179,6 +1182,11 @@ class PrivateMessagesView(ArtManagerPaneView):
 
 class TradingTreeView(ArtManagerPaneView):
     template_name = 'artmanager/trading_tree.html'
+    offer_type = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.offer_type = self.kwargs.get('offer_type') or 'icon'
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'trading-tree'
@@ -1187,16 +1195,12 @@ class TradingTreeView(ArtManagerPaneView):
     def get_context_data(self, **kwargs):
         context = super(TradingTreeView, self).get_context_data(**kwargs)
 
-        offer_type = kwargs.get('offer_type')
-        if not offer_type:
-            offer_type = 'icon'
-
-        if offer_type == 'icon':
+        if self.offer_type == 'icon':
             context['offers'] = self.request.user.active_icon_offers
-        elif offer_type == 'adoptable':
+        elif self.offer_type == 'adoptable':
             context['offers'] = self.request.user.active_adoptable_offers
 
-        context['offer_type'] = offer_type
+        context['offer_type'] = self.offer_type
 
         offer_id = self.request.GET.get('offer_id', None)
         if offer_id:
@@ -1211,6 +1215,11 @@ class TradingTreeView(ArtManagerPaneView):
 
 class TradingTreeForYouView(ArtManagerPaneView):
     template_name = 'artmanager/trading_tree_for_you.html'
+    offer_type = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.offer_type = self.kwargs.get('offer_type') or 'icon'
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         request.session['am_page'] = 'trading-tree'
@@ -1219,16 +1228,12 @@ class TradingTreeForYouView(ArtManagerPaneView):
     def get_context_data(self, **kwargs):
         context = super(TradingTreeForYouView, self).get_context_data(**kwargs)
 
-        offer_type = kwargs.get('offer_type')
-        if not offer_type:
-            offer_type = 'icon'
-
-        if offer_type == 'icon':
+        if self.offer_type == 'icon':
             context['claims_for_you'] = self.request.user.icon_claims_received.all()
-        elif offer_type == 'adoptable':
+        elif self.offer_type == 'adoptable':
             context['claims_for_you'] = self.request.user.adoptable_claims_received.all()
 
-        context['offer_type'] = offer_type
+        context['offer_type'] = self.offer_type
 
         return context
 

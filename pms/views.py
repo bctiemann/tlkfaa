@@ -139,7 +139,7 @@ class PMCreateView(LoginRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse('artmanager:private-msgs', kwargs={'box': 'out'})
+        return reverse('artmanager:private-msgs-out')
 
 
 class PMSuccessView(PMView):
