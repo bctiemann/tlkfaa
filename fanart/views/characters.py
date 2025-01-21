@@ -221,7 +221,7 @@ class CharacterView(UserPaneMixin, TemplateView):
         context = super(CharacterView, self).get_context_data(**kwargs)
 
         context['character'] = get_object_or_404(Character, pk=kwargs.get('character_id', None))
-        logger.info('{0} viewing character {1} via {2}'.format(self.request.user, context['character'], self.template_name))
+        logger.debug('{0} viewing character {1} via {2}'.format(self.request.user, context['character'], self.template_name))
         other_characters = self.request.GET.get('othercharacters', None)
         character_list = [str(context['character'].id)]
         if other_characters:
