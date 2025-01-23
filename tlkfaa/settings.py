@@ -229,6 +229,11 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django.request': {
+            'handlers': ['logfile'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         '': {
             'handlers': ['logfile'],
             'level': 'INFO',
