@@ -36,6 +36,12 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.User, UserAdmin)
 
 
+class BannerAdmin(admin.ModelAdmin):
+    search_fields = ('picture',)
+
+admin.site.register(fanart_models.Banner, BannerAdmin)
+
+
 class PictureYearFilter(admin.SimpleListFilter):
     title = 'year'
     parameter_name = 'year'
