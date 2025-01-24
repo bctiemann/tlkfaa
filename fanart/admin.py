@@ -18,7 +18,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'num_pictures', 'date_joined',)
     search_fields = ('username', 'email',)
     readonly_fields = ()
-    autocomplete_fields = ('example_pic',)
+    autocomplete_fields = ('example_pic', 'banner',)
     user_id_for_formfield = None
 
     def get_form(self, request, obj=None, **kwargs):
