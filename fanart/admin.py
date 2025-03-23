@@ -194,7 +194,7 @@ admin.site.register(fanart_models.SpamFlag, SpamFlagAdmin)
 
 class CharacterAdmin(admin.ModelAdmin):
     list_display = ('name', 'creator', 'owner', 'date_created',)
-    list_filter = ()
+    list_filter = ('is_canon',)
     search_fields = ('name', 'owner__username')
     readonly_fields = ('creator', 'owner', 'adopted_from', 'profile_picture', 'profile_coloring_picture',)
     user_id_for_formfield = None
