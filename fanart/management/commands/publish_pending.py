@@ -155,3 +155,6 @@ class Command(BaseCommand):
             # delete pending
             pending.delete()
             print(f'Pending {pending} deleted.')
+
+            pending.artist.refresh_from_db()
+            print('last_upload:', pending.artist.last_upload)
