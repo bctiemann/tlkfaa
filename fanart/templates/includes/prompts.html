@@ -1,0 +1,19 @@
+{% load bbcode_tags %}
+
+{% for prompt in prompts %}
+
+<div class="bulletinlink group" prompt_id="{{ prompt.id }}">
+    <div class="bulletin-title-block">
+        <div class="bulletindate">{{ prompt.created_at|date:"SHORT_DATE_FORMAT" }}</div>
+        <p class="bulletintitle">{{ prompt.title }}</p>
+        <div class="bulletinname"><a href="{% url "artist" dir_name=prompt.creator.dir_name %}">{{ prompt.creator.username }}</a></div>
+    </div>
+
+    <div class="prompt-picture-icons">
+        {% for picture in prompt.pictures.all reversed %}
+            <img src="{{ picture.thumbnail_url }}" />
+        {% endfor %}
+    </div>
+</div>
+
+{% endfor %}

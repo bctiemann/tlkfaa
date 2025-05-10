@@ -173,6 +173,25 @@ class ContestForm(forms.ModelForm):
         fields = ['title', 'description', 'rules']
 
 
+class PromptForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Prompt'}))
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Description (Optional)'}),
+        required=False,
+    )
+
+    class Meta:
+        model = models.Prompt
+        fields = ['title', 'description']
+
+
+class PromptDeactivateForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Prompt
+        fields = ('is_visible',)
+
+
 class GlobalContestForm(ContestForm):
     LENGTH_DAYS_CHOICES = (
         (7, '1 week'),

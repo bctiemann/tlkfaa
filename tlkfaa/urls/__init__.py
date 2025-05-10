@@ -11,6 +11,7 @@ from fanart.views import artwork as artwork_views
 from fanart.views import characters as characters_views
 from fanart.views import chamber_of_stars as stars_views
 from fanart.views import contests
+from fanart.views import prompts
 from fanart.models import artists_tabs, artwork_tabs, characters_tabs
 from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
@@ -170,6 +171,10 @@ urlpatterns = [
     path('Showcases/', stars_views.ShowcasesView.as_view(), name='showcases'),
     path('Showcases/<int:showcase_id>/', stars_views.ShowcaseView.as_view(), name='showcase'),
 
+    # Prompts
+    path('Prompts/', prompts.PromptsView.as_view(), name='prompts'),
+    path('prompt/', include('tlkfaa.urls.prompts')),
+
     # Featured Artists and Featured Pictures
     path('FeaturedArtists/', stars_views.FeaturedArtistsView.as_view(), name='featured-artists'),
     path('FeaturedArtists/<month:month_featured>/', stars_views.FeaturedArtistView.as_view(), name='featured-artist'),
@@ -261,10 +266,12 @@ urlpatterns = [
     path('pm/create/', pms_views.PMCreateView.as_view(), name='pm-create'),
     path('pm/success/<int:pm_id>/', pms_views.PMSuccessView.as_view(), name='pm-success'),
 
+    # Announcements/bulletins/prompts alert boxes
     path('admin_announcements/<int:count>/<int:start>/', fanart_views.AdminAnnouncementsView.as_view(), name='admin-announcements'),
     path('bulletins/<int:count>/<int:start>/', fanart_views.BulletinsView.as_view(), name='bulletins'),
     path('bulletin/<int:bulletin_id>/', fanart_views.BulletinView.as_view(), name='bulletin'),
     path('bulletin/<int:bulletin_id>/reply/', fanart_views.PostBulletinReplyView.as_view(), name='post-bulletin-reply'),
+    path('prompts/<int:count>/<int:start>/', fanart_views.PromptsView.as_view(), name='prompts'),
 
     path('aotm/vote/', fanart_views.AotmVoteView.as_view(), name='aotm-vote'),
     path('aotm/vote/form/', fanart_views.AotmVoteFormView.as_view(), name='aotm-vote-form'),

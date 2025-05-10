@@ -60,6 +60,14 @@
                             </div>
                         {% endif %}
 
+                        {% if prompt %}
+                            <div class="picvote">
+                                {% if picture.artist == user or prompt.creator == user %}
+                                    <button type="button" class="small" onClick="removePromptPic({{ prompt.id }}, {{ picture.id }})">Remove</button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
                         <ul class="characters group">
                             {% for pc in picture.picturecharacter_set.all %}
                                 <li>

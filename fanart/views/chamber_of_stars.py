@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
 
 from fanart.views import UserPaneMixin
-from fanart.models import Showcase, FeaturedArtist, FeaturedPicture
+from fanart.models import Showcase, FeaturedArtist, FeaturedPicture, Prompt
 from fanart.utils import PagesLink
 
 
@@ -49,6 +49,25 @@ class ShowcaseView(UserPaneMixin, PaginationMixin, DetailView):
     template_name = 'fanart/chamber_of_stars/showcase.html'
     model = Showcase
     pk_url_kwarg = 'showcase_id'
+
+    def get_pictures(self):
+        pictures = self.object.pictures.order_by('date_uploaded')
+        return pictures.filter(artist__is_active=True)
+
+
+class PromptsView(UserPaneMixin, ListView):
+    template_name = 'fanart/chamber_of_stars/prompts.html'
+    model = Prompt
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(is_visible=True).order_by('-id')
+
+
+class PromptView(UserPaneMixin, PaginationMixin, DetailView):
+    template_name = 'fanart/chamber_of_stars/prompt.html'
+    model = Prompt
+    pk_url_kwarg = 'prompt_id'
 
     def get_pictures(self):
         pictures = self.object.pictures.order_by('date_uploaded')

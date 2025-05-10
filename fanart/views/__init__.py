@@ -581,6 +581,21 @@ class BulletinsView(TemplateView):
         return context
 
 
+# Prompts
+
+class PromptsView(TemplateView):
+    template_name = 'includes/prompts.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start = int(kwargs.get('start'))
+        count = int(kwargs.get('count'))
+        end = start + count
+        prompts_qs = models.Prompt.objects.annotate(num_pictures=Count('pictures')).filter(is_visible=True)
+        context['prompts'] = prompts_qs.order_by('-num_pictures', '-created_at')[start:end]
+        return context
+
+
 # Comments
 
 class CommentsView(TemplateView):

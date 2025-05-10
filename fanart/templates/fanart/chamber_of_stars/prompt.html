@@ -1,0 +1,60 @@
+{% extends "fanart/chamber_of_stars/prompts.html" %}
+{% load bbcode_tags %}
+
+{% block section_nav_link %}
+    <a class="section-nav-link" href="{% url "prompts" %}">Show all</a>
+{% endblock %}
+
+{% block chamber_of_stars_section %}
+
+    <div class="featurebox prompt-container">
+        {% include "fanart/chamber_of_stars/prompt_creator.html" %}
+
+        <div class="prompt-header">
+            <h2>{{ prompt.title }}</h2>
+            <button type="button" class="small prompt-remove-button" onClick="removePrompt({{ prompt.id }})">Remove</button>
+
+            <div class="pageinfo">
+                <p>{{ prompt.description|bbcode|safe }}</p>
+            </div>
+        </div>
+
+        {{ pages_link.pages_nav|safe }}
+
+        {% if user.is_authenticated %}
+            <form name="contestentryform" id="contestentryform" method="POST" action="{% url "prompt-entry-create" pk=prompt.id %}">
+                <table class="formtable">
+                    <tr>
+                        <td class="label">Picture From Gallery</td>
+                        <td class="data" id="picselect">
+                            <div id="pickpicture_new"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="buttons">
+                            <a class="button" type="button" href="{% url "picture-picker" target="contest" %}" onClick="" rel="shadowbox;width=500;height=600">Choose Picture</a>
+                            <button type="button" onClick="postContestEntry(this.form)">Post Picture</button>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="contestid" value="{{ contest.id }}" />
+                <input type="hidden" name="picture" value="" />
+                {% csrf_token %}
+            </form>
+
+            <form name="pickpictureform">
+                <input type="hidden" name="item" value="contestpic" />
+                <input type="hidden" name="itemid" value="new" />
+                <input type="hidden" name="pictureid" value="" />
+            </form>
+        {% endif %}
+
+        {% for picture in prompt.pictures.all reversed %}
+            {% with forloop.revcounter as pic_number %}
+                {% include "includes/picture.html" %}
+            {% endwith %}
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

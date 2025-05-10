@@ -3,9 +3,11 @@ function nop() {}
 const globals = {
     adminAnnouncementsCount: 1,
     bulletinsCount: 0,
+    promptsCount: 0,
     shoutsCount: 0,
     adminAnnouncementsToLoad: 3,
     bulletinsToLoad: 5,
+    promptsToLoad: 10,
     shoutsToLoad: 10,
     scrollBottomMargin: 20,
 };
@@ -23,6 +25,7 @@ var pictureidMove = 0;
 var scrollIsLoading = {
     bulletins: false,
     adminAnnouncements: false,
+    prompts: false,
     shouts: false,
 };
 
@@ -346,6 +349,23 @@ function getMoreBulletins(start, count) {
                 showBulletin($(this).attr('bulletin_id'));
             });
             scrollIsLoading.bulletins = false;
+        }});
+    }
+}
+
+function getMorePrompts(start, count) {
+    if (!scrollIsLoading.prompts) {
+        scrollIsLoading.prompts = true;
+        const url = `/prompts/${count}/${start}/`;
+        $.ajax({ url: url, success: function(data) {
+            const innerDiv = $('#prompts_inner');
+            innerDiv.addClass('promptsscroll');
+            globals.promptsCount += count;
+            innerDiv.find('.prompts_content').append(data);
+            $('.bulletinlink').click(function() {
+                showPrompt($(this).attr('prompt_id'));
+            });
+            scrollIsLoading.prompts = false;
         }});
     }
 }
@@ -2951,9 +2971,44 @@ function removeContestPic(entryid) {
         $.post(url, {}, function(data) {
           window.location.reload();
         });
-//        selform.pictureid.value=pictureid;
-//        selform.fnc.value='removepicture';
-//        selform.submit();
+      },
+      Cancel: function() {
+        $(this).dialog('close');
+      }
+    }
+  });
+}
+
+function removePromptPic(promptId, pictureId) {
+  $('#dialog_confirm_text').html("Are you sure you want to remove this picture from the prompt?");
+  $('#dialog_confirm').dialog({
+    resizable: false,
+    modal: true,
+    buttons: {
+      "Remove": function() {
+        var url = `/prompt/${promptId}/entry/delete/`;
+        $.post(url, {picture: pictureId}, function(data) {
+          window.location.reload();
+        });
+      },
+      Cancel: function() {
+        $(this).dialog('close');
+      }
+    }
+  });
+}
+
+function removePrompt(promptId) {
+  $('#dialog_confirm_text').html("Are you sure you want to remove this prompt?");
+  $('#dialog_confirm').dialog({
+    resizable: false,
+    modal: true,
+    buttons: {
+      "Remove": function() {
+        var url = `/prompt/${promptId}/deactivate/`;
+        $.post(url, {}, function(data) {
+            window.location = data.url;
+        });
       },
       Cancel: function() {
         $(this).dialog('close');
@@ -3090,6 +3145,11 @@ function showBulletin(bulletin_id) {
         height: 600
     });
 */
+}
+
+function showPrompt(promptId) {
+    const url = `/prompt/${promptId}/`;
+    window.location.href = url;
 }
 
 function showPM(pm_id) {
@@ -3276,6 +3336,7 @@ $(document).ready(function() {
 
     getMoreBulletins(0, globals.bulletinsToLoad);
     getMoreAdminAnnouncements(0, globals.adminAnnouncementsToLoad);
+    getMorePrompts(0, globals.promptsToLoad);
     $('.bulletinsinner').scroll(function(e) {
         const bottomMargin = $(this)[0].scrollHeight - $(this).scrollTop() - globals.scrollBottomMargin;
         if (bottomMargin < $(this).outerHeight()) {
@@ -3284,6 +3345,13 @@ $(document).ready(function() {
             } else {
                 getMoreBulletins(globals.bulletinsCount, globals.bulletinsToLoad);
             }
+        }
+    });
+
+    $('.promptsinner').scroll(function(e) {
+        const bottomMargin = $(this)[0].scrollHeight - $(this).scrollTop() - globals.scrollBottomMargin;
+        if (bottomMargin < $(this).outerHeight()) {
+            getMorePrompts(globals.promptsCount, globals.promptsToLoad);
         }
     });
 

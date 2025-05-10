@@ -542,6 +542,10 @@ class User(AbstractUser):
     def can_comment(self):
         return self.days_since_joined >= settings.USER_AGE_BEFORE_COMMENTING_DAYS
 
+    @property
+    def can_post_prompts(self):
+        return self.can_comment and self.num_pictures > 3
+
     def create_dir(self):
         try:
             os.mkdir(self.absolute_dir_name)
@@ -1726,6 +1730,22 @@ class ContestVote(models.Model):
 
     def get_absolute_url(self):
         return reverse('contest', kwargs={'contest_id': self.entry.contest.id})
+
+
+class Prompt(models.Model):
+    creator = models.ForeignKey('User', null=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    pictures = models.ManyToManyField('Picture', blank=True)
+    is_visible = models.BooleanField(default=True)
+
+    @property
+    def pictures_by_date(self):
+        return self.pictures.order_by('-date_uploaded')
+
+    def get_absolute_url(self):
+        return reverse('prompt', kwargs={'pk': self.id})
 
 
 class Showcase(models.Model):
