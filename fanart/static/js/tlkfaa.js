@@ -328,7 +328,7 @@ function getMoreAdminAnnouncements(start, count) {
             innerDiv.addClass('bulletinsscroll');
             globals.adminAnnouncementsCount += count;
             innerDiv.find('.bulletins_content').append(data);
-            $('.bulletinlink').click(function() {
+            $('#adminannouncements .bulletinlink').click(function() {
                 showBulletin($(this).attr('bulletin_id'));
             });
             scrollIsLoading.adminAnnouncements = false;
@@ -345,7 +345,7 @@ function getMoreBulletins(start, count) {
             innerDiv.addClass('bulletinsscroll');
             globals.bulletinsCount += count;
             innerDiv.find('.bulletins_content').append(data);
-            $('.bulletinlink').click(function() {
+            $('#bulletins .bulletinlink').click(function() {
                 showBulletin($(this).attr('bulletin_id'));
             });
             scrollIsLoading.bulletins = false;
@@ -362,7 +362,7 @@ function getMorePrompts(start, count) {
             innerDiv.addClass('promptsscroll');
             globals.promptsCount += count;
             innerDiv.find('.prompts_content').append(data);
-            $('.bulletinlink').click(function() {
+            $('#prompts .bulletinlink').click(function() {
                 showPrompt($(this).attr('prompt_id'));
             });
             scrollIsLoading.prompts = false;
