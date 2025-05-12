@@ -124,9 +124,9 @@ urlpatterns = [
 
     path('shouts/', shouts_views.ShoutsView.as_view(), name='shouts'),
     path('shouts/mark_read/', shouts_views.MarkShoutsReadView.as_view(), name='mark-shouts-read'),
-    path('shouts/<str:shout_type>/', shouts_views.ShoutsView.as_view(), name='shouts'),
     path('shouts/<int:shout_id>/', shouts_views.ShoutDetailView.as_view(), name='shout-detail'),
     path('shouts/<int:shout_id>/delete/', shouts_views.ShoutDeleteView.as_view(), name='shout-delete'),
+    path('shouts/<str:shout_type>/', shouts_views.ShoutsView.as_view(), name='shouts'),
 
     path('fans/', artmanager_views.FansView.as_view(), name='fans'),
     path('blocks/', artmanager_views.BlocksView.as_view(), name='blocks'),

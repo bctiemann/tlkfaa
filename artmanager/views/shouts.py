@@ -107,7 +107,7 @@ class ShoutDetailView(LoginRequiredMixin, DetailView):
     template_name = 'artmanager/shout.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(models.Shout, (Q(artist=self.request.user) | Q(user=self.request.user)), pk=self.kwargs['shout_id'])
+        return models.Shout.objects.filter(Q(artist=self.request.user) | Q(user=self.request.user), pk=self.kwargs['shout_id']).first()
 
 
 class ShoutDeleteView(LoginRequiredMixin, UpdateView):
