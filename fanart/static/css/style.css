@@ -571,8 +571,11 @@ div.frontpagebanners {
 	div#upcoming_birthdays {
 		/*display: none;*/
 	}
+	div#prompts {
+		display: none;
+	}
 }
-div.frontpagebanners h3 {
+div.frontpagebanners h3, div.frontpagebanners h3 a {
 	font-size: 11px;
 	color: #889;
 	margin: 0px 0px 2px 0px;
@@ -689,6 +692,25 @@ img.bulletinprofilepic {
 	text-decoration: underline;
 }
 
+div#prompts {
+	left: 640px;
+	width: 340px;
+}
+div.promptsinner {
+	margin: 5px;
+	padding: 5px 10px 5px 5px;
+	height: 170px;
+	overflow: auto;
+}
+div.promptsinner.without-footer {
+	height: 180px;
+}
+div.promptsstatic {
+	overflow: hidden;
+}
+div.promptsscroll {
+	overflow: auto;
+}
 
 div.current-contest {
 	left: 640px;
@@ -2807,6 +2829,43 @@ div.contest .contestdeadline {
 }
 .current-contest .contest-title {
 }
+
+/* Prompts */
+
+.prompt-container {
+	min-height: 100px;
+}
+.prompt-creator {
+	display: flex;
+	flex-direction: row;
+	clear: both;
+}
+.prompt-creator-bio {
+	text-align: right;
+}
+.prompt-creator-profilepic {
+}
+.prompt-creator-profilepic img {
+	margin: 0px 10px;
+	width: 80px;
+}
+.prompt-header,
+.prompt-form {
+	text-align: left;
+}
+.prompt-form input,
+.prompt-form textarea {
+	width: 500px;
+	max-height: 40px;
+	padding: 5px;
+	margin: 3px;
+}
+.prompt-picture-icons img {
+	height: 20px;
+}
+
+
+/* Artist of the Month */
 
 div.aotm {
 	width: 600px;

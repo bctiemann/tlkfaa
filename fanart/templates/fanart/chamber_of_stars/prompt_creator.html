@@ -1,0 +1,17 @@
+<div class="prompt-creator float-right artist-info">
+    <div class="prompt-creator-bio">
+        <p>
+            By <a href="{% url "artist" dir_name=prompt.creator.dir_name %}">{{ prompt.creator.username }}</a>
+        </p>
+        <p>
+            {{ prompt.created_at }}
+        </p>
+    </div>
+    <div class="prompt-creator-profilepic">
+        {% if prompt.creator.profile_pic_url %}
+            <a href="{% url "artist" dir_name=prompt.creator.dir_name %}">
+                <img class="profilepic promptthumb" src="{{ prompt.creator.profile_pic_url }}" />
+            </a>
+        {% endif %}
+    </div>
+</div>
