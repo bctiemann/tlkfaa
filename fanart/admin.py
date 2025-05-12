@@ -280,6 +280,13 @@ class BulletinAdmin(admin.ModelAdmin):
 admin.site.register(fanart_models.Bulletin, BulletinAdmin)
 
 
+class PromptAdmin(admin.ModelAdmin):
+    list_display = ('title', 'creator', 'created_at',)
+    autocomplete_fields = ('creator', 'pictures',)
+    user_id_for_formfield = None
+admin.site.register(fanart_models.Prompt, PromptAdmin)
+
+
 class ShowcaseAdmin(admin.ModelAdmin):
     list_display = ('title', 'tag', 'is_visible',)
     autocomplete_fields = ('tag',)

@@ -1,0 +1,51 @@
+{% extends "fanart/chamber_of_stars/base.html" %}
+{% load bbcode_tags %}
+
+{% block prompts_class %}selected{% endblock %}
+
+{% block section_title %}Prompts{% endblock %}
+
+{% block section_intro %}
+    Prompts are ideas for art! Just suggest a theme. Reimagine a scene! Come up with a new character! Commemorate
+    an event! Give your fellow artists a challenge!
+{% endblock %}
+
+{% block chamber_of_stars_section %}
+
+    {% if user.is_authenticated and user.can_post_prompts %}
+        <div class="prompt-form">
+            <form method="POST" action="{% url "prompt-create" %}">
+                <p>
+                    {{ form.title }}
+                    <button type="submit">Post Prompt</button>
+                </p>
+                <p>{{ form.description }}</p>
+                {% csrf_token %}
+            </form>
+        </div>
+    {% endif %}
+
+    {% for prompt in prompt_list %}
+
+        <div class="featurebox prompt-container">
+            {% include "fanart/chamber_of_stars/prompt_creator.html" %}
+
+            <h2><a href="{% url "prompt" pk=prompt.id %}">{{ prompt.title }}</a></h2>
+
+            <div class="pageinfo">
+                <p>{{ prompt.description|bbcode|safe }}</p>
+            </div>
+
+            <div class="masonry">
+                {% for picture in prompt.pictures.all|slice:":20" reversed %}
+                    <div class="offertile picturetile">
+                        <a id="picturetile_{{ picture.id }}" class="previewPopupTrigger" type="picture" itemid="{{ picture.id }}" href="{{ picture.url }}" rel="shadowbox[prompt_{{ prompt.id }}]"><img src="{{ picture.thumbnail_url }}" width="60" height="{{ picture.thumb_height }}" /></a>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

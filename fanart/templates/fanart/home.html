@@ -36,37 +36,10 @@
         </div>
     </div>
 
-    {% if current_contest %}
-    <div class="banner-block current-contest">
-        <h3>Current Art Contest</h3>
-        <p class="contest-title"><a href="{% url "contest" contest_id=current_contest.id %}">{{ current_contest.title }}</a></p>
-	<div class="contest-theme">
-                {{ current_contest.description|bbcode|safe }}
-	</div>
-        <p>{{ current_contest.contestentry_set.count }} entr{{ current_contest.contestentry_set.count|pluralize:"y,ies" }}</p>
-        {% if current_contest.is_ended %}
-            Winner: {{ current_contest.get_winner.picture.artist.username }}
-        {% elif current_contest.days_left == 0 %}
-            <b>({{ current_contest.hours_left }} hour{{ current_contest.hours_left|pluralize }} left)</b>
-        {% else %}
-            <p><b>({{ current_contest.days_left }} day{{ current_contest.days_left|pluralize }} left)</b></p>
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <div class="banner-block" id="upcoming_birthdays">
-        <h3>Upcoming Birthdays</h3>
-        <div class="birthdays-scroll">
-        {% for birthday in upcoming_birthdays %}
-            <div class="upcoming-birthday">
-                <p class="float-right">{{ birthday.next_birthday|date:"M j" }}</p>
-                <p><a href="{% url "artist" dir_name=birthday.dir_name %}">{{ birthday.username }}</a>
-                {% if birthday.show_birthdate_age %}
-                    <span class="birthday-age">{{ birthday.age }}</span>
-                {% endif %}
-                </p>
-            </div>
-        {% endfor %}
+    <div class="banner-block" id="prompts">
+        <h3><a href="{% url "prompts" %}">Prompts</a></h3>
+        <div id="prompts_inner" class="promptsinner promptsstatic without-footer">
+            <div class="prompts_content"></div>
         </div>
     </div>
 
