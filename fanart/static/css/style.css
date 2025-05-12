@@ -569,7 +569,7 @@ div.frontpagebanners {
 		width: 800px;
 	}
 	div#upcoming_birthdays {
-		display: none;
+		/*display: none;*/
 	}
 }
 div.frontpagebanners h3 {
