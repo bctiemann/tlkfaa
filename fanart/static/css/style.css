@@ -566,7 +566,7 @@ div.frontpagebanners {
 }
 @media only screen and (max-width: 1310px) {
 	div.frontpagebanners {
-		width: 800px;
+		/*width: 800px;*/
 	}
 	div#upcoming_birthdays {
 		/*display: none;*/
