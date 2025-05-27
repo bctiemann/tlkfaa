@@ -12,7 +12,9 @@
 
         <div class="prompt-header">
             <h2>{{ prompt.title }}</h2>
-            <button type="button" class="small prompt-remove-button" onClick="removePrompt({{ prompt.id }})">Remove</button>
+            {% if prompt.creator == user %}
+                <button type="button" class="small prompt-remove-button" onClick="removePrompt({{ prompt.id }})">Remove</button>
+            {% endif %}
 
             <div class="pageinfo">
                 <p>{{ prompt.description|bbcode|safe }}</p>
