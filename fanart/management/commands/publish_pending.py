@@ -101,13 +101,17 @@ class Command(BaseCommand):
 
             # If not a replacement or notify_fans_of_replacement is on, populate unviewedpictures
             if not pending.replaces_picture or pending.notify_fans_of_replacement:
+                uvp_to_create = []
                 for watcher in pending.artist.fans.all():
-                    uvp = models.UnviewedPicture.objects.create(
-                        picture = picture,
-                        artist = picture.artist,
-                        user = watcher.user,
+                    uvp_to_create.append(
+                        models.UnviewedPicture(
+                            picture = picture,
+                            artist = picture.artist,
+                            user = watcher.user,
+                        )
                     )
-                print(f'{models.UnviewedPicture.objects.filter(picture=picture).count()} UnviewedPictures created')
+                models.UnviewedPicture.objects.bulk_create(uvp_to_create)
+                print(f'{len(uvp_to_create)} UnviewedPictures created')
 
             # Update artist.last_upload
             print(f'Setting last_upload to {timezone.now()}...')
