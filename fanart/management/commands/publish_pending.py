@@ -110,7 +110,7 @@ class Command(BaseCommand):
                             user = watcher.user,
                         )
                     )
-                models.UnviewedPicture.objects.bulk_create(uvp_to_create)
+                models.UnviewedPicture.objects.bulk_create(uvp_to_create, batch_size=100)
                 print(f'{len(uvp_to_create)} UnviewedPictures created')
 
             # Update artist.last_upload
