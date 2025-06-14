@@ -128,10 +128,15 @@ class Command(BaseCommand):
             if pending.folder:
                 print(f'Refreshing folder {pending.folder}')
                 pending.folder.refresh_num_pictures()
+                pending.artist.refresh_from_db()
+                print('last_upload:', pending.artist.last_upload)
                 pending.folder.refresh_picture_ranks()
             else:
                 print('Refreshing main folder')
                 pending.artist.refresh_main_folder_picture_ranks()
+
+            pending.artist.refresh_from_db()
+            print('last_upload:', pending.artist.last_upload)
 
             # Move files into place
             if pending.replaces_picture:
