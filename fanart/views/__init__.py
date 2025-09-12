@@ -592,7 +592,7 @@ class PromptsView(TemplateView):
         count = int(kwargs.get('count'))
         end = start + count
         prompts_qs = models.Prompt.objects.annotate(num_pictures=Count('pictures')).filter(is_visible=True)
-        context['prompts'] = prompts_qs.order_by('-num_pictures', '-created_at')[start:end]
+        context['prompts'] = prompts_qs.order_by('-created_at', '-num_pictures',)[start:end]
         return context
 
 
