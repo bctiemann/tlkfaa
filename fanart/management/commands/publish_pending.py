@@ -116,6 +116,7 @@ class Command(BaseCommand):
             # Update artist.last_upload
             print(f'Setting last_upload to {timezone.now()}...')
             pending.artist.last_upload = timezone.now()
+            pending.artist.save()
 
             # Refresh num_pictures and picture ranks in artist and folder
             print(f'Refreshing artist {pending.artist}')
