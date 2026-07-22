@@ -1107,8 +1107,8 @@ class ArtistGalleryView(ArtistView):
         return context
 
 
-class ArtWallView(ArtistView):
-    template_name = 'fanart/artist-artwall.html'
+class ArtTradesRequestsView(ArtistView):
+    template_name = 'fanart/artist-art-trades-requests.html'
 
     def get_context_data(self, **kwargs):
         context = super(ArtistView, self).get_context_data(**kwargs)
@@ -1296,9 +1296,9 @@ class PicturePickerView(LoginRequiredMixin, TemplateView):
         if folder_id == 'cc':
             pictures = self.request.user.coloringpicture_set.all()
             context['coloring_cave'] = True
-        elif folder_id == 'artwall':
+        elif folder_id == 'art_trades_requests':
             pictures = self.request.user.gifts_received.all()
-            context['artwall'] = True
+            context['art_trades_requests'] = True
 
         else:
             selected_folder = None

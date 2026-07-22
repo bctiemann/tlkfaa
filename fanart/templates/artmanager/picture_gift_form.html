@@ -1,4 +1,4 @@
-<h4>Post this picture on someone's ArtWall:</h4>
+<h4>Post this picture on someone's Art Trades/Requests page:</h4>
 
 <form name="editrequest_{{ picture.id }}" onSubmit="return false;">
     <table class="formtable">
@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td colspan="2" class="buttons">
-                <button type="button" onClick="doRequest({{ picture.id }},this.form)">Post on ArtWall</button>
+                <button type="button" onClick="doRequest({{ picture.id }},this.form)">Post on Art Trades/Requests page</button>
                 <button type="button" onClick="loadArtworkPicture({{ picture.id }})">Cancel</button>
             </td>
         </tr>

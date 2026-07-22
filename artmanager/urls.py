@@ -62,9 +62,9 @@ urlpatterns = [
     path('folders/<int:folder_id>/update/', artmanager_views.FolderUpdateView.as_view(), name='folder-update'),
     path('folders/<int:folder_id>/delete/', artmanager_views.FolderDeleteView.as_view(), name='folder-delete'),
 
-    path('artwall/', artmanager_views.ArtWallView.as_view(), name='artwall'),
-    path('artwall/<int:gift_picture_id>/accept/', artmanager_views.GiftPictureAcceptView.as_view(), name='artwall-gift-picture-accept'),
-    path('artwall/<gift_picture_ids>/delete/', artmanager_views.GiftPictureBulkDeleteView.as_view(), name='artwall-gift-picture-bulk-delete'),
+    path('art_trades_requests/', artmanager_views.ArtTradesRequestsView.as_view(), name='art-trades-requests'),
+    path('art_trades_requests/<int:gift_picture_id>/accept/', artmanager_views.GiftPictureAcceptView.as_view(), name='art-trades-requests-gift-picture-accept'),
+    path('art_trades_requests/<gift_picture_ids>/delete/', artmanager_views.GiftPictureBulkDeleteView.as_view(), name='art-trades-requests-gift-picture-bulk-delete'),
 
     path('characters/', artmanager_views.CharactersView.as_view(), name='characters'),
     path('characters/create/', artmanager_views.CharacterCreateView.as_view(), name='character-create'),

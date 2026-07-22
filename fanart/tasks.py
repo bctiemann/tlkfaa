@@ -262,7 +262,7 @@ def send_art_wall_submission_email(gift_picture_id):
     send_email(
         recipients=[gift_picture.recipient.email],
         context=email_context,
-        subject='TLKFAA ArtWall submission from {0}'.format(gift_picture.sender.username),
+        subject='TLKFAA Art Trades/Requests submission from {0}'.format(gift_picture.sender.username),
         text_template='email/gift_sent.txt',
         html_template='email/gift_sent.html',
         bcc=[settings.DEBUG_EMAIL]

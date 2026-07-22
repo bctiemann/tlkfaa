@@ -1,5 +1,5 @@
 {{ user.username }}, an artist at The Lion King Fan-Art Archive, has submitted one of
-{{ user.possessive_pronoun }} pictures as an Art Trade or Request to be displayed in on your ArtWall.
+{{ user.possessive_pronoun }} pictures to be displayed in on your Art Trades/Requests page.
 You will need to approve the action. To do this, please visit the following URL:
 
 {{ base_url }}{{ url }}
