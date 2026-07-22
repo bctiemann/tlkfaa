@@ -113,30 +113,23 @@ class Command(BaseCommand):
                 models.UnviewedPicture.objects.bulk_create(uvp_to_create, batch_size=100)
                 print(f'{len(uvp_to_create)} UnviewedPictures created')
 
-            # Update artist.last_upload
-            print(f'Setting last_upload to {timezone.now()}...')
-            pending.artist.last_upload = timezone.now()
-            pending.artist.save()
-
             # Refresh num_pictures and picture ranks in artist and folder
             print(f'Refreshing artist {pending.artist}')
             pending.artist.refresh_num_pictures()
-
-            pending.artist.refresh_from_db()
-            print(pending.artist.last_upload)
 
             pending.artist.refresh_picture_ranks()
             if pending.folder:
                 print(f'Refreshing folder {pending.folder}')
                 pending.folder.refresh_num_pictures()
-                pending.artist.refresh_from_db()
-                print('last_upload:', pending.artist.last_upload)
                 pending.folder.refresh_picture_ranks()
             else:
                 print('Refreshing main folder')
                 pending.artist.refresh_main_folder_picture_ranks()
 
-            pending.artist.refresh_from_db()
+            # Update artist.last_upload after slow refresh work to minimize race window
+            print(f'Setting last_upload to {timezone.now()}...')
+            pending.artist.last_upload = timezone.now()
+            pending.artist.save(update_fields=['last_upload'])
             print('last_upload:', pending.artist.last_upload)
 
             # Move files into place

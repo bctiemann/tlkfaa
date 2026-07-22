@@ -1094,7 +1094,7 @@ function approveRequest(requestid) {
 //    theform.requestid.value=requestid;
 //  }
 //  theform.submit();
-  var url = '/ArtManager/artwall/' + requestid + '/accept/';
+  var url = '/ArtManager/art_trades_requests/' + requestid + '/accept/';
   $.post(url, function(data) {
     if (data.success) {
       window.location.reload();
@@ -1105,7 +1105,7 @@ function approveRequest(requestid) {
 }
 
 function removeSentRequest(pictureid,requestid) {
-    $('#dialog_confirm_text').html('Are you sure you want to remove this picture from the recipient\'s ArtWall?');
+    $('#dialog_confirm_text').html('Are you sure you want to remove this picture from the recipient\'s Art Trades/Requests page?');
     $('#dialog_confirm').dialog({
         resizable: false,
         modal: true,
@@ -1291,9 +1291,9 @@ function removeRequest(requestid) {
   var s = getSelectList(requestid);
   if (s.numselected > 0) {
     if (s.numselected > 1) {
-      $('#dialog_confirm_text').html("Are you sure you want to remove all "+s.numselected+" selected pictures from your ArtWall?");
+      $('#dialog_confirm_text').html("Are you sure you want to remove all "+s.numselected+" selected pictures from your Art Trades/Requests page?");
     } else {
-      $('#dialog_confirm_text').html("Are you sure you want to remove this picture from your ArtWall?");
+      $('#dialog_confirm_text').html("Are you sure you want to remove this picture from your Art Trades/Requests page?");
     }
     $('#dialog_confirm').dialog({
       title: 'Really remove?',
@@ -1303,7 +1303,7 @@ function removeRequest(requestid) {
         "Remove": function() {
 //          window.location.href = "/ArtManager.jsp?op=requests&fnc=remove&requestlist="+s.selectlist;
 //          var url = '/ArtManager/artwork/picture/' + requestid + '/gift/delete/';
-          var url = '/ArtManager/artwall/' + s.selectlist + '/delete/';
+          var url = '/ArtManager/art_trades_requests/' + s.selectlist + '/delete/';
           $.post(url, function(data) {
             if (data.success) {
                 window.location.reload();

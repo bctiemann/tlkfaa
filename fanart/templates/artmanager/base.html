@@ -30,7 +30,7 @@
             <a href="{% url "artmanager:upload" %}" class="{% if page == "upload" or page == "pending" %}selected{% endif %}">Upload</a>
             <a href="{% url "artmanager:artwork" %}" class="{% if page == "artwork" %}selected{% endif %}">Artwork</a>
             <a href="{% url "artmanager:folders" %}" class="{% if page == "folders" %}selected{% endif %}">Folders</a>
-            <a href="{% url "artmanager:artwall" %}" class="{% if page == "artwall" %}selected{% endif %}">ArtWall</a>
+            <a href="{% url "artmanager:art-trades-requests" %}" class="{% if page == "art_trades_requests" %}selected{% endif %}">Art Trades/Requests</a>
             <a href="{% url "artmanager:characters" %}" class="{% if page == "characters" %}selected{% endif %}">Characters</a>
             <a href="{% url "artmanager:customize" %}" class="sectionend {% if page == "customize" %}selected{% endif %}">Gallery Appearance</a>
             <a href="{% url "artmanager:private-msgs" %}" class="{% if not request.user.is_paid %}notpaidfeature{% endif %} {% if page == "private-msgs" %}selected{% endif %}">

@@ -9,9 +9,9 @@ Folder:
 <select name="switchfolder" class="foldermenu" onChange="switchParam(this, 'folder_id')">
     {% if target == "character" %}
         <option value="cc" {% if coloring_cave %}selected{% endif %}>(Coloring Cave)</option>
-        <option value="artwall" {% if artwall %}selected{% endif %}>(ArtWall)</option>
+        <option value="art_trades_requests" {% if art_trades_requests %}selected{% endif %}>(Art Trades/Requests)</option>
     {% endif %}
-    <option value="0" {% if not coloring_cave and not artwall and selected_folder == None %}selected{% endif %}>(Main)</option>
+    <option value="0" {% if not coloring_cave and not art_trades_requests and selected_folder == None %}selected{% endif %}>(Main)</option>
     {% for folder in folders %}
         <option value="{{ folder.id }}" {% if selected_folder == folder %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;{% for i in folder.depth|times %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ folder.name }}</option>
     {% endfor %}
@@ -56,7 +56,7 @@ Sort by:
         </div>
     {% endfor %}
 
-{% elif target == "character" and artwall %}
+{% elif target == "character" and art_trades_requests %}
 
         {% for gift_picture in pictures %}
         <div class="picture">
@@ -64,7 +64,7 @@ Sort by:
             <table>
                 <tr>
                     <td class="thumb">
-                        <a href="javascript:nop()" onClick="selectPicture({{ gift_picture.id }},'artwall_picture')">
+                        <a href="javascript:nop()" onClick="selectPicture({{ gift_picture.id }},'gift_picture')">
                             <img class="thumb" id="picker_image_{{ gift_picture.id }}" src="{{ gift_picture.picture.preview_url }}" />
                         </a>
                     </td>

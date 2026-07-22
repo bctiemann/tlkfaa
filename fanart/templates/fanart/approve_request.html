@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <h1>Approve ArtWall Submission</h1>
+    <h1>Approve Art Trade/Request</h1>
 
     <div class="am_panel">
         <div class="am_tabs">
@@ -15,13 +15,13 @@
 
             {% block am_content %}
 
-                <h2>ArtWall Submission</h2>
+                <h2>Art Trade/Request</h2>
 
                 {% if giftpicture.is_active %}
 
                     <div class="pageinfo">
                         <p>
-                            This ArtWall submission has already been accepted.
+                            This Art Trade/Request has already been accepted.
                         </p>
                     </div>
 
@@ -29,7 +29,7 @@
 
                     <div class="pageinfo">
                         <p>
-                            This ArtWall submission has been declined.
+                            This Art Trade/Request has been declined.
                         </p>
                     </div>
 
@@ -37,14 +37,14 @@
 
                     <div class="pageinfo">
                         <p>
-                            The picture that was sent as this ArtWall submission has been deleted.
+                            The picture that was sent as this Art Trade/Request has been deleted.
                         </p>
                     </div>
 
                 {% else %}
 
                     <div class="pageinfo">
-                        <p>The artist <a href="{% url "artist" dir_name=giftpicture.sender.dir_name %}">{{ giftpicture.sender.username }}</a> would like to post the following picture on your ArtWall:</p>
+                        <p>The artist <a href="{% url "artist" dir_name=giftpicture.sender.dir_name %}">{{ giftpicture.sender.username }}</a> would like to post the following picture on your Art Trades/Requests page:</p>
                     </div>
 
                     {% with giftpicture.picture as picture %}

@@ -114,7 +114,7 @@ urlpatterns = [
     path('Artists/<str:dir_name>/', fanart_views.ArtistView.as_view(), name='artist'),
     path('Artists/<str:dir_name>/Gallery/', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
     path('Artists/<str:dir_name>/Gallery/<str:subview>/', fanart_views.ArtistGalleryView.as_view(), name='artist-gallery'),
-    path('Artists/<str:dir_name>/ArtWall/', fanart_views.ArtWallView.as_view(), name='artist-artwall'),
+    path('Artists/<str:dir_name>/ArtTradesRequests/', fanart_views.ArtTradesRequestsView.as_view(), name='artist-art-trades-requests'),
     # re_path(r'^Artists/(?P<dir_name>[^/]+)/Characters/$', fanart_views.CharactersView.as_view(), name='artist-characters'),
 
     path('artists/list/newest/', artists_views.ArtistsListByNewestView.as_view(), name='artists-list-by-newest'),

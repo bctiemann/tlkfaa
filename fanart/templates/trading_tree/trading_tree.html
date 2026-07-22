@@ -21,12 +21,12 @@
     <p>
         Here at the Trading Tree, TLKFAA artists can create custom-colored icons to each other's specs, or post
         adoptable characters for each other to make their own. This is also where you can see the art that has been
-        posted by artists on each other's ArtWalls, via art trades or requests.
+        posted by artists on each other's Art Trades/Requests pages.
     </p>
 </div>
 
 <div class="selector">
-    <a class="{% if not offer_type %}selected{% endif %}" href="{% url "trading-tree" %}">ArtWall exchanges</a>
+    <a class="{% if not offer_type %}selected{% endif %}" href="{% url "trading-tree" %}">Art Trades/Requests</a>
     <a class="{% if offer_type == "icon" %}selected{% endif %}" href="{% url "trading-tree" offer_type="icon" %}">icons</a>
     <a class="{% if offer_type == "adoptable" %}selected{% endif %}" href="{% url "trading-tree" offer_type="adoptable" %}">adoptables</a>
 </div>
@@ -121,7 +121,7 @@ if (thumbsGenerated == false) {
             {% with pic_number=forloop.revcounter picture=gift_picture.picture extra_classes="no-top-margin" %}
                 <div class="gift-picture-caption">
                     <p>
-                        Posted on <a href="{% url "artist" dir_name=gift_picture.recipient.dir_name %}">{{ gift_picture.recipient.username }}</a>'s <a href="{% url "artist-artwall" dir_name=gift_picture.recipient.dir_name %}">ArtWall</a>
+                        Posted on <a href="{% url "artist" dir_name=gift_picture.recipient.dir_name %}">{{ gift_picture.recipient.username }}</a>'s <a href="{% url "artist-art-trades-requests" dir_name=gift_picture.recipient.dir_name %}">Art Trades/Requests</a>
                     </p>
                 </div>
                 {% include "includes/picture.html" %}

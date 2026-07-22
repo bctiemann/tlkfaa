@@ -1,7 +1,7 @@
 You recently submitted an Art Trade/Request to {{ giftpicture.recipient.username }}. This is to let you know that the recipient has
-accepted the picture, and it will now appear on their ArtWall. To view this section, please visit the following URL:
+accepted the picture, and it will now appear on their Art Trades/Requests page. To view this section, please visit the following URL:
 
-{{ base_url }}{% url "artist-artwall" dir_name=giftpicture.recipient.dir_name %}
+{{ base_url }}{% url "artist-art-trades-requests" dir_name=giftpicture.recipient.dir_name %}
 
 {% if giftpicture.reply_message %}
 {{ giftpicture.recipient.username }} sent the following reply:

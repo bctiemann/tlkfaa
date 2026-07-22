@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import PermissionDenied
+from django.urls import NoReverseMatch
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
@@ -45,9 +46,10 @@ logger = logging.getLogger(__name__)
 class BaseRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        if self.request.session.get('am_page'):
-            return reverse('artmanager:{0}'.format(self.request.session['am_page']))
-        return reverse('artmanager:dashboard')
+        try:
+            return reverse('artmanager:{0}'.format(self.request.session.get('am_page')))
+        except NoReverseMatch:
+            return reverse('artmanager:dashboard')
 
 
 class ArtManagerPaneView(LoginRequiredMixin, UserPaneMixin, TemplateView):
@@ -901,15 +903,15 @@ class FolderDeleteView(LoginRequiredMixin, DeleteView):
         return JsonResponse(response)
 
 
-class ArtWallView(ArtManagerPaneView):
-    template_name = 'artmanager/artwall.html'
+class ArtTradesRequestsView(ArtManagerPaneView):
+    template_name = 'artmanager/art_trades_requests.html'
 
     def get(self, request, *args, **kwargs):
-        request.session['am_page'] = 'artwall'
-        return super(ArtWallView, self).get(request, *args, **kwargs)
+        request.session['am_page'] = 'art-trades-requests'
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ArtWallView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         gift_pictures = self.request.user.gifts_received.all().order_by('-picture__date_uploaded')
 
@@ -1059,7 +1061,7 @@ class CharacterSetPictureView(APIView):
 
         if request.POST.get('picture_type') == 'coloring_picture':
             picture_model = ColoringPicture
-        elif request.POST.get('picture_type') == 'artwall_picture':
+        elif request.POST.get('picture_type') == 'gift_picture':
             picture_model = models.GiftPicture
         elif request.POST.get('picture_type') == 'picture':
             picture_model = models.Picture
