@@ -599,7 +599,7 @@ class User(AbstractUser):
 
     def refresh_num_pictures(self):
         self.num_pictures = self.picture_set.count()
-        self.save()
+        self.save(update_fields=['num_pictures'])
 
     def refresh_picture_ranks(self):
         pictures = self.picture_set.order_by('date_uploaded')
@@ -615,7 +615,7 @@ class User(AbstractUser):
 
     def refresh_num_characters(self):
         self.num_characters = self.character_set.count()
-        self.save()
+        self.save(update_fields=['num_characters'])
 
     def refresh_num_faves(self):
         self.num_faves = self.fans.count()
@@ -623,11 +623,11 @@ class User(AbstractUser):
         for picture in self.picture_set.all():
             num_favepics += picture.num_faves
         self.num_favepics = num_favepics
-        self.save()
+        self.save(update_fields=['num_faves', 'num_favepics'])
 
     def update_last_active(self):
         self.last_active = timezone.now()
-        self.save()
+        self.save(update_fields=['last_active'])
 
     def save(self, update_thumbs=False, *args, **kwargs):
         logger.debug('Saving {0}, {1}'.format(self, update_thumbs))
