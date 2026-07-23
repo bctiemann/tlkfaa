@@ -1252,6 +1252,11 @@ class Favorite(models.Model):
 
     class Meta:
         ordering = ['-date_added']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'artist'], name='unique_favorite_user_artist'),
+            models.UniqueConstraint(fields=['user', 'picture'], name='unique_favorite_user_picture'),
+            models.UniqueConstraint(fields=['user', 'character'], name='unique_favorite_user_character'),
+        ]
 
 
 class PendingManager(models.Manager):

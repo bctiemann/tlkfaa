@@ -878,7 +878,15 @@ class ToggleVisibleView(AjaxableResponseMixin, LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         artist = get_object_or_404(models.User, pk=self.kwargs['artist_id'], is_artist=True)
-        return get_object_or_404(models.Favorite, user=self.request.user, artist=artist)
+        faves = models.Favorite.objects.filter(user=self.request.user, artist=artist)
+        fave = faves.filter(is_visible=True).first() or faves.first()
+        if fave is None:
+            raise Http404
+        duplicates = faves.exclude(pk=fave.pk)
+        if duplicates.exists():
+            logger.info(f'Deleted {duplicates.count()} duplicate Favorite(s) for {self.request.user} / {artist}')
+            duplicates.delete()
+        return fave
 
     def get_success_url(self):
         return reverse('artist', kwargs={'dir_name': self.object.artist.dir_name})
