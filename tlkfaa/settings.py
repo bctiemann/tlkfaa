@@ -73,13 +73,13 @@ INSTALLED_APPS = [
     'wiki.plugins.macros.apps.MacrosConfig',
 
     'rest_framework',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'precise_bbcode',
     'django_extensions',
 ]
 
 MIDDLEWARE = [
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -247,17 +247,14 @@ LOGGING = {
 }
 
 
-# Debug toolbar nuclear option
-
 def show_toolbar(request):
-    return True
+    return DEBUG
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK" : show_toolbar,
 #    "RESULTS_CACHE_SIZE": 1000,
 }
 
 DEBUG_TOOLBAR_PANELS = [
-    'ddt_request_history.panels.request_history.RequestHistoryPanel',
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
     'debug_toolbar.panels.settings.SettingsPanel',
