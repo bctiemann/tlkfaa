@@ -1160,7 +1160,7 @@ class Character(models.Model):
             return self.profile_coloring_picture.url
         elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
-                if os.path.exists('{0}/images/canon_characters/{1}.{2}'.format(settings.MEDIA_ROOT, self.id, ext)):
+                if os.path.exists('{0}/canon_characters/{1}.{2}'.format(settings.MEDIA_ROOT, self.id, ext)):
                     return '{0}canon_characters/{1}.{2}'.format(settings.MEDIA_URL, self.id, ext)
             return settings.CHARACTER_PLACEHOLDER_IMG_URL
         else:
@@ -1174,7 +1174,7 @@ class Character(models.Model):
             return self.profile_coloring_picture.thumbnail_url
         elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
-                if os.path.exists('{0}/images/canon_characters/{1}.s.jpg'.format(settings.MEDIA_ROOT, self.id)):
+                if os.path.exists('{0}/canon_characters/{1}.s.jpg'.format(settings.MEDIA_ROOT, self.id)):
                     return '{0}canon_characters/{1}.s.jpg'.format(settings.MEDIA_URL, self.id)
             return settings.CHARACTER_PLACEHOLDER_IMG_URL
         else:
@@ -1188,7 +1188,7 @@ class Character(models.Model):
             return self.profile_coloring_picture.preview_url
         elif self.is_canon:
             for ext in ['gif', 'jpg', 'png']:
-                if os.path.exists('{0}/images/canon_characters/{1}.p.jpg'.format(settings.MEDIA_ROOT, self.id)):
+                if os.path.exists('{0}/canon_characters/{1}.p.jpg'.format(settings.MEDIA_ROOT, self.id)):
                     return '{0}canon_characters/{1}.p.jpg'.format(settings.MEDIA_URL, self.id)
             return settings.CHARACTER_PLACEHOLDER_IMG_URL
         else:
