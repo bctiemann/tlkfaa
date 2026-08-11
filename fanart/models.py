@@ -1415,8 +1415,8 @@ class Pending(models.Model):
 
     @property
     def sanitized_basename(self):
-        base_fn = re.sub(r'\.[^\.]+$', '', self.filename)
-        out_fn = ''.join([upperfirst(part) for part in re.split(r'[- _+~&()\.]', base_fn)])
+        base_fn = re.sub(r'\.[^.]+$', '', self.filename)
+        out_fn = ''.join([upperfirst(part) for part in re.split(r'[- _+~&().]', base_fn)])
         out_fn = re.sub('[^a-zA-Z0-9_-]', '', out_fn)
         if not out_fn:
             out_fn = 'Untitled'
