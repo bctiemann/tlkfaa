@@ -715,6 +715,11 @@ class Picture(models.Model):
 
     objects = PictureManager()
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['num_faves', 'mime_type', 'date_deleted'], name='picture_popular_idx'),
+        ]
+
     @property
     def basename(self):
         return '.'.join(self.filename.split('.')[:-1])
