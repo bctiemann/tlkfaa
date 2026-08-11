@@ -657,7 +657,7 @@ class PictureManager(models.Manager):
     def random_popular(self):
         ids = list(self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).values_list('pk', flat=True))
         sample_ids = random.sample(ids, min(len(ids), 12))
-        return self.filter(pk__in=sample_ids)
+        return self.filter(pk__in=sample_ids).select_related('artist')
 
     @property
     def most_popular_recent(self):

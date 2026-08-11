@@ -223,7 +223,7 @@ class HomeView(UserPaneMixin, TemplateView):
 
         context['upcoming_birthdays'] = models.User.objects.upcoming_birthdays()
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
-        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).first()
+        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).select_related('picture__artist').first()
 
         context['login_failed'] = self.request.session.get('login_failed')
         self.request.session['login_failed'] = False
@@ -237,7 +237,7 @@ class RandomPopularView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(RandomPopularView, self).get_context_data(**kwargs)
         context['random_popular'] = models.Picture.objects.random_popular[0:12]
-        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).first()
+        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).select_related('picture__artist').first()
         return context
 
 
