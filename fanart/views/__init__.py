@@ -713,7 +713,7 @@ class ShoutsView(TemplateView):
         context['shouts'] = artist.shouts_received.filter(reply_to__isnull=True).order_by('-date_posted')[start:end]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
-            context['shouts'] = artist.shouts_received.filter(id=shout_id)
+            context['shouts'] = models.Shout.all_shouts.filter(artist=artist, id=shout_id)
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = self.request.user.is_blocked_by(artist) or self.request.user.is_blanket_blocked
         context['hash'] = uuid.uuid4()
@@ -786,6 +786,7 @@ class ReplyShoutView(LoginRequiredMixin, CreateView):
         reply.save()
         response['shout_id'] = self.shout.id
         response['reply_id'] = reply.id
+        response['artist_id'] = self.shout.artist.id
 
         response['success'] = True
         return JsonResponse(response)

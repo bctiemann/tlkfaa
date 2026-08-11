@@ -1098,6 +1098,7 @@ class Shout(BaseComment):
     reply_to = models.ForeignKey('Shout', null=True, blank=True, related_name='replies', on_delete=models.SET_NULL)
 
     objects = ShoutManager()
+    all_shouts = models.Manager()
 
     @property
     def num_replies(self):
