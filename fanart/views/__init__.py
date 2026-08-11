@@ -183,13 +183,8 @@ class UserPaneMixin(RatelimitMixin):
         return Drawpile.objects.first()
 
     def get_sketcher_slots(self):
-        slots = []
-        sketcher_users = self.get_sketcher_users()
-        for slot in range(12):
-            try:
-                slots.append(sketcher_users[slot])
-            except IndexError:
-                slots.append(None)
+        slots = list(self.get_sketcher_users()[:12])
+        slots += [None] * (12 - len(slots))
         return slots
 
     def get_context_data(self, **kwargs):
@@ -606,7 +601,7 @@ class CommentsView(TemplateView):
         context = super(CommentsView, self).get_context_data(*args, **kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
-        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture).select_related('reply_to'), sort_by='date_posted', parent_field='reply_to')
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = self.request.user.is_blocked_by(picture.artist) or self.request.user.is_blanket_blocked
         context['hash'] = uuid.uuid4()
@@ -965,7 +960,7 @@ class PictureView(UserPaneMixin, TemplateView):
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
-        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture).select_related('reply_to'), sort_by='date_posted', parent_field='reply_to')
         context['hash'] = uuid.uuid4()
         if self.request.user.is_authenticated:
             context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
@@ -986,8 +981,22 @@ class PictureFansView(LoginRequiredMixin, DetailView):
 
 # Tooltip popup previews
 
-class PictureTooltipView(PictureView):
+class PictureTooltipView(RatelimitMixin, TemplateView):
     template_name = 'tooltips/picture.html'
+    ratelimit_key = 'ip'
+    ratelimit_rate = '10/m'
+    ratelimit_method = 'GET'
+
+    def get_context_data(self, **kwargs):
+        context = super(PictureTooltipView, self).get_context_data(**kwargs)
+        context['picture'] = get_object_or_404(
+            models.Picture,
+            pk=kwargs['picture_id'],
+            date_deleted__isnull=True,
+            artist__is_artist=True,
+            artist__is_active=True,
+        )
+        return context
 
 
 class ColoringPictureTooltipView(TemplateView):
