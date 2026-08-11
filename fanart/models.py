@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 import uuid
 import datetime
+import random
 import pytz
 import os
 import re
@@ -654,7 +655,9 @@ class PictureManager(models.Manager):
 
     @property
     def random_popular(self):
-        return self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('?')
+        ids = list(self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).values_list('pk', flat=True))
+        sample_ids = random.sample(ids, min(len(ids), 12))
+        return self.filter(pk__in=sample_ids)
 
     @property
     def most_popular_recent(self):
@@ -688,7 +691,7 @@ class Picture(models.Model):
     quality = models.CharField(max_length=1, blank=True)
 #    thumb_height = models.IntegerField(blank=True)
     num_comments = models.IntegerField(default=0)
-    num_faves = models.IntegerField(default=0)
+    num_faves = models.IntegerField(default=0, db_index=True)
 #    characters = models.CharField(max_length=50, blank=True)
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
