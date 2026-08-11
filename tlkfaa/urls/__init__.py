@@ -18,6 +18,7 @@ from fanart.views import approval as approval_views
 from trading_tree import views as trading_tree_views
 from coloring_cave import views as coloring_cave_views
 from pms import views as pms_views
+from sketcher import views as sketcher_views
 
 
 class MonthPathConverter:
@@ -69,6 +70,10 @@ urlpatterns = [
     path('ColoringCave/', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     path('ColoringCave/<int:coloring_base_id>/', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     path('ColoringCave/artist/<str:dir_name>/', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
+
+    path('Sketcher/launch/', sketcher_views.SketcherLaunchView.as_view(), name='sketcher-launch'),
+    path('Sketcher/api/verify/', sketcher_views.SketcherVerifyTokenView.as_view(), name='sketcher-verify'),
+
     # re_path(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
     path('FavoritePictures/', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
     # re_path(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', showcases_views.FeaturedArtistsView.as_view(), name='featured-artists'),

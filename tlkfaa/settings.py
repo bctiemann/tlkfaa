@@ -337,6 +337,15 @@ RECAPTCHA_SITE_KEY = None
 RECAPTCHA_SECRET_KEY = None
 RECAPTCHA_ENABLED = True
 
+# Shared secret the Sketcher (Java) server presents when calling back to
+# Sketcher/api/verify/ to redeem a SketcherAccessToken.
+SKETCHER_API_KEY = None
+
+# Host/port the sketcher-server the "Launch Sketcher" link should point
+# clients at (embedded in the sketcher:// launch URI).
+SKETCHER_SERVER_HOST = 'localhost'
+SKETCHER_SERVER_PORT = 28000
+
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'
 # CELERY_RESULT_SERIALIZER = 'pickle'

@@ -110,6 +110,8 @@ Drawpile</h1>
 <div class="userboxfooter" style="height: 40px;">
 {% if drawpile %}
     <a href="{{ drawpile.download_url }}">Get Drawpile</a>
+    &middot;
+    <a href="{% url 'sketcher-launch' %}">Launch Sketcher</a>
     {% if drawpile.is_running %}
         <p style="margin-bottom: 0px;">Drawpile status: <b>Online</b>
             (<span class="sketcher-users-count">{{ drawpile.active_users.count }}</span>
