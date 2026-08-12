@@ -72,6 +72,7 @@ urlpatterns = [
     path('ColoringCave/artist/<str:dir_name>/', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
 
     path('Sketcher/launch/', sketcher_views.SketcherLaunchView.as_view(), name='sketcher-launch'),
+    path('Sketcher/api/launch/', sketcher_views.SketcherLaunchApiView.as_view(), name='sketcher-launch-api'),
     path('Sketcher/api/verify/', sketcher_views.SketcherVerifyTokenView.as_view(), name='sketcher-verify'),
 
     # re_path(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),

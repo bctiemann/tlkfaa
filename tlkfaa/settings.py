@@ -342,9 +342,14 @@ RECAPTCHA_ENABLED = True
 SKETCHER_API_KEY = None
 
 # Host/port the sketcher-server the "Launch Sketcher" link should point
-# clients at (embedded in the sketcher:// launch URI).
+# clients at (embedded in the sketcher:// launch URI, for the desktop client's
+# raw-TCP connection).
 SKETCHER_SERVER_HOST = 'localhost'
 SKETCHER_SERVER_PORT = 28000
+
+# Port the sketcher-server's WebSocket listener is on, for browser-based
+# clients (see server.wsPort in sketcher-server's server.properties).
+SKETCHER_SERVER_WS_PORT = 28001
 
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'

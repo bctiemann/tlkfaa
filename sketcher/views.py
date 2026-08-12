@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views import View
 
 from rest_framework.views import APIView
@@ -42,6 +42,22 @@ class SketcherLaunchView(LoginRequiredMixin, View):
             'port': settings.SKETCHER_SERVER_PORT,
         })
         return SketcherLaunchRedirect('sketcher://launch?{0}'.format(query))
+
+
+class SketcherLaunchApiView(LoginRequiredMixin, View):
+    """
+    JSON sibling of SketcherLaunchView for the browser-based (WebSocket)
+    client: same token minting, but returned as JSON for a same-origin
+    fetch() caller instead of a sketcher:// redirect - there's no OS-level
+    handoff needed when the client is itself a web page.
+    """
+    def get(self, request):
+        access_token = SketcherAccessToken.issue_for(request.user)
+        return JsonResponse({
+            'token': access_token.token,
+            'server': settings.SKETCHER_SERVER_HOST,
+            'wsPort': settings.SKETCHER_SERVER_WS_PORT,
+        })
 
 
 class SketcherVerifyTokenView(APIView):
