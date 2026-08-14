@@ -44,6 +44,29 @@ class SketcherLaunchView(LoginRequiredMixin, View):
         return SketcherLaunchRedirect('sketcher://launch?{0}'.format(query))
 
 
+class SketcherWebLaunchView(LoginRequiredMixin, View):
+    """
+    Mints a short-lived, single-use Sketcher access token and redirects
+    straight to the browser-based (sketcher-web) client with it embedded in
+    the query string - the one-click path for users who should never need
+    to touch the Java desktop client. Mirrors SketcherLaunchView's redirect-
+    with-token pattern rather than SketcherLaunchApiView's fetch()-based
+    JSON handoff, so no CORS or cross-origin cookie setup is required
+    between this site and wherever sketcher-web ends up hosted - it is a
+    plain ordinary redirect, and sketcher-web's own launch.ts already knows
+    how to read token/server/port/nick straight off the URL.
+    """
+    def get(self, request):
+        access_token = SketcherAccessToken.issue_for(request.user)
+        query = urlencode({
+            'token': access_token.token,
+            'server': settings.SKETCHER_SERVER_HOST,
+            'port': settings.SKETCHER_SERVER_WS_PORT,
+            'nick': request.user.username,
+        })
+        return HttpResponseRedirect('{0}/?{1}'.format(settings.SKETCHER_WEB_URL, query))
+
+
 class SketcherLaunchApiView(LoginRequiredMixin, View):
     """
     JSON sibling of SketcherLaunchView for the browser-based (WebSocket)

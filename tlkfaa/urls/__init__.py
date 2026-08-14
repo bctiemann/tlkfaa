@@ -71,7 +71,8 @@ urlpatterns = [
     path('ColoringCave/<int:coloring_base_id>/', coloring_cave_views.ColoringCaveView.as_view(), name='coloring-cave'),
     path('ColoringCave/artist/<str:dir_name>/', fanart_views.ColoringPicturesView.as_view(), name='coloring-cave-artist'),
 
-    path('Sketcher/launch/', sketcher_views.SketcherLaunchView.as_view(), name='sketcher-launch'),
+    path('Sketcher/launch/', sketcher_views.SketcherWebLaunchView.as_view(), name='sketcher-launch'),
+    path('Sketcher/launch/desktop/', sketcher_views.SketcherLaunchView.as_view(), name='sketcher-launch-desktop'),
     path('Sketcher/api/launch/', sketcher_views.SketcherLaunchApiView.as_view(), name='sketcher-launch-api'),
     path('Sketcher/api/verify/', sketcher_views.SketcherVerifyTokenView.as_view(), name='sketcher-verify'),
 

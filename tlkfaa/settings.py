@@ -351,6 +351,11 @@ SKETCHER_SERVER_PORT = 28000
 # clients (see server.wsPort in sketcher-server's server.properties).
 SKETCHER_SERVER_WS_PORT = 28001
 
+# Where the browser-based (sketcher-web) client is hosted - "Launch
+# Sketcher" redirects here with a fresh access token embedded in the query
+# string (see SketcherWebLaunchView).
+SKETCHER_WEB_URL = 'http://localhost:5173'
+
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'
 # CELERY_RESULT_SERIALIZER = 'pickle'
