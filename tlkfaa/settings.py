@@ -356,6 +356,11 @@ SKETCHER_SERVER_WS_PORT = 28001
 # string (see SketcherWebLaunchView).
 SKETCHER_WEB_URL = 'http://localhost:5173'
 
+# Whether the userpane shows the "Launch Sketcher" link at all - off by
+# default so it doesn't go live until deliberately flipped on (via
+# env.yaml) once sketcher-server is actually running somewhere reachable.
+SHOW_SKETCHER_LINK = False
+
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'
 # CELERY_RESULT_SERIALIZER = 'pickle'
