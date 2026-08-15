@@ -626,8 +626,21 @@ class User(AbstractUser):
         self.num_favepics = num_favepics
         self.save(update_fields=['num_faves', 'num_favepics'])
 
+    # Called unconditionally on nearly every page view and userpane refresh
+    # (multiple times per minute for an active user with several tabs open),
+    # but last_active's only consumer is the RECENT_ACTIVITY_CUTOFF_SECS
+    # (300s) "recently active" check, which doesn't need better than ~60s
+    # precision. Writing every single call turns any user with overlapping
+    # tabs/polling into a hot row - many workers serializing on the same
+    # UPDATE, each waiting on the previous one's commit - so skip the write
+    # entirely when the existing value is already fresh enough.
+    LAST_ACTIVE_UPDATE_THROTTLE_SECS = 60
+
     def update_last_active(self):
-        self.last_active = timezone.now()
+        now = timezone.now()
+        if self.last_active and (now - self.last_active).total_seconds() < self.LAST_ACTIVE_UPDATE_THROTTLE_SECS:
+            return
+        self.last_active = now
         self.save(update_fields=['last_active'])
 
     def save(self, update_thumbs=False, *args, **kwargs):

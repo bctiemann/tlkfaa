@@ -394,8 +394,10 @@ class SketcherBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/sketcher.html'
 
     def get_context_data(self, **kwargs):
-        if self.request.user.is_authenticated:
-            self.request.user.update_last_active()
+        # UserPaneMixin.get_context_data already calls update_last_active()
+        # for authenticated users (and already sets drawpile/sketcher_slots
+        # below) - this used to duplicate that call, writing last_active
+        # twice per request instead of once.
         context = super().get_context_data(**kwargs)
         context['drawpile'] = self.get_drawpile()
         context['sketcher_slots'] = self.get_sketcher_slots()
