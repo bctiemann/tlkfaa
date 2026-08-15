@@ -3209,9 +3209,20 @@ function refreshSketcherLogin() {
   $('#sketcher').load(url);
 }
 
+// setInterval fires on a fixed schedule regardless of whether the previous
+// tick's request has come back yet. If a response ever takes longer than
+// sketcherboxIntvMs (e.g. the backend is briefly slow), the next tick fires
+// anyway and the requests start overlapping - each one adding more load and
+// pushing response times up further, so *more* ticks overlap, spiraling.
+// This flag makes a tick a no-op while one is still in flight instead.
+var sketcherBoxRequestInFlight = false;
+
 function refreshSketcherUserBox() {
+    if (sketcherBoxRequestInFlight) return;
+    sketcherBoxRequestInFlight = true;
     const url = '/userbox/sketcher_box/';
     $('#sketcher_box').load(url, function(html) {
+        sketcherBoxRequestInFlight = false;
         const $html = $(html);
         const sketcherUsers = $html.contents('.sketcheruser .sketcher-user-name').length;
         $('.sketcher-users-count').html(sketcherUsers);
