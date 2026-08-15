@@ -450,8 +450,10 @@ function replyShout(shoutId) {
                     if (data.success) {
                         $('#reply_shout').val('');
                         $('#dialog_shout_reply').dialog('close');
-                        var shoutUrl = `/shouts/${data.shout_id}/detail/`;
-                        $(`#shout_${data.shout_id}`).load(shoutUrl);
+                        var refreshurl = `/shouts/${data.artist_id}/?shoutid=${data.shout_id}`;
+                        $.get(refreshurl, function(html) {
+                            $(`#shout_${data.shout_id}`).html($(html).filter(`#shout_${data.shout_id}`).html());
+                        });
                     }
                 });
             },
@@ -2079,7 +2081,7 @@ function deleteShout(shoutid, artmanagerview) {
             } else {
                 var refreshurl = '/shouts/' + data.artist_id + '/?shoutid=' + shoutid;
                 $.get(refreshurl, function(html) {
-                    $('#shout_' + shoutid).empty().html($(html).find('#shout_' + shoutid).children());
+                    $('#shout_' + shoutid).html($(html).filter('#shout_' + shoutid).html());
                 });
             }
         });
@@ -2138,7 +2140,7 @@ console.log(data);
 //            var refreshurl = "/ajax_shouts.jsp?artistid="+itemid+"&offset=0&count=10";
             var refreshurl = '/shouts/' + itemid + '/?shoutid=' + commentid;
             $.get(refreshurl, function(html) {
-                $('#shout_' + commentid).empty().html($(html).find('#shout_' + commentid).children());
+                $('#shout_' + commentid).html($(html).filter('#shout_' + commentid).html());
             });
 //            $('#shouts').load(refreshurl,function() {
 //                Shadowbox.setup('#shouts a.button');
@@ -3207,9 +3209,20 @@ function refreshSketcherLogin() {
   $('#sketcher').load(url);
 }
 
+// setInterval fires on a fixed schedule regardless of whether the previous
+// tick's request has come back yet. If a response ever takes longer than
+// sketcherboxIntvMs (e.g. the backend is briefly slow), the next tick fires
+// anyway and the requests start overlapping - each one adding more load and
+// pushing response times up further, so *more* ticks overlap, spiraling.
+// This flag makes a tick a no-op while one is still in flight instead.
+var sketcherBoxRequestInFlight = false;
+
 function refreshSketcherUserBox() {
+    if (sketcherBoxRequestInFlight) return;
+    sketcherBoxRequestInFlight = true;
     const url = '/userbox/sketcher_box/';
     $('#sketcher_box').load(url, function(html) {
+        sketcherBoxRequestInFlight = false;
         const $html = $(html);
         const sketcherUsers = $html.contents('.sketcheruser .sketcher-user-name').length;
         $('.sketcher-users-count').html(sketcherUsers);

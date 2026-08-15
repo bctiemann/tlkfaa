@@ -183,13 +183,8 @@ class UserPaneMixin(RatelimitMixin):
         return Drawpile.objects.first()
 
     def get_sketcher_slots(self):
-        slots = []
-        sketcher_users = self.get_sketcher_users()
-        for slot in range(12):
-            try:
-                slots.append(sketcher_users[slot])
-            except IndexError:
-                slots.append(None)
+        slots = list(self.get_sketcher_users()[:12])
+        slots += [None] * (12 - len(slots))
         return slots
 
     def get_context_data(self, **kwargs):
@@ -228,7 +223,7 @@ class HomeView(UserPaneMixin, TemplateView):
 
         context['upcoming_birthdays'] = models.User.objects.upcoming_birthdays()
         context['aotm'] = models.FeaturedArtist.objects.filter(is_published=True).first()
-        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).first()
+        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).select_related('picture__artist').first()
 
         context['login_failed'] = self.request.session.get('login_failed')
         self.request.session['login_failed'] = False
@@ -242,7 +237,7 @@ class RandomPopularView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(RandomPopularView, self).get_context_data(**kwargs)
         context['random_popular'] = models.Picture.objects.random_popular[0:12]
-        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).first()
+        context['featured_picture'] = models.FeaturedPicture.objects.filter(is_published=True).select_related('picture__artist').first()
         return context
 
 
@@ -399,8 +394,10 @@ class SketcherBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/sketcher.html'
 
     def get_context_data(self, **kwargs):
-        if self.request.user.is_authenticated:
-            self.request.user.update_last_active()
+        # UserPaneMixin.get_context_data already calls update_last_active()
+        # for authenticated users (and already sets drawpile/sketcher_slots
+        # below) - this used to duplicate that call, writing last_active
+        # twice per request instead of once.
         context = super().get_context_data(**kwargs)
         context['drawpile'] = self.get_drawpile()
         context['sketcher_slots'] = self.get_sketcher_slots()
@@ -606,7 +603,7 @@ class CommentsView(TemplateView):
         context = super(CommentsView, self).get_context_data(*args, **kwargs)
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'])
         context['picture'] = picture
-        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture).select_related('reply_to'), sort_by='date_posted', parent_field='reply_to')
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = self.request.user.is_blocked_by(picture.artist) or self.request.user.is_blanket_blocked
         context['hash'] = uuid.uuid4()
@@ -718,7 +715,7 @@ class ShoutsView(TemplateView):
         context['shouts'] = artist.shouts_received.filter(reply_to__isnull=True).order_by('-date_posted')[start:end]
         shout_id = self.request.GET.get('shoutid', None)
         if shout_id:
-            context['shouts'] = artist.shouts_received.filter(id=shout_id)
+            context['shouts'] = models.Shout.all_shouts.filter(artist=artist, id=shout_id)
         if self.request.user.is_authenticated:
             context['current_user_is_blocked'] = self.request.user.is_blocked_by(artist) or self.request.user.is_blanket_blocked
         context['hash'] = uuid.uuid4()
@@ -791,6 +788,7 @@ class ReplyShoutView(LoginRequiredMixin, CreateView):
         reply.save()
         response['shout_id'] = self.shout.id
         response['reply_id'] = reply.id
+        response['artist_id'] = self.shout.artist.id
 
         response['success'] = True
         return JsonResponse(response)
@@ -965,7 +963,7 @@ class PictureView(UserPaneMixin, TemplateView):
         picture = get_object_or_404(models.Picture, pk=kwargs['picture_id'], date_deleted__isnull=True, artist__is_artist=True, artist__is_active=True)
         context['picture'] = picture
         context['picture_is_private'] = not picture.is_public and (not self.request.user.is_authenticated or picture.artist != self.request.user)
-        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture), sort_by='date_posted', parent_field='reply_to')
+        context['comments'] = utils.tree_to_list(models.ThreadedComment.objects.filter(picture=picture).select_related('reply_to'), sort_by='date_posted', parent_field='reply_to')
         context['hash'] = uuid.uuid4()
         if self.request.user.is_authenticated:
             context['fave_artist'] = models.Favorite.objects.filter(artist=picture.artist, user=self.request.user).first()
@@ -986,8 +984,22 @@ class PictureFansView(LoginRequiredMixin, DetailView):
 
 # Tooltip popup previews
 
-class PictureTooltipView(PictureView):
+class PictureTooltipView(RatelimitMixin, TemplateView):
     template_name = 'tooltips/picture.html'
+    ratelimit_key = 'ip'
+    ratelimit_rate = '10/m'
+    ratelimit_method = 'GET'
+
+    def get_context_data(self, **kwargs):
+        context = super(PictureTooltipView, self).get_context_data(**kwargs)
+        context['picture'] = get_object_or_404(
+            models.Picture,
+            pk=kwargs['picture_id'],
+            date_deleted__isnull=True,
+            artist__is_artist=True,
+            artist__is_active=True,
+        )
+        return context
 
 
 class ColoringPictureTooltipView(TemplateView):

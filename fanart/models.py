@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 import uuid
 import datetime
+import random
 import pytz
 import os
 import re
@@ -625,8 +626,21 @@ class User(AbstractUser):
         self.num_favepics = num_favepics
         self.save(update_fields=['num_faves', 'num_favepics'])
 
+    # Called unconditionally on nearly every page view and userpane refresh
+    # (multiple times per minute for an active user with several tabs open),
+    # but last_active's only consumer is the RECENT_ACTIVITY_CUTOFF_SECS
+    # (300s) "recently active" check, which doesn't need better than ~60s
+    # precision. Writing every single call turns any user with overlapping
+    # tabs/polling into a hot row - many workers serializing on the same
+    # UPDATE, each waiting on the previous one's commit - so skip the write
+    # entirely when the existing value is already fresh enough.
+    LAST_ACTIVE_UPDATE_THROTTLE_SECS = 60
+
     def update_last_active(self):
-        self.last_active = timezone.now()
+        now = timezone.now()
+        if self.last_active and (now - self.last_active).total_seconds() < self.LAST_ACTIVE_UPDATE_THROTTLE_SECS:
+            return
+        self.last_active = now
         self.save(update_fields=['last_active'])
 
     def save(self, update_thumbs=False, *args, **kwargs):
@@ -654,7 +668,9 @@ class PictureManager(models.Manager):
 
     @property
     def random_popular(self):
-        return self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).order_by('?')
+        ids = list(self.filter(num_faves__gt=20).exclude(mime_type__in=list(settings.MOVIE_FILE_TYPES.keys())).values_list('pk', flat=True))
+        sample_ids = random.sample(ids, min(len(ids), 12))
+        return self.filter(pk__in=sample_ids).select_related('artist')
 
     @property
     def most_popular_recent(self):
@@ -688,7 +704,7 @@ class Picture(models.Model):
     quality = models.CharField(max_length=1, blank=True)
 #    thumb_height = models.IntegerField(blank=True)
     num_comments = models.IntegerField(default=0)
-    num_faves = models.IntegerField(default=0)
+    num_faves = models.IntegerField(default=0, db_index=True)
 #    characters = models.CharField(max_length=50, blank=True)
     width = models.IntegerField(blank=True)
     height = models.IntegerField(blank=True)
@@ -711,6 +727,11 @@ class Picture(models.Model):
     tags = models.ManyToManyField('Tag', blank=True)
 
     objects = PictureManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['num_faves', 'mime_type', 'date_deleted'], name='picture_popular_idx'),
+        ]
 
     @property
     def basename(self):
@@ -1090,6 +1111,7 @@ class Shout(BaseComment):
     reply_to = models.ForeignKey('Shout', null=True, blank=True, related_name='replies', on_delete=models.SET_NULL)
 
     objects = ShoutManager()
+    all_shouts = models.Manager()
 
     @property
     def num_replies(self):
@@ -1407,8 +1429,8 @@ class Pending(models.Model):
 
     @property
     def sanitized_basename(self):
-        base_fn = re.sub('\.[^\.]+$', '', self.filename)
-        out_fn = ''.join([upperfirst(part) for part in re.split('[- _+~&()\.]', base_fn)])
+        base_fn = re.sub(r'\.[^.]+$', '', self.filename)
+        out_fn = ''.join([upperfirst(part) for part in re.split(r'[- _+~&().]', base_fn)])
         out_fn = re.sub('[^a-zA-Z0-9_-]', '', out_fn)
         if not out_fn:
             out_fn = 'Untitled'
