@@ -96,6 +96,33 @@ Favorite Pictures</h1>
 </div>
 
 
+{% if sketcher_enabled %}
+<div class="userbox">
+<h1>
+<a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
+Sketcher</h1>
+<div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
+
+{% if request.session.sketcher_box %}
+{% include "fanart/userpane/sketcher.html" %}
+{% endif %}
+
+</div>
+<div class="userboxfooter" style="height: 40px;">
+    <a href="{% url 'sketcher-launch' %}" target="_blank" rel="noopener">Launch Sketcher</a>
+    {% if sketcher_online %}
+        <p style="margin-bottom: 0px;">Sketcher status: <b>Online</b>
+            (<span class="sketcher-users-count">{{ sketcher_users|length }}</span>
+            <span class="sketcher-users-count-label">user{{ sketcher_users|length|pluralize }}</span>)
+        </p>
+    {% else %}
+        <p>Sketcher status: <b>Offline</b></p>
+    {% endif %}
+</div>
+</div>
+{% endif %}
+
+
 {% if drawpile_enabled %}
 <div class="userbox">
 <h1>
@@ -121,33 +148,6 @@ Drawpile</h1>
         <p>Drawpile status: <b>Offline</b></p>
     {% endif %}
 {% endif %}
-</div>
-</div>
-{% endif %}
-
-
-{% if sketcher_enabled %}
-<div class="userbox">
-<h1>
-<a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
-Sketcher</h1>
-<div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
-
-{% if request.session.sketcher_box %}
-{% include "fanart/userpane/sketcher.html" %}
-{% endif %}
-
-</div>
-<div class="userboxfooter" style="height: 40px;">
-    <a href="{% url 'sketcher-launch' %}" target="_blank" rel="noopener">Launch Sketcher</a>
-    {% if sketcher_online %}
-        <p style="margin-bottom: 0px;">Sketcher status: <b>Online</b>
-            (<span class="sketcher-users-count">{{ sketcher_users|length }}</span>
-            <span class="sketcher-users-count-label">user{{ sketcher_users|length|pluralize }}</span>)
-        </p>
-    {% else %}
-        <p>Sketcher status: <b>Offline</b></p>
-    {% endif %}
 </div>
 </div>
 {% endif %}
