@@ -356,10 +356,34 @@ SKETCHER_SERVER_WS_PORT = 28001
 # string (see SketcherWebLaunchView).
 SKETCHER_WEB_URL = 'http://localhost:5173'
 
-# Whether the userpane shows the "Launch Sketcher" link at all - off by
-# default so it doesn't go live until deliberately flipped on (via
-# env.yaml) once sketcher-server is actually running somewhere reachable.
-SHOW_SKETCHER_LINK = False
+# Whether the userpane shows the Sketcher box (roster + status + Launch
+# Sketcher link) at all - off by default so it doesn't go live until
+# deliberately flipped on (via env.yaml) once sketcher-server is actually
+# running somewhere reachable. Independent of DRAWPILE_ENABLED below -
+# either, both, or neither box can be shown.
+SKETCHER_ENABLED = False
+
+# Whether the userpane shows the (older, separate) Drawpile box at all.
+DRAWPILE_ENABLED = True
+
+# Absolute path to sketcher-server's user.txt (server.user in its own
+# server.properties) - a live roster of currently-connected usernames that
+# sketcher-server's own background thread truncates and rewrites every 30
+# seconds (ServerContext.java), one name per line. Read directly at render
+# time - no DB model or scheduled sync job, unlike Drawpile below, since
+# the file already *is* the up-to-date source of truth (Drawpile only
+# exposes an HTTP admin API, which has to be polled into a DB cache
+# instead). None until configured per-environment (via env.yaml) - treated
+# the same as a missing/unreadable file (empty roster, Offline status).
+SKETCHER_USER_FILE_PATH = None
+
+# How stale user.txt's mtime can be before the Sketcher box reports the
+# server as Offline. The dump thread rewrites the file every 30s
+# unconditionally, even with zero users connected, so this needs enough
+# slack above that to absorb normal scheduling jitter while still meaning
+# "the server process itself has stopped updating it" rather than "no one
+# happens to be drawing right now".
+SKETCHER_STATUS_STALE_SECONDS = 90
 
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'

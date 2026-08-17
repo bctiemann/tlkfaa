@@ -20,6 +20,7 @@ var artworklistopen;
 var CharactersList = [];
 var characterslistopen;
 var banneropen = false;
+var drawpileboxIntvMs = 10000;
 var sketcherboxIntvMs = 10000;
 var pictureidMove = 0;
 var scrollIsLoading = {
@@ -3211,10 +3212,31 @@ function refreshSketcherLogin() {
 
 // setInterval fires on a fixed schedule regardless of whether the previous
 // tick's request has come back yet. If a response ever takes longer than
-// sketcherboxIntvMs (e.g. the backend is briefly slow), the next tick fires
+// drawpileboxIntvMs (e.g. the backend is briefly slow), the next tick fires
 // anyway and the requests start overlapping - each one adding more load and
 // pushing response times up further, so *more* ticks overlap, spiraling.
 // This flag makes a tick a no-op while one is still in flight instead.
+var drawpileBoxRequestInFlight = false;
+
+function refreshDrawpileUserBox() {
+    if (drawpileBoxRequestInFlight) return;
+    drawpileBoxRequestInFlight = true;
+    const url = '/userbox/drawpile_box/';
+    $('#drawpile_box').load(url, function(html) {
+        drawpileBoxRequestInFlight = false;
+        const $html = $(html);
+        const drawpileUsers = $html.contents('.drawpileuser .drawpile-user-name').length;
+        $('.drawpile-users-count').html(drawpileUsers);
+        if (drawpileUsers === 1) {
+            $('.drawpile-users-count-label').html('user');
+        } else {
+            $('.drawpile-users-count-label').html('users');
+        }
+    });
+}
+
+// See refreshDrawpileUserBox's own comment above - same in-flight guard,
+// same overlap-avoidance reasoning, just for the separate Sketcher box.
 var sketcherBoxRequestInFlight = false;
 
 function refreshSketcherUserBox() {
@@ -3324,6 +3346,7 @@ $(document).ready(function() {
   $('.actions_menu a').mouseleave(function() {
     $(this).removeClass('ui-state-hover');
   });
+  var drawpileboxIntv = setInterval('refreshDrawpileUserBox()',drawpileboxIntvMs);
   var sketcherboxIntv = setInterval('refreshSketcherUserBox()',sketcherboxIntvMs);
   $('#keywords_new').tagsInput({
     'height': '50px',

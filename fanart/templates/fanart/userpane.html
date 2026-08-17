@@ -96,28 +96,25 @@ Favorite Pictures</h1>
 </div>
 
 
+{% if drawpile_enabled %}
 <div class="userbox">
 <h1>
-<a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
+<a id="drawpile_box_toggle" class="toggle {% if request.session.drawpile_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('drawpile_box')"></a>
 Drawpile</h1>
-<div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
+<div class="userboxinner {% if not request.session.drawpile_box %}hidden{% endif %}" id="drawpile_box">
 
-{% if request.session.sketcher_box %}
-{% include "fanart/userpane/sketcher.html" %}
+{% if request.session.drawpile_box %}
+{% include "fanart/userpane/drawpile.html" %}
 {% endif %}
 
 </div>
 <div class="userboxfooter" style="height: 40px;">
 {% if drawpile %}
     <a href="{{ drawpile.download_url }}">Get Drawpile</a>
-    {% if show_sketcher_link %}
-        &middot;
-        <a href="{% url 'sketcher-launch' %}" target="_blank" rel="noopener">Launch Sketcher</a>
-    {% endif %}
     {% if drawpile.is_running %}
         <p style="margin-bottom: 0px;">Drawpile status: <b>Online</b>
-            (<span class="sketcher-users-count">{{ drawpile.active_users.count }}</span>
-            <span class="sketcher-users-count-label">user{{ drawpile.active_users.count|pluralize }}</span>)
+            (<span class="drawpile-users-count">{{ drawpile.active_users.count }}</span>
+            <span class="drawpile-users-count-label">user{{ drawpile.active_users.count|pluralize }}</span>)
         </p>
         <p>Join: <b><code>fanart.lionking.org:28000</code></b></p>
     {% else %}
@@ -126,6 +123,34 @@ Drawpile</h1>
 {% endif %}
 </div>
 </div>
+{% endif %}
+
+
+{% if sketcher_enabled %}
+<div class="userbox">
+<h1>
+<a id="sketcher_box_toggle" class="toggle {% if request.session.sketcher_box %}toggleopen{% else %}toggleclosed{% endif %}" href="javascript:nop()" onclick="toggleUserBox('sketcher_box')"></a>
+Sketcher</h1>
+<div class="userboxinner {% if not request.session.sketcher_box %}hidden{% endif %}" id="sketcher_box">
+
+{% if request.session.sketcher_box %}
+{% include "fanart/userpane/sketcher.html" %}
+{% endif %}
+
+</div>
+<div class="userboxfooter" style="height: 40px;">
+    <a href="{% url 'sketcher-launch' %}" target="_blank" rel="noopener">Launch Sketcher</a>
+    {% if sketcher_online %}
+        <p style="margin-bottom: 0px;">Sketcher status: <b>Online</b>
+            (<span class="sketcher-users-count">{{ sketcher_users|length }}</span>
+            <span class="sketcher-users-count-label">user{{ sketcher_users|length|pluralize }}</span>)
+        </p>
+    {% else %}
+        <p>Sketcher status: <b>Offline</b></p>
+    {% endif %}
+</div>
+</div>
+{% endif %}
 
 
 <style type="text/css">

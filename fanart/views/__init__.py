@@ -176,16 +176,51 @@ class UserPaneMixin(RatelimitMixin):
         ).order_by('-date_end')[0:5]
         return contests_data
 
-    def get_sketcher_users(self):
+    def get_drawpile_users(self):
         return ActiveUser.objects.all()
 
     def get_drawpile(self):
         return Drawpile.objects.first()
 
-    def get_sketcher_slots(self):
-        slots = list(self.get_sketcher_users()[:12])
+    def get_drawpile_slots(self):
+        slots = list(self.get_drawpile_users()[:12])
         slots += [None] * (12 - len(slots))
         return slots
+
+    def get_sketcher_user_names(self):
+        # Unlike Drawpile above (a DB cache periodically refreshed from an
+        # HTTP admin API - see refresh_drawpile_users management command),
+        # sketcher-server's user.txt already *is* a live roster - its own
+        # background thread rewrites it every 30s straight from the
+        # connected-users list (ServerContext.java) - so this just reads it
+        # directly at render time. A missing/unreadable file (not yet
+        # configured, or sketcher-server never started) is treated the
+        # same as an empty roster rather than an error.
+        if not settings.SKETCHER_USER_FILE_PATH:
+            return []
+        try:
+            with open(settings.SKETCHER_USER_FILE_PATH) as f:
+                return [line.strip() for line in f if line.strip()]
+        except OSError:
+            return []
+
+    def get_sketcher_slots(self):
+        names = self.get_sketcher_user_names()[:12]
+        return names + [None] * (12 - len(names))
+
+    def get_sketcher_online(self):
+        # sketcher-server has no HTTP admin API to probe for liveness
+        # (unlike Drawpile) - but its dump thread rewrites user.txt every
+        # 30s unconditionally, even with nobody connected, so a mtime well
+        # beyond that interval means the server process itself has stopped
+        # updating it, not just that the room is empty right now.
+        if not settings.SKETCHER_USER_FILE_PATH:
+            return False
+        try:
+            mtime = os.path.getmtime(settings.SKETCHER_USER_FILE_PATH)
+        except OSError:
+            return False
+        return (timezone.now().timestamp() - mtime) < settings.SKETCHER_STATUS_STALE_SECONDS
 
     def get_context_data(self, **kwargs):
         context = super(UserPaneMixin, self).get_context_data(**kwargs)
@@ -200,7 +235,10 @@ class UserPaneMixin(RatelimitMixin):
         context['contests_data'] = self.get_contests_data()
 
         context['drawpile'] = self.get_drawpile()
+        context['drawpile_slots'] = self.get_drawpile_slots()
+        context['sketcher_users'] = self.get_sketcher_user_names()
         context['sketcher_slots'] = self.get_sketcher_slots()
+        context['sketcher_online'] = self.get_sketcher_online()
 
         self.request.user.update_last_active()
 
@@ -390,17 +428,29 @@ class FavoritePicturesBoxView(UserPaneMixin, TemplateView):
     template_name = 'fanart/userpane/favorite_pictures.html'
 
 
-class SketcherBoxView(UserPaneMixin, TemplateView):
-    template_name = 'fanart/userpane/sketcher.html'
+class DrawpileBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/drawpile.html'
 
     def get_context_data(self, **kwargs):
         # UserPaneMixin.get_context_data already calls update_last_active()
-        # for authenticated users (and already sets drawpile/sketcher_slots
+        # for authenticated users (and already sets drawpile/drawpile_slots
         # below) - this used to duplicate that call, writing last_active
         # twice per request instead of once.
         context = super().get_context_data(**kwargs)
         context['drawpile'] = self.get_drawpile()
+        context['drawpile_slots'] = self.get_drawpile_slots()
+        return context
+
+
+class SketcherBoxView(UserPaneMixin, TemplateView):
+    template_name = 'fanart/userpane/sketcher.html'
+
+    def get_context_data(self, **kwargs):
+        # See DrawpileBoxView's own comment above - same reasoning.
+        context = super().get_context_data(**kwargs)
+        context['sketcher_users'] = self.get_sketcher_user_names()
         context['sketcher_slots'] = self.get_sketcher_slots()
+        context['sketcher_online'] = self.get_sketcher_online()
         return context
 
 

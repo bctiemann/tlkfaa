@@ -103,6 +103,7 @@ urlpatterns = [
     path('userbox/set/', fanart_views.UserBoxSetView.as_view(), name='userbox-set'),
     path('userbox/favorite_artists_box/', fanart_views.FavoriteArtistsBoxView.as_view(), name='favorite-artists-box'),
     path('userbox/favorite_pictures_box/', fanart_views.FavoritePicturesBoxView.as_view(), name='favorite-pictures-box'),
+    path('userbox/drawpile_box/', fanart_views.DrawpileBoxView.as_view(), name='drawpile-box'),
     path('userbox/sketcher_box/', fanart_views.SketcherBoxView.as_view(), name='sketcher-box'),
     path('userbox/community_art_box/', fanart_views.CommunityArtBoxView.as_view(), name='community-art-box'),
     path('userbox/contests_box/', fanart_views.ContestsBoxView.as_view(), name='contests-box'),

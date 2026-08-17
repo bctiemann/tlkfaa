@@ -1,12 +1,12 @@
 {% load static %}
 
-<h3>Current Drawpile users:</h3>
+<h3>Current Sketcher users:</h3>
 
 {% for user in sketcher_slots %}
     <div class="sketcheruser">
         <span class="usernumber">{{ forloop.counter }}</span>
         {% if user %}
-            <span class="sketcher-user-name">{{ user.name }}</span>
+            <span class="sketcher-user-name">{{ user }}</span>
         {% endif %}
     </div>
 {% endfor %}

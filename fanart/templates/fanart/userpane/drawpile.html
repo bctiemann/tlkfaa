@@ -1,0 +1,12 @@
+{% load static %}
+
+<h3>Current Drawpile users:</h3>
+
+{% for user in drawpile_slots %}
+    <div class="drawpileuser">
+        <span class="usernumber">{{ forloop.counter }}</span>
+        {% if user %}
+            <span class="drawpile-user-name">{{ user.name }}</span>
+        {% endif %}
+    </div>
+{% endfor %}

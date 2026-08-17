@@ -2961,17 +2961,17 @@ div.sketcherentry {
 div.sketcherusers {
 	margin-left: 100px;
 }
-div.sketcheruser {
+div.sketcheruser, div.drawpileuser {
 	background-color: #fff;
 	border: 1px solid #eee;
 	border-width: 1px 1px 0px 1px;
 	width: 180px;
 	padding: 3px;
 }
-div.sketcheruser:last-child {
+div.sketcheruser:last-child, div.drawpileuser:last-child {
 	border-width: 1px 1px 1px 1px;
 }
-div.sketcheruser span.usernumber {
+div.sketcheruser span.usernumber, div.drawpileuser span.usernumber {
 	color: #888;
 	margin-right: 8px;
 }
