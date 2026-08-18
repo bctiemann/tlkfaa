@@ -6,7 +6,13 @@
     <div class="sketcheruser">
         <span class="usernumber">{{ forloop.counter }}</span>
         {% if user %}
-            <span class="sketcher-user-name">{{ user }}</span>
+            <span class="sketcher-user-name">
+                {% if user.dir_name %}
+                    <a href="{% url "artist" dir_name=user.dir_name %}">{{ user.name }}</a>
+                {% else %}
+                    {{ user.name }}
+                {% endif %}
+            </span>
         {% endif %}
     </div>
 {% endfor %}

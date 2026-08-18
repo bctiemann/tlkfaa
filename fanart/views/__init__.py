@@ -204,9 +204,26 @@ class UserPaneMixin(RatelimitMixin):
         except OSError:
             return []
 
+    def get_sketcher_artist_dir_names(self, names):
+        # Maps Sketcher's plain usernames back to a linkable gallery, the
+        # same way the "Logged in as" block already does ({% url "artist"
+        # dir_name=user.dir_name %}) - a single indexed IN lookup (username
+        # is unique=True, so indexed) rather than one query per name, and
+        # capped at 12 names anyway. Not every Sketcher name matches a site
+        # account at all (the desktop client can connect with an arbitrary
+        # nickname) or is an artist account (is_artist=True gates whether
+        # the artist URL is even valid) - is_artist=True in the filter
+        # means those just don't show up in the returned dict, so the
+        # template falls back to plain text for them.
+        if not names:
+            return {}
+        return dict(models.User.objects.filter(username__in=names, is_artist=True).values_list('username', 'dir_name'))
+
     def get_sketcher_slots(self):
         names = self.get_sketcher_user_names()[:12]
-        return names + [None] * (12 - len(names))
+        dir_names = self.get_sketcher_artist_dir_names(names)
+        slots = [{'name': name, 'dir_name': dir_names.get(name)} for name in names]
+        return slots + [None] * (12 - len(slots))
 
     def get_sketcher_online(self):
         # sketcher-server has no HTTP admin API to probe for liveness
