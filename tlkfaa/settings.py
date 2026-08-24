@@ -385,6 +385,39 @@ SKETCHER_USER_FILE_PATH = None
 # happens to be drawing right now".
 SKETCHER_STATUS_STALE_SECONDS = 90
 
+# Absolute path to sketcher-server's talk.txt (server.talk in its own
+# server.properties) - a one-way command file its background thread polls
+# every second (ServerContext.java): a bare "kick <username>" line
+# disconnects that user, a bare "quad" line dumps every connected user's
+# screen quadrant to the server's own log (not readable from here), and
+# any other line is broadcast verbatim to every connected client as a
+# chat message. The admin page writes to this file for kicking and
+# broadcasting - same mechanism the pre-2017 JSP admin page used. None
+# until configured per-environment, same as SKETCHER_USER_FILE_PATH.
+SKETCHER_TALK_FILE_PATH = None
+
+# Absolute path to sketcher-server's own log file - see sketcher_logfile
+# in sketcher-server/rc.d/sketcher (defaults to /var/log/sketcher-srv.log
+# there). Tailed by the admin page's log viewer.
+SKETCHER_LOG_FILE_PATH = None
+SKETCHER_LOG_TAIL_LINES = 100
+
+# Absolute path to a lock file whose mere existence cancels the next
+# scheduled canvas reset - written/deleted by the admin page's Cancel/
+# Uncancel button, mirroring the pre-2017 JSP admin's exact mechanism
+# (Sketcher/resetkey/resetkey). Nothing currently reads this file - there
+# is no scheduled-reset cron job in the modernized sketcher-server/rc.d
+# setup yet, only a manual "restart the service to clear the canvas" -
+# so Cancel/Uncancel and the reset countdown below are fully functional
+# UI wired to a real file, they just have no automated consumer to affect
+# until that cron job is (re)built.
+SKETCHER_RESET_KEY_PATH = None
+
+# Hours between scheduled canvas resets, mirroring resetsettings.conf's
+# resetfreq from the pre-2017 Perl/JSP era - used only to compute the
+# countdown display on the admin page (see get_sketcher_next_reset).
+SKETCHER_RESET_FREQ_HOURS = 24
+
 # Celery
 # CELERY_TASK_SERIALIZER = 'pickle'
 # CELERY_RESULT_SERIALIZER = 'pickle'

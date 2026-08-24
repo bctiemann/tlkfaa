@@ -1,0 +1,10 @@
+{% if sketcher_next_reset %}
+    {{ sketcher_next_reset }} ({{ sketcher_reset_mins }} mins)
+    {% if sketcher_reset_cancelled %}
+        <input type="button" value="Uncancel" onclick="sketcherAdminToggleReset('uncancel')">
+    {% else %}
+        <input type="button" value="Cancel" onclick="sketcherAdminToggleReset('cancel')">
+    {% endif %}
+{% else %}
+    Automatic resets are not currently scheduled.
+{% endif %}

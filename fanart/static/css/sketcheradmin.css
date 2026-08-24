@@ -1,0 +1,45 @@
+/* Ported from the pre-2017 JSP admin's own Sketcher/sketcheradmin.css -
+   trimmed to the rules this page's sections actually use (no blog/
+   nomination styling, since those features weren't carried forward). */
+
+table.layout {
+	border-collapse: collapse;
+	width: 100%;
+}
+td.content {
+	padding: 10px;
+}
+
+div#bannedartists table {
+	border-collapse: collapse;
+	font-size: 10px;
+	margin-left: 30px;
+}
+div#bannedartists input {
+	font-size: 10px;
+}
+#logportlet {
+	font-size: 10px;
+	width: 100%;
+	white-space: pre-wrap;
+	font-family: monospace;
+}
+#logportletcontainer {
+	width: 100%;
+	height: 200px;
+	border: 1px solid;
+	overflow: scroll;
+}
+div.adminlist {
+	float: right;
+	width: 200px;
+}
+div#adminlist {
+	display: none;
+	margin-bottom: 10px;
+}
+#actionresult {
+	min-height: 1.4em;
+	margin: 10px 0;
+	font-weight: bold;
+}

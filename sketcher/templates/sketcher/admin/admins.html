@@ -1,0 +1,8 @@
+<h3>All current admins:</h3>
+
+{% for admin in sketcher_admins %}
+    {{ admin.username }}<br />
+{% endfor %}
+
+<br />
+<a href="mailto:{% for admin in sketcher_admins %}{{ admin.email }}{% if not forloop.last %},{% endif %}{% endfor %}">E-mail all</a>

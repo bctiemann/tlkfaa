@@ -1,0 +1,25 @@
+Banned users:
+<table id="bannedartists">
+{% for ban in sketcher_banned %}
+    <tr>
+        <td>
+            {% if ban.user.dir_name %}
+                <a target="_blank" href="{% url "artist" dir_name=ban.user.dir_name %}">{{ ban.user.username }}</a>
+            {% else %}
+                {{ ban.user.username }}
+            {% endif %}
+        </td>
+        <td>{{ ban.date_banned|date:"n/j/Y" }}</td>
+        <td>{{ ban.banned_by.username }}</td>
+        <td>{{ ban.ban_reason }}</td>
+        <td><input type="button" value="Lift Ban" onclick="sketcherAdminUnban({{ ban.id }})"></td>
+    </tr>
+{% empty %}
+    <tr><td colspan="5">No users currently banned.</td></tr>
+{% endfor %}
+<tr>
+<td><input name="banusername" id="banusername" size="20" maxlength="150" placeholder="username" /></td>
+<td colspan="3">Reason: <input name="banreason" id="banreason" size="30" maxlength="255" /></td>
+<td><input type="button" value="Ban" onclick="sketcherAdminBan()"></td>
+</tr>
+</table>

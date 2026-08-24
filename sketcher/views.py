@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
+import os
+from datetime import timedelta
 from urllib.parse import urlencode
 
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.utils import timezone
 from django.views import View
+from django.views.generic import TemplateView
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -115,3 +120,265 @@ class SketcherVerifyTokenView(APIView):
         access_token.mark_used()
 
         return Response({'valid': True, 'username': access_token.user.username})
+
+
+# --- Sketcher admin page --------------------------------------------------
+#
+# Ported from the pre-2017 JSP admin (Sketcher/admin.jsp,
+# ajax_sketcheradmin.jsp, ajax_sketcherlog.jsp, ajax_resetstatus.jsp,
+# resetwarn.pl) onto the same two files sketcher-server already exposes -
+# talk.txt (a one-way command queue its own background thread polls every
+# second: ServerContext.java) and user.txt (the live roster, already read
+# by UserPaneMixin.get_sketcher_user_names for the userpane box) - rather
+# than adding any new API surface to the Java server itself.
+#
+# Not ported: the old sketcheradmins/sketcheradminvotes peer-nomination
+# system for *becoming* an admin (superseded here by is_sketcher_mod,
+# set directly via the Django admin) and the private admin-only "blog"
+# (adminblog table) - a notes board with no functional tie to Sketcher
+# itself.
+
+def _read_sketcher_user_names():
+    # Same logic as UserPaneMixin.get_sketcher_user_names (fanart/views) -
+    # duplicated rather than imported to keep this admin-only module from
+    # depending on fanart's view layer for what is, on both sides, a
+    # trivial file read.
+    if not settings.SKETCHER_USER_FILE_PATH:
+        return []
+    try:
+        with open(settings.SKETCHER_USER_FILE_PATH) as f:
+            return [line.strip() for line in f if line.strip()]
+    except OSError:
+        return []
+
+
+def _write_sketcher_talk_line(line):
+    # Append-only - sketcher-server's own poller drains and truncates this
+    # file itself once a second (ServerContext.java), so this only ever
+    # needs to add its line to the end, matching the old JSP's own
+    # FileWriter(path, true) (append mode).
+    if not settings.SKETCHER_TALK_FILE_PATH:
+        return
+    with open(settings.SKETCHER_TALK_FILE_PATH, 'a') as f:
+        f.write(line + '\n')
+
+
+def _tail_sketcher_log():
+    # Reads the whole file rather than shelling out to `tail` (what the
+    # old JSP did via Runtime.exec) - simpler and avoids a subprocess, at
+    # the cost of not scaling to a huge log file. Fine for a log this rc.d
+    # service alone writes to; revisit if that ever stops being true.
+    if not settings.SKETCHER_LOG_FILE_PATH:
+        return []
+    try:
+        with open(settings.SKETCHER_LOG_FILE_PATH) as f:
+            lines = f.readlines()
+    except OSError:
+        return []
+    return [line.rstrip('\n') for line in lines[-settings.SKETCHER_LOG_TAIL_LINES:]]
+
+
+def _sketcher_reset_cancelled():
+    if not settings.SKETCHER_RESET_KEY_PATH:
+        return False
+    return os.path.exists(settings.SKETCHER_RESET_KEY_PATH)
+
+
+def _sketcher_reset_status_context():
+    # Shared by SketcherAdminView's initial render and
+    # SketcherAdminResetStatusView's polling refresh, so the two can't
+    # drift out of sync with each other about what "next reset" means.
+    next_reset = _get_sketcher_next_reset()
+    mins = int((next_reset - timezone.now()).total_seconds() // 60) if next_reset else None
+    return {
+        'sketcher_next_reset': next_reset,
+        'sketcher_reset_mins': mins,
+        'sketcher_reset_cancelled': _sketcher_reset_cancelled(),
+    }
+
+
+def _get_sketcher_next_reset():
+    # Direct port of ajax_resetstatus.jsp's own Calendar arithmetic:
+    # starting from the coming midnight, step backward by
+    # SKETCHER_RESET_FREQ_HOURS repeatedly, keeping each candidate as the
+    # answer, until stepping back further would land at or before now -
+    # i.e. the smallest of those hour-boundaries that's still in the
+    # future. Only meaningful once something actually consumes
+    # SKETCHER_RESET_KEY_PATH on a matching schedule (see this module's
+    # own top comment) - until then this is a correctly-computed
+    # countdown to a reset that won't actually happen.
+    freq_hours = settings.SKETCHER_RESET_FREQ_HOURS
+    if not freq_hours or freq_hours <= 0:
+        return None
+    now = timezone.now()
+    midnight_tonight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    candidate = midnight_tonight
+    next_reset = candidate
+    while candidate > now:
+        next_reset = candidate
+        candidate -= timedelta(hours=freq_hours)
+    return next_reset
+
+
+class SketcherAdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Gates every Sketcher admin view behind is_sketcher_mod - set directly
+    via the Django admin, not through any in-app nomination/voting flow
+    (unlike the pre-2017 sketcheradmins/sketcheradminvotes tables this
+    replaces). raise_exception so a logged-in user who simply isn't an
+    admin gets a plain 403, rather than UserPassesTestMixin's default of
+    bouncing them to the login page they're already past.
+    """
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_sketcher_mod
+
+
+class SketcherAdminView(SketcherAdminRequiredMixin, TemplateView):
+    """
+    The admin page itself - computes every section's data directly for
+    the initial render (same as the old admin.jsp's own <jsp:include>s),
+    with the sibling AJAX views below re-serving the same partials for
+    each section's independent polling refresh.
+    """
+    template_name = 'sketcher/admin.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sketcher_users'] = _read_sketcher_user_names()
+        context['sketcher_log_lines'] = _tail_sketcher_log()
+        context.update(_sketcher_reset_status_context())
+        context['sketcher_banned'] = Ban.objects.select_related('user', 'banned_by').order_by('user__username')
+        context['sketcher_admins'] = get_user_model().objects.filter(is_sketcher_mod=True).order_by('username')
+        return context
+
+
+class SketcherAdminUsersView(SketcherAdminRequiredMixin, TemplateView):
+    template_name = 'sketcher/admin/users.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sketcher_users'] = _read_sketcher_user_names()
+        return context
+
+
+class SketcherAdminKickView(SketcherAdminRequiredMixin, View):
+    def post(self, request):
+        username = request.POST.get('username', '').strip()
+        if not username:
+            return HttpResponse('')
+        # sketcher-server's talk.txt protocol splits the line on
+        # whitespace and requires exactly two tokens ("kick" + the name),
+        # matching it against a connected user's name field exactly
+        # (ServerContext.java) - a name containing a space (e.g. a site
+        # username like "Brian Tiemann", which sketcher-web already uses
+        # as the nickname) produces three-plus tokens and silently fails
+        # to match anyone. Pre-existing protocol limitation, not
+        # introduced here - flagged rather than worked around, since
+        # fixing it means changing the Java server's own parsing.
+        _write_sketcher_talk_line('kick {0}'.format(username))
+        return HttpResponse('Kicking {0}...'.format(username))
+
+
+class SketcherAdminBroadcastView(SketcherAdminRequiredMixin, View):
+    def post(self, request):
+        text = request.POST.get('text', '').strip()
+        if not text:
+            return HttpResponse('')
+        # Any talk.txt line that isn't exactly "quad" or "kick <user>"
+        # (and doesn't start with "/") gets broadcast verbatim to every
+        # connected client as a chat message (ServerContext.java) - same
+        # mechanism the old JSP's "echo" function used, attributed the
+        # same way ("ADMIN (name): text").
+        _write_sketcher_talk_line('ADMIN ({0}): {1}'.format(request.user.username, text))
+        return HttpResponse('')
+
+
+class SketcherAdminLogView(SketcherAdminRequiredMixin, TemplateView):
+    template_name = 'sketcher/admin/log.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sketcher_log_lines'] = _tail_sketcher_log()
+        return context
+
+
+class SketcherAdminResetStatusView(SketcherAdminRequiredMixin, TemplateView):
+    template_name = 'sketcher/admin/reset_status.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(_sketcher_reset_status_context())
+        return context
+
+
+class SketcherAdminToggleResetView(SketcherAdminRequiredMixin, View):
+    """
+    Writes/deletes SKETCHER_RESET_KEY_PATH - the exact mechanism the old
+    JSP admin used (Sketcher/resetkey/resetkey), just with nothing reading
+    it yet. See this module's own top comment.
+    """
+    def post(self, request):
+        if not settings.SKETCHER_RESET_KEY_PATH:
+            return HttpResponse('', status=200)
+        action = request.POST.get('action')
+        if action == 'cancel':
+            with open(settings.SKETCHER_RESET_KEY_PATH, 'w') as f:
+                f.write(request.user.username)
+        elif action == 'uncancel':
+            try:
+                os.remove(settings.SKETCHER_RESET_KEY_PATH)
+            except OSError:
+                pass
+        return HttpResponse('')
+
+
+class SketcherAdminBannedView(SketcherAdminRequiredMixin, TemplateView):
+    template_name = 'sketcher/admin/banned.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sketcher_banned'] = Ban.objects.select_related('user', 'banned_by').order_by('user__username')
+        return context
+
+
+class SketcherAdminBanView(SketcherAdminRequiredMixin, View):
+    def post(self, request):
+        username = request.POST.get('username', '').strip()
+        reason = request.POST.get('reason', '').strip()
+        User = get_user_model()
+        try:
+            target = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return HttpResponse('No such user: {0}'.format(username), status=404)
+        ban, created = Ban.objects.get_or_create(
+            user=target,
+            defaults={'banned_by': request.user, 'ban_reason': reason},
+        )
+        if not created:
+            return HttpResponse('{0} is already banned.'.format(target.username))
+        return HttpResponse('Banned {0}.'.format(target.username))
+
+
+class SketcherAdminUnbanView(SketcherAdminRequiredMixin, View):
+    def post(self, request):
+        ban_id = request.POST.get('ban_id')
+        # Unlike the old JSP (which only let the artist who placed a ban
+        # lift it themselves - sketcherbannedby == artist.artistid), any
+        # admin can lift any ban here. That old restriction reads like an
+        # accident of the era rather than a deliberate policy - nothing
+        # else about this page assumes admins operate in isolation from
+        # each other (the "E-mail all" admin list exists precisely so
+        # they can coordinate).
+        Ban.objects.filter(id=ban_id).delete()
+        return HttpResponse('')
+
+
+class SketcherAdminAdminsView(SketcherAdminRequiredMixin, TemplateView):
+    template_name = 'sketcher/admin/admins.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sketcher_admins'] = get_user_model().objects.filter(is_sketcher_mod=True).order_by('username')
+        return context

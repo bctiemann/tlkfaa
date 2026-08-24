@@ -1,0 +1,71 @@
+{% extends "fanart/base_popup.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static "css/sketcheradmin.css" %}">
+
+<div class="adminlist"><a href="javascript:nop()" onclick="$('#adminlist').slideToggle()">show admins</a>
+<div id="adminlist">
+{% include "sketcher/admin/admins.html" %}
+</div>
+</div>
+
+<h1>Sketcher admin</h1>
+
+<p><a href="{% url "sketcher-launch" %}" target="_blank" rel="noopener">Enter Sketcher</a></p>
+
+<table class="layout">
+<tr>
+<td class="content">
+
+    <div id="userlist">
+    {% include "sketcher/admin/users.html" %}
+    </div>
+
+    <table class="formtable">
+    <tr>
+    <td class="label">Broadcast Text</td>
+    <td class="data"><input name="broadcasttext" id="broadcasttext" size="40" /></td>
+    <td><input type="button" value="Send Text" onclick="sketcherAdminBroadcast()"></td>
+    </tr>
+    <tr>
+    <td class="label">Upcoming reset</td>
+    <td class="data" id="resetstatus">{% include "sketcher/admin/reset_status.html" %}</td>
+    <td></td>
+    </tr>
+    </table>
+
+    <div id="logportletcontainer">
+    <div id="logportlet">
+    {% include "sketcher/admin/log.html" %}
+    </div>
+    </div>
+
+    <div id="actionresult"></div>
+
+    <div id="bannedartists">
+    {% include "sketcher/admin/banned.html" %}
+    </div>
+
+</td>
+</tr>
+</table>
+
+<script type="text/javascript">
+var sketcherAdminUrls = {
+    users: "{% url 'sketcher-admin-users' %}",
+    kick: "{% url 'sketcher-admin-kick' %}",
+    broadcast: "{% url 'sketcher-admin-broadcast' %}",
+    log: "{% url 'sketcher-admin-log' %}",
+    resetStatus: "{% url 'sketcher-admin-reset-status' %}",
+    toggleReset: "{% url 'sketcher-admin-toggle-reset' %}",
+    banned: "{% url 'sketcher-admin-banned' %}",
+    ban: "{% url 'sketcher-admin-ban' %}",
+    unban: "{% url 'sketcher-admin-unban' %}",
+    admins: "{% url 'sketcher-admin-admins' %}"
+};
+</script>
+<script type="text/javascript" src="{% static "js/sketcheradmin.js" %}"></script>
+
+{% endblock %}

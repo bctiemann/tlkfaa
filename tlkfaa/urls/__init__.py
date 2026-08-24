@@ -76,6 +76,18 @@ urlpatterns = [
     path('Sketcher/api/launch/', sketcher_views.SketcherLaunchApiView.as_view(), name='sketcher-launch-api'),
     path('Sketcher/api/verify/', sketcher_views.SketcherVerifyTokenView.as_view(), name='sketcher-verify'),
 
+    path('Sketcher/admin/', sketcher_views.SketcherAdminView.as_view(), name='sketcher-admin'),
+    path('Sketcher/admin/ajax/users/', sketcher_views.SketcherAdminUsersView.as_view(), name='sketcher-admin-users'),
+    path('Sketcher/admin/ajax/kick/', sketcher_views.SketcherAdminKickView.as_view(), name='sketcher-admin-kick'),
+    path('Sketcher/admin/ajax/broadcast/', sketcher_views.SketcherAdminBroadcastView.as_view(), name='sketcher-admin-broadcast'),
+    path('Sketcher/admin/ajax/log/', sketcher_views.SketcherAdminLogView.as_view(), name='sketcher-admin-log'),
+    path('Sketcher/admin/ajax/reset_status/', sketcher_views.SketcherAdminResetStatusView.as_view(), name='sketcher-admin-reset-status'),
+    path('Sketcher/admin/ajax/toggle_reset/', sketcher_views.SketcherAdminToggleResetView.as_view(), name='sketcher-admin-toggle-reset'),
+    path('Sketcher/admin/ajax/banned/', sketcher_views.SketcherAdminBannedView.as_view(), name='sketcher-admin-banned'),
+    path('Sketcher/admin/ajax/ban/', sketcher_views.SketcherAdminBanView.as_view(), name='sketcher-admin-ban'),
+    path('Sketcher/admin/ajax/unban/', sketcher_views.SketcherAdminUnbanView.as_view(), name='sketcher-admin-unban'),
+    path('Sketcher/admin/ajax/admins/', sketcher_views.SketcherAdminAdminsView.as_view(), name='sketcher-admin-admins'),
+
     # re_path(r'^Showcase/(?:(?P<showcase_id>[0-9]+)/)?$', fanart_views.ShowcasesView.as_view(), name='showcases'),
     path('FavoritePictures/', fanart_views.FavoritePicturesView.as_view(), name='favorite-pictures'),
     # re_path(r'^FeaturedArtists/(?:(?P<month_featured>[0-9]{4}-[0-9]{2})/)?$', showcases_views.FeaturedArtistsView.as_view(), name='featured-artists'),
