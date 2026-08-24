@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import os
 from datetime import timedelta
 from urllib.parse import urlencode
@@ -17,6 +18,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from sketcher.models import SketcherAccessToken, Ban
+
+logger = logging.getLogger(__name__)
 
 
 class SketcherLaunchRedirect(HttpResponseRedirect):
@@ -152,6 +155,30 @@ def _read_sketcher_user_names():
         return []
 
 
+def _make_group_writable(path):
+    # talk.txt (and SKETCHER_RESET_KEY_PATH below) is written by this
+    # process - running as the web server's own user - but has to be
+    # read *and truncated* by sketcher-server, which runs as a different
+    # user entirely. If whichever side creates the file first leaves it
+    # at a plain default-umask 644, the other side can read it but not
+    # write it - which is exactly what happened in production: talk.txt
+    # ended up owner=www (this process), group=sketcher, mode 644, so
+    # sketcher-server's own truncate-after-read (ServerContext.java, in
+    # its talk.txt poller's finally block) hit a permission error on
+    # every single 1-second poll - and that specific catch block swallows
+    # the IOException with no log line at all, so the failure was
+    # completely invisible until a broadcast kept re-appearing every
+    # second until someone manually emptied the file. This can only fix
+    # a file this process itself owns (chmod requires ownership, not just
+    # write access) - logged rather than raised if it fails, since a
+    # permission problem here shouldn't take down the request that
+    # triggered it.
+    try:
+        os.chmod(path, 0o664)
+    except OSError as e:
+        logger.warning('Could not chmod %s to be group-writable: %s', path, e)
+
+
 def _write_sketcher_talk_line(line):
     # Append-only - sketcher-server's own poller drains and truncates this
     # file itself once a second (ServerContext.java), so this only ever
@@ -161,6 +188,7 @@ def _write_sketcher_talk_line(line):
         return
     with open(settings.SKETCHER_TALK_FILE_PATH, 'a') as f:
         f.write(line + '\n')
+    _make_group_writable(settings.SKETCHER_TALK_FILE_PATH)
 
 
 def _tail_sketcher_log():
@@ -324,13 +352,33 @@ class SketcherAdminToggleResetView(SketcherAdminRequiredMixin, View):
             return HttpResponse('', status=200)
         action = request.POST.get('action')
         if action == 'cancel':
-            with open(settings.SKETCHER_RESET_KEY_PATH, 'w') as f:
-                f.write(request.user.username)
+            try:
+                with open(settings.SKETCHER_RESET_KEY_PATH, 'w') as f:
+                    f.write(request.user.username)
+            except OSError as e:
+                # Unlike talk.txt/user.txt (which always exist and only
+                # ever get rewritten in place), this file may not exist
+                # yet - *creating* it needs write permission on its
+                # containing directory, not just the file itself. If
+                # that's missing, surface it clearly here rather than let
+                # it become another silent, undiagnosable no-op like the
+                # talk.txt bug this module's own top comment describes.
+                logger.warning('Could not write %s: %s', settings.SKETCHER_RESET_KEY_PATH, e)
+                return HttpResponse('Could not cancel the reset - check permissions on the sketcher-server directory.', status=500)
+            # See _make_group_writable's own comment - same reasoning
+            # applies here, pre-emptively, for whatever eventually
+            # consumes this file on a matching cron schedule.
+            _make_group_writable(settings.SKETCHER_RESET_KEY_PATH)
         elif action == 'uncancel':
             try:
                 os.remove(settings.SKETCHER_RESET_KEY_PATH)
-            except OSError:
+            except FileNotFoundError:
                 pass
+            except OSError as e:
+                # Deleting is also a directory-write operation, same as
+                # creating above - same reasoning, same failure mode.
+                logger.warning('Could not remove %s: %s', settings.SKETCHER_RESET_KEY_PATH, e)
+                return HttpResponse('Could not uncancel the reset - check permissions on the sketcher-server directory.', status=500)
         return HttpResponse('')
 
 

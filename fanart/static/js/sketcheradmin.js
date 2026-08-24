@@ -41,9 +41,19 @@ function sketcherAdminBroadcast() {
 }
 
 function sketcherAdminToggleReset(action) {
-    $.post(sketcherAdminUrls.toggleReset, { action: action }, function() {
-        refreshResetStatus();
-    });
+    // $.post's third-argument callback only fires on HTTP success - a
+    // permission failure on the server (see SketcherAdminToggleResetView)
+    // returns a 500, which would otherwise fail completely silently here
+    // instead of surfacing anywhere, same as it did on the Java side
+    // before that bug was found. .fail() reports it into #actionresult
+    // like every other action on this page does.
+    $.post(sketcherAdminUrls.toggleReset, { action: action })
+        .done(function() {
+            refreshResetStatus();
+        })
+        .fail(function(xhr) {
+            $('#actionresult').html(xhr.responseText || 'Could not update the reset schedule.');
+        });
 }
 
 function sketcherAdminBan() {
